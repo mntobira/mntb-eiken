@@ -58,6 +58,10 @@
     });
   });
 
+  document.querySelectorAll('[data-print]').forEach(function (button) {
+    button.addEventListener('click', function () { window.print(); });
+  });
+
   const paper = document.getElementById('paper');
   if (!paper) return;
 

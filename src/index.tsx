@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { renderer } from './renderer'
 import { Home } from './views/home'
-import { AnswerSheet, Exam, Script } from './views/exam'
+import { AnswerSheet, BlankSheet, Exam, Script } from './views/exam'
 import { getGeneratedSet, getSet, SETS } from './data/sets'
 
 const app = new Hono()
@@ -24,6 +24,12 @@ app.get('/exam/:id', (c) => {
   const showAnswers = c.req.query('show') === 'answers'
 
   return c.render(<Exam set={set} part={part} showAnswers={showAnswers} />)
+})
+
+app.get('/sheet/:id', (c) => {
+  const set = resolveSet(c.req.param('id'))
+  if (!set) return c.notFound()
+  return c.render(<BlankSheet set={set} />)
 })
 
 app.get('/answers/:id', (c) => {

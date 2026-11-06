@@ -1,190 +1,35 @@
 import type { FC } from 'hono/jsx'
 import { SETS } from '../data/sets'
 
-const GRADES = ['1級', '準1級', '2級', '準2級プラス', '準2級', '3級', '4級', '5級']
-
-const PdfIcon: FC = () => (
-  <span class="pill-icon" aria-hidden="true">
-    PDF
-  </span>
-)
-
-const SpeakerIcon: FC = () => <span class="pill-icon spk" aria-hidden="true" />
-
-export const Home: FC = () => {
-  return (
-    <div class="page">
-      <nav class="breadcrumb" aria-label="パンくずリスト">
-        <a href="/">ホーム</a>
-        <span class="sep">›</span>
-        <a href="/">過去問・試験内容</a>
-        <span class="sep">›</span>
-        <span>5級の過去問・試験内容</span>
-      </nav>
-
-      <h1 class="page-title">5級の過去問・試験内容</h1>
-
-      <p class="lead">5級の試験内容と、過去1年（3回分）の過去問をご紹介します。</p>
-
-      <h2 class="sec-heading">過去問・サンプル問題</h2>
-
-      <p class="body-text">
-        5級は、英語の学習を始めて最初の目標となる級で、レベルはおよそ中学初級程度とされています。初歩的な英語を理解することができ、それを使って表現することが求められます。基礎的でかつ重要な内容が出題されます。5級は、英語学習のステップの始まりです。試験内容は、一次試験（リーディング・リスニング）に加え、スピーキングテストも導入します。なお、スピーキングテストは級認定には影響せず、スピーキングテスト単位で合否判定されます。
-      </p>
-
-      <section class="panel" id="written-exam">
-        <h3 class="panel-heading">一次試験</h3>
-
-        <p class="body-text">
-          一次試験の問題と解答がPDFでダウンロードできます。また、リスニングも聞くことができます。
-        </p>
-        <ul class="note-list">
-          <li>本会場・準会場F日程（2〜5級のみ）実施分のみダウンロードができます。</li>
-          <li>問題数が多く、再生に時間がかかる場合があります。</li>
-        </ul>
-
-        <div class="menu-grid" id="drill-menu">
-          <article class="menu-card">
-            <h3>
-              通し演習<span class="tag">おすすめ</span>
-            </h3>
-            <p>
-              リーディング25問＋リスニング25問を、本番と同じ順番・制限時間で解きます。採点後に全問の解説が表示されます。
-            </p>
-            <div class="pill-row">
-              <a class="pill" href="/exam/2026-2">
-                <PdfIcon />
-                2026年度 第2回を解く
-              </a>
-            </div>
-          </article>
-
-          <article class="menu-card">
-            <h3>リーディングだけ</h3>
-            <p>大問1〜3（25問）を25分で解きます。語彙・会話文・語句並べかえを集中的に練習できます。</p>
-            <div class="pill-row">
-              <a class="pill" href="/exam/2026-2?part=reading">
-                <PdfIcon />
-                リーディング25問
-              </a>
-            </div>
-          </article>
-
-          <article class="menu-card">
-            <h3>
-              オリジナル問題を自動生成<span class="tag">毎回ちがう</span>
-            </h3>
-            <p>
-              過去問の出題形式をもとに、語彙・文法・会話・並べかえ・リスニングを組み合わせて、毎回ちがう問題を作ります。繰り返し練習したいときに。
-            </p>
-            <div class="pill-row">
-              <a class="pill" href="/new">
-                <PdfIcon />
-                新しい問題を作る
-              </a>
-              <a class="pill" href="/new?part=listening">
-                <SpeakerIcon />
-                リスニングのみ
-              </a>
-            </div>
-          </article>
-
-          <article class="menu-card">
-            <h3>リスニングだけ</h3>
-            <p>第1部〜第3部（25問）を音声つきで解きます。音声は何度でも再生できます。</p>
-            <div class="pill-row">
-              <a class="pill" href="/exam/2026-2?part=listening">
-                <SpeakerIcon />
-                リスニング25問
-              </a>
-            </div>
-          </article>
-        </div>
-
-        {SETS.map((set, idx) => (
-          <div class="round-block">
-            <h4 class="round-title">
-              {set.round}
-              <span class="round-caption">{set.date}</span>
-            </h4>
-
-            <p class="bullet-label">過去問</p>
-            <div class="pill-row">
-              <a class="pill" href={`/exam/${set.id}`}>
-                <PdfIcon />
-                {set.round} 問題冊子（演習する）
-              </a>
-              <a class="pill" href={`/script/${set.id}`}>
-                <PdfIcon />
-                {set.round} リスニング原稿
-              </a>
-            </div>
-
-            <p class="bullet-label">リスニング音源</p>
-            <div class="pill-row">
-              <a class="pill" href={`/exam/${set.id}?part=listening#sec-L1`}>
-                <SpeakerIcon />
-                第1部
-              </a>
-              <a class="pill" href={`/exam/${set.id}?part=listening#sec-L2`}>
-                <SpeakerIcon />
-                第2部
-              </a>
-              <a class="pill" href={`/exam/${set.id}?part=listening#sec-L3`}>
-                <SpeakerIcon />
-                第3部
-              </a>
-            </div>
-
-            <p class="bullet-label">解答</p>
-            <div class="answer-row">
-              {GRADES.map((g) => (
-                <a class={g === '5級' ? 'grade-pill is-current' : 'grade-pill'} href={`/exam/${set.id}?show=answers`}>
-                  {g}
-                  <span class="tab-chev" aria-hidden="true">
-                    ›
-                  </span>
-                </a>
-              ))}
-            </div>
+export const Home: FC = () => (
+  <div class="page book-home">
+    <nav class="breadcrumb" aria-label="パンくずリスト"><span>マナトビ</span><span> / </span><span>英検5級</span></nav>
+    <header class="book-hero">
+      <p class="book-kicker">MANATOBI / ENGLISH PRACTICE</p>
+      <h1>英検5級<br /><span>演習問題集</span></h1>
+      <p class="lead">本試験の形式で、一問ずつ確かめる。</p>
+      <p>リーディング25問・リスニング25問。<br />問題冊子を開くように取り組める、マナトビの学習教材です。</p>
+      <div class="hero-facts"><span>中学初級程度</span><span>リーディング 25分</span><span>リスニング 約22分</span></div>
+      <div class="pill-row"><a class="btn-primary" href="/exam/2026-2">演習をはじめる →</a><a class="btn-secondary" href="#practice-sets">問題を選ぶ</a></div>
+    </header>
+    <aside class="book-notice">本教材は学習用の演習です。日本英語検定協会の公式サイト・公式問題集ではありません。収録問題には過去問を参考に再構成したものが含まれます。</aside>
+    <section id="practice-sets" class="practice-sets">
+      <div class="book-section-heading"><span>01 / PRACTICE</span><h2>問題を選ぶ</h2></div>
+      {SETS.map((set, index) => (
+        <article class="practice-set">
+          <div class="set-number">0{index + 1}</div>
+          <div class="set-detail"><p class="book-kicker">GRADE 5 / 50 QUESTIONS</p><h3>{set.round} 形式の演習</h3><p>参照試験：{set.date}　{set.note}</p>
+            <div class="set-links"><a href={`/exam/${set.id}?part=reading`}>リーディング 25問</a><a href={`/exam/${set.id}?part=listening`}>リスニング 25問</a><a href={`/answers/${set.id}`}>解答一覧</a><a href={`/script/${set.id}`}>放送原稿</a></div>
           </div>
-        ))}
-      </section>
-
-      <section class="panel" id="speaking-test">
-        <h3 class="panel-heading">スピーキングテスト</h3>
-        <p class="body-text">
-          5級の一次試験に申し込んだ方全員に、スピーキングテストの受験資格があります。対面式の面接ではなく、コンピュータ端末を使って受験し、応答を録音する方式です。級の合否は一次試験のみで判定されます。
-        </p>
-        <ul class="note-list">
-          <li>受験に必要な「英検ID」と「パスワード」は、一次試験の結果通知の際に成績表に記載されます。</li>
-          <li>スピーキングテストの結果は、受験後1か月を目途にウェブ上で閲覧できます。</li>
-        </ul>
-      </section>
-
-      <section class="panel" id="exam-format">
-        <h3 class="panel-heading">5級の試験内容</h3>
-        <p class="body-text">
-          リーディングテスト（25分）とリスニングテスト（約22分）。リーディングは大問1〜3の25問、リスニングは第1部〜第3部の25問です。
-        </p>
-
-        <ul class="note-list">
-          <li>リーディング：大問1（15問）／大問2（5問）／大問3（5問）</li>
-          <li>リスニング：第1部（10問）／第2部（5問）／第3部（10問）</li>
-          <li>解答はマークシートに記入します。問題冊子に書き込んでも採点されません。</li>
-        </ul>
-
-        <div class="pill-row">
-          <a class="pill" href="/exam/2026-1">
-            <PdfIcon />
-            2026年度 第1回を解く
-          </a>
-          <a class="pill" href="/exam/2025-3">
-            <PdfIcon />
-            2025年度 第3回を解く
-          </a>
-        </div>
-      </section>
-    </div>
-  )
-}
+          <a class="btn-secondary" href={`/exam/${set.id}`}>問題を開く →</a>
+        </article>
+      ))}
+    </section>
+    <section class="generation-panel" id="generate-practice"><div><p class="book-kicker">MORE PRACTICE</p><h2>問題を組み替えて、もう一度。</h2><p>文法テンプレートと収録問題を組み合わせた演習セットを作ります。</p></div><a class="btn-primary" href="/new">新しい演習を作る →</a></section>
+    <section id="exam-format" class="format-section">
+      <div class="book-section-heading"><span>02 / EXAM FORMAT</span><h2>本試験の構成</h2></div>
+      <div class="format-grid"><article><h3>READING <small>25分 / 25問</small></h3><dl><div><dt>大問1 / 15問</dt><dd>短文の語句空所補充</dd></div><div><dt>大問2 / 5問</dt><dd>会話文の文空所補充</dd></div><div><dt>大問3 / 5問</dt><dd>日本文付き短文の語句整序</dd></div></dl><p>選択肢は各問4つ。語句整序は1番目と3番目の組合せを選びます。</p></article>
+      <article><h3>LISTENING <small>約22分 / 25問</small></h3><dl><div><dt>第1部 / 10問</dt><dd>会話の応答文選択 / 3択</dd></div><div><dt>第2部 / 5問</dt><dd>会話の内容一致選択 / 4択</dd></div><div><dt>第3部 / 10問</dt><dd>イラストの内容一致選択 / 3択</dd></div></dl><p>本アプリでは合成音声を何度でも再生できます。イラストは説明文等による代替です。</p></article></div>
+    </section>
+  </div>
+)

@@ -47,7 +47,7 @@ const Question: FC<{ item: QuizItem; showAnswers: boolean }> = ({ item, showAnsw
       data-answer={item.answer}
       data-listening={listening ? '1' : '0'}
     >
-      <span class="q-no">({item.no})</span>
+      <span class="q-no">{listening ? `No. ${item.no}` : `(${item.no})`}</span>
 
       <div class="q-body">
         {item.sec === 'R3' && (
@@ -215,10 +215,15 @@ export const Exam: FC<{
 
       <div class="paper">
         <header class="paper-head">
-          <h1>2026年度 実用英語技能検定 5級　{title}</h1>
-          <p>
-            {set.round}／{set.date}　全{total}問　{set.note}
-          </p>
+          <div class="paper-brand-line"><img src="/static/manatobi-logo-gray.png" alt="マナトビ" width="126" height="40" /><span>GRADE 5 / PRACTICE BOOK</span></div>
+          <p class="book-kicker">学習用演習教材 / {set.id.startsWith('gen-') ? '組み替え演習' : set.round}</p>
+          <h1>英検5級 演習問題</h1>
+          <h2>{title}</h2>
+          <p>{set.round}／{set.date}　全{total}問</p>
+          <div class="exam-cover-facts"><span>リーディング 25分</span><span>リスニング 約22分</span></div>
+          <aside class="cover-instructions"><h3>取り組み方</h3><ol><li>各問の選択肢から、最も適切な答えを一つ選んでください。</li><li>リーディングは4択。並べかえは1番目と3番目の組合せを選びます。</li><li>リスニングは各問の再生ボタンから聞けます。公式音源ではなく合成音声です。</li><li>画面では選択肢をクリックして解答し、最後に「採点する」を押してください。</li></ol></aside>
+          <p class="material-disclaimer">日本英語検定協会の公式教材ではありません。{set.note}　本試験とは音声・図版・進行方法が異なります。</p>
+          <nav class="paper-tools" aria-label="冊子操作"><button type="button" class="btn-secondary" data-print>印刷 / PDF保存</button><a class="btn-secondary" href={`/sheet/${set.id}`}>解答用紙</a><a class="btn-secondary" href={`/answers/${set.id}`}>解答一覧</a><a class="btn-secondary" href={`/script/${set.id}`}>放送原稿</a></nav>
         </header>
 
         <div class="paper-body" id="paper">
@@ -292,6 +297,23 @@ export const Exam: FC<{
   )
 }
 
+export const BlankSheet: FC<{ set: QuizSet }> = ({ set }) => (
+  <div class="page blank-sheet">
+    <div class="paper-brand-line"><img src="/static/manatobi-logo-gray.png" alt="マナトビ" width="126" height="40" /><span>GRADE 5 / ANSWER SHEET</span></div>
+    <h1>英検5級 演習 解答用紙</h1><p>{set.round} / セットID：{set.id}</p>
+    <p class="sheet-name">氏名：________________________________　日付：________________</p>
+    <p>各問の答えを一つ選び、番号の丸をぬりつぶしてください。</p>
+    <div class="mark-sheet-columns">{(['reading', 'listening'] as const).map((part) => (
+      <section><h2>{part === 'reading' ? 'リーディング' : 'リスニング'}</h2>
+        <table class="mark-sheet"><thead><tr><th>問題番号</th><th>解答欄</th></tr></thead><tbody>{set[part].map((item) => (
+          <tr><th>{item.no}</th><td>{item.choices.map((_, i) => <span class="mark-bubble">{i + 1}</span>)}</td></tr>
+        ))}</tbody></table>
+      </section>
+    ))}</div>
+    <div class="paper-tools"><button type="button" class="btn-primary" data-print>印刷 / PDF保存</button><a class="btn-secondary" href={`/exam/${set.id}`}>問題冊子へ</a></div>
+  </div>
+)
+
 export const AnswerSheet: FC<{ set: QuizSet }> = ({ set }) => {
   const rows = (items: QuizItem[]) => (
     <table class="review-table">
@@ -337,7 +359,7 @@ export const AnswerSheet: FC<{ set: QuizSet }> = ({ set }) => {
         {set.date}実施　{set.note}
       </p>
 
-      <div class="answer-row" style="margin-bottom:26px">
+      <div class="answer-row" style="margin-bottom:26px"><button type="button" class="btn-secondary" data-print>印刷 / PDF保存</button>
         {GRADES.map((g) => (
           <a class={g === '5級' ? 'grade-pill is-current' : 'grade-pill'} href="/">
             {g}
@@ -385,9 +407,10 @@ export const Script: FC<{ set: QuizSet }> = ({ set }) => {
 
       <h1 class="page-title">「5級リスニングテスト」原稿</h1>
       <p class="lead">
-        {set.round}（{set.date}）　英文はすべて二度ずつ読まれます。第1部には例題が1題あります。
+        {set.round}（{set.date}）の演習用原稿です。画面では各問を手動再生します。本試験の2回放送・例題は再現していません。
       </p>
 
+      <button type="button" class="btn-secondary" data-print>印刷 / PDF保存</button>
       {(['L1', 'L2', 'L3'] as Sec[]).map((sec) => {
         const items = set.listening.filter((i) => i.sec === sec)
         if (items.length === 0) return null

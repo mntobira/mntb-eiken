@@ -227,7 +227,9 @@ function buildSet(
   } else {
     for (const raw of shuffle(L1.slice(10), rand).slice(0, 10)) listening.push(mkL1(raw))
     for (const raw of shuffle(L2.slice(5), rand).slice(0, 5)) listening.push(mkL2(raw))
-    for (const raw of shuffle(L3.slice(10), rand).slice(0, 10)) listening.push(mkL3(raw))
+    // The supplemental pool contains only 8 pictures; include the full pool
+    // so every practice set still has the exam's required 10 questions.
+    for (const raw of shuffle(L3, rand).slice(0, 10)) listening.push(mkL3(raw))
   }
   listening.forEach((it, i) => (it.no = i + 1))
 
@@ -243,7 +245,7 @@ export const SETS: QuizSet[] = [
     0,
     'real',
     20261004,
-    '一次試験のリーディング25問・リスニング25問を、公式の解答どおりに収録しています。',
+    '参照試験をもとに再構成した演習です。選択肢の順序等が本試験と異なるため、採点には本アプリの解答を使用してください。',
   ),
   buildSet(
     '2026-1',
@@ -309,13 +311,13 @@ function genId(seed: number) {
   return `gen-${seed.toString(36)}`
 }
 
-/** 毎回ちがう25問（リーディング15＋リスニング10）を作る */
+/** 本試験と同じ大問構成・問数の50問を作る。 */
 export function buildGeneratedSet(seed: number): QuizSet {
   const rand = mulberry32(seed)
   const reading: QuizItem[] = []
 
-  // 生成問題（テンプレート）10問
-  generateReading(10, seed).forEach((g) => {
+  // 短文補充15問（テンプレート）。
+  generateReading(15, seed).forEach((g) => {
     reading.push({
       id: nextId(),
       sec: 'R1',
@@ -328,28 +330,28 @@ export function buildGeneratedSet(seed: number): QuizSet {
     })
   })
 
-  // 過去問プールから会話文3問・語句並べかえ2問
+  // 問題プールから会話文5問・語句並べかえ5問。
   shuffle(S2, rand)
-    .slice(0, 3)
+    .slice(0, 5)
     .forEach((raw) => reading.push(mkS2(raw)))
   shuffle(S3, rand)
-    .slice(0, 2)
+    .slice(0, 5)
     .forEach((raw) => reading.push(mkS3(raw)))
 
-  const readingOut = shuffle(reading, rand)
+  const readingOut = reading
   readingOut.forEach((it, i) => (it.no = i + 1))
 
   const listening: QuizItem[] = []
-  shuffle(L1, rand).slice(0, 5).forEach((raw) => listening.push(mkL1(raw)))
-  shuffle(L2, rand).slice(0, 3).forEach((raw) => listening.push(mkL2(raw)))
-  shuffle(L3, rand).slice(0, 5).forEach((raw) => listening.push(mkL3(raw)))
-  const listeningOut = shuffle(listening, rand)
+  shuffle(L1, rand).slice(0, 10).forEach((raw) => listening.push(mkL1(raw)))
+  shuffle(L2, rand).slice(0, 5).forEach((raw) => listening.push(mkL2(raw)))
+  shuffle(L3, rand).slice(0, 10).forEach((raw) => listening.push(mkL3(raw)))
+  const listeningOut = listening
   listeningOut.forEach((it, i) => (it.no = i + 1))
 
   return {
     id: genId(seed),
     round: '自動生成',
-    date: 'オリジナル問題',
+    date: 'テンプレート＋収録問題の組み替え',
     note: '過去問の出題形式をもとに、テンプレートと問題プールから毎回ちがう問題を作成しています。',
     reading: readingOut,
     listening: listeningOut,

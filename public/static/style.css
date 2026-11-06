@@ -1,11 +1,11 @@
 /* ============================================================
-   英検 5級 過去問演習 — 公式サイトのデザインに合わせたスタイル
+   マナトビ 英検5級演習 — 本試験の構成に沿ったモノクロ冊子UI
    ============================================================ */
 
 :root {
-  --red: #e50111;
-  --red-deep: #c00010;
-  --red-pale: #fdecec;
+  --red: #202020;
+  --red-deep: #000000;
+  --red-pale: #f1f1f1;
   --ink: #333333;
   --ink-sub: #555555;
   --ink-light: #777777;
@@ -1586,4 +1586,114 @@ button {
 /* 語句並べかえのスロット */
 .order-sentence .slot {
   width: 52px;
+}
+
+/* Manatobi: Kobe mock-booklet grayscale brand and exam-paper layout. */
+body { padding-bottom: 0; background: #f7f7f5; }
+.manatobi-header { display:flex; align-items:center; gap:26px; padding:20px max(24px, calc((100vw - 1100px) / 2)); }
+.manatobi-brand { display:flex; flex-shrink:0; }
+.manatobi-brand img, .footer-logo, .paper-brand-line img { object-fit:contain; }
+.site-edition { font-size:10px; letter-spacing:.12em; color:#666; border-left:1px solid #ccc; padding-left:24px; }
+.book-nav { display:flex; gap:24px; margin-left:auto; font-size:12px; white-space:nowrap; }
+.book-home { max-width:1100px; }
+.book-hero { padding:50px 0 46px; }
+.book-kicker { font-size:10px; letter-spacing:.17em; font-weight:700; color:#666; }
+.book-hero h1 { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; font-size:54px; line-height:1.5; letter-spacing:.12em; margin:22px 0; color:#111; }
+.book-hero h1 span { font-size:40px; }
+.book-hero .lead { font-size:20px; margin:20px 0 12px; }
+.hero-facts { display:flex; flex-wrap:wrap; gap:12px; margin:28px 0; }
+.hero-facts span { border:1px solid #bbb; padding:5px 14px; font-size:12px; background:#fff; }
+.book-notice { border-left:3px solid #333; background:#eee; padding:16px 22px; font-size:12px; margin-bottom:54px; }
+.book-section-heading { border-bottom:2px solid #222; padding-bottom:14px; margin-bottom:0; display:flex; gap:24px; align-items:baseline; }
+.book-section-heading > span { font-size:10px; letter-spacing:.1em; color:#666; }
+.book-section-heading h2 { font-size:21px; margin:0; }
+.practice-set { display:flex; gap:26px; align-items:center; padding:30px 0; border-bottom:1px solid #ccc; }
+.set-number { font-family:Georgia,serif; font-size:37px; color:#aaa; }
+.set-detail { flex:1; min-width:0; }
+.set-detail h3 { margin:4px 0; font-size:19px; }
+.set-detail p { margin:0 0 8px; font-size:11px; color:#666; }
+.set-links { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; text-decoration:underline; text-underline-offset:4px; }
+.generation-panel { display:flex; justify-content:space-between; align-items:center; gap:24px; background:#eaeae7; margin:42px 0 60px; padding:30px; }
+.generation-panel h2 { font-size:21px; margin:8px 0; }
+.generation-panel p { font-size:12px; }
+.format-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:24px; }
+.format-grid h3 { font-size:17px; letter-spacing:.08em; }
+.format-grid small { display:block; font-size:11px; margin-top:4px; font-weight:400; }
+.format-grid dl > div { display:flex; justify-content:space-between; gap:10px; border-bottom:1px solid #ccc; padding:12px 0; font-size:12px; }
+.format-grid dd { margin:0; }
+.format-grid p { font-size:11px; color:#666; }
+.btn-primary, .btn-secondary, .pill { border-radius:3px; }
+.site-footer { margin-top:64px; background:#eee; }
+.footer-inner { display:flex; align-items:center; gap:30px; }
+.exam-bar { top:0; background:#fff; }
+.paper { background:#fff; max-width:960px; border:1px solid #d0d0d0; margin:30px auto; }
+.paper-head { padding:36px 56px 30px; text-align:left; border-bottom:1px solid #333; background:#fff; }
+.paper-brand-line { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #aaa; padding-bottom:12px; margin-bottom:28px; gap:15px; }
+.paper-brand-line > span { font-size:10px; letter-spacing:.12em; color:#555; }
+.paper-head h1 { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; font-size:34px; letter-spacing:.12em; margin:24px 0 10px; }
+.paper-head h2 { font-size:17px; font-weight:400; }
+.exam-cover-facts { display:flex; gap:24px; margin:24px 0; font-size:13px; }
+.cover-instructions { border:1px solid #aaa; padding:16px 24px; margin:24px 0; font-size:12px; }
+.cover-instructions h3 { font-size:14px; margin:0; }
+.cover-instructions ol { margin:8px 0 0; padding-left:20px; }
+.material-disclaimer { font-size:11px !important; color:#666; }
+.paper-tools { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+.paper-tools .btn-secondary { font-size:11px; padding:8px 13px; }
+.section-no { background:#222; color:#fff; border-radius:0; }
+.q-line, .choices, .order-sentence { font-family:"Times New Roman","Yu Mincho",serif; }
+.choice-num { border:1px solid #555; color:#111; background:#fff; }
+.choice.is-selected { background:#eee; border-color:#111; }
+.choice.is-selected .choice-num { background:#111; color:#fff; }
+.blank-sheet { background:#fff; }
+.sheet-name { margin:24px 0; }
+.mark-sheet-columns { display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+.mark-sheet-columns h2 { font-size:16px; }
+.mark-sheet { width:100%; border-collapse:collapse; font-size:12px; }
+.mark-sheet th, .mark-sheet td { border-bottom:1px solid #ccc; padding:5px 12px; text-align:center; }
+.mark-bubble { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border:1px solid #222; border-radius:50%; margin:0 5px; font:12px Arial,sans-serif; }
+@media(max-width:700px) {
+  .manatobi-header { padding:16px 20px; flex-wrap:wrap; gap:12px; }
+  .manatobi-brand img { width:130px; height:auto; }
+  .site-edition { font-size:9px; padding-left:14px; }
+  .book-nav { width:100%; margin:4px 0 0; gap:22px; }
+  .book-hero { padding:26px 0; }
+  .book-hero h1 { font-size:40px; }
+  .book-hero h1 span { font-size:30px; }
+  .book-hero .lead { font-size:17px; }
+  .practice-set { flex-wrap:wrap; gap:14px; }
+  .practice-set > .btn-secondary { margin-left:44px; }
+  .generation-panel { flex-direction:column; align-items:flex-start; padding:24px; }
+  .format-grid { grid-template-columns:1fr; gap:20px; }
+  .paper { margin:16px 10px; }
+  .paper-head { padding:24px 20px; }
+  .paper-head h1 { font-size:25px; }
+  .exam-cover-facts { flex-wrap:wrap; gap:8px 20px; }
+  .footer-inner { flex-direction:column; align-items:flex-start; }
+  .mark-sheet-columns { gap:12px; }
+  .mark-sheet th, .mark-sheet td { padding:4px 0; }
+  .mark-bubble { width:17px; height:17px; margin:0 2px; }
+}
+@page { size:A4; margin:16mm; }
+@media print {
+  body { background:#fff; color:#000; font-size:10pt; }
+  .site-footer, .paper-tools, .breadcrumb, .result-card, .answer-row, [data-print] { display:none !important; }
+  .page, .paper { max-width:none; width:100%; margin:0; padding:0; border:0; box-shadow:none; }
+  .paper-head { min-height:245mm; padding:0; border:0; break-after:page; }
+  .paper-head h1 { margin-top:38mm; font-size:28pt; }
+  .paper-brand-line img { width:34mm; height:auto; }
+  .paper-brand-line { margin-bottom:20mm; }
+  .paper-body { padding:0; }
+  .section-block { break-before:page; margin:0 !important; padding-top:0 !important; }
+  .q { break-inside:avoid; }
+  .section-head { break-after:avoid; }
+  .choices.cols-4 { grid-template-columns:repeat(4,1fr); }
+  .choices.cols-3 { grid-template-columns:repeat(3,1fr); }
+  .choice { padding:4px; border-color:transparent; background:white !important; }
+  .choice-num, .choice.is-selected .choice-num { color:#000; background:#fff; }
+  .mark-sheet-columns { gap:12mm; }
+  .mark-sheet th, .mark-sheet td { padding:1mm 2mm; }
+  .mark-bubble { width:4.8mm; height:4.8mm; }
+  .blank-sheet .paper-brand-line { margin-bottom:6mm; }
+  .blank-sheet h1 { font-size:20pt; }
+  .script-item { break-inside:avoid; }
 }
