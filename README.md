@@ -59,6 +59,12 @@
 - 内容はコード内の静的教材。ユーザーの解答はブラウザの表示中のみ保持し、DB・外部API・永続ストレージは使用しません。履歴保存はありません。
 - `/api/sets/:id` やHTMLには正解も含むため、学習用であり不正防止が必要な試験には使えません。
 
+## Firebase接続（英検版）
+
+英検版専用のFirebaseプロジェクト `manatobi-eiken` にWebアプリ `Manatobi Eiken Web` を登録し、`src/renderer.tsx` からFirebase Web SDKを初期化しています。Apple／iOSアプリやAndroidアプリは登録していません。大学入試版のFirebaseプロジェクトとは分離しています。
+
+採点時には、ブラウザからFirebase Firestoreの `eiken_attempts` コレクションへ、セットID・正答数・正答率・セクション別結果・作成時刻を保存します。FirebaseのWeb設定値はWeb SDKの公開設定値であり、サービスアカウント鍵や秘密鍵はリポジトリに含めていません。Firestoreを有効化する場合は、Firebaseコンソールでデータベースを作成し、認証・ルールを設定してから公開してください。
+
 ## ローカル起動・テスト
 
 ```sh

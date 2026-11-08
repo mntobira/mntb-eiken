@@ -33,6 +33,16 @@ export const renderer = jsxRenderer(({ children }) => (
         </div>
       </footer>
       <button type="button" class="to-top" id="to-top" aria-label="ページの先頭へ戻る">↑</button>
+      <script dangerouslySetInnerHTML={{ __html: `window.__MANATOBI_FIREBASE_CONFIG__ = ${JSON.stringify({
+        apiKey: 'AIzaSyB4MEgQ3EJyR8ImE5b-Pm-EtJVPC3apdkw',
+        authDomain: 'manatobi-eiken.firebaseapp.com',
+        projectId: 'manatobi-eiken',
+        storageBucket: 'manatobi-eiken.firebasestorage.app',
+        messagingSenderId: '643126129869',
+        appId: '1:643126129869:web:fd89acc67e503b9439e584',
+      })};` }} />
+      <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
       <script src="/static/app.js" defer></script>
     </body>
   </html>

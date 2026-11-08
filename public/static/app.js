@@ -7,7 +7,33 @@
    ============================================================= */
 (function () {
   'use strict';
-
+  /* ---------- Firebase（英検版専用） ---------- */
+  var eikenDb = null;
+  try {
+    if (window.firebase && window.__MANATOBI_FIREBASE_CONFIG__) {
+      if (!window.firebase.apps.length) {
+        window.firebase.initializeApp(window.__MANATOBI_FIREBASE_CONFIG__);
+      }
+      eikenDb = window.firebase.firestore();
+    }
+  } catch (e) {
+    eikenDb = null;
+  }
+  function saveAttempt(summary) {
+    if (!eikenDb) return;
+    eikenDb.collection('eiken_attempts').add({
+      examType: 'eiken',
+      app: 'mntb-eiken',
+      setId: summary.setId,
+      total: summary.total,
+      correct: summary.correct,
+      percentage: summary.percentage,
+      sections: summary.sections,
+      createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+    }).catch(function () {
+      // Firebase未設定・オフライン時も演習自体は継続できるようにする。
+    });
+  }
   /* ---------------- トースト通知 ---------------- */
   var toastEl = null;
   var toastTimer = null;
@@ -426,6 +452,13 @@
         resultCard.hidden = false;
         resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+      saveAttempt({
+        setId: DATA.set || window.location.pathname.split('/').pop() || 'unknown',
+        total: total,
+        correct: correct,
+        percentage: pct,
+        sections: perSection,
+      });
       toast('採点しました。解説を確認しましょう。');
     });
   }
