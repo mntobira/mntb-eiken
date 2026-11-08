@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci --prefix eiken-app",
+  "buildCommand": "npm --prefix eiken-app run build:vercel",
+  "outputDirectory": "eiken-app/dist",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(assets|brand|mascots|icons|sfx|eiken_audio)/.*", "status": 404 },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}

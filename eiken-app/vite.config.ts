@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
     },
     generateBundle(_, bundle) {
       const modules = Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []);
+      const forbidden = /\/src\/(?:data\/(?:englishListening(?:Data|Q)|englishGrammar(?:Data|Problems)|toeic)|battle\/data\/(?:pool\.|answer\.))/;
+      if (modules.some(id => forbidden.test(id))) this.error('大学入試・TOEIC問題バンクが英検版の配信対象に入りました。ビルドを停止します。');
       this.emitFile({ type: 'asset', fileName: 'build-modules.json', source: JSON.stringify(modules.filter(id => id.includes('/src/')).map(id => id.split('/src/')[1]), null, 2) });
     },
     transformIndexHtml(html) {

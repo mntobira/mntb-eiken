@@ -1,4 +1,95 @@
-# マナトビ 英検の練習問題
+# マナトビ 英検版
+
+## 現在の公開対象（React/Vite版）
+
+大学入試版のアップロードされたUIを元にした英検専用アプリは `eiken-app/` です。大学版の本番・Firebase・Storageには接続／配備していません。元ZIPと `.reference/university/` は変更せず保存しています。GitHubは `https://github.com/mntobira/mntb-eiken` のみ使用します。
+
+### Vercelの404対策
+
+リポジトリ直下の `vercel.json` が **Cloudflare WorkerではなくReact SPA** をビルド・配信します。コード本体は独立した `eiken-app/` に保持し、公開エントリ設定をリポジトリ直下へ移しています。
+
+VercelプロジェクトはGitHubのステータスで `mntb-eiken0` と確認しました。大学版プロジェクトを選ばないでください。
+
+| 設定 | 値 |
+| --- | --- |
+| Root Directory | 空欄（リポジトリ直下） |
+| Framework Preset | Other |
+| Install Command | `npm ci --prefix eiken-app` |
+| Build Command | `npm --prefix eiken-app run build:vercel` |
+| Output Directory | `eiken-app/dist` |
+| Production Branch | `main` |
+| Node.js | 22.18以上（Vercelの22.x/24.x） |
+
+Dashboardに旧Build/Output設定のOverrideがあれば上記へ合わせ、最新コミットをRedeployしてください。代替としてRoot Directoryを `eiken-app` にする場合は、同フォルダの `vercel.json` が使われ、出力は `dist` です。**2通りの設定を混在させないでください。** SPA再読込はindex.htmlへ戻し、不明なasset URLは404を返します。ルートHono用の `npm run build` はVercelでは使用しません。
+
+### Firebase接続・環境分離
+
+GitHub上の追加コミットから英検専用プロジェクト `manatobi-eiken` を確認しました。接続情報はソース直書きではなく新しい環境変数を使用します。実値をREADMEや新しいコミットへ書きません。大学版の `VITE_FIREBASE_*` があるとビルドを停止します。
+
+VercelのDevelopment / Preview / Productionを**個別に確認**し、接続する環境だけ次を設定してください。設定後はRedeployが必要です。
+
+```dotenv
+VITE_EIKEN_ENABLE_CLOUD=true
+VITE_EIKEN_FIREBASE_API_KEY=FirebaseのWebアプリ設定の値
+VITE_EIKEN_FIREBASE_AUTH_DOMAIN=manatobi-eiken.firebaseapp.com
+VITE_EIKEN_FIREBASE_PROJECT_ID=manatobi-eiken
+VITE_EIKEN_FIREBASE_STORAGE_BUCKET=manatobi-eiken.firebasestorage.app
+VITE_EIKEN_FIREBASE_MESSAGING_SENDER_ID=FirebaseのWebアプリ設定の値
+VITE_EIKEN_FIREBASE_APP_ID=FirebaseのWebアプリ設定の値
+VITE_EIKEN_USE_EMULATORS=false
+```
+
+未設定時は端末内学習として配信できます。クラウド有効時に設定が不足・不一致ならビルドを停止します。Preview/Developmentは通常 `VITE_EIKEN_ENABLE_CLOUD=false`、Productionだけtrueを推奨します。必要なら別の `manatobi-eiken-*` 検証プロジェクトを使用してください。本番をPreviewのテストデータ保存先にしないでください。
+
+- ローカル開発は `eiken-app/.env.eiken.local`。Vercel向けローカルビルドは `.env.eiken.production` / `.env.eiken.production.local` を読みます。いずれもGit対象外です。
+- 任意の `EIKEN_EXPECTED_VERCEL_PROJECT_ID` を指定するとVercelのシステム変数 `VERCEL_PROJECT_ID` と照合します。ローカル `.vercel` リンクがある場合は照合を必須にします。
+- Firebase AuthenticationでGoogleを有効にし、**実際の英検版公開ホスト名**をAuthorized domainsへ追加してください。大学版の認証設定は変更しません。
+- GitHubへの接続／Web SDK設定追加だけでは、Firestore/Storageルールは自動公開されません。このリポジトリにはルール自動配備Workflowはありません。
+- 現在の接続ではGitHub Actions secrets一覧が403のため、管理用認証やVercel環境変数の実設定は確認できません。本番Auth・同期の成功も未確認です。
+
+### Firebase rules（英検専用プロジェクトにだけ適用）
+
+正本は `eiken-app/firestore.rules` と `eiken-app/storage.rules`。直下の `firebase.json` で参照します。Firestore Emulatorの `demo-manatobi-eiken` で、本人の作成・取得・更新、他人／未認証の拒否、uid偽装・追加フィールド・集計不一致・タイムスタンプ偽装の拒否、大学版コレクション・削除・一覧取得の拒否を検証しています。
+
+```sh
+# Firebase CLIで英検プロジェクトへの管理権限を取得済みの環境で実行
+firebase deploy --config firebase.json --project manatobi-eiken --only firestore:rules,storage
+```
+
+**この作業では本番ルールは配備していません。** Firebase Consoleで貼り付ける場合もプロジェクトIDが `manatobi-eiken` であることを確認してください。既存の大学版ルールを置き換えてはいけません。
+
+- `eiken_study_progress/{uid}`：ログイン本人のみget/create/update。uid・型・件数・更新時刻を検査し、許可フィールド以外を拒否。
+- その他のFirestore文書：すべて拒否。現行画面は同期にこの1コレクションだけ使用します。ランキング・対戦・プロフィール同期を許可していません。
+- Storage：すべて拒否。現在は静的アセットとブラウザ読み上げを使用し、Storage録音音源の公開機能は未実装です。
+- `solved` 内の各値／復習項目内の全フィールドまではルールで検証していません。本人記録の保護用であり、公式成績・課金・ランキングの信頼できるサーバースコアには使用できません。
+
+### React版の機能・データ・使い方
+
+- `/`：元UIのホーム、級選択、問題セット、音声プレイヤー、解答、解説、復習・記録、設定（画面切替はSPA内）。Honoの旧APIはVercelでは提供しません。
+- 8級のID登録。5級〜準1級は各2問、計14問の独自リスニング教材。1級は準備中。本試験1回分の模試ではありません。
+- 級を選ぶ → 第N回演習 → 問題をはじめる → 再生 → 選択 → 解答と解説 → 結果。誤答は復習リストへ登録します。
+- `src/eiken/questions.ts` に必須schemaと既存UI用adapter。`examType='eiken'`。大学版教材を級だけ変えて使いません。過去問の流用・言い換えは禁止です。
+- ブラウザStorageは `eiken:v1:` 名前空間。大学版の既存キーの読み込み・上書き・削除は行いません。
+- ログイン中の解答済み記録・復習リストを英検Firebaseへ同期。ゲスト記録のアカウント移行、連続日数・ゲーム資産の端末間同期は未実装です。
+- 元sourceの未使用機能は残っていますが、大学入試・TOEICの問題バンクをruntime bundleへ含めるとビルドを失敗させます。
+- 3級のアップロードPDFの内容監査・問題登録、録音音源、全出題形式、1級教材、ゲーム機能の移植は未完了です。画像・音声の有料生成は実行していません。
+
+### 検証コマンド
+
+```sh
+npm ci --prefix eiken-app
+npm --prefix eiken-app run typecheck
+npm --prefix eiken-app test
+npm --prefix eiken-app run build:vercel
+# Firestore Emulator起動済み（project demo-manatobi-eiken）
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 npm --prefix eiken-app run test:rules
+```
+
+本番公開URLは新しいVercelデプロイ後の確認が必要です。下記は保持している旧Hono英検版の記録で、React版の搭載機能と混同しないでください。
+
+---
+
+# 旧Hono版：マナトビ 英検の練習問題
 
 5級・4級・3級・準2級・準2級プラス・2級・準1級向けの学習アプリ。Hono / TypeScript / Vite、Cloudflare Pages互換です。ユーザー指定の既存の白黒マナトビロゴを使用しています。
 

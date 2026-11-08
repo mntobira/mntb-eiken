@@ -1,14 +1,31 @@
 rules_version = '2';
 service cloud.firestore {
- match /databases/{database}/documents {
-  function owner(uid) { return request.auth != null && request.auth.uid == uid; }
-  match /eiken_study_progress/{uid} {
-   allow read: if owner(uid);
-   allow create, update: if owner(uid) && request.resource.data.uid == uid;
-   allow delete: if false;
+  match /databases/{database}/documents {
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function validProgress(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['uid', 'solved', 'reviewItems', 'solvedTotal', 'reviewTotal', 'lastStudiedAt', 'updatedAt'])
+        && d.keys().hasOnly(['uid', 'solved', 'reviewItems', 'solvedTotal', 'reviewTotal', 'lastStudiedAt', 'updatedAt'])
+        && d.uid == uid
+        && d.solved is map && d.solved.size() <= 5000
+        && d.reviewItems is list && d.reviewItems.size() <= 600
+        && d.solvedTotal is int && d.solvedTotal == d.solved.size()
+        && d.reviewTotal is int && d.reviewTotal == d.reviewItems.size()
+        && d.lastStudiedAt is number && d.lastStudiedAt >= 0
+        && d.lastStudiedAt <= request.time.toMillis()
+        && d.updatedAt == request.time;
+    }
+    match /eiken_study_progress/{uid} {
+      allow get: if owner(uid);
+      allow create, update: if owner(uid) && validProgress(uid);
+      allow list, delete: if false;
+    }
+    // Current Eiken UI only synchronizes study progress. Social/profile and
+    // university collections are deliberately not writable by this client.
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
-  match /eiken_user_data/{uid} { allow read, create, update: if owner(uid); allow delete: if false; }
-  match /eiken_users/{uid} { allow read, create, update: if owner(uid); allow delete: if false; }
-  match /{document=**} { allow read, write: if false; }
- }
 }

@@ -7,9 +7,10 @@
     "dev": "vite --host 0.0.0.0 --port 3000 --mode eiken",
     "build": "node scripts/check-target.mjs && vite build --mode eiken",
     "build:demo": "vite build --mode eiken",
-    "build:vercel": "node scripts/check-target.mjs --production && vite build --mode eiken",
+    "build:vercel": "node scripts/check-target.mjs --production && vite build --mode eiken.production",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run tests/eiken.test.ts"
+    "test": "vitest run tests/eiken.test.ts --maxWorkers=1",
+    "test:rules": "node --test tests/firestore-rules.test.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.2.0",
@@ -32,6 +33,7 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -43,6 +45,6 @@
     "vitest": "^4.1.10"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.18.0"
   }
 }
