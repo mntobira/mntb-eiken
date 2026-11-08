@@ -1588,6 +1588,12 @@ button {
   width: 52px;
 }
 
+/* Material notes use the same quiet typography as the exercises. */
+.practice-note { margin:0 0 36px; color:#555; font-size:12px; }
+.material-about { margin-top:44px; padding-top:20px; border-top:1px solid #ccc; font-size:12px; color:#555; }
+.material-about summary { cursor:pointer; color:#333; }
+.material-about p { max-width:760px; }
+
 /* Independently authored focus units and self-review writing. */
 .question-skill { color:#666; font-size:11px; margin:0 0 12px; }
 .reading-passage { border:1px solid #bbb; background:#fafaf8; padding:22px; margin:0 0 22px; }

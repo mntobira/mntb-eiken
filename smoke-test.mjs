@@ -3,6 +3,10 @@ import { chromium } from 'playwright'
 
 const base = process.env.TEST_BASE_URL || 'http://localhost:3000'
 const grades = ['5', '4', '3', 'pre-2', 'pre-2-plus', '2', 'pre-1']
+const removedInterfaceCopy = /MANATOBI\s*\/|INDEPENDENTLY AUTHORED|ORIGINAL FOCUS UNIT|PRACTICE BOOK|GRADE INDEX|LEARNING CYCLE|HOW TO REVIEW|OTHER GRADES|WRITE & REVIEW|ANSWER KEY|ANSWER SHEET|LISTENING SCRIPT|独立執筆|生成用スクリプト|外部専門家|網羅的照合|旧セットURL/
+async function checkInterfaceCopy(page) {
+  assert.doesNotMatch(await page.locator('body').innerText(), removedInterfaceCopy)
+}
 const listed = await (await fetch(`${base}/api/sets`)).json()
 assert.equal(listed.length, 7)
 assert.ok(listed.every(set => set.origin === 'independently-authored'))
@@ -33,10 +37,13 @@ try {
   page.on('dialog', dialog => dialog.accept())
   await page.goto(base)
   assert.equal(await page.locator('.grade-card').count(), 7)
+  await checkInterfaceCopy(page)
+  assert.equal(await page.locator('h1').innerText(), '英検の練習問題')
   assert.ok(await page.locator('.manatobi-brand img').evaluate(img => img.complete && img.naturalWidth > 0))
   for (const grade of grades) {
     await page.goto(`${base}/grades/${grade}`)
-    assert.match(await page.locator('#grade-status-heading').innerText(), /独立執筆/)
+    assert.equal(await page.locator('#practice-heading').innerText(), 'この回の問題')
+    await checkInterfaceCopy(page)
     assert.equal(await page.locator('.grade-navigation-link[aria-current=page]').count(), 1)
     await page.goto(`${base}/exam/original-${grade}-01`)
     assert.equal(await page.locator('#paper .q').count(), 8)
@@ -76,6 +83,7 @@ try {
   for (const grade of grades) for (const path of [`/grades/${grade}`, `/exam/original-${grade}-01`, `/answers/original-${grade}-01`, `/script/original-${grade}-01`, `/sheet/original-${grade}-01`]) {
     await page.goto(base + path)
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${path}: mobile overflow`)
+    await checkInterfaceCopy(page)
   }
   await page.goto(`${base}/sheet/original-4-01`)
   assert.equal(await page.locator('.mark-sheet tbody tr').count(), 8)

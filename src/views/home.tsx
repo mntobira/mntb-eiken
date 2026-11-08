@@ -3,9 +3,27 @@ import { GRADE_PAGES, gradeHref } from '../data/grades'
 
 export const Home: FC = () => (
   <div class="page book-home">
-    <header class="book-hero"><p class="book-kicker">MANATOBI / INDEPENDENTLY AUTHORED</p><h1>考える力を、<br /><span>一問ずつ。</span></h1><p class="lead">5級から準1級まで。マナトビのオリジナル重点演習。</p><p>場面・本文・設問を新しく執筆し、正解の根拠と誤答の理由まで確認します。<br />本試験1回分の模試ではなく、各級8問から始める小さな学習ユニットです。</p><div class="hero-facts"><span>7級 / 選択式56問</span><span>3級以上は記述2課題ずつ</span><span>過去問の流用禁止</span></div><a class="btn-primary" href="#grade-selection">級を選んで始める →</a></header>
-    <aside class="book-notice" id="originality-policy"><strong>教材制作の方針</strong><p>過去問の転載・言い換え・人物名や数値だけの差し替えは行いません。以前の過去問由来プールと生成経路は廃止しました。旧セットURLは配信停止です。</p><p>これは独立執筆の初版です。外部専門家の校閲・実測による難度検証・世界中の教材との網羅的照合は未実施です。今後も内容検証を重ねます。</p></aside>
-    <section id="grade-selection"><div class="book-section-heading"><span>GRADE INDEX</span><h2>自分の級から、深く学ぶ。</h2></div><div class="grade-cards">{GRADE_PAGES.map(grade => <a class="grade-card" href={gradeHref(grade)}><strong>{grade.label}</strong><span>{grade.level}<br />オリジナル8問{['5','4'].includes(grade.id) ? '' : '＋記述2課題'}</span><span aria-hidden="true">→</span></a>)}</div></section>
-    <section id="exam-format"><div class="book-section-heading"><span>LEARNING CYCLE</span><h2>解いて、根拠を説明する。</h2></div><div class="format-grid"><article><h3>選択式の重点演習</h3><p>語彙・文法2問、本文2本の読解4問、独自の会話・説明を聞く2問。文脈・根拠箇所・誤答の違いを確認します。タイマーは練習の目安です。</p></article><article><h3>記述は自己点検</h3><p>3級以上にはメール返信・意見表現・要約など、級に合わせた2課題。モデル答案は採点基準そのものではなく、構成を比較するための一例です。自動採点は行いません。</p></article></div></section>
+    <header class="book-hero">
+      <h1>英検の練習問題</h1>
+      <p class="lead">5級から準1級まで、取り組みたい級を選んでください。</p>
+      <p>各級に語彙・文法、読解、リスニングの8問を用意しています。<br />3級以上は、英作文や要約にも取り組めます。</p>
+      <a class="btn-primary" href="#grade-selection">級を選ぶ</a>
+    </header>
+    <section id="grade-selection">
+      <div class="book-section-heading"><h2>級を選ぶ</h2></div>
+      <div class="grade-cards">{GRADE_PAGES.map(grade => <a class="grade-card" href={gradeHref(grade)}><strong>{grade.label}</strong><span>{grade.level}<br />選択問題8問{['5','4'].includes(grade.id) ? '' : '・記述問題2題'}</span><span aria-hidden="true">→</span></a>)}</div>
+    </section>
+    <section id="exam-format">
+      <div class="book-section-heading"><h2>使い方</h2></div>
+      <div class="format-grid">
+        <article><h3>問題を解いて、解説を読む</h3><p>語彙・文法2問、読解4問、リスニング2問に取り組めます。採点後は、正解の根拠とほかの選択肢が違う理由を確認してください。</p></article>
+        <article><h3>書いた英文を見直す</h3><p>記述問題には解答例と見直しのポイントがあります。自分の答案と比べて、内容や表現を確認してください。記述問題の自動採点は行いません。</p></article>
+      </div>
+    </section>
+    <details class="material-about" id="about-materials">
+      <summary>教材について</summary>
+      <p>マナトビが作成したオリジナルの練習問題です。過去問の転載や言い換えによる問題作成は行いません。</p>
+      <p>本試験1回分の模試ではなく、内容を絞った短い練習です。日本英語検定協会の公式教材ではありません。</p>
+    </details>
   </div>
 )
