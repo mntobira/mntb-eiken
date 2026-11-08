@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "status": "structural-checks-passed",
+  "authoredUnits": 7,
+  "objectiveQuestions": 56,
+  "writingTasks": 10,
+  "sourceComparison": {
+    "ngram": 8,
+    "baseline": "Retired local source literals only",
+    "matches": 0,
+    "limitation": "Cannot detect all paraphrases or compare against all published works. Not a plagiarism-clearance certificate."
+  },
+  "reviewLimits": "Correct-answer uniqueness and level appropriateness receive author review, not independent expert validation or psychometric calibration.",
+  "reports": [
+    {
+      "id": "original-5-01",
+      "grade": "5",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        25,
+        38
+      ],
+      "listeningWords": [
+        28,
+        17
+      ],
+      "writing": []
+    },
+    {
+      "id": "original-4-01",
+      "grade": "4",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        59,
+        65
+      ],
+      "listeningWords": [
+        40,
+        31
+      ],
+      "writing": []
+    },
+    {
+      "id": "original-3-01",
+      "grade": "3",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        81,
+        89
+      ],
+      "listeningWords": [
+        50,
+        56
+      ],
+      "writing": [
+        {
+          "id": "email",
+          "modelWords": 30,
+          "practiceRange": [
+            25,
+            40
+          ]
+        },
+        {
+          "id": "opinion",
+          "modelWords": 44,
+          "practiceRange": [
+            40,
+            60
+          ]
+        }
+      ]
+    },
+    {
+      "id": "original-pre-2-01",
+      "grade": "pre-2",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        113,
+        111
+      ],
+      "listeningWords": [
+        58,
+        58
+      ],
+      "writing": [
+        {
+          "id": "email",
+          "modelWords": 50,
+          "practiceRange": [
+            45,
+            65
+          ]
+        },
+        {
+          "id": "opinion",
+          "modelWords": 70,
+          "practiceRange": [
+            65,
+            85
+          ]
+        }
+      ]
+    },
+    {
+      "id": "original-pre-2-plus-01",
+      "grade": "pre-2-plus",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        126,
+        123
+      ],
+      "listeningWords": [
+        67,
+        72
+      ],
+      "writing": [
+        {
+          "id": "summary",
+          "modelWords": 44,
+          "practiceRange": [
+            40,
+            55
+          ]
+        },
+        {
+          "id": "opinion",
+          "modelWords": 84,
+          "practiceRange": [
+            80,
+            100
+          ]
+        }
+      ]
+    },
+    {
+      "id": "original-2-01",
+      "grade": "2",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        142,
+        144
+      ],
+      "listeningWords": [
+        71,
+        75
+      ],
+      "writing": [
+        {
+          "id": "summary",
+          "modelWords": 52,
+          "practiceRange": [
+            50,
+            65
+          ]
+        },
+        {
+          "id": "opinion",
+          "modelWords": 112,
+          "practiceRange": [
+            100,
+            130
+          ]
+        }
+      ]
+    },
+    {
+      "id": "original-pre-1-01",
+      "grade": "pre-1",
+      "questions": 8,
+      "choicesPerQuestion": 4,
+      "rationaleCount": 32,
+      "evidenceLocated": true,
+      "answerPositions": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "passageWords": [
+        187,
+        186
+      ],
+      "listeningWords": [
+        84,
+        92
+      ],
+      "writing": [
+        {
+          "id": "summary",
+          "modelWords": 71,
+          "practiceRange": [
+            65,
+            85
+          ]
+        },
+        {
+          "id": "opinion",
+          "modelWords": 154,
+          "practiceRange": [
+            140,
+            170
+          ]
+        }
+      ]
+    }
+  ]
+}

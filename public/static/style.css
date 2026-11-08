@@ -1588,6 +1588,33 @@ button {
   width: 52px;
 }
 
+/* Independently authored focus units and self-review writing. */
+.question-skill { color:#666; font-size:11px; margin:0 0 12px; }
+.reading-passage { border:1px solid #bbb; background:#fafaf8; padding:22px; margin:0 0 22px; }
+.reading-passage h3 { margin:0 0 14px; font:700 19px Georgia,serif; }
+.reading-passage p { font:18px/1.85 Georgia,"Times New Roman",serif; margin:0 0 6px; letter-spacing:0; }
+.q .choices.cols-4 { grid-template-columns:1fr; gap:8px; }
+.q .choice { align-items:baseline; min-width:0; padding:10px 14px; }
+.q .choice > span:last-child { overflow-wrap:anywhere; font-size:16px; }
+.q .q-prompt { font-size:17px; }
+.q .explain li { margin:8px 0; }
+.writing-section { background:#fff; margin-top:40px; }
+.writing-task { margin:30px 0 45px; padding-bottom:30px; border-bottom:1px solid #aaa; }
+.writing-task h3 { font-size:22px; }
+.writing-source { margin:22px 0; padding:22px; border-left:3px solid #333; background:#f4f4f1; font:17px/1.9 Georgia,serif; }
+.writing-target { font-size:12px; color:#555; }
+.writing-task textarea { display:block; width:100%; padding:18px; border:1px solid #aaa; border-radius:0; font:17px/1.7 Georgia,serif; resize:vertical; }
+.writing-checks { border:1px solid #bbb; padding:16px 20px; margin:20px 0; }
+.writing-checks label { display:block; margin:7px 0; }
+.model-answer { border:1px solid #aaa; padding:16px 20px; }
+.model-answer summary { cursor:pointer; font-weight:700; }
+.model-answer p[lang=en] { font:17px/1.9 Georgia,serif; }
+.answer-explanation { padding:20px 0; border-bottom:1px solid #aaa; }
+.answer-explanation h2 { font-size:17px; }
+.answer-explanation li { margin:9px 0; }
+@media(max-width:600px) { .reading-passage { padding:15px; } .reading-passage p { font-size:16px; } .book-section-heading { flex-wrap:wrap; gap:8px; } }
+@media print { .reading-passage { background:#fff; } .writing-task { break-before:page; } .writing-task textarea { min-height:55mm; } .writing-checks label { break-inside:avoid; } }
+
 /* Grade pages share the existing monochrome booklet design. */
 .grade-navigation { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:14px 20px; border-bottom:1px solid #ccc; background:#fff; }
 .grade-navigation-link { min-width:90px; padding:7px 16px; border:1px solid #ccc; text-align:center; font-size:14px; }

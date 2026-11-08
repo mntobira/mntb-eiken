@@ -30,13 +30,16 @@ test('content keys are stable and duplicate content is not billed twice', () => 
   assert.equal(two[0].sources.length, 2)
 })
 
-test('snapshot manifest covers every listening question in all 3 sets', async () => {
+test('snapshot manifest covers all 7 independently authored units', async () => {
   const data = JSON.parse(await readFile(manifestPath, 'utf8'))
   assert.equal(data.version, 1)
   const audio = data.jobs.filter(j => j.kind === 'audio')
   const image = data.jobs.filter(j => j.kind === 'image')
-  assert.equal(audio.flatMap(j => j.sources).length, 75)
-  assert.equal(image.flatMap(j => j.sources).length, 30)
+  assert.equal(data.origin, 'independently-authored')
+  assert.equal(data.sets.length, 7)
+  assert.equal(audio.flatMap(j => j.sources).length, 14)
+  assert.equal(image.flatMap(j => j.sources).length, 7)
+  assert.ok(image.every(job => job.sources.every(source => source.section === 'cover')))
   assert.equal(new Set(data.jobs.map(j => j.id)).size, data.jobs.length)
 })
 

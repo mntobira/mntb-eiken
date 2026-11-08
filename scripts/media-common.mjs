@@ -12,8 +12,14 @@ export const cleanLine = line => String(line).replace(/^[★☆]+\s*/, '').repla
 export function makeJobs(sets) {
   const jobs = new Map()
   for (const set of sets) {
+    if (set.provenance && set.provenance.origin !== 'independently-authored') throw new Error('Refusing a non-original unit')
+    if (set.unit?.theme) {
+      const prompt = `Create an original black-and-white educational cover illustration on a white background. Theme: ${set.unit.theme}. Learning focus: ${set.unit.focus}. Use a simple everyday scene or conceptual composition. No words, logos, watermarks, question numbers, or answer clues. This is a decorative unit cover, NOT an exam question or a copy of an existing illustration.`
+      const id = `image-${digest(prompt)}`
+      jobs.set(id, { id, kind: 'image', output: `${id}.png`, prompt, sources: [{ set: set.id, grade: set.grade, section: 'cover', number: 0 }] })
+    }
     for (const item of set.listening) {
-      const source = { set: set.id, section: item.sec, number: item.no }
+      const source = { set: set.id, grade: set.grade, section: item.sec, number: item.no }
       let lines = (item.audio || []).map(cleanLine)
       if (item.sec === 'L1') lines.push(...item.choices.map((choice, i) => `${i + 1}. ${choice}`))
       if (item.sec === 'L3') lines = item.choices.map((choice, i) => `${i + 1}. ${choice}`)

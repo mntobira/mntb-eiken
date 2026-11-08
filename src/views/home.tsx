@@ -1,40 +1,11 @@
 import type { FC } from 'hono/jsx'
-import { SETS } from '../data/sets'
 import { GRADE_PAGES, gradeHref } from '../data/grades'
 
 export const Home: FC = () => (
   <div class="page book-home">
-    <nav class="breadcrumb" aria-label="パンくずリスト"><span>マナトビ</span><span> / </span><span>英検5級</span></nav>
-    <header class="book-hero">
-      <p class="book-kicker">MANATOBI / ENGLISH PRACTICE</p>
-      <h1>英検5級<br /><span>演習問題集</span></h1>
-      <p class="lead">本試験の形式で、一問ずつ確かめる。</p>
-      <p>リーディング25問・リスニング25問。<br />問題冊子を開くように取り組める、マナトビの学習教材です。</p>
-      <div class="hero-facts"><span>中学初級程度</span><span>リーディング 25分</span><span>リスニング 約22分</span></div>
-      <div class="pill-row"><a class="btn-primary" href="/exam/2026-2">演習をはじめる →</a><a class="btn-secondary" href="#practice-sets">問題を選ぶ</a></div>
-    </header>
-    <aside class="book-notice">本教材は学習用の演習です。日本英語検定協会の公式サイト・公式問題集ではありません。収録問題には過去問を参考に再構成したものが含まれます。</aside>
-    <section id="grade-selection" aria-labelledby="grade-selection-heading">
-      <div class="book-section-heading"><span>GRADE INDEX</span><h2 id="grade-selection-heading">級を選ぶ</h2></div>
-      <div class="grade-cards">{GRADE_PAGES.map(grade => <a class="grade-card" href={gradeHref(grade)}><strong>{grade.label}</strong><span>{grade.available ? '演習できます' : 'ページのみ / 教材準備中'}</span><span aria-hidden="true">→</span></a>)}</div>
-    </section>
-    <section id="practice-sets" class="practice-sets">
-      <div class="book-section-heading"><span>01 / PRACTICE</span><h2>問題を選ぶ</h2></div>
-      {SETS.map((set, index) => (
-        <article class="practice-set">
-          <div class="set-number">0{index + 1}</div>
-          <div class="set-detail"><p class="book-kicker">GRADE 5 / 50 QUESTIONS</p><h3>{set.round} 形式の演習</h3><p>参照試験：{set.date}　{set.note}</p>
-            <div class="set-links"><a href={`/exam/${set.id}?part=reading`}>リーディング 25問</a><a href={`/exam/${set.id}?part=listening`}>リスニング 25問</a><a href={`/answers/${set.id}`}>解答一覧</a><a href={`/script/${set.id}`}>放送原稿</a></div>
-          </div>
-          <a class="btn-secondary" href={`/exam/${set.id}`}>問題を開く →</a>
-        </article>
-      ))}
-    </section>
-    <section class="generation-panel" id="generate-practice"><div><p class="book-kicker">MORE PRACTICE</p><h2>問題を組み替えて、もう一度。</h2><p>文法テンプレートと収録問題を組み合わせた演習セットを作ります。</p></div><a class="btn-primary" href="/new">新しい演習を作る →</a></section>
-    <section id="exam-format" class="format-section">
-      <div class="book-section-heading"><span>02 / EXAM FORMAT</span><h2>本試験の構成</h2></div>
-      <div class="format-grid"><article><h3>READING <small>25分 / 25問</small></h3><dl><div><dt>大問1 / 15問</dt><dd>短文の語句空所補充</dd></div><div><dt>大問2 / 5問</dt><dd>会話文の文空所補充</dd></div><div><dt>大問3 / 5問</dt><dd>日本文付き短文の語句整序</dd></div></dl><p>選択肢は各問4つ。語句整序は1番目と3番目の組合せを選びます。</p></article>
-      <article><h3>LISTENING <small>約22分 / 25問</small></h3><dl><div><dt>第1部 / 10問</dt><dd>会話の応答文選択 / 3択</dd></div><div><dt>第2部 / 5問</dt><dd>会話の内容一致選択 / 4択</dd></div><div><dt>第3部 / 10問</dt><dd>イラストの内容一致選択 / 3択</dd></div></dl><p>本アプリでは合成音声を何度でも再生できます。イラストは説明文等による代替です。</p></article></div>
-    </section>
+    <header class="book-hero"><p class="book-kicker">MANATOBI / INDEPENDENTLY AUTHORED</p><h1>考える力を、<br /><span>一問ずつ。</span></h1><p class="lead">5級から準1級まで。マナトビのオリジナル重点演習。</p><p>場面・本文・設問を新しく執筆し、正解の根拠と誤答の理由まで確認します。<br />本試験1回分の模試ではなく、各級8問から始める小さな学習ユニットです。</p><div class="hero-facts"><span>7級 / 選択式56問</span><span>3級以上は記述2課題ずつ</span><span>過去問の流用禁止</span></div><a class="btn-primary" href="#grade-selection">級を選んで始める →</a></header>
+    <aside class="book-notice" id="originality-policy"><strong>教材制作の方針</strong><p>過去問の転載・言い換え・人物名や数値だけの差し替えは行いません。以前の過去問由来プールと生成経路は廃止しました。旧セットURLは配信停止です。</p><p>これは独立執筆の初版です。外部専門家の校閲・実測による難度検証・世界中の教材との網羅的照合は未実施です。今後も内容検証を重ねます。</p></aside>
+    <section id="grade-selection"><div class="book-section-heading"><span>GRADE INDEX</span><h2>自分の級から、深く学ぶ。</h2></div><div class="grade-cards">{GRADE_PAGES.map(grade => <a class="grade-card" href={gradeHref(grade)}><strong>{grade.label}</strong><span>{grade.level}<br />オリジナル8問{['5','4'].includes(grade.id) ? '' : '＋記述2課題'}</span><span aria-hidden="true">→</span></a>)}</div></section>
+    <section id="exam-format"><div class="book-section-heading"><span>LEARNING CYCLE</span><h2>解いて、根拠を説明する。</h2></div><div class="format-grid"><article><h3>選択式の重点演習</h3><p>語彙・文法2問、本文2本の読解4問、独自の会話・説明を聞く2問。文脈・根拠箇所・誤答の違いを確認します。タイマーは練習の目安です。</p></article><article><h3>記述は自己点検</h3><p>3級以上にはメール返信・意見表現・要約など、級に合わせた2課題。モデル答案は採点基準そのものではなく、構成を比較するための一例です。自動採点は行いません。</p></article></div></section>
   </div>
 )

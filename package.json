@@ -7,6 +7,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node smoke-test.mjs",
     "test:media": "node --test scripts/media.test.mjs",
+    "test:content": "node scripts/check-content.mjs",
     "media:manifest": "node scripts/export-media-manifest.mjs",
     "media:images": "node scripts/generate-images.mjs",
     "media:audio": "node scripts/generate-audio.mjs",

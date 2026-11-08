@@ -1,5 +1,5 @@
 /* =============================================================
-   英検5級 演習アプリ — フロントエンド
+   英検 オリジナル重点演習 — フロントエンド
    - 選択肢の選択状態
    - リスニング音声（Web Speech API / en-US）
    - タイマー / 進捗
@@ -49,17 +49,17 @@
     });
   }
 
-  /* ---------- 5級以外のタブ ---------- */
-  document.querySelectorAll('.grade-tab, .grade-pill').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      if (el.classList.contains('is-current')) return;
-      e.preventDefault();
-      toast('このアプリは5級のみ収録しています（他の級は準備中です）');
-    });
-  });
-
   document.querySelectorAll('[data-print]').forEach(function (button) {
     button.addEventListener('click', function () { window.print(); });
+  });
+
+  document.querySelectorAll('[data-writing-input]').forEach(function (input) {
+    input.addEventListener('input', function () {
+      const id = input.getAttribute('data-writing-input');
+      const counter = document.querySelector('[data-word-count="' + id + '"]');
+      const words = input.value.match(/[A-Za-z]+(?:['’\-][A-Za-z]+)*/g) || [];
+      if (counter) counter.textContent = String(words.length);
+    });
   });
 
   const paper = document.getElementById('paper');
@@ -345,10 +345,13 @@
           box.appendChild(pj);
         }
 
-        const pe = document.createElement('p');
-        pe.style.margin = '0';
-        pe.textContent = item.e || '';
-        box.appendChild(pe);
+        const reasons = document.createElement('ol');
+        (item.e || '').split('\n').forEach(function (reason) {
+          const li = document.createElement('li');
+          li.textContent = reason.replace(/^\d+:\s*/, '');
+          reasons.appendChild(li);
+        });
+        box.appendChild(reasons);
 
         const qBody = q.querySelector('.q-body');
         if (qBody) qBody.appendChild(box);
@@ -356,7 +359,7 @@
 
       const total = questions.length;
       const pct = total ? Math.round((correct / total) * 100) : 0;
-      const pass = pct >= 60;
+      // A small focus unit cannot estimate official pass/fail or CSE scores.
 
       const scoreVal = document.getElementById('score-val');
       if (scoreVal) scoreVal.textContent = String(correct);
@@ -369,17 +372,15 @@
 
       const verdict = document.getElementById('verdict');
       if (verdict) {
-        verdict.textContent = pass
-          ? '合格圏内です（正答率 ' + pct + '%）'
-          : 'あと少しです（正答率 ' + pct + '%）';
-        verdict.className = 'result-verdict ' + (pass ? 'pass' : 'fail');
+        verdict.textContent = 'この重点演習の正答率 ' + pct + '%';
+        verdict.className = 'result-verdict';
       }
 
       const note = document.getElementById('result-note');
       if (note) {
         note.textContent =
-          '正答率 ' + pct + '%　／　5級の一次試験は各技能でおおむね6割前後が合格の目安とされています。' +
-          '間違えた問題は解説を読み、音声も聞き直してみましょう。';
+          '選択式のみの結果です。公式試験の合否・CSEスコア・実力の推定には使えません。' +
+          '根拠と誤答理由を確認し、記述は別の観点で自己点検してください。';
       }
 
       const secBox = document.getElementById('sec-scores');
