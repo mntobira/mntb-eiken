@@ -33,6 +33,7 @@ try {
       assert.ok(item.reasons.every(reason => reason.length >= 15), `${item.id}: missing distractor rationale`)
       const evidenceSource = item.passage || item.audio?.join(' ') || item.lines.join(' ')
       assert.ok(normal(evidenceSource).includes(normal(item.evidence)), `${item.id}: evidence not found in source`)
+      if (item.passage || item.audio) assert.ok(item.translation && item.translation.length >= 30 && !item.translation.includes('\uFFFD'), `${item.id}: missing or broken translation`)
       const key = normal((item.passage || item.audio?.join(' ') || '') + ' ' + (item.question || item.lines.join(' ')))
       assert.ok(!allQuestionKeys.has(key), `${item.id}: duplicated question`)
       allQuestionKeys.add(key)
@@ -66,7 +67,7 @@ try {
         if (forbidden.has(hash(tokens.slice(i, i + legacy.ngram).join(' ')))) collisions.push({ set: set.id, hash: hash(tokens.slice(i, i + legacy.ngram).join(' ')) })
       }
     }
-    reports.push({ id: set.id, grade: set.grade, questions: items.length, choicesPerQuestion: 4, rationaleCount: items.reduce((n, item) => n + item.reasons.length, 0), evidenceLocated: true, answerPositions: answers, passageWords: set.unit.readings.map(block => words(block.text).length), listeningWords: set.unit.listenings.map(block => words(block.script.join(' ')).length), writing })
+    reports.push({ id: set.id, grade: set.grade, questions: items.length, choicesPerQuestion: 4, rationaleCount: items.reduce((n, item) => n + item.reasons.length, 0), evidenceLocated: true, translatedReadingPassages: new Set(set.reading.filter(item => item.passage && item.translation).map(item => item.passage)).size, translatedListeningScripts: set.listening.filter(item => item.translation).length, answerPositions: answers, passageWords: set.unit.readings.map(block => words(block.text).length), listeningWords: set.unit.listenings.map(block => words(block.script.join(' ')).length), writing })
   }
   assert.equal(reports.length, 7)
   assert.deepEqual(collisions, [], 'Eight-word overlap with retired source detected; review and independently rewrite before release')

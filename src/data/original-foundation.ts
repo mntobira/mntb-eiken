@@ -13,7 +13,7 @@ export const FOUNDATION_UNITS: OriginalUnit[] = [
         mc('場所の特定', 'Where do students put their boats?', ['In the box by the window.', 'Under their desks.', 'In Room 3.', 'On the teacher’s chair.'], 0, 'in the big box by the window', ['窓のそばの大きな箱に入れると指定されています。', '机の下という指示はありません。', '活動場所はRoom 2で、船の置き場所もRoom 3ではありません。', '先生の椅子は本文に出てきません。']),
       ] },
       { title: 'A helper at home', text: 'My name is Leo. My mother has a flower shop. I help her on Saturdays. I write the flower names on small cards. My sister puts water in the pots. We eat lunch at the shop at twelve.', questions: [
-        mc('役割の区別', 'What does Leo do at the shop?', ['He cooks lunch.', 'He writes on cards.', 'He puts water in pots.', 'He sells books.'], 1, 'I write the flower names on small cards.', ['昼食を作るとは書かれていません。', '語り手Leoが花の名前をカードに書きます。', '水を入れるのはLeoではなく妹です。', '店は花屋で、本を売るという記述はありません。']),
+        mc('役割の区別', 'What does Leo do at the shop?', ['He cooks lunch.', 'He writes on cards.', 'He puts water in pots.', 'He sells books.'], 1, 'I write the flower names on small cards.', ['昼食を作るとは書かれていません。', '語り手Leoが花の名前をカードに書きます。', '水を入れるのはLeoではなくsister（姉または妹）です。', '店は花屋で、本を売るという記述はありません。']),
         mc('時刻の読み取り', 'When do they eat lunch?', ['At ten.', 'At eleven.', 'At one.', 'At twelve.'], 3, 'at twelve', ['tenではなくtwelveです。', 'elevenという時刻はありません。', 'oneという時刻はありません。', '最後の文にat twelveと明記されています。']),
       ] },
     ],

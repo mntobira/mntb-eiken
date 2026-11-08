@@ -5,6 +5,7 @@ import { UPPER_UNIT } from './original-upper'
 import { ADVANCED_UNIT } from './original-advanced'
 import { AUTHORING_POLICY, type OriginalQuestion, type OriginalUnit, type WritingTask } from './original-types'
 import { findGrade } from './grades'
+import { TRANSLATIONS } from './translations'
 
 export type Sec = 'R1' | 'R2' | 'R3' | 'L1' | 'L2' | 'L3'
 export const SEC_LABEL: Record<Sec, string> = { R1: '語彙・文法', R2: '読解', R3: '語句整序', L1: '応答', L2: '聞き取り', L3: '図版理解' }
@@ -17,7 +18,7 @@ export const isListening = (sec: Sec) => sec.startsWith('L')
 
 export type QuizItem = {
   id: string; sec: Sec; no: number; lines: string[]; choices: string[]; answer: number; jpFull: string; exp: string
-  question?: string; audio?: string[]; passage?: string; passageTitle?: string; skill: string; evidence: string; reasons: string[]
+  question?: string; audio?: string[]; passage?: string; passageTitle?: string; translation?: string; skill: string; evidence: string; reasons: string[]
   scene?: string; sceneJp?: string; jp?: string; prefix?: string; chunks?: string[]; suffix?: string
 }
 export type QuizSet = {
@@ -35,10 +36,11 @@ function buildOriginalSet(unit: OriginalUnit): QuizSet {
     choices: [...raw.choices], jpFull: `根拠：${raw.evidence}`, exp: raw.reasons.map((reason, i) => `${i + 1}: ${reason}`).join('\n'),
   })
   const reading = unit.vocabulary.map(raw => item(raw, 'R1', ++readingNo))
-  for (const block of unit.readings) for (const raw of block.questions) reading.push({
+  for (const [index, block] of unit.readings.entries()) for (const raw of block.questions) reading.push({
     ...item(raw, 'R2', ++readingNo), passage: block.text, passageTitle: block.title, question: raw.prompt,
+    translation: TRANSLATIONS[unit.grade]?.readings[index],
   })
-  const listening = unit.listenings.map((block, i) => ({ ...item(block.question, 'L2', i + 1), question: block.question.prompt, audio: [...block.script], passageTitle: block.title }))
+  const listening = unit.listenings.map((block, i) => ({ ...item(block.question, 'L2', i + 1), question: block.question.prompt, audio: [...block.script], passageTitle: block.title, translation: TRANSLATIONS[unit.grade]?.listenings[i] }))
   return {
     id, grade: unit.grade, gradeLabel: findGrade(unit.grade)?.label ?? unit.grade, round: `オリジナル重点演習 01｜${unit.theme}`,
     date: '独立執筆・初版', note: AUTHORING_POLICY.scope, reading, listening, writing: unit.writing,
