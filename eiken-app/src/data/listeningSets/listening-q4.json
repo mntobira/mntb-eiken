@@ -1,0 +1,3232 @@
+{
+ "subjectId": "listening-q4",
+ "subjectName": "共通テスト英語リスニング 第4問",
+ "format": {
+  "q18_21": "完答で4点（部分点なし）",
+  "q22_25": "各1点×4。6つの共有選択肢から選び2つは使わない",
+  "q26": "4点。3条件をすべて満たす選択肢を1つ",
+  "total": 12,
+  "playOnce": true
+ },
+ "count": 15,
+ "sets": [
+  {
+   "id": "set01",
+   "no": 1,
+   "level": "easy",
+   "levelJa": "やや易",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "料理教室で、講師がパンケーキの作り方を説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Pancake Steps",
+     "audio": "audio/set01_4A_front.mp3",
+     "image": "images/set01_4A_front.png",
+     "choices": [
+      "Putting a tray into an oven",
+      "Mixing flour, eggs and milk in a bowl with a whisk",
+      "Cooking one side in a frying pan, small bubbles on the surface",
+      "Flipping the pancake over in the frying pan",
+      "A pancake on a plate with syrup being poured on it"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st step",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "2nd step",
+       "answer": 3
+      },
+      {
+       "no": 20,
+       "label": "3rd step",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "4th step",
+       "answer": 5
+      }
+     ],
+     "dummy": 1,
+     "script": "Good morning, everyone. Today I'll show you how I make my favorite pancakes. To start off, put the flour, eggs and milk in a bowl and mix them until smooth. Next, pour the batter into a hot frying pan and cook one side until small bubbles appear on the surface. When you see those bubbles, flip it over and cook the other side for about a minute. Finally, slide it onto a plate and pour plenty of maple syrup on top. And by the way, you never need an oven for this recipe.",
+     "wordCount": 93,
+     "explain": "順序標識 To start off → Next → When you see those bubbles → Finally を追う素直な構成。最後の you never need an oven でオーブンのイラスト①が明確に除外される（ダミー）。「片面を焼く→泡が出たらひっくり返す」という因果のつながりが③→④の根拠。",
+     "keyPhrases": [
+      "To start off, put the flour, eggs and milk in a bowl",
+      "cook one side until small bubbles appear on the surface",
+      "flip it over and cook the other side",
+      "Finally, slide it onto a plate and pour plenty of maple syrup",
+      "you never need an oven for this recipe"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "学校のカフェテリアで、職員が今週のランチ特別メニューを説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "This Week's Lunch Special",
+     "audio": "audio/set01_4A_back.mp3",
+     "image": "images/set01_4A_back.png",
+     "table": {
+      "headers": [
+       "Day",
+       "Special"
+      ],
+      "rows": [
+       [
+        "Monday",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Tuesday",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Wednesday",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Thursday",
+        {
+         "blank": 25
+        }
+       ],
+       [
+        "Friday",
+        "Students' choice"
+       ]
+      ]
+     },
+     "choices": [
+      "Beef curry",
+      "Chicken pie",
+      "Fish and chips",
+      "Pasta salad",
+      "Tomato soup",
+      "Vegetable stew"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 6
+      },
+      {
+       "no": 23,
+       "answer": 3
+      },
+      {
+       "no": 24,
+       "answer": 2
+      },
+      {
+       "no": 25,
+       "answer": 4
+      }
+     ],
+     "unused": [
+      1,
+      5
+     ],
+     "script": "Here's this week's lunch special. On Monday we're starting with something warm — a stew with seasonal vegetables, and no meat at all. Tuesday is for our fish lovers: fried cod with chips. On Wednesday the chef makes his famous pie with chicken and mushrooms. Thursday is a cold dish — a bowl of pasta with tomatoes and olives, served cold. Friday, as always, is students' choice. Oh, and the beef curry everyone keeps asking about? That's next month, I'm afraid.",
+     "wordCount": 81,
+     "explain": "料理名を直接言わず内容で説明する言い換え型。木曜の a bowl of pasta with tomatoes（トマト入りパスタ）を⑤Tomato soup と誤らないこと（soup ではなく pasta、しかも served cold なので④Pasta salad）。①Beef curry は That's next month で除外され、⑤Tomato soup は未言及。",
+     "keyPhrases": [
+      "a stew with seasonal vegetables, and no meat at all",
+      "fried cod with chips",
+      "his famous pie with chicken and mushrooms",
+      "a bowl of pasta with tomatoes and olives, served cold",
+      "the beef curry everyone keeps asking about? That's next month"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは文化祭でクラスの出し物を1つ選ぼうとしている。4人の意見を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set01_4B_s1.mp3",
+     "audio/set01_4B_s2.mp3",
+     "audio/set01_4B_s3.mp3",
+     "audio/set01_4B_s4.mp3"
+    ],
+    "image": "images/set01_4B.png",
+    "conditionsEn": [
+     "A. No money is needed to prepare it",
+     "B. Ten students or fewer can run it",
+     "C. One round finishes in 30 minutes or less"
+    ],
+    "conditionsJa": [
+     "A. 準備にお金がかからないこと",
+     "B. 10人以下で運営できること",
+     "C. 1回あたり30分以内で終わること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Haunted house",
+     "Magic show",
+     "Café",
+     "Giant puzzle"
+    ],
+    "choicesJa": [
+     "お化け屋敷",
+     "手品ショー",
+     "喫茶店",
+     "巨大パズル"
+    ],
+    "scripts": [
+     "A haunted house would be really exciting. We'd have to buy black curtains and costumes, though, so it isn't cheap. And we'd need about fifteen people to scare the visitors properly. The good news is that each tour only takes ten minutes.",
+     "How about a magic show? The cards and ropes are already in our classroom, so we don't have to spend a single yen. Two of us perform and three guide the audience — five people in total. Each show runs for twenty minutes.",
+     "A café sounds nice. We could bring tea bags from home, but we'd still have to buy cups, sugar and cookies. Eight of us could run it easily, and customers usually stay for about twenty minutes.",
+     "Let's do a giant puzzle corner. The art club will lend us their puzzle for free, and only three of us are needed at a time. The one problem is the time — finishing one puzzle takes about forty-five minutes."
+    ],
+    "wordCounts": [
+     42,
+     43,
+     36,
+     40
+    ],
+    "answer": 2,
+    "matrix": [
+     [
+      false,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ]
+    ],
+    "explain": "①はA（黒幕と衣装を買う＝有料）とB（15人）の2点で失格。③はA（カップ・砂糖・クッキーを買う）で失格。ここは we could bring tea bags from home「家から持ってくる」に安心せず、but 以降を聞き取ることが鍵。④はC（45分）で失格。②のみ A（we don't have to spend a single yen）・B（five people in total）・C（twenty minutes）の3条件すべてを満たす。",
+    "keyPhrases": [
+     "so it isn't cheap",
+     "we'd need about fifteen people",
+     "we don't have to spend a single yen",
+     "five people in total",
+     "we'd still have to buy cups, sugar and cookies",
+     "finishing one puzzle takes about forty-five minutes"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set02",
+   "no": 2,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "市立図書館の職員が、4種類の資料の貸出割合が5年間でどう変化したかを説明している。あなたはグラフの4本の線がそれぞれ何を表すかを答える。",
+     "worksheetTitle": "Share of Items Borrowed (2021–2025)",
+     "audio": "audio/set02_4A_front.mp3",
+     "image": "images/set02_4A_front.png",
+     "choices": [
+      "Comics",
+      "DVDs",
+      "E-books",
+      "Paper books"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the line that starts highest and keeps falling",
+       "answer": 4
+      },
+      {
+       "no": 19,
+       "label": "the line that rises every year",
+       "answer": 3
+      },
+      {
+       "no": 20,
+       "label": "the line that drops to the lowest position",
+       "answer": 2
+      },
+      {
+       "no": 21,
+       "label": "the line that stays almost flat",
+       "answer": 1
+      }
+     ],
+     "dummy": null,
+     "script": "Let me show you how borrowing at our library has changed over five years. Paper books started at the top and have gone down every single year, though they are still number one. E-books tell the opposite story — they have risen steadily and now come second. DVDs were once quite popular, but they have fallen the most sharply of all, and today they sit at the very bottom. Comics have hardly moved at all; the figure is almost the same as it was in 2021.",
+     "wordCount": 86,
+     "explain": "4本の線と4つのカテゴリを対応させる本試験型（2025年度と同形式）。gone down every single year（④Paper books＝一貫下降・ただし依然1位）、risen steadily（③E-books）、fallen the most sharply / at the very bottom（②DVDs）、hardly moved at all（①Comics＝ほぼ横ばい）。「下降」が2つ（Paper booksとDVDs）あるため、下降の程度と最終順位で区別するのが鍵。",
+     "keyPhrases": [
+      "Paper books started at the top and have gone down every single year",
+      "E-books tell the opposite story",
+      "they have risen steadily and now come second",
+      "they have fallen the most sharply of all, and today they sit at the very bottom",
+      "Comics have hardly moved at all"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "同じ図書館の職員が、館内4つのエリアの利用ルールを説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Library Area Rules",
+     "audio": "audio/set02_4A_back.mp3",
+     "image": "images/set02_4A_back.png",
+     "table": {
+      "headers": [
+       "Area",
+       "Closing time",
+       "Note"
+      ],
+      "rows": [
+       [
+        "Reading Room",
+        "8:00 p.m.",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Study Booths",
+        {
+         "blank": 23
+        },
+        "Reservation needed"
+       ],
+       [
+        "Group Room",
+        "6:00 p.m.",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Café Corner",
+        {
+         "blank": 25
+        },
+        "Drinks allowed"
+       ]
+      ]
+     },
+     "choices": [
+      "Drinks in bottles only",
+      "Four people or more",
+      "No talking at all",
+      "5:00 p.m.",
+      "7:00 p.m.",
+      "9:00 p.m."
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 1
+      },
+      {
+       "no": 23,
+       "answer": 6
+      },
+      {
+       "no": 24,
+       "answer": 2
+      },
+      {
+       "no": 25,
+       "answer": 5
+      }
+     ],
+     "unused": [
+      3,
+      4
+     ],
+     "script": "Now, about our four areas. The Reading Room closes at eight, and you may bring a drink, but only in a bottle with a lid — no open cups. The Study Booths stay open the longest, right up to nine, though you do need to book one first. The Group Room shuts at six and, as the name suggests, it cannot be used by fewer than four people. And the Café Corner, where drinks are of course fine, closes two hours before the Reading Room does.",
+     "wordCount": 86,
+     "explain": "①と③の区別が要点。Reading Room は a drink, but only in a bottle with a lid なので①Drinks in bottles only。③No talking at all は一切言及されないダミー。Group Room の cannot be used by fewer than four people（4人未満は不可）＝②Four people or more の言い換え。Café Corner は closes two hours before the Reading Room（＝8時の2時間前）で⑤7:00 p.m. を計算させる。④5:00 p.m. は未使用。",
+     "keyPhrases": [
+      "you may bring a drink, but only in a bottle with a lid",
+      "stay open the longest, right up to nine",
+      "it cannot be used by fewer than four people",
+      "closes two hours before the Reading Room does"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは週末に通う語学教室を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set02_4B_s1.mp3",
+     "audio/set02_4B_s2.mp3",
+     "audio/set02_4B_s3.mp3",
+     "audio/set02_4B_s4.mp3"
+    ],
+    "image": "images/set02_4B.png",
+    "conditionsEn": [
+     "A. You can take a lesson that starts after 8 p.m.",
+     "B. The monthly fee is 10,000 yen or less",
+     "C. Lessons can be taken online"
+    ],
+    "conditionsJa": [
+     "A. 夜8時より後に始まる授業を受けられること",
+     "B. 月謝が1万円以下であること",
+     "C. オンラインで受講できること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "River English",
+     "Globe Language School",
+     "Sun English",
+     "Moon Language"
+    ],
+    "choicesJa": [
+     "リバー英会話",
+     "グローブ語学院",
+     "サン英語塾",
+     "ムーン・ランゲージ"
+    ],
+    "scripts": [
+     "I go to River English. The building is open until ten at night, and the last lesson begins at eight thirty, which suits me after work. Eight thousand yen a month is reasonable, too. The one thing is that every lesson is face to face — they have no online classes.",
+     "Globe Language School is where I study. You can join any lesson online whenever you like, and the evening classes run until nine thirty. It's twelve thousand yen a month, which is a bit more than the others, but the teachers really are excellent.",
+     "I'm at Sun English. It's the cheapest — only seven thousand yen a month — and they finally started online lessons this spring. The problem for me is the schedule. The final lesson of the day begins at six thirty, so nothing runs late in the evening.",
+     "My school is Moon Language. The last lesson of the day starts at eight thirty, and the fee is nine thousand yen a month. Half of the lessons can be taken online from home, which helps a lot on busy days."
+    ],
+    "wordCounts": [
+     51,
+     44,
+     47,
+     41
+    ],
+    "answer": 4,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ]
+    ],
+    "explain": "①はC（no online classes）で失格。open until ten という数字に引っかからず、the last lesson begins at eight thirty が条件Aの判定材料であることに注意。②はB（12,000円）で失格。③はA（最終授業が6時半開始）で失格 — cheapest と online started という好条件に惑わされないこと。④のみ A（starts at eight thirty）・B（nine thousand yen）・C（Half of the lessons can be taken online）を満たす。条件Aは「始まる時刻」で判定する点が全体の仕掛け。",
+    "keyPhrases": [
+     "the last lesson begins at eight thirty",
+     "they have no online classes",
+     "It's twelve thousand yen a month",
+     "The final lesson of the day begins at six thirty",
+     "the fee is nine thousand yen a month",
+     "Half of the lessons can be taken online from home"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set03",
+   "no": 3,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "生徒がクラスで、先週の高校オープンキャンパスで回った順序を報告している。あなたはワークシートのイラストを訪問順に並べる。",
+     "worksheetTitle": "Open Day Route",
+     "audio": "audio/set03_4A_front.mp3",
+     "image": "images/set03_4A_front.png",
+     "choices": [
+      "A student reading a newspaper at a library desk",
+      "Many visitors sitting in a gym listening to a speech on a stage",
+      "A student in a science room watching liquid bubble in a glass flask",
+      "A student holding a violin under his chin in a music room",
+      "A student eating a slice of cake at a cafeteria table"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st place visited",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "2nd place visited",
+       "answer": 4
+      },
+      {
+       "no": 20,
+       "label": "3rd place visited",
+       "answer": 1
+      },
+      {
+       "no": 21,
+       "label": "4th place visited",
+       "answer": 5
+      }
+     ],
+     "dummy": 3,
+     "script": "Last Saturday I went to the open day at Midtown High, and I'd like to tell you what I did. First, all the visitors gathered in the gym for a welcome talk by the principal. After that, I went straight to the music room and got to try a violin for the very first time. Then I spent about half an hour in the library, reading their collection of old newspapers. To finish the day, I had a piece of chocolate cake in the cafeteria. I did want to see the chemistry experiment, but the science room was closed for repairs.",
+     "wordCount": 101,
+     "explain": "First → After that → Then → To finish the day の4つの順序標識を追う標準型。ダミーは③の理科室で、最後の but the science room was closed for repairs によって明確に否定される。②gym →④violin →①library →⑤cafeteria の順であり、選択肢の番号順とは一致しないため、番号ではなく絵の内容で照合する必要がある。",
+     "keyPhrases": [
+      "all the visitors gathered in the gym for a welcome talk",
+      "I went straight to the music room and got to try a violin",
+      "Then I spent about half an hour in the library",
+      "To finish the day, I had a piece of chocolate cake in the cafeteria",
+      "the science room was closed for repairs"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "担任の先生が、ボランティアデーの班ごとの作業内容を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Volunteer Day Plan",
+     "audio": "audio/set03_4A_back.mp3",
+     "image": "images/set03_4A_back.png",
+     "table": {
+      "headers": [
+       "Group",
+       "Task",
+       "Meeting place"
+      ],
+      "rows": [
+       [
+        "Group A",
+        {
+         "blank": 22
+        },
+        "School gate"
+       ],
+       [
+        "Group B",
+        {
+         "blank": 23
+        },
+        "Bus stop"
+       ],
+       [
+        "Group C",
+        {
+         "blank": 24
+        },
+        "Riverside Park"
+       ],
+       [
+        "Group D",
+        {
+         "blank": 25
+        },
+        "Station square"
+       ]
+      ]
+     },
+     "choices": [
+      "Collecting old clothes",
+      "Painting a wall",
+      "Picking up litter",
+      "Planting flowers",
+      "Reading to children",
+      "Washing windows"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 4
+      },
+      {
+       "no": 23,
+       "answer": 5
+      },
+      {
+       "no": 24,
+       "answer": 3
+      },
+      {
+       "no": 25,
+       "answer": 2
+      }
+     ],
+     "unused": [
+      1,
+      6
+     ],
+     "script": "Here is the plan for Volunteer Day. Group A, meet me at the school gate, because you will put new flowers in the beds along the front path. Group B, take the bus to the nursery school; you will be reading picture books to the children there. Group C goes to Riverside Park to collect rubbish along the water. And Group D, at the station square, will give the old wall by the bike park a fresh coat of paint. Bring gloves, everyone. We had planned to wash the library windows too, but that job has been put off until next term.",
+     "wordCount": 102,
+     "explain": "作業名を直接言わず内容で言い換える型。put new flowers in the beds＝④Planting flowers、reading picture books＝⑤Reading to children、collect rubbish along the water＝③Picking up litter、a fresh coat of paint＝②Painting a wall。⑥Washing windows は最後の but that job has been put off until next term で否定され、①Collecting old clothes は一切言及されない。",
+     "keyPhrases": [
+      "you will put new flowers in the beds along the front path",
+      "you will be reading picture books to the children there",
+      "Group C goes to Riverside Park to collect rubbish along the water",
+      "will give the old wall by the bike park a fresh coat of paint",
+      "We had planned to wash the library windows too, but that job has been put off"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは中古自転車を1台買おうとしている。4人の説明を聞き、3つの条件をすべて満たす店の自転車を選ぶ。",
+    "audios": [
+     "audio/set03_4B_s1.mp3",
+     "audio/set03_4B_s2.mp3",
+     "audio/set03_4B_s3.mp3",
+     "audio/set03_4B_s4.mp3"
+    ],
+    "image": "images/set03_4B.png",
+    "conditionsEn": [
+     "A. It costs 20,000 yen or less",
+     "B. It has a basket",
+     "C. It can be delivered to your home"
+    ],
+    "conditionsJa": [
+     "A. 2万円以下であること",
+     "B. かごが付いていること",
+     "C. 自宅まで配達してもらえること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Sky Cycle",
+     "Green Wheels",
+     "Town Bike",
+     "Happy Ride"
+    ],
+    "choicesJa": [
+     "スカイサイクル",
+     "グリーンホイールズ",
+     "タウンバイク",
+     "ハッピーライド"
+    ],
+    "scripts": [
+     "The bicycle at Sky Cycle is eighteen thousand yen, so it fits your budget nicely. It already has a large metal basket on the front. And because you live inside the city, the shop will bring it to your door at no extra charge.",
+     "Green Wheels has a nice one for only fifteen thousand yen, and it comes with a basket big enough for a school bag. The problem is that the shop has no van at all, so you would have to ride it home yourself on the day.",
+     "Town Bike sells a very light model with a wide basket, and they deliver anywhere in the prefecture for free. However, it is twenty-five thousand yen, which is five thousand over the limit you set. It really is a lovely bike, though.",
+     "At Happy Ride there is a twelve-thousand-yen bicycle, and delivery to your house is included in that price. Just remember that it is a sports type, so there is no basket at all, either on the front or on the back."
+    ],
+    "wordCounts": [
+     44,
+     46,
+     42,
+     41
+    ],
+    "answer": 1,
+    "matrix": [
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ]
+    ],
+    "explain": "②は価格もかごも満たすが the shop has no van at all で条件C（配達）が不成立。③は配達無料・かごありだが twenty-five thousand yen で条件A（2万円以下）を満たさない。④は12,000円で配達込みだが no basket at all で条件Bが不成立。①のみ eighteen thousand yen（A）・a large metal basket（B）・bring it to your door at no extra charge（C）の3条件すべてを満たす。安い金額に飛びつかず3項目を最後まで照合すること。",
+    "keyPhrases": [
+     "the shop will bring it to your door at no extra charge",
+     "the shop has no van at all, so you would have to ride it home yourself",
+     "it is twenty-five thousand yen, which is five thousand over the limit you set",
+     "there is no basket at all, either on the front or on the back"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set04",
+   "no": 4,
+   "level": "easy",
+   "levelJa": "やや易",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "先生が、生徒が家で使う4種類の機器の利用時間が学年とともにどう変わるかをグラフで説明している。あなたはグラフの4本の棒の系列名を答える。",
+     "worksheetTitle": "Time Spent on Devices at Home",
+     "audio": "audio/set04_4A_front.mp3",
+     "image": "images/set04_4A_front.png",
+     "choices": [
+      "Game consoles",
+      "Radios",
+      "Smartphones",
+      "Televisions"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the series that is highest in every school year",
+       "answer": 3
+      },
+      {
+       "no": 19,
+       "label": "the series that falls as the school year goes up",
+       "answer": 4
+      },
+      {
+       "no": 20,
+       "label": "the series that goes up and then comes down",
+       "answer": 1
+      },
+      {
+       "no": 21,
+       "label": "the series that is lowest in every school year",
+       "answer": 2
+      }
+     ],
+     "dummy": null,
+     "script": "Look at the results of our survey on how long students use each device at home. Smartphones come first in every year, and the gap grows wider as students get older. Televisions show the opposite pattern: the older the students are, the less they watch. Game consoles are interesting. They rise from the first year to the second, and then drop again in the third year. Radios are used the least in all three years, and the bar is so short that some students may never use one.",
+     "wordCount": 88,
+     "explain": "4本の棒（系列）と4つのカテゴリ名を対応させる本試験型。come first in every year（③Smartphones）、the older the students are, the less they watch（④Televisions＝一貫下降）、rise ... and then drop again（①Game consoles＝山型）、used the least in all three years（②Radios＝最下位）。「上がって下がる」山型を見落とすと①と②を混同する。",
+     "keyPhrases": [
+      "Smartphones come first in every year",
+      "the older the students are, the less they watch",
+      "They rise from the first year to the second, and then drop again in the third year",
+      "Radios are used the least in all three years"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "美術館の職員が、館内の各階に何があるかを説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Museum Floor Guide",
+     "audio": "audio/set04_4A_back.mp3",
+     "image": "images/set04_4A_back.png",
+     "table": {
+      "headers": [
+       "Floor",
+       "What you can find"
+      ],
+      "rows": [
+       [
+        "4th floor",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "3rd floor",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "2nd floor",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "1st floor",
+        {
+         "blank": 25
+        }
+       ],
+       [
+        "Basement",
+        "Parking"
+       ]
+      ]
+     },
+     "choices": [
+      "Café",
+      "Children's workshop",
+      "Gift shop",
+      "Modern paintings",
+      "Photography exhibition",
+      "Stone sculptures"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 1
+      },
+      {
+       "no": 23,
+       "answer": 5
+      },
+      {
+       "no": 24,
+       "answer": 4
+      },
+      {
+       "no": 25,
+       "answer": 3
+      }
+     ],
+     "unused": [
+      2,
+      6
+     ],
+     "script": "Welcome to our museum. Let me tell you what is on each floor. Right at the top, on the fourth floor, you can sit down with a cup of coffee and enjoy the view of the park. One floor below that, we are showing black-and-white pictures taken by a famous local photographer. The second floor is where our newest oil paintings hang. On the ground floor, near the exit, you can buy postcards and souvenirs. The basement is only for parking. Our stone sculptures, I'm sorry to say, are being cleaned and cannot be seen this month.",
+     "wordCount": 97,
+     "explain": "「4階から順に下へ」という説明順を追う型。a cup of coffee ＝①Café、black-and-white pictures taken by a photographer ＝⑤Photography exhibition、our newest oil paintings ＝④Modern paintings、postcards and souvenirs ＝③Gift shop。⑥Stone sculptures は cannot be seen this month で否定、②Children's workshop は未言及。One floor below that が3階を指すと正しく処理できるかが鍵。",
+     "keyPhrases": [
+      "on the fourth floor, you can sit down with a cup of coffee",
+      "we are showing black-and-white pictures taken by a famous local photographer",
+      "The second floor is where our newest oil paintings hang",
+      "you can buy postcards and souvenirs",
+      "are being cleaned and cannot be seen this month"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは週末に泊まる宿を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set04_4B_s1.mp3",
+     "audio/set04_4B_s2.mp3",
+     "audio/set04_4B_s3.mp3",
+     "audio/set04_4B_s4.mp3"
+    ],
+    "image": "images/set04_4B.png",
+    "conditionsEn": [
+     "A. Breakfast is included in the price",
+     "B. It is within a ten-minute walk of the station",
+     "C. You can cancel for free on the day before"
+    ],
+    "conditionsJa": [
+     "A. 料金に朝食が含まれていること",
+     "B. 駅から徒歩10分以内であること",
+     "C. 前日まで無料でキャンセルできること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Hotel Aoi",
+     "Sakura Inn",
+     "Star Lodge",
+     "River House"
+    ],
+    "choicesJa": [
+     "ホテル葵",
+     "さくら旅館",
+     "スターロッジ",
+     "リバーハウス"
+    ],
+    "scripts": [
+     "Hotel Aoi is only four minutes from the east exit of the station, and a hot breakfast is served free of charge. But their rule is strict: once you book, you must pay half the price if you cancel, even a week in advance.",
+     "Sakura Inn stands right next to the station, about six minutes on foot. Breakfast with rice and soup is part of the room price, and you can call off your stay up to the evening before without paying anything.",
+     "Star Lodge lets you cancel free of charge until the day before, and morning coffee and toast are included. The one thing to check is the distance. It takes a good twenty-five minutes to walk there, though a bus does run.",
+     "River House is just five minutes from the station, and cancelling the day before costs you nothing. The rooms are lovely, but no meals are served at all, so you would have to find breakfast somewhere in the town."
+    ],
+    "wordCounts": [
+     44,
+     39,
+     41,
+     39
+    ],
+    "answer": 2,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ]
+    ],
+    "explain": "①は朝食無料・駅4分だが、you must pay half the price if you cancel で条件C（無料キャンセル）が不成立。③は無料キャンセル・朝食込みだが twenty-five minutes to walk で条件Bを満たさない（バスがある点に惑わされないこと。条件は「徒歩10分以内」）。④は駅5分・無料キャンセルだが no meals are served at all で条件Aが不成立。②のみ six minutes on foot（B）・Breakfast ... is part of the room price（A）・call off your stay up to the evening before without paying anything（C）の3条件すべてを満たす。",
+    "keyPhrases": [
+     "you must pay half the price if you cancel, even a week in advance",
+     "you can call off your stay up to the evening before without paying anything",
+     "It takes a good twenty-five minutes to walk there, though a bus does run",
+     "no meals are served at all"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set05",
+   "no": 5,
+   "level": "hard",
+   "levelJa": "やや難",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "スポーツクラブのコーチが、けがをした後に体を戻していく手順を説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Getting Back into Training",
+     "audio": "audio/set05_4A_front.mp3",
+     "image": "images/set05_4A_front.png",
+     "choices": [
+      "An athlete lifting a heavy barbell in a gym",
+      "An athlete sitting on a bench with a bag of ice on one knee",
+      "An athlete walking slowly around a running track",
+      "An athlete sitting on the floor stretching one leg forward",
+      "An athlete running fast on a track with other runners"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st stage",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "2nd stage",
+       "answer": 4
+      },
+      {
+       "no": 20,
+       "label": "3rd stage",
+       "answer": 3
+      },
+      {
+       "no": 21,
+       "label": "4th stage",
+       "answer": 5
+      }
+     ],
+     "dummy": 1,
+     "script": "If you hurt your leg, don't rush back. In the first few days, all you should do is rest and hold ice against the injury. Only when the swelling has gone should you begin gentle stretching on the floor. Once that feels comfortable, the next stage is walking, not running, around the track. Racing with the others comes last, and not before your coach says you are ready. And please, no weight training during any of this. Heavy lifting has to wait until the whole programme is over.",
+     "wordCount": 88,
+     "explain": "順序標識が明示的でなく、Only when ... should you / Once that feels comfortable / comes last という構文で段階が示される難度の高い型。②ice →④stretching →③walking →⑤racing。ダミーは①のウェイトで、no weight training during any of this / Heavy lifting has to wait により除外される。walking, not running の対比を聞き逃すと③と⑤が入れ替わる。",
+     "keyPhrases": [
+      "all you should do is rest and hold ice against the injury",
+      "Only when the swelling has gone should you begin gentle stretching on the floor",
+      "the next stage is walking, not running, around the track",
+      "Racing with the others comes last",
+      "no weight training during any of this"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "国際交流委員の生徒が、来週の交流イベントの各時間帯の内容を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Exchange Day Timetable",
+     "audio": "audio/set05_4A_back.mp3",
+     "image": "images/set05_4A_back.png",
+     "table": {
+      "headers": [
+       "Time",
+       "Activity",
+       "Room"
+      ],
+      "rows": [
+       [
+        "9:30",
+        {
+         "blank": 22
+        },
+        "Hall"
+       ],
+       [
+        "10:30",
+        {
+         "blank": 23
+        },
+        "Room 201"
+       ],
+       [
+        "13:00",
+        {
+         "blank": 24
+        },
+        "Cooking room"
+       ],
+       [
+        "15:00",
+        {
+         "blank": 25
+        },
+        "Hall"
+       ]
+      ]
+     },
+     "choices": [
+      "Calligraphy lesson",
+      "Farewell speeches",
+      "Group discussion",
+      "Making dumplings",
+      "Traditional dance",
+      "Welcome party"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 6
+      },
+      {
+       "no": 23,
+       "answer": 3
+      },
+      {
+       "no": 24,
+       "answer": 4
+      },
+      {
+       "no": 25,
+       "answer": 2
+      }
+     ],
+     "unused": [
+      1,
+      5
+     ],
+     "script": "Let me run through Exchange Day. We open at half past nine in the hall, where everyone shares snacks and gets to know the guests. An hour later, in Room 201, you will sit in small circles and talk about school life in each country. There is a long lunch break, and then at one o'clock we move to the cooking room to wrap and boil dumplings together. Finally, back in the hall at three, a few students from each side will say a word of thanks before the buses leave. The dance the guests prepared has been cancelled, sadly.",
+     "wordCount": 100,
+     "explain": "時刻表現が数字と語（half past nine / An hour later / at one o'clock / at three）で混在する難度の高い型。everyone shares snacks and gets to know the guests＝⑥Welcome party、sit in small circles and talk＝③Group discussion、wrap and boil dumplings＝④Making dumplings、say a word of thanks before the buses leave＝②Farewell speeches。⑤Traditional dance は has been cancelled で否定、①Calligraphy lesson は未言及。",
+     "keyPhrases": [
+      "We open at half past nine in the hall, where everyone shares snacks and gets to know the guests",
+      "you will sit in small circles and talk about school life in each country",
+      "we move to the cooking room to wrap and boil dumplings together",
+      "a few students from each side will say a word of thanks before the buses leave",
+      "The dance the guests prepared has been cancelled"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは夏休みに参加する短期の海外プログラムを1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set05_4B_s1.mp3",
+     "audio/set05_4B_s2.mp3",
+     "audio/set05_4B_s3.mp3",
+     "audio/set05_4B_s4.mp3"
+    ],
+    "image": "images/set05_4B.png",
+    "conditionsEn": [
+     "A. It lasts three weeks or less",
+     "B. You stay with a host family",
+     "C. It offers a class for beginners"
+    ],
+    "conditionsJa": [
+     "A. 期間が3週間以内であること",
+     "B. ホームステイであること",
+     "C. 初級者向けのクラスがあること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Program Alpha",
+     "Program Beta",
+     "Program Gamma",
+     "Program Delta"
+    ],
+    "choicesJa": [
+     "プログラムA",
+     "プログラムB",
+     "プログラムC",
+     "プログラムD"
+    ],
+    "scripts": [
+     "Program Alpha is three weeks on the dot. You stay in a host family's house near the school, and the timetable has a beginners' group in the mornings, so you can start from zero without any worry.",
+     "Program Beta is exactly two weeks, and they put you in a shared room in a student dormitory, not with a family. Classes start from the very basics, so even if you know nothing at all you will manage well enough.",
+     "Program Gamma lasted eighteen days for me, and I lived with a wonderful host family in the suburbs. But be careful about the classes. There is no beginner course; everyone has to take the intermediate lessons from day one.",
+     "Program Delta runs for a full five weeks, which is rather long. You do live with a local family the whole time, and there are classes at every level, including one for complete beginners who have never studied the language before."
+    ],
+    "wordCounts": [
+     37,
+     41,
+     39,
+     41
+    ],
+    "answer": 1,
+    "matrix": [
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      false,
+      true,
+      true
+     ]
+    ],
+    "explain": "④はホームステイ・初級クラスありだが a full five weeks で条件A（3週間以内）が不成立。②は2週間・初級から学べるが a student dormitory, not with a family で条件Bが不成立。③は18日・ホームステイだが There is no beginner course で条件Cが不成立。①のみ three weeks on the dot（A：ちょうど3週間なので「3週間以内」を満たす）・a host family's house（B）・a beginners' group in the mornings（C）を満たす。「eighteen days」「three weeks on the dot」のように期間表現が日数と週で混在するため換算が必要。",
+    "keyPhrases": [
+     "Program Delta runs for a full five weeks",
+     "they put you in a shared room in a student dormitory, not with a family",
+     "There is no beginner course; everyone has to take the intermediate lessons",
+     "Program Alpha is three weeks on the dot"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set06",
+   "no": 6,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "留学生が、自分の国で人気のある4つの移動手段の利用者の割合が20年でどう変わったかを説明している。あなたはグラフの4本の線の系列名を答える。",
+     "worksheetTitle": "How People Travel to Work",
+     "audio": "audio/set06_4A_front.mp3",
+     "image": "images/set06_4A_front.png",
+     "choices": [
+      "Bicycles",
+      "Buses",
+      "Cars",
+      "Trains"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the line that was first in 2005 but is no longer first",
+       "answer": 3
+      },
+      {
+       "no": 19,
+       "label": "the line that became first by 2025",
+       "answer": 4
+      },
+      {
+       "no": 20,
+       "label": "the line that grew the fastest after 2015",
+       "answer": 1
+      },
+      {
+       "no": 21,
+       "label": "the line that went down and never recovered",
+       "answer": 2
+      }
+     ],
+     "dummy": null,
+     "script": "This graph shows how people in my city get to work. Cars were used by the most people in 2005, but they lost their top place about ten years later. Trains took over that top place and have stayed there since. Buses have simply gone down, year after year, and they have never come back up. The most surprising line is bicycles. They were almost flat until 2015, and after that they have shot up faster than anything else, though they are still not in first place.",
+     "wordCount": 87,
+     "explain": "「順位の入れ替わり」を扱う型。were used by the most people in 2005, but they lost their top place（③Cars）、took over that top place（④Trains）、almost flat until 2015, and after that ... shot up faster than anything else（①Bicycles）、simply gone down, year after year（②Buses）。問20は「2015年以降の伸び」という限定条件で、全期間の順位ではないことに注意。",
+     "keyPhrases": [
+      "Cars were used by the most people in 2005, but they lost their top place",
+      "Trains took over that top place and have stayed there since",
+      "Buses have simply gone down, year after year",
+      "after that they have shot up faster than anything else"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "図書委員の生徒が、来月の読書週間の各曜日の催しを説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Reading Week Events",
+     "audio": "audio/set06_4A_back.mp3",
+     "image": "images/set06_4A_back.png",
+     "table": {
+      "headers": [
+       "Day",
+       "Event"
+      ],
+      "rows": [
+       [
+        "Monday",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Tuesday",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Wednesday",
+        "No event"
+       ],
+       [
+        "Thursday",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Friday",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "Author's talk",
+      "Book exchange",
+      "Poetry reading",
+      "Quiz contest",
+      "Storytelling for children",
+      "Used book sale"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 2
+      },
+      {
+       "no": 23,
+       "answer": 5
+      },
+      {
+       "no": 24,
+       "answer": 1
+      },
+      {
+       "no": 25,
+       "answer": 4
+      }
+     ],
+     "unused": [
+      3,
+      6
+     ],
+     "script": "Here are the plans for Reading Week. On Monday, bring a book you have finished and swap it for someone else's — no money changes hands. On Tuesday, we visit the primary school and read picture books aloud to the little ones. Wednesday is free, as the hall is being used for exams. On Thursday a writer from this town will come and speak about her new novel. And on Friday we finish with teams answering questions about famous books, with a prize for the winners. The poetry event will have to wait until next year.",
+     "wordCount": 96,
+     "explain": "「無料の交換」と「販売」を区別する型。swap it for someone else's — no money changes hands＝②Book exchange（⑥Used book sale ではない。money changes hands の否定が決定的）。read picture books aloud to the little ones＝⑤Storytelling for children、a writer ... will come and speak＝①Author's talk、teams answering questions about famous books＝④Quiz contest。③Poetry reading は will have to wait until next year で否定。",
+     "keyPhrases": [
+      "swap it for someone else's — no money changes hands",
+      "we visit the primary school and read picture books aloud to the little ones",
+      "a writer from this town will come and speak about her new novel",
+      "we finish with teams answering questions about famous books",
+      "The poetry event will have to wait until next year"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは部活のためにデジタルカメラを1台買おうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set06_4B_s1.mp3",
+     "audio/set06_4B_s2.mp3",
+     "audio/set06_4B_s3.mp3",
+     "audio/set06_4B_s4.mp3"
+    ],
+    "image": "images/set06_4B.png",
+    "conditionsEn": [
+     "A. It weighs less than 500 grams",
+     "B. It can record video",
+     "C. It comes with a one-year guarantee"
+    ],
+    "conditionsJa": [
+     "A. 重さが500グラム未満であること",
+     "B. 動画が撮れること",
+     "C. 1年間の保証が付いていること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Model P",
+     "Model Q",
+     "Model R",
+     "Model S"
+    ],
+    "choicesJa": [
+     "Pモデル",
+     "Qモデル",
+     "Rモデル",
+     "Sモデル"
+    ],
+    "scripts": [
+     "Model P is our lightest camera at three hundred and twenty grams, and the picture quality is excellent. It shoots video in high definition too. The guarantee, however, is only three months, and after that any repair has to be paid for.",
+     "Model Q weighs six hundred and eighty grams, which is heavier than the others. On the good side, it records video, and the maker covers it for a full twelve months from the day you buy it.",
+     "Model R comes in at four hundred and fifty grams, records video in two different sizes, and the box includes a guarantee card valid for twelve months. It has been on sale since spring and the club already owns one.",
+     "Model S is very light, just four hundred grams, and the shop gives you a one-year guarantee with it. The catch is that it takes still photographs only. There is no video function on this model at all."
+    ],
+    "wordCounts": [
+     42,
+     37,
+     40,
+     38
+    ],
+    "answer": 3,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ]
+    ],
+    "explain": "①は320gで動画も可だが the guarantee ... is only three months で条件Cが不成立。②は動画・12か月保証だが six hundred and eighty grams で条件A（500g未満）が不成立。④は400g・1年保証だが There is no video function ... at all で条件Bが不成立。③のみ four hundred and fifty grams（A）・records video（B）・a guarantee card valid for twelve months（C）を満たす。数値が英語の綴りで読まれるため、three hundred and twenty / six hundred and eighty の聞き取りが鍵。",
+    "keyPhrases": [
+     "The guarantee, however, is only three months",
+     "Model Q weighs six hundred and eighty grams",
+     "There is no video function on this model at all",
+     "Model R comes in at four hundred and fifty grams"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set07",
+   "no": 7,
+   "level": "easy",
+   "levelJa": "やや易",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "先生が、教室のプランターで野菜の種をまく手順を説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Planting Seeds",
+     "audio": "audio/set07_4A_front.mp3",
+     "image": "images/set07_4A_front.png",
+     "choices": [
+      "Hands putting soil into an empty planter box",
+      "A hand dropping small seeds into a shallow hole in the soil",
+      "Cutting a grown vegetable with scissors",
+      "A watering can pouring water onto the soil",
+      "Hands covering the seeds with soil"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st step",
+       "answer": 1
+      },
+      {
+       "no": 19,
+       "label": "2nd step",
+       "answer": 2
+      },
+      {
+       "no": 20,
+       "label": "3rd step",
+       "answer": 5
+      },
+      {
+       "no": 21,
+       "label": "4th step",
+       "answer": 4
+      }
+     ],
+     "dummy": 3,
+     "script": "Today we are going to plant vegetable seeds. Step one: fill the planter box with soil, right up to about two centimetres below the top. Step two: make a shallow hole with your finger and drop two or three seeds into it. Step three: gently push soil back over the seeds so that you cannot see them any more. And step four: water the soil until it is damp all over. Harvesting is not today's job, of course. We will not be cutting anything for at least two months.",
+     "wordCount": 89,
+     "explain": "Step one 〜 step four と明示される最も素直な型。①soil →②seeds →⑤covering →④watering。ダミーは③の収穫で、Harvesting is not today's job / We will not be cutting anything で明確に否定される。②と⑤はどちらも土と種の絵なので、drop ... seeds into it（入れる）と push soil back over the seeds（かぶせる）の動作の違いで区別する。",
+     "keyPhrases": [
+      "Step one: fill the planter box with soil",
+      "make a shallow hole with your finger and drop two or three seeds into it",
+      "gently push soil back over the seeds",
+      "water the soil until it is damp all over",
+      "We will not be cutting anything for at least two months"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "駅の係員が、駅の各出口を出たところにある施設を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Station Exit Guide",
+     "audio": "audio/set07_4A_back.mp3",
+     "image": "images/set07_4A_back.png",
+     "table": {
+      "headers": [
+       "Exit",
+       "Nearest place"
+      ],
+      "rows": [
+       [
+        "North Exit",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "South Exit",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "East Exit",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "West Exit",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "City hospital",
+      "Football stadium",
+      "Post office",
+      "Public library",
+      "Shopping mall",
+      "Zoo"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 4
+      },
+      {
+       "no": 23,
+       "answer": 5
+      },
+      {
+       "no": 24,
+       "answer": 1
+      },
+      {
+       "no": 25,
+       "answer": 2
+      }
+     ],
+     "unused": [
+      3,
+      6
+     ],
+     "script": "Let me explain the four exits. If you leave by the North Exit, you will see a large building where you can borrow books; it is open until eight. The South Exit brings you out in front of the mall, with all the clothes shops. Take the East Exit for the hospital — it is the white building with the tall tower. And the West Exit faces the stadium where the football team plays. The zoo is much further away; you need a bus for that one.",
+     "wordCount": 87,
+     "explain": "施設名を機能で言い換える型。a large building where you can borrow books＝④Public library、in front of the mall＝⑤Shopping mall、the hospital＝①City hospital、the stadium where the football team plays＝②Football stadium。⑥Zoo は you need a bus for that one で「駅の出口すぐ」ではないと否定され、③Post office は未言及。",
+     "keyPhrases": [
+      "you will see a large building where you can borrow books",
+      "The South Exit brings you out in front of the mall",
+      "Take the East Exit for the hospital",
+      "the West Exit faces the stadium where the football team plays",
+      "The zoo is much further away; you need a bus for that one"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは家族で行く日帰りバスツアーを1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set07_4B_s1.mp3",
+     "audio/set07_4B_s2.mp3",
+     "audio/set07_4B_s3.mp3",
+     "audio/set07_4B_s4.mp3"
+    ],
+    "image": "images/set07_4B.png",
+    "conditionsEn": [
+     "A. Lunch is included",
+     "B. It returns before 6 p.m.",
+     "C. Children under twelve pay half price"
+    ],
+    "conditionsJa": [
+     "A. 昼食が付いていること",
+     "B. 午後6時前に帰着すること",
+     "C. 12歳未満の子どもが半額であること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Lake Tour",
+     "Farm Tour",
+     "Castle Tour",
+     "Mountain Tour"
+    ],
+    "choicesJa": [
+     "湖ツアー",
+     "牧場ツアー",
+     "城ツアー",
+     "山ツアー"
+    ],
+    "scripts": [
+     "The Lake Tour leaves at nine and gets back at half past five, so you are home early. A boxed lunch is handed out on the bus. One point to note: every passenger pays the same fare, whatever their age.",
+     "The Farm Tour serves a lunch of local vegetables and bread, and we return at five thirty. Anyone under the age of twelve travels for half the usual price. The bus has room for thirty people, so book early.",
+     "On the Castle Tour, children pay half the adult fare, and we are back at the station by four forty-five. Please bring your own food, though; there is no meal in the price and the shops near the castle are small.",
+     "The Mountain Tour includes a hot lunch at a restaurant near the summit, and children under twelve are charged only half. The trouble is the timing — the bus does not reach the station again until seven in the evening."
+    ],
+    "wordCounts": [
+     40,
+     39,
+     41,
+     40
+    ],
+    "answer": 2,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ]
+    ],
+    "explain": "①は昼食付き・17:30帰着だが every passenger pays the same fare, whatever their age で条件C（子ども半額）が不成立。④は昼食付き・子ども半額だが seven in the evening で条件B（18時前）が不成立。③は子ども半額・16:45帰着だが there is no meal in the price で条件Aが不成立。②のみ a lunch of local vegetables and bread（A）・we return at five thirty（B）・under the age of twelve travels for half the usual price（C）を満たす。時刻が half past five / seven / four forty-five / five thirty と多様な言い方で読まれる。",
+    "keyPhrases": [
+     "every passenger pays the same fare, whatever their age",
+     "the bus does not reach the station again until seven in the evening",
+     "there is no meal in the price",
+     "Anyone under the age of twelve travels for half the usual price"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set08",
+   "no": 8,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "校内アンケートの結果として、放課後の過ごし方4種類の割合が4つの学年でどう違うかを担当者が説明している。あなたはグラフの4本の棒の系列名を答える。",
+     "worksheetTitle": "After-School Activities",
+     "audio": "audio/set08_4A_front.mp3",
+     "image": "images/set08_4A_front.png",
+     "choices": [
+      "Club activities",
+      "Part-time jobs",
+      "Study at cram school",
+      "Volunteer work"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the series that is highest in the first year",
+       "answer": 1
+      },
+      {
+       "no": 19,
+       "label": "the series that overtakes the others in the final year",
+       "answer": 3
+      },
+      {
+       "no": 20,
+       "label": "the series that appears only from the third year",
+       "answer": 2
+      },
+      {
+       "no": 21,
+       "label": "the series that stays under ten per cent throughout",
+       "answer": 4
+      }
+     ],
+     "dummy": null,
+     "script": "Here are the survey results. Club activities are the most common choice for first-year students, but the figure falls as the years go on. Study at cram school starts low and climbs, until in the final year it passes everything else. Part-time jobs are zero for the first two years, because they are not allowed, and appear only from the third year onwards. Volunteer work is chosen by a small number in every year, always below ten per cent, and the bars hardly change at all.",
+     "wordCount": 86,
+     "explain": "各系列の「特徴的な形」を捉える型。the most common choice for first-year students（①Club activities）、starts low and climbs, until in the final year it passes everything else（③Study at cram school）、zero for the first two years ... appear only from the third year（②Part-time jobs）、always below ten per cent（④Volunteer work）。「0の期間がある」という特徴で②を特定できるのが最大の手がかり。",
+     "keyPhrases": [
+      "Club activities are the most common choice for first-year students",
+      "Study at cram school starts low and climbs, until in the final year it passes everything else",
+      "Part-time jobs are zero for the first two years",
+      "always below ten per cent"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "文化センターの職員が、各教室の持ち物を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "What to Bring",
+     "audio": "audio/set08_4A_back.mp3",
+     "image": "images/set08_4A_back.png",
+     "table": {
+      "headers": [
+       "Class",
+       "What to bring"
+      ],
+      "rows": [
+       [
+        "Cooking",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Swimming",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Painting",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Guitar",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "An apron",
+      "A cap and a towel",
+      "A notebook and a pen",
+      "Nothing at all",
+      "Old clothes",
+      "Your own instrument"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 1
+      },
+      {
+       "no": 23,
+       "answer": 2
+      },
+      {
+       "no": 24,
+       "answer": 5
+      },
+      {
+       "no": 25,
+       "answer": 4
+      }
+     ],
+     "unused": [
+      3,
+      6
+     ],
+     "script": "Let me go through what each class needs. For cooking, all the food and knives are here, so just tie something round your waist to keep your clothes clean. Swimmers, we lend you the goggles, but you must bring a cap for your hair and something to dry yourself with. In the painting class, wear clothes you do not mind getting dirty, because the paint will not wash out. And guitar students, relax — the centre has twenty instruments, so you can come with empty hands.",
+     "wordCount": 86,
+     "explain": "「持ち物」を直接言わず説明する型。tie something round your waist to keep your clothes clean＝①An apron、a cap for your hair and something to dry yourself with＝②A cap and a towel、wear clothes you do not mind getting dirty＝⑤Old clothes、the centre has twenty instruments, so you can come with empty hands＝④Nothing at all。⑥Your own instrument は「センターが20本用意」で逆に否定される罠。③A notebook and a pen は未言及。",
+     "keyPhrases": [
+      "just tie something round your waist to keep your clothes clean",
+      "you must bring a cap for your hair and something to dry yourself with",
+      "wear clothes you do not mind getting dirty",
+      "the centre has twenty instruments, so you can come with empty hands"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは学校の帰りに立ち寄れる自習用の場所を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set08_4B_s1.mp3",
+     "audio/set08_4B_s2.mp3",
+     "audio/set08_4B_s3.mp3",
+     "audio/set08_4B_s4.mp3"
+    ],
+    "image": "images/set08_4B.png",
+    "conditionsEn": [
+     "A. It is open until 9 p.m. on weekdays",
+     "B. You can use free wi-fi there",
+     "C. You do not have to pay to enter"
+    ],
+    "conditionsJa": [
+     "A. 平日は午後9時まで開いていること",
+     "B. 無料の Wi-Fi が使えること",
+     "C. 入るのに料金がかからないこと"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "School Lab",
+     "Study Café",
+     "Community Room",
+     "Central Library"
+    ],
+    "choicesJa": [
+     "学校の実習室",
+     "スタディカフェ",
+     "コミュニティルーム",
+     "中央図書館"
+    ],
+    "scripts": [
+     "Our own School Lab is free for students, open until nine from Monday to Friday, and the school wi-fi covers the whole room. A teacher stays there, so you have to be quiet, but that suits studying.",
+     "Study Café is open till ten every weekday and the wi-fi is fast and free. You do need to buy a drink to sit down, though, and the cheapest one is four hundred yen. Think of it as an entrance fee.",
+     "The Community Room next to the station is free to use and stays open until nine on weekdays. There is a network for members of the town office only, so students cannot connect. Bring a book instead of a laptop.",
+     "The Central Library costs nothing to get in, and the wi-fi works everywhere on the reading floor. The only trouble is the closing time. From Monday to Friday the doors shut at six, and only on Saturday do they stay open late."
+    ],
+    "wordCounts": [
+     37,
+     41,
+     40,
+     42
+    ],
+    "answer": 1,
+    "matrix": [
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ]
+    ],
+    "explain": "④は無料・Wi-Fiありだが the doors shut at six（平日）で条件Aが不成立（Saturday の情報に惑わされないこと。条件は平日）。②は22時まで・無料Wi-Fiだが You do need to buy a drink ... Think of it as an entrance fee で条件C（入場無料）が不成立。③は無料・21時までだが students cannot connect で条件Bが不成立。①のみ free for students（C）・open until nine from Monday to Friday（A）・the school wi-fi covers the whole room（B）を満たす。",
+    "keyPhrases": [
+     "From Monday to Friday the doors shut at six",
+     "You do need to buy a drink to sit down",
+     "There is a network for members of the town office only, so students cannot connect",
+     "open until nine from Monday to Friday, and the school wi-fi covers the whole room"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set09",
+   "no": 9,
+   "level": "hard",
+   "levelJa": "やや難",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "研究者が、ある町の4種類のごみの量が10年でどう変わったかを説明している。あなたはグラフの4本の線の系列名を答える。",
+     "worksheetTitle": "Waste Collected in Our Town",
+     "audio": "audio/set09_4A_front.mp3",
+     "image": "images/set09_4A_front.png",
+     "choices": [
+      "Cans",
+      "Glass bottles",
+      "Paper",
+      "Plastic"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the line that rose first and then fell back",
+       "answer": 4
+      },
+      {
+       "no": 19,
+       "label": "the line that fell first and then rose again",
+       "answer": 3
+      },
+      {
+       "no": 20,
+       "label": "the line that halved over the ten years",
+       "answer": 2
+      },
+      {
+       "no": 21,
+       "label": "the line that changed the least",
+       "answer": 1
+      }
+     ],
+     "dummy": null,
+     "script": "This graph covers ten years of waste in our town. Plastic climbed sharply in the first half, but since the new bag charge it has come back down to almost where it began. Paper did the opposite: it dropped while people were reading online, then rose again as home deliveries increased. Glass bottles fell steadily and ended at half the amount of ten years ago. As for cans, the line moves up and down by only a tiny amount, so we can say it is essentially unchanged.",
+     "wordCount": 87,
+     "explain": "「山型」と「谷型」を対比させる高難度型。climbed sharply ... has come back down to almost where it began（④Plastic＝山型）、did the opposite: it dropped ... then rose again（③Paper＝谷型）、fell steadily and ended at half the amount（②Glass bottles）、moves up and down by only a tiny amount ... essentially unchanged（①Cans）。did the opposite が直前の Plastic の形を指すため、代名詞的な参照を追う力が必要。",
+     "keyPhrases": [
+      "Plastic climbed sharply in the first half",
+      "Paper did the opposite: it dropped while people were reading online, then rose again",
+      "Glass bottles fell steadily and ended at half the amount of ten years ago",
+      "the line moves up and down by only a tiny amount"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "劇の演出担当の生徒が、各役の担当者に伝える注意点を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Drama Club Notes",
+     "audio": "audio/set09_4A_back.mp3",
+     "image": "images/set09_4A_back.png",
+     "table": {
+      "headers": [
+       "Role",
+       "Point to remember"
+      ],
+      "rows": [
+       [
+        "Narrator",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Queen",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Soldier",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Merchant",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "Enter from the left side",
+      "Hold the flag high",
+      "Move as little as possible",
+      "Sing the last line",
+      "Speak more slowly",
+      "Wear the red hat"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 5
+      },
+      {
+       "no": 23,
+       "answer": 3
+      },
+      {
+       "no": 24,
+       "answer": 2
+      },
+      {
+       "no": 25,
+       "answer": 1
+      }
+     ],
+     "unused": [
+      4,
+      6
+     ],
+     "script": "A few notes before tomorrow. Narrator, the words at the opening were too fast for the audience at the back, so take your time with them. Queen, you looked restless last night; stay almost still on the throne, because that is what makes her look powerful. Soldier, the flag must be above your head, not at your side. Merchant, you came in from the wrong wing again — use the door on the left as you face the audience. And forget the song at the end; we cut it yesterday.",
+     "wordCount": 90,
+     "explain": "指示を言い換えで表す型。take your time with them＝⑤Speak more slowly、stay almost still on the throne＝③Move as little as possible、the flag must be above your head＝②Hold the flag high、use the door on the left＝①Enter from the left side。④Sing the last line は forget the song at the end; we cut it yesterday で否定、⑥Wear the red hat は未言及。not at your side / from the wrong wing の否定表現に注意。",
+     "keyPhrases": [
+      "the words at the opening were too fast for the audience at the back, so take your time with them",
+      "stay almost still on the throne",
+      "the flag must be above your head, not at your side",
+      "use the door on the left as you face the audience",
+      "forget the song at the end; we cut it yesterday"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは学校祭で使う会場を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set09_4B_s1.mp3",
+     "audio/set09_4B_s2.mp3",
+     "audio/set09_4B_s3.mp3",
+     "audio/set09_4B_s4.mp3"
+    ],
+    "image": "images/set09_4B.png",
+    "conditionsEn": [
+     "A. It holds at least 200 people",
+     "B. It has a stage with lights",
+     "C. It can be booked on a Sunday"
+    ],
+    "conditionsJa": [
+     "A. 200人以上収容できること",
+     "B. 照明のある舞台があること",
+     "C. 日曜日に予約できること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "City Hall",
+     "Green Theatre",
+     "Music Centre",
+     "Old Gym"
+    ],
+    "choicesJa": [
+     "市民ホール",
+     "グリーン劇場",
+     "音楽センター",
+     "旧体育館"
+    ],
+    "scripts": [
+     "City Hall seats four hundred and fifty, and our stage has a full set of lights above it. I am afraid the building is used for council meetings every Sunday, so weekend bookings are only possible on Saturdays.",
+     "Green Theatre is available seven days a week, Sundays included, and the lighting here is the best in town. The room is small, though; we can let in a hundred and eighty people at most, and no more for safety reasons.",
+     "The Music Centre holds three hundred and twenty, and above the stage there are lights we can change during the show. Sunday is one of our quietest days, so a booking then would be no trouble at all.",
+     "The Old Gym takes up to six hundred people and you may book any day of the week, Sunday too. Do remember that it is only a sports hall. There is a flat wooden floor but no stage and no lights of any kind."
+    ],
+    "wordCounts": [
+     38,
+     41,
+     38,
+     44
+    ],
+    "answer": 3,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ]
+    ],
+    "explain": "①は450人・照明付き舞台だが weekend bookings are only possible on Saturdays で条件C（日曜）が不成立。②は日曜可・照明良好だが a hundred and eighty people at most で条件A（200人以上）を満たさない。④は600人・毎日予約可だが no stage and no lights of any kind で条件Bが不成立。③のみ three hundred and twenty（A）・above the stage there are lights（B）・a booking then would be no trouble（C）を満たす。",
+    "keyPhrases": [
+     "so weekend bookings are only possible on Saturdays",
+     "we can let in a hundred and eighty people at most",
+     "There is a flat wooden floor but no stage and no lights of any kind",
+     "The Music Centre holds three hundred and twenty"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set10",
+   "no": 10,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "美術部の生徒が、版画（もくはんが）の作り方を後輩に説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Making a Print",
+     "audio": "audio/set10_4A_front.mp3",
+     "image": "images/set10_4A_front.png",
+     "choices": [
+      "A hand drawing a design on a wooden board with a pencil",
+      "A finished print hanging on a wall in a frame",
+      "A hand carving the board with a small knife",
+      "A roller spreading ink over the carved board",
+      "A hand pressing paper onto the inked board"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st step",
+       "answer": 1
+      },
+      {
+       "no": 19,
+       "label": "2nd step",
+       "answer": 3
+      },
+      {
+       "no": 20,
+       "label": "3rd step",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "4th step",
+       "answer": 5
+      }
+     ],
+     "dummy": 2,
+     "script": "Let me show you how we make our prints. Before you touch any tools, draw your design on the board in pencil, and make it simple. The second job is cutting: hold the knife with both hands and cut away everything you do not want printed. When the carving is done, run the roller over the surface until the ink is even. Then lay your paper on top and press down hard with your palm. Framing and putting it on the wall is not part of today's lesson, though.",
+     "wordCount": 89,
+     "explain": "Before you touch any tools / The second job / When the carving is done / Then という順序標識で進む型。①drawing →③carving →④inking →⑤pressing。ダミーは②の額縁で、Framing and putting it on the wall is not part of today's lesson により否定される。Before you touch any tools が「最初に」を意味することを取れるかが第一の関門。",
+     "keyPhrases": [
+      "Before you touch any tools, draw your design on the board in pencil",
+      "The second job is cutting",
+      "run the roller over the surface until the ink is even",
+      "Then lay your paper on top and press down hard with your palm",
+      "Framing and putting it on the wall is not part of today's lesson"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "バイト先の店長が、曜日ごとの担当の仕事を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Weekly Duties",
+     "audio": "audio/set10_4A_back.mp3",
+     "image": "images/set10_4A_back.png",
+     "table": {
+      "headers": [
+       "Day",
+       "Your duty",
+       "Time"
+      ],
+      "rows": [
+       [
+        "Monday",
+        {
+         "blank": 22
+        },
+        "before opening"
+       ],
+       [
+        "Tuesday",
+        {
+         "blank": 23
+        },
+        "after closing"
+       ],
+       [
+        "Thursday",
+        {
+         "blank": 24
+        },
+        "any time"
+       ],
+       [
+        "Saturday",
+        {
+         "blank": 25
+        },
+        "in the morning"
+       ]
+      ]
+     },
+     "choices": [
+      "Checking the stock",
+      "Cleaning the windows",
+      "Counting the money",
+      "Ordering new goods",
+      "Watering the plants",
+      "Writing the price cards"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 5
+      },
+      {
+       "no": 23,
+       "answer": 3
+      },
+      {
+       "no": 24,
+       "answer": 6
+      },
+      {
+       "no": 25,
+       "answer": 1
+      }
+     ],
+     "unused": [
+      2,
+      4
+     ],
+     "script": "Here are your duties for the week. On Monday, come in a little early and give the plants by the door a drink. On Tuesday, once the last customer has gone, add up what is in the till and write down the total. Thursday is flexible: whenever you have a free moment, make new cards showing the prices. And on Saturday morning, go through the shelves in the back room and tell me what we are short of. Ordering itself is my job, not yours.",
+     "wordCount": 85,
+     "explain": "仕事内容を平易な表現で言い換える型。give the plants by the door a drink＝⑤Watering the plants、add up what is in the till＝③Counting the money、make new cards showing the prices＝⑥Writing the price cards、go through the shelves ... tell me what we are short of＝①Checking the stock。④Ordering new goods は Ordering itself is my job, not yours で明確に否定される最大の罠。②Cleaning the windows は未言及。",
+     "keyPhrases": [
+      "give the plants by the door a drink",
+      "add up what is in the till and write down the total",
+      "make new cards showing the prices",
+      "go through the shelves in the back room and tell me what we are short of",
+      "Ordering itself is my job, not yours"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは英語の発表に使うアプリを1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set10_4B_s1.mp3",
+     "audio/set10_4B_s2.mp3",
+     "audio/set10_4B_s3.mp3",
+     "audio/set10_4B_s4.mp3"
+    ],
+    "image": "images/set10_4B.png",
+    "conditionsEn": [
+     "A. It is free to use",
+     "B. It works without an internet connection",
+     "C. It can read English text aloud"
+    ],
+    "conditionsJa": [
+     "A. 無料で使えること",
+     "B. インターネットに接続しなくても使えること",
+     "C. 英文を読み上げてくれること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Wordy",
+     "SpeakUp",
+     "NoteBee",
+     "ReadEasy"
+    ],
+    "choicesJa": [
+     "ワーディ",
+     "スピークアップ",
+     "ノートビー",
+     "リードイージー"
+    ],
+    "scripts": [
+     "Wordy costs nothing at all to download, and it will read any English sentence out loud in a very natural voice. Sadly the voice is made on their server, so the moment you lose your signal on the train, the app stops speaking to you.",
+     "SpeakUp keeps all of its data on your own phone, so it still speaks perfectly well inside a tunnel, and the pronunciation is very clear. But the free version lasts only one week; after that you have to pay six hundred yen every month.",
+     "NoteBee is completely free and it works offline once you have installed it on your phone. All the same, it is really just a notebook app. It shows you the text in large letters, but it has no voice function whatsoever.",
+     "ReadEasy is free with no time limit at all, and the voice data is stored inside the app itself, so it reads English aloud even with the wi-fi switched off. I use it on the bus every single morning before class."
+    ],
+    "wordCounts": [
+     45,
+     44,
+     41,
+     41
+    ],
+    "answer": 4,
+    "matrix": [
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      true,
+      true
+     ]
+    ],
+    "explain": "①は無料・読み上げ可だが the voice comes from their server ... the app stops speaking で条件B（オフライン動作）が不成立。②はオフライン可・発音明瞭だが the free version lasts only one week; after that you pay で条件Aが不成立。③は完全無料・オフライン可だが has no voice function whatsoever で条件Cが不成立。④のみ free with no time limit（A）・reads English aloud even with the wi-fi switched off（B・C）を満たす。「無料」が期間限定か無制限かの区別が鍵。",
+    "keyPhrases": [
+     "the voice is made on their server, so the moment you lose your signal on the train, the app stops speaking to you",
+     "the free version lasts only one week; after that you have to pay six hundred yen every month",
+     "it has no voice function whatsoever",
+     "ReadEasy is free with no time limit at all"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set11",
+   "no": 11,
+   "level": "easy",
+   "levelJa": "やや易",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "郵便局の職員が、海外に荷物を送る手順を説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Sending a Parcel Abroad",
+     "audio": "audio/set11_4A_front.mp3",
+     "image": "images/set11_4A_front.png",
+     "choices": [
+      "A person writing on a form at a counter",
+      "A person putting items into a cardboard box",
+      "A postman on a bicycle delivering a parcel to a house",
+      "A box being placed on a scale at the counter",
+      "A person paying with coins at a counter"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st step",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "2nd step",
+       "answer": 1
+      },
+      {
+       "no": 20,
+       "label": "3rd step",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "4th step",
+       "answer": 5
+      }
+     ],
+     "dummy": 3,
+     "script": "Let me explain how to send a parcel overseas. First, pack everything you want to send into a strong box and close it with tape. Second, fill in the green form on the counter with the address and the contents. Third, we put the box on the scale, because the price depends on the weight. And last of all, you pay here at the window. There is no need to wait for a postman; the parcel starts its journey from this office.",
+     "wordCount": 82,
+     "explain": "First / Second / Third / last of all の完全に明示された順序標識で進む最も易しい型。②packing →①form →④scale →⑤paying。ダミーは③の配達で、There is no need to wait for a postman により明確に否定される。",
+     "keyPhrases": [
+      "First, pack everything you want to send into a strong box",
+      "Second, fill in the green form on the counter",
+      "Third, we put the box on the scale",
+      "last of all, you pay here at the window",
+      "There is no need to wait for a postman"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "先生が、遠足の各グループの集合場所を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Field Trip Meeting Points",
+     "audio": "audio/set11_4A_back.mp3",
+     "image": "images/set11_4A_back.png",
+     "table": {
+      "headers": [
+       "Group",
+       "Meet at"
+      ],
+      "rows": [
+       [
+        "Group 1",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Group 2",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Group 3",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Group 4",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "In front of the aquarium",
+      "At the bus stop",
+      "By the big clock",
+      "Next to the fountain",
+      "Under the bridge",
+      "At the ticket gate"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 3
+      },
+      {
+       "no": 23,
+       "answer": 4
+      },
+      {
+       "no": 24,
+       "answer": 1
+      },
+      {
+       "no": 25,
+       "answer": 6
+      }
+     ],
+     "unused": [
+      2,
+      5
+     ],
+     "script": "Listen carefully for your meeting point. Group 1, wait where the large clock stands in the middle of the square. Group 2, you will find water shooting up into the air; gather around it. Group 3, go to the building where the fish and dolphins are and wait outside the entrance. Group 4, stay right by the gate where we showed our tickets this morning. Please do not go under the bridge; the path there is closed today.",
+     "wordCount": 78,
+     "explain": "場所を機能・見た目で言い換える型。where the large clock stands＝③By the big clock、water shooting up into the air＝④Next to the fountain、the building where the fish and dolphins are＝①In front of the aquarium、the gate where we showed our tickets＝⑥At the ticket gate。⑤Under the bridge は Please do not go under the bridge で否定、②At the bus stop は未言及。",
+     "keyPhrases": [
+      "wait where the large clock stands in the middle of the square",
+      "you will find water shooting up into the air",
+      "go to the building where the fish and dolphins are",
+      "stay right by the gate where we showed our tickets this morning",
+      "Please do not go under the bridge"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたはクラスで飼う小さな生き物を1種類選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set11_4B_s1.mp3",
+     "audio/set11_4B_s2.mp3",
+     "audio/set11_4B_s3.mp3",
+     "audio/set11_4B_s4.mp3"
+    ],
+    "image": "images/set11_4B.png",
+    "conditionsEn": [
+     "A. It does not make loud noises",
+     "B. It can be left alone over the weekend",
+     "C. It costs less than 3,000 yen to start keeping"
+    ],
+    "conditionsJa": [
+     "A. 大きな音を出さないこと",
+     "B. 週末は放っておいても大丈夫なこと",
+     "C. 飼い始める費用が3,000円未満であること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Goldfish",
+     "Small birds",
+     "Stick insects",
+     "Hamsters"
+    ],
+    "choicesJa": [
+     "金魚",
+     "小鳥",
+     "ナナフシ",
+     "ハムスター"
+    ],
+    "scripts": [
+     "Goldfish are silent, of course, and they are quite happy without food for two or three days, so weekends are no problem. The difficulty is the tank. A tank with a filter will cost you about five thousand yen in total.",
+     "Small birds are cheap; a pair and a cage together come to around two thousand yen. They also need fresh water and food every single morning, weekend or not. And I should warn you that they sing very loudly at sunrise.",
+     "Stick insects make no sound at all, and they eat leaves that you can pick from the school garden, so a plastic case and a lid for eight hundred yen is all you need. Leave them from Friday to Monday and they will be fine.",
+     "Hamsters are lovely and a cage with a wheel is only two thousand five hundred yen. Two things, though: they run on that wheel at night and it squeaks a lot, and someone must give them water every day, weekends included."
+    ],
+    "wordCounts": [
+     41,
+     41,
+     45,
+     41
+    ],
+    "answer": 3,
+    "matrix": [
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      false,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      false,
+      false,
+      true
+     ]
+    ],
+    "explain": "①は無音・週末放置可だが A tank with a filter will cost you about five thousand yen で条件C（3,000円未満）が不成立。②は2,000円と安いが every single morning, weekend or not（条件B不成立）と they sing very loudly at sunrise（条件A不成立）で2点失格。④は2,500円だが it squeaks a lot（A不成立）と someone must give them water every day, weekends included（B不成立）で失格。③のみ make no sound at all（A）・Leave them from Friday to Monday and they will be fine（B）・eight hundred yen（C）を満たす。",
+    "keyPhrases": [
+     "A tank with a filter will cost you about five thousand yen in total",
+     "They also need fresh water and food every single morning, weekend or not",
+     "they sing very loudly at sunrise",
+     "Stick insects make no sound at all",
+     "a plastic case and a lid for eight hundred yen is all you need",
+     "they run on that wheel at night and it squeaks a lot"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set12",
+   "no": 12,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "先生が、生徒が1日に食べる4種類の食品の量が季節でどう変わるかをグラフで説明している。あなたはグラフの4本の線の系列名を答える。",
+     "worksheetTitle": "What Students Eat by Season",
+     "audio": "audio/set12_4A_front.mp3",
+     "image": "images/set12_4A_front.png",
+     "choices": [
+      "Hot soup",
+      "Ice cream",
+      "Fresh fruit",
+      "Bread"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the line with its highest point in summer",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "the line with its lowest point in summer",
+       "answer": 1
+      },
+      {
+       "no": 20,
+       "label": "the line that is almost the same in all four seasons",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "the line that has two peaks in the year",
+       "answer": 3
+      }
+     ],
+     "dummy": null,
+     "script": "Look at how eating changes with the seasons. Ice cream reaches its peak in summer, as you would expect, and falls right down in winter. Hot soup does the reverse: summer is its weakest season, and it rises sharply once the cold comes. Bread hardly changes at all; students eat about the same amount every month of the year. Fresh fruit is the interesting one, because it goes up twice — once in early summer and again in autumn, when different fruits are picked.",
+     "wordCount": 84,
+     "explain": "季節変動のパターンで判別する型。reaches its peak in summer（②Ice cream）、does the reverse: summer is its weakest season（①Hot soup）、hardly changes at all（④Bread）、goes up twice — once in early summer and again in autumn（③Fresh fruit＝二山型）。「二山（two peaks）」という珍しい形が③の決定的な手がかり。does the reverse が直前の Ice cream を指す参照を追う必要がある。",
+     "keyPhrases": [
+      "Ice cream reaches its peak in summer",
+      "Hot soup does the reverse: summer is its weakest season",
+      "Bread hardly changes at all",
+      "it goes up twice — once in early summer and again in autumn"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "ホテルの係員が、宿泊客に館内の設備の場所を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Hotel Facilities",
+     "audio": "audio/set12_4A_back.mp3",
+     "image": "images/set12_4A_back.png",
+     "table": {
+      "headers": [
+       "Facility",
+       "Where",
+       "Hours"
+      ],
+      "rows": [
+       [
+        {
+         "blank": 22
+        },
+        "2nd floor",
+        "6:30 - 10:00"
+       ],
+       [
+        {
+         "blank": 23
+        },
+        "3rd floor",
+        "24 hours"
+       ],
+       [
+        {
+         "blank": 24
+        },
+        "Ground floor",
+        "8:00 - 20:00"
+       ],
+       [
+        {
+         "blank": 25
+        },
+        "Top floor",
+        "17:00 - 23:00"
+       ]
+      ]
+     },
+     "choices": [
+      "Bar",
+      "Business room",
+      "Gift shop",
+      "Laundry",
+      "Restaurant",
+      "Swimming pool"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 5
+      },
+      {
+       "no": 23,
+       "answer": 4
+      },
+      {
+       "no": 24,
+       "answer": 3
+      },
+      {
+       "no": 25,
+       "answer": 1
+      }
+     ],
+     "unused": [
+      2,
+      6
+     ],
+     "script": "Allow me to explain our facilities. Breakfast is served on the second floor from half past six until ten. On the third floor you will find washing machines and dryers, and those are available at any hour of the day or night. Down here on the ground floor, next to reception, we sell local sweets and postcards from eight in the morning until eight in the evening. And on the top floor, drinks are served from five in the afternoon until eleven. Our pool, I regret to say, is closed for repairs.",
+     "wordCount": 92,
+     "explain": "設備名を機能で言い換える型。Breakfast is served＝⑤Restaurant、washing machines and dryers＝④Laundry、we sell local sweets and postcards＝③Gift shop、drinks are served＝①Bar。⑥Swimming pool は Our pool ... is closed for repairs で否定、②Business room は未言及。時刻も half past six / eight in the morning のように語で読まれるため、表の数値と照合する力が要る。",
+     "keyPhrases": [
+      "Breakfast is served on the second floor from half past six until ten",
+      "On the third floor you will find washing machines and dryers",
+      "we sell local sweets and postcards",
+      "on the top floor, drinks are served from five in the afternoon until eleven",
+      "Our pool, I regret to say, is closed for repairs"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは休日に参加できるスポーツ教室を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set12_4B_s1.mp3",
+     "audio/set12_4B_s2.mp3",
+     "audio/set12_4B_s3.mp3",
+     "audio/set12_4B_s4.mp3"
+    ],
+    "image": "images/set12_4B.png",
+    "conditionsEn": [
+     "A. Beginners are welcome",
+     "B. It is held indoors",
+     "C. You do not need to buy your own equipment"
+    ],
+    "conditionsJa": [
+     "A. 初心者でも参加できること",
+     "B. 屋内で行われること",
+     "C. 自分の道具を買う必要がないこと"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Tennis class",
+     "Badminton class",
+     "Running class",
+     "Climbing class"
+    ],
+    "choicesJa": [
+     "テニス教室",
+     "バドミントン教室",
+     "ランニング教室",
+     "クライミング教室"
+    ],
+    "scripts": [
+     "Our tennis class is held on the covered courts, so rain is never a problem, and we lend rackets and balls to everyone who comes. However, you must already be able to keep a rally going; this is not a course for first-timers.",
+     "The badminton class meets in the school gym, and rackets and shuttles are all provided by us. We take complete beginners every term, and about half the members this year had never played before joining.",
+     "The running class is perfect for beginners, and you need nothing but the shoes you already own. Of course we run along the river and through the park, so we are outside in all weather, even in winter.",
+     "The climbing class takes place on an indoor wall, and anyone can join from their very first day. One thing to know is that each member has to buy their own shoes and harness, which comes to about nine thousand yen."
+    ],
+    "wordCounts": [
+     43,
+     35,
+     38,
+     41
+    ],
+    "answer": 2,
+    "matrix": [
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ]
+    ],
+    "explain": "①は屋根付きコート（屋内扱い）でラケット貸出もあるが this is not a course for first-timers で条件A（初心者可）が不成立。③は初心者向け・道具不要だが we run along the river and through the park, so we are outside で条件Bが不成立。④は屋内・初日から参加可だが each member has to buy their own shoes and harness で条件Cが不成立。②のみ meets in the school gym（B）・rackets and shuttles are all provided（C）・We take complete beginners（A）を満たす。",
+    "keyPhrases": [
+     "you must already be able to keep a rally going; this is not a course for first-timers",
+     "The badminton class meets in the school gym, and rackets and shuttles are all provided by us",
+     "we run along the river and through the park, so we are outside in all weather",
+     "each member has to buy their own shoes and harness"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set13",
+   "no": 13,
+   "level": "hard",
+   "levelJa": "やや難",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "博物館の学芸員が、古い土器を修復する作業の流れを説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Repairing an Old Pot",
+     "audio": "audio/set13_4A_front.mp3",
+     "image": "images/set13_4A_front.png",
+     "choices": [
+      "A finished pot standing in a glass display case",
+      "A brush cleaning soil off a broken piece of pottery",
+      "Pieces of pottery laid out separately on a flat table",
+      "Two pieces being joined together with glue",
+      "A hand painting colour onto a joined pot"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st stage",
+       "answer": 3
+      },
+      {
+       "no": 19,
+       "label": "2nd stage",
+       "answer": 2
+      },
+      {
+       "no": 20,
+       "label": "3rd stage",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "4th stage",
+       "answer": 5
+      }
+     ],
+     "dummy": 1,
+     "script": "People often ask how we put a broken pot back together. Nothing can begin until every piece is spread out on the table so that we can see the whole puzzle. Only after that do we take a soft brush to each piece and remove the earth from it. Joining comes next, and the glue must be one that can later be dissolved. The final task in our workshop is colouring the joins so that they do not catch the eye. Putting the pot in the display case, though, is the exhibition team's work, not ours.",
+     "wordCount": 96,
+     "explain": "Nothing can begin until / Only after that do we / Joining comes next / The final task という高度な構文で順序が示される難度の高い型。③laying out →②brushing →④gluing →⑤colouring。ダミーは①のケース展示で、Putting the pot in the display case ... is the exhibition team's work, not ours により「この作業には含まれない」と否定される。Nothing can begin until X が「Xが最初」を意味する点が最大の関門。",
+     "keyPhrases": [
+      "Nothing can begin until every piece is spread out on the table",
+      "Only after that do we take a soft brush to each piece and remove the earth",
+      "Joining comes next, and the glue must be one that can later be dissolved",
+      "The final task in our workshop is colouring the joins",
+      "Putting the pot in the display case, though, is the exhibition team's work, not ours"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "生徒会の担当者が、来週の各委員会の提出物を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "What Each Committee Must Hand In",
+     "audio": "audio/set13_4A_back.mp3",
+     "image": "images/set13_4A_back.png",
+     "table": {
+      "headers": [
+       "Committee",
+       "Hand in",
+       "Deadline"
+      ],
+      "rows": [
+       [
+        "Sports",
+        {
+         "blank": 22
+        },
+        "Monday"
+       ],
+       [
+        "Music",
+        {
+         "blank": 23
+        },
+        "Tuesday"
+       ],
+       [
+        "Health",
+        {
+         "blank": 24
+        },
+        "Wednesday"
+       ],
+       [
+        "Library",
+        {
+         "blank": 25
+        },
+        "Friday"
+       ]
+      ]
+     },
+     "choices": [
+      "A budget plan",
+      "A list of members",
+      "A poster design",
+      "A room booking form",
+      "A safety check sheet",
+      "A survey result"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 2
+      },
+      {
+       "no": 23,
+       "answer": 4
+      },
+      {
+       "no": 24,
+       "answer": 5
+      },
+      {
+       "no": 25,
+       "answer": 6
+      }
+     ],
+     "unused": [
+      1,
+      3
+     ],
+     "script": "Right, deadlines. Sports Committee, by Monday I need the names of everyone who will actually take part — just the names, nothing else. Music Committee, Tuesday, and what I want from you is the paper that reserves the hall for rehearsals. Health Committee, your sheet showing that all the equipment has been inspected is due Wednesday. Library Committee, you have until Friday to give me what the students answered in your reading questionnaire. Budgets are not needed this month; the office has changed the schedule.",
+     "wordCount": 85,
+     "explain": "提出物を機能で言い換える型。the names of everyone who will actually take part＝②A list of members、the paper that reserves the hall＝④A room booking form、your sheet showing that all the equipment has been inspected＝⑤A safety check sheet、what the students answered in your reading questionnaire＝⑥A survey result。①A budget plan は Budgets are not needed this month で明確に否定、③A poster design は未言及。",
+     "keyPhrases": [
+      "by Monday I need the names of everyone who will actually take part",
+      "what I want from you is the paper that reserves the hall for rehearsals",
+      "your sheet showing that all the equipment has been inspected is due Wednesday",
+      "to give me what the students answered in your reading questionnaire",
+      "Budgets are not needed this month"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは3日間の合宿で使う施設を1つ選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たすものを選ぶ。",
+    "audios": [
+     "audio/set13_4B_s1.mp3",
+     "audio/set13_4B_s2.mp3",
+     "audio/set13_4B_s3.mp3",
+     "audio/set13_4B_s4.mp3"
+    ],
+    "image": "images/set13_4B.png",
+    "conditionsEn": [
+     "A. It can take a group of forty students",
+     "B. Meals are prepared by the staff",
+     "C. It is reachable by train without changing lines"
+    ],
+    "conditionsJa": [
+     "A. 40人の団体を受け入れられること",
+     "B. 食事を施設のスタッフが用意してくれること",
+     "C. 乗り換えなしで電車で行けること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Pine House",
+     "Hilltop Centre",
+     "Seaside Lodge",
+     "Forest Camp"
+    ],
+    "choicesJa": [
+     "パインハウス",
+     "ヒルトップセンター",
+     "シーサイドロッジ",
+     "フォレストキャンプ"
+    ],
+    "scripts": [
+     "Pine House sleeps up to sixty, our cooks make three meals a day, and the station for us is on the same line as your school, so no changing trains. We have had school groups here every summer for twenty years.",
+     "Hilltop Centre is on a direct line from the city and our kitchen staff serve breakfast, lunch and dinner. Do check the size, though. We have beds for twenty-eight guests only, so a group of forty could not all stay here.",
+     "Seaside Lodge takes as many as eighty people and the train runs straight there with no change at all. The one thing you must know is that we have no cooks; every group uses our kitchen and prepares its own food.",
+     "Forest Camp has room for fifty and our staff cook every meal for you. Getting here is the hard part. You take the train to Central, change to the local line, and then it is another forty minutes on a bus."
+    ],
+    "wordCounts": [
+     41,
+     41,
+     41,
+     41
+    ],
+    "answer": 1,
+    "matrix": [
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ]
+    ],
+    "explain": "②は直通・食事付きだが We have beds for twenty-eight guests only で条件A（40人）が不成立。③は80人可・直通だが we have no cooks; every group ... prepares its own food で条件Bが不成立。④は50人可・食事付きだが change to the local line で条件C（乗り換えなし）が不成立（さらにバス40分）。①のみ sleeps up to sixty（A）・our cooks make three meals a day（B）・on the same line as your school, so no changing trains（C）を満たす。",
+    "keyPhrases": [
+     "on the same line as your school, so no changing trains",
+     "We have beds for twenty-eight guests only",
+     "we have no cooks; every group uses our kitchen and prepares its own food",
+     "You take the train to Central, change to the local line"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set14",
+   "no": 14,
+   "level": "standard",
+   "levelJa": "標準",
+   "partA": {
+    "front": {
+     "type": "graph",
+     "situation": "留学生が、自国の高校生が英語を学ぶ4つの方法の利用率が学年でどう変わるかを説明している。あなたはグラフの4本の棒の系列名を答える。",
+     "worksheetTitle": "How Students Learn English",
+     "audio": "audio/set14_4A_front.mp3",
+     "image": "images/set14_4A_front.png",
+     "choices": [
+      "Textbooks",
+      "Videos online",
+      "Talking with friends",
+      "Language apps"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "the series that is first in the first year but third by the last year",
+       "answer": 1
+      },
+      {
+       "no": 19,
+       "label": "the series that is first by the last year",
+       "answer": 2
+      },
+      {
+       "no": 20,
+       "label": "the series that doubles but is still last",
+       "answer": 4
+      },
+      {
+       "no": 21,
+       "label": "the series that stays second the whole time",
+       "answer": 3
+      }
+     ],
+     "dummy": null,
+     "script": "This chart shows how students in my country study English. In the first year, textbooks are used by more students than anything else, but by the third year they have slipped to third place. Videos online start below textbooks and end up in first place. Talking with friends holds second position in every single year — never first, never third. Language apps double their share over the three years, and yet they are still the least used of the four.",
+     "wordCount": 80,
+     "explain": "「順位」と「増減」を同時に処理する型。used by more students than anything else ... slipped to third place（①Textbooks）、start below textbooks and end up in first place（②Videos online）、holds second position in every single year（③Talking with friends）、double their share ... still the least used（④Language apps）。「倍増したのに最下位」という増加と順位の食い違いが④の手がかりで、増えた＝上位という思い込みが罠。",
+     "keyPhrases": [
+      "textbooks are used by more students than anything else, but by the third year they have slipped to third place",
+      "Videos online start below textbooks and end up in first place",
+      "Talking with friends holds second position in every single year",
+      "Language apps double their share over the three years, and yet they are still the least used"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "空港の係員が、各カウンターで何ができるかを説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "Airport Counter Guide",
+     "audio": "audio/set14_4A_back.mp3",
+     "image": "images/set14_4A_back.png",
+     "table": {
+      "headers": [
+       "Counter",
+       "What you can do"
+      ],
+      "rows": [
+       [
+        "Counter A",
+        {
+         "blank": 22
+        }
+       ],
+       [
+        "Counter B",
+        {
+         "blank": 23
+        }
+       ],
+       [
+        "Counter C",
+        {
+         "blank": 24
+        }
+       ],
+       [
+        "Counter D",
+        {
+         "blank": 25
+        }
+       ]
+      ]
+     },
+     "choices": [
+      "Buy travel insurance",
+      "Change money",
+      "Hire a car",
+      "Leave your luggage",
+      "Report a lost item",
+      "Send a parcel"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 2
+      },
+      {
+       "no": 23,
+       "answer": 4
+      },
+      {
+       "no": 24,
+       "answer": 5
+      },
+      {
+       "no": 25,
+       "answer": 3
+      }
+     ],
+     "unused": [
+      1,
+      6
+     ],
+     "script": "Here is what each counter is for. At Counter A you can turn your yen into dollars or euros, and the rate is shown on the board above. Counter B looks after bags: leave your suitcase there for the day and pick it up before your flight. If you have dropped something in the terminal, Counter C is the place to tell us about it. Counter D arranges cars for people driving on from the airport. Insurance used to be sold at Counter E, but that service has now moved online.",
+     "wordCount": 91,
+     "explain": "機能を平易に言い換える型。turn your yen into dollars or euros＝②Change money、leave your suitcase there for the day＝④Leave your luggage、If you have dropped something ... tell us about it＝⑤Report a lost item、arranges cars for people driving on＝③Hire a car。①Buy travel insurance は that service has now moved online で否定、⑥Send a parcel は未言及。",
+     "keyPhrases": [
+      "you can turn your yen into dollars or euros",
+      "leave your suitcase there for the day and pick it up before your flight",
+      "If you have dropped something in the terminal, Counter C is the place to tell us about it",
+      "Counter D arranges cars for people driving on from the airport",
+      "Insurance used to be sold at Counter E, but that service has now moved online"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは英語のスピーチ大会に向けて練習相手になってくれる先生を1人選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たす人を選ぶ。",
+    "audios": [
+     "audio/set14_4B_s1.mp3",
+     "audio/set14_4B_s2.mp3",
+     "audio/set14_4B_s3.mp3",
+     "audio/set14_4B_s4.mp3"
+    ],
+    "image": "images/set14_4B.png",
+    "conditionsEn": [
+     "A. He or she is free after school on Thursdays",
+     "B. He or she can give advice on pronunciation",
+     "C. He or she will watch a recording of your speech"
+    ],
+    "conditionsJa": [
+     "A. 木曜の放課後に空いていること",
+     "B. 発音について助言できること",
+     "C. スピーチの録画を見てくれること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Mr Aoki",
+     "Ms Bell",
+     "Mr Carter",
+     "Ms Doyle"
+    ],
+    "choicesJa": [
+     "青木先生",
+     "ベル先生",
+     "カーター先生",
+     "ドイル先生"
+    ],
+    "scripts": [
+     "I would be glad to help with your sounds, and yes, send me your video any time; I watch them at home. Unfortunately Thursday is my club day. I am with the basketball team from four until six every week, so that afternoon is out.",
+     "Thursday afternoons are completely free for me this term, and pronunciation is what I studied at university, so I can work on your vowels. Do send the recording as well — I would rather watch it twice before we meet.",
+     "I am free on Thursdays and happy to look at any video you send me. I should say, though, that my field is writing. For the sounds themselves you really need someone trained in phonetics; I would only guess.",
+     "Thursday after school suits me, and I have taught pronunciation for years. The one thing I cannot do is watch recordings; my computer at home is broken and I would rather listen to you live in the classroom."
+    ],
+    "wordCounts": [
+     45,
+     40,
+     39,
+     38
+    ],
+    "answer": 2,
+    "matrix": [
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ]
+    ],
+    "explain": "①は発音指導可・録画確認可だが Thursday is my club day で条件A（木曜放課後）が不成立。③は木曜可・録画確認可だが my field is writing / you really need someone trained in phonetics で条件Bが不成立。④は木曜可・発音指導可だが The one thing I cannot do is watch recordings で条件Cが不成立。②のみ Thursday afternoons are completely free（A）・pronunciation is what I studied at university（B）・Do send the recording as well（C）を満たす。",
+    "keyPhrases": [
+     "Unfortunately Thursday is my club day",
+     "Thursday afternoons are completely free for me this term",
+     "my field is writing",
+     "The one thing I cannot do is watch recordings"
+    ],
+    "points": 4
+   }
+  },
+  {
+   "id": "set15",
+   "no": 15,
+   "level": "hard",
+   "levelJa": "やや難",
+   "partA": {
+    "front": {
+     "type": "sequence",
+     "situation": "科学部の生徒が、水質を調べる実験の手順を新入部員に説明している。あなたはワークシートのイラストを正しい順に並べる。",
+     "worksheetTitle": "Testing River Water",
+     "audio": "audio/set15_4A_front.mp3",
+     "image": "images/set15_4A_front.png",
+     "choices": [
+      "A student writing numbers into a notebook beside a bottle",
+      "A student filling a small bottle with river water",
+      "A student holding a test strip against a colour chart",
+      "A student pouring water from the bottle into a clear tube",
+      "A student releasing small fish into the river"
+     ],
+     "blanks": [
+      {
+       "no": 18,
+       "label": "1st stage",
+       "answer": 2
+      },
+      {
+       "no": 19,
+       "label": "2nd stage",
+       "answer": 4
+      },
+      {
+       "no": 20,
+       "label": "3rd stage",
+       "answer": 3
+      },
+      {
+       "no": 21,
+       "label": "4th stage",
+       "answer": 1
+      }
+     ],
+     "dummy": 5,
+     "script": "Before you come to the river on Saturday, learn the order. What you do first is fill your bottle, holding it well below the surface so that no air gets in. Back at the tent, the water goes from the bottle into a clear tube — never test it in the bottle itself. Once it is in the tube, dip the paper strip and match the colour you get against the chart. Only then write the figures in your notebook. And we are not putting any fish back this year; that project ended in March.",
+     "wordCount": 95,
+     "explain": "What you do first is / Back at the tent / Once it is in the tube / Only then という順序標識で進むが、否定の挿入句（never test it in the bottle itself）が混じる高難度型。②bottle →④tube →③strip →①notebook。ダミーは⑤の放流で、we are not putting any fish back this year により否定される。",
+     "keyPhrases": [
+      "What you do first is fill your bottle",
+      "the water goes from the bottle into a clear tube",
+      "dip the paper strip and match the colour you get against the chart",
+      "Only then write the figures in your notebook",
+      "we are not putting any fish back this year"
+     ],
+     "points": 4,
+     "allOrNothing": true
+    },
+    "back": {
+     "situation": "旅行会社の係員が、4つの都市で予定されている見学内容を説明している。あなたは表の空欄を埋める。",
+     "worksheetTitle": "City Tour Highlights",
+     "audio": "audio/set15_4A_back.mp3",
+     "image": "images/set15_4A_back.png",
+     "table": {
+      "headers": [
+       "City",
+       "Main activity",
+       "Day"
+      ],
+      "rows": [
+       [
+        "Riverford",
+        {
+         "blank": 22
+        },
+        "Day 1"
+       ],
+       [
+        "Kingsport",
+        {
+         "blank": 23
+        },
+        "Day 2"
+       ],
+       [
+        "Ashdale",
+        {
+         "blank": 24
+        },
+        "Day 3"
+       ],
+       [
+        "Northgate",
+        {
+         "blank": 25
+        },
+        "Day 4"
+       ]
+      ]
+     },
+     "choices": [
+      "A boat trip",
+      "A cheese factory tour",
+      "A concert",
+      "A market visit",
+      "A mountain walk",
+      "A museum tour"
+     ],
+     "blanks": [
+      {
+       "no": 22,
+       "answer": 4
+      },
+      {
+       "no": 23,
+       "answer": 1
+      },
+      {
+       "no": 24,
+       "answer": 6
+      },
+      {
+       "no": 25,
+       "answer": 3
+      }
+     ],
+     "unused": [
+      2,
+      5
+     ],
+     "script": "Let me take you through the four cities. In Riverford on the first day you will walk among the stalls where local farmers sell their vegetables. Kingsport is next; there we go out on the water for an hour and see the harbour from the sea. On the third day, in Ashdale, we spend the morning among the paintings and old furniture indoors. Northgate on the final day means music — the town orchestra plays for us in the evening. The mountain path we used to include is closed after the storm.",
+     "wordCount": 92,
+     "explain": "活動を情景描写で言い換える型。walk among the stalls where local farmers sell their vegetables＝④A market visit、go out on the water for an hour＝①A boat trip、among the paintings and old furniture indoors＝⑥A museum tour、the town orchestra plays for us＝③A concert。⑤A mountain walk は The mountain path ... is closed after the storm で否定、②A cheese factory tour は未言及。Kingsport の「海から港を見る」を「山」や「市場」と混同しないこと。",
+     "keyPhrases": [
+      "you will walk among the stalls where local farmers sell their vegetables",
+      "there we go out on the water for an hour and see the harbour from the sea",
+      "we spend the morning among the paintings and old furniture indoors",
+      "the town orchestra plays for us in the evening",
+      "The mountain path we used to include is closed after the storm"
+     ],
+     "pointsEach": 1
+    }
+   },
+   "partB": {
+    "situation": "あなたは学校新聞の記事に載せる写真を撮ってもらう人を1人選ぼうとしている。4人の説明を聞き、3つの条件をすべて満たす人を選ぶ。",
+    "audios": [
+     "audio/set15_4B_s1.mp3",
+     "audio/set15_4B_s2.mp3",
+     "audio/set15_4B_s3.mp3",
+     "audio/set15_4B_s4.mp3"
+    ],
+    "image": "images/set15_4B.png",
+    "conditionsEn": [
+     "A. He or she can come to the event on Saturday",
+     "B. He or she has a camera that works indoors in low light",
+     "C. He or she can send the photos by Monday morning"
+    ],
+    "conditionsJa": [
+     "A. 土曜のイベントに来られること",
+     "B. 暗い屋内でも撮れるカメラを持っていること",
+     "C. 月曜の朝までに写真を送れること"
+    ],
+    "question": "You are most likely to choose ( 26 ).",
+    "choices": [
+     "Nao",
+     "Ken",
+     "Emi",
+     "Taro"
+    ],
+    "choicesJa": [
+     "ナオ",
+     "ケン",
+     "エミ",
+     "タロウ"
+    ],
+    "scripts": [
+     "My camera is very good in a dark hall, and I can always get the files to you the same night, so Monday is easy. The trouble is Saturday itself. I have my grandmother's birthday party out of town and I will not be back until Sunday.",
+     "Saturday is completely free for me and I can hand over the pictures on Sunday evening, well before your Monday deadline. But my camera is an old one and anything indoors comes out dark and blurry unless I use the flash.",
+     "I am coming to the event anyway on Saturday, and my camera is made for low light — it takes clear shots in a dim room. The problem is afterwards. I fly to Osaka on Sunday morning and cannot send anything until Wednesday.",
+     "I will be there on Saturday from the start, my camera handles a dark gym without any flash at all, and I can upload everything on Sunday night so you have it first thing Monday."
+    ],
+    "wordCounts": [
+     47,
+     41,
+     43,
+     35
+    ],
+    "answer": 4,
+    "matrix": [
+     [
+      false,
+      true,
+      true
+     ],
+     [
+      true,
+      false,
+      true
+     ],
+     [
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      true,
+      true
+     ]
+    ],
+    "explain": "①は暗所に強いカメラ・即日送付可だが I will not be back until Sunday で条件A（土曜）が不成立。②は土曜可・日曜夜に渡せるが anything indoors comes out dark and blurry で条件Bが不成立。③は土曜参加・暗所対応だが cannot send anything until Wednesday で条件Cが不成立。④のみ there on Saturday from the start（A）・handles a dark gym without any flash（B）・upload everything on Sunday night（C）を満たす。各話者が「利点を2つ述べた後で1つの欠点を明かす」構成なので、最後まで聞くこと。",
+    "keyPhrases": [
+     "I will not be back until Sunday",
+     "anything indoors comes out dark and blurry unless I use the flash",
+     "I fly to Osaka on Sunday morning and cannot send anything until Wednesday",
+     "my camera handles a dark gym without any flash at all"
+    ],
+    "points": 4
+   }
+  }
+ ]
+}

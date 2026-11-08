@@ -1,0 +1,213 @@
+/*
+ * タイトル画面（LaunchScreen.tsx）。トークンは src/styles/tokens.css。
+ * 地色は登場動画 title.mp4 の背景色（#FCF5E9）と同じ紙色の無地にする。
+ * グラデーションや罫線を敷くと、動画の四角い縁が浮いて見えるため。
+ */
+.launch-screen { position: relative; isolation: isolate; min-height: 100dvh; background: var(--mt-paper); color: var(--mt-ink); font-family: var(--mt-font-body); }
+.launch-content { display: flex; flex-direction: column; align-items: center; gap: var(--mt-s3); width: min(560px, 100%); height: 100dvh; min-height: 520px; margin: 0 auto; padding: max(var(--mt-s3), env(safe-area-inset-top)) var(--mt-s5) max(var(--mt-s4), env(safe-area-inset-bottom)); }
+
+.launch-brand { flex-shrink: 0; width: min(320px, 78%); margin-top: var(--mt-s2); }
+.launch-brand img { display: block; width: 100%; height: auto; }
+
+/* とびら君のステージ：残りの高さをすべて使い、正方形の箱を中央に置く */
+.launch-stage { position: relative; flex: 1 1 auto; min-height: 150px; max-height: 380px; width: 100%; }
+.launch-box { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1; margin: 0 auto; }
+.launch-scene { position: absolute; inset: 0; transition: opacity .35s ease; }
+.launch-stage[data-phase=intro] .launch-scene { opacity: 0; }
+/* 閉じた円の光背（途中で切れた弧にしない） */
+.launch-halo { position: absolute; left: 16%; top: 11%; width: 68%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #ffffff 0%, #fff9ee 55%, #f7ead3 100%); box-shadow: inset 0 0 0 1px var(--mt-line); }
+/* 床（動画の床と同じ位置）＋足元の接地影 */
+.launch-ground { position: absolute; left: 13.5%; top: 76.4%; width: 72.8%; height: 12.1%; border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, #f3e6c9 0%, #eddcb9 70%, #e6d2ab 100%); }
+.launch-ground::after { content: ''; position: absolute; left: 27%; top: 8%; width: 46%; height: 42%; border-radius: 50%; background: radial-gradient(ellipse, rgba(28, 42, 57, .28) 0%, rgba(28, 42, 57, .12) 55%, transparent 72%); }
+.launch-arrival { position: absolute; left: 20.7%; top: 17.2%; width: 58.3%; height: 62.8%; pointer-events: none; }
+.launch-gait { position: relative; width: 100%; height: 100%; transform-origin: 50% 95%; }
+.launch-gait > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.launch-walking-pose { opacity: 0; }
+.launch-arrival.is-idle .launch-walking-pose { display: none; }
+.launch-arrival.is-idle .launch-equipped-pose { opacity: 1; }
+.launch-gait > .tobira-accessories { inset: 0; }
+.launch-box .cinematic-clip { inset: 0; border-radius: 0; overflow: visible; }
+.launch-box .cinematic-clip video { background: transparent; -webkit-mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); }
+.launch-box .cinematic-clip.has-poster { opacity: 1; }
+.launch-box .cinematic-clip.is-held { opacity: 0; transition: opacity .35s ease; }
+.launch-box .cinematic-skip { bottom: 2%; right: 2%; }
+
+/* 主コピー：ロゴの 1/3〜1/2 の存在感。濃い文字で */
+.launch-copy { flex-shrink: 0; margin: 0; text-align: center; font: 800 clamp(24px, 6.4vw, 32px)/1.3 var(--mt-font-display); color: var(--mt-ink); letter-spacing: .02em; }
+.launch-copy-break { display: none; }
+@media (max-width: 420px) { .launch-copy-break { display: inline; } }
+.launch-chips { flex-shrink: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--mt-s2); margin: 0; padding: 0; list-style: none; }
+.launch-chips li { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--mt-s3); border-radius: var(--mt-r-pill); background: var(--mt-surface); box-shadow: inset 0 0 0 1px var(--mt-line); color: var(--mt-ink-2); font: 700 var(--mt-fs-sm)/1 var(--mt-font-body); }
+.launch-chips li svg { color: var(--mt-brand); }
+
+.launch-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: var(--mt-s1); width: 100%; }
+.launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); box-shadow: 0 3px 0 var(--mt-accent-strong); }
+.launch-start:active { box-shadow: 0 1px 0 var(--mt-accent-strong); transform: translateY(2px); }
+.launch-guest { min-height: var(--mt-tap); font-size: var(--mt-fs-sm); }
+.launch-note { min-height: var(--mt-tap); display: grid; place-items: center; margin: 0; font-size: var(--mt-fs-xs); color: var(--mt-ink-3); }
+.launch-screen button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
+
+/* 背の低い画面：ロゴとステージを縮めて、はじめるボタンを必ず1画面に入れる */
+@media (max-height: 700px) {
+  .launch-content { gap: var(--mt-s2); padding-top: var(--mt-s2); }
+  .launch-brand { width: min(240px, 64%); margin-top: 0; }
+  .launch-copy { font-size: clamp(21px, 5.6vw, 26px); }
+  .launch-start { min-height: 52px; }
+}
+@media (max-height: 600px) {
+  .launch-chips { display: none; }
+  .launch-brand { width: min(200px, 56%); }
+}
+
+/* 歩いて登場（動画が使えないとき） */
+.walk-ready { animation: tobira-walk-in 1.8s linear both; }
+.walk-ready .launch-gait { animation: tobira-footsteps .3s ease-in-out 6; }
+.walk-ready .launch-walking-pose { animation: tobira-walking-visibility 1.8s linear both; }
+.walk-ready .launch-equipped-pose { animation: tobira-equipped-visibility 1.8s linear both; }
+@media (prefers-reduced-motion: reduce) {
+  .launch-scene, .launch-box .cinematic-clip.is-held { transition: none; }
+  .launch-arrival, .launch-gait, .launch-gait > img { animation: none !important; transform: none !important; }
+  .launch-walking-pose { display: none; }
+  .launch-equipped-pose { opacity: 1 !important; }
+}
+
+.launch-emblem { position:relative; height:100dvh; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:20px; background:var(--mt-paper); color:#344451; font-family:var(--mt-font-body); }
+.launch-emblem img { width:min(260px,70vw); height:auto; }
+.launch-emblem h1 { font:400 clamp(20px,5.5vw,28px)/1.6 var(--font-handwriting); text-align:center; letter-spacing:.04em; }
+.launch-emblem p { font-size:12px; letter-spacing:.2em; color:#6b6047; }
+.launch-emblem-mark { position:relative; display:grid; place-items:center; width:108px; height:118px; border:3px solid #b59c5d; border-radius:48% 48% 40% 40%; background:linear-gradient(#fffdf8,#f5e5bc); box-shadow:0 0 0 5px #fffaf0,0 0 0 6px #dfcc9d; }
+.launch-emblem-mark svg:first-child { width:56px; height:56px; color:#987735; }
+.launch-emblem-mark svg:last-child { position:absolute; right:8px; bottom:9px; width:34px; height:34px; background:#fff7e6; border-radius:50%; color:#3e7289; }
+.launch-emblem button { min-height:44px; padding:0 16px; font-size:12px; color:#596673; border:1px solid #d8caa9; border-radius:20px; }
+.launch-emblem-disclaimer { position:absolute; inset-inline:max(16px, env(safe-area-inset-left)); bottom:calc(env(safe-area-inset-bottom) + 10px); max-width:720px; margin:0 auto; font-size:12px; line-height:1.45; letter-spacing:0; text-align:center; color:#596673; }
+
+/* 2026-10-02 D2：起動エンブレムを市販アプリのスプラッシュの間合いに（白→フェードイン→保持→フェードアウト→タイトル） */
+.launch-emblem { background:#fff; cursor:pointer; -webkit-tap-highlight-color:transparent; outline:none; }
+.launch-emblem-inner { display:flex; flex-direction:column; align-items:center; gap:22px; opacity:0; transition:opacity .7s ease, transform 2.6s cubic-bezier(.2,.7,.2,1); transform:scale(.985); }
+.launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; transform:scale(1); }
+.launch-emblem[data-phase="out"] .launch-emblem-inner { opacity:0; transform:scale(1); transition-duration:.7s, 0s; }
+.launch-emblem[data-skip] .launch-emblem-inner { transition-duration:.4s, 0s; }
+.launch-screen { animation: launch-title-in .8s ease both; }
+@keyframes launch-title-in { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .launch-emblem-inner, .launch-screen { transition:none; animation:none; transform:none; } .launch-emblem[data-phase="hold"] .launch-emblem-inner { opacity:1; } }
+
+/* タイトル画面 → 「学びの扉」（理念）ページへの入口。主CTAの邪魔をしない文字リンク */
+.launch-philosophy { display: inline-flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin-top: 4px; padding: 0 18px; border: 1px solid #e3c49a; border-radius: 999px; background: linear-gradient(135deg, #fff3e0, #e9f1fb); color: #6e4019; font: 700 14px/1.2 'Shippori Mincho', 'Hiragino Mincho ProN', serif; letter-spacing: .06em; box-shadow: 0 2px 0 #e8d3b2; }
+
+/* ===== 2026-10-07 アプリ版：起動エンブレムはアプリのロゴ（白背景のまま・透過しない）＋新しい主コピー ===== */
+.launch-emblem-applogo { width: min(280px, 70vw); height: auto; }
+.launch-emblem h1 { font: 900 clamp(22px, 6vw, 30px)/1.4 var(--mt-font-display); letter-spacing: .02em; color: var(--mt-ink, #1f2d3d); }
+.launch-emblem h1 em, .launch-copy em { font-style: normal; color: #c25a0c; }
+.launch-copy-break { display: inline; }
+
+/* ===== 2026-10-12 パソコン版タイトル画面（PC 大改訂） =====
+ * スマホは縦1列のまま。PC（横 1024px 以上）では
+ *   左：とびら君のステージ（大きく） / 右：ロゴ → コピー → 説明 → できること（カード） → はじめる
+ * の2カラムにする。スマホ向けの「細い縦長カラムを真ん中に置いただけ」を解消する。
+ * スマホでだけ要らない要素（説明文・残り日数・Enter の案内）は PC でだけ出す。 */
+.launch-lead, .launch-countdown-mini, .launch-kbd { display: none; }
+.launch-chips li > span { display: contents; }
+.launch-chips li small { display: none; }
+
+@media (min-width: 1024px) and (min-height: 560px) {
+  .launch-screen { background:
+      radial-gradient(1200px 700px at 22% 55%, #fffaf0 0%, rgba(255,250,240,0) 60%),
+      var(--mt-paper); }
+  .launch-content {
+    display: grid; width: min(1240px, 100%); height: 100dvh; min-height: 560px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 1fr);
+    grid-template-rows: 1fr auto auto auto auto auto 1fr;
+    grid-template-areas:
+      "stage  ."
+      "stage  brand"
+      "stage  copy"
+      "stage  lead"
+      "stage  chips"
+      "stage  actions"
+      "stage  .";
+    column-gap: clamp(32px, 5vw, 80px); row-gap: 18px; align-items: start;
+    padding: 20px clamp(32px, 5vw, 72px) 28px;
+  }
+  .launch-brand { grid-area: brand; justify-self: start; width: min(340px, 100%); margin: 0; }
+  .launch-stage { grid-area: stage; align-self: center; width: 100%; height: min(82dvh, 640px); max-height: none; min-height: 0; }
+  .launch-copy { grid-area: copy; text-align: left; font-size: clamp(34px, 3.2vw, 46px); line-height: 1.25; }
+  .launch-copy-break { display: inline; }
+  .launch-lead { grid-area: lead; display: block; margin: 0; font-size: 16px; line-height: 1.8; color: var(--mt-ink-2); }
+  .launch-chips { grid-area: chips; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; justify-content: stretch; }
+  .launch-chips li { display: grid; grid-template-columns: auto 1fr; align-items: start; column-gap: 10px; min-height: 0; padding: 14px 14px; border-radius: 16px; background: #fff; box-shadow: inset 0 0 0 1px var(--mt-line), 0 2px 0 #eadfca; }
+  .launch-chips li svg { width: 22px; height: 22px; margin-top: 1px; }
+  .launch-chips li > span { display: grid; gap: 6px; }
+  .launch-chips li b { font: 800 16px/1.2 var(--mt-font-display); color: var(--mt-ink); }
+  .launch-chips li small { display: block; font: 600 12.5px/1.5 var(--mt-font-body); color: var(--mt-ink-3); }
+  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
+  .launch-start { grid-area: start; width: 300px; min-height: 64px; }
+  .launch-start:hover { filter: brightness(1.04); }
+  .launch-guest, .launch-note { grid-area: guest; }
+  .launch-countdown-mini { grid-area: count; display: inline-flex; align-items: baseline; gap: 6px; margin: 0; font-size: 14px; font-weight: 700; color: var(--mt-ink-2); }
+  .launch-countdown-mini svg { align-self: center; color: var(--mt-brand); }
+  .launch-countdown-mini strong { font: 900 26px/1 var(--mt-font-display); color: #496d80; font-variant-numeric: tabular-nums; }
+  .launch-countdown-mini small { margin-left: 6px; font-size: 12px; color: var(--mt-ink-3); }
+  .launch-philosophy { grid-area: phil; margin-top: 0; }
+  .launch-philosophy:hover { filter: brightness(.98); box-shadow: 0 2px 0 #e8d3b2, 0 0 0 3px #f3e3c7; }
+  .launch-kbd { grid-area: kbd; display: block; margin: 0; justify-self: end; font-size: 12px; color: var(--mt-ink-3); }
+  .launch-kbd kbd { display: inline-block; min-width: 44px; padding: 3px 8px; margin-right: 4px; border: 1px solid var(--mt-line-strong); border-bottom-width: 3px; border-radius: 8px; background: #fff; font: 700 12px/1.2 var(--mt-font-body); color: var(--mt-ink-2); text-align: center; }
+
+  .launch-emblem-applogo { width: min(340px, 40vh); }
+  .launch-emblem h1 { font-size: 34px; }
+}
+
+/* F6（2026-11-04）動画の終わりと静止画をひと続きにする
+ *   背景は動画の最後のコマから作った板（title-plate.webp）。動画と同じ丸いぼかしをかけるので、縁の形も同じ。
+ *   動画が終わったあとは、星がまたたき・とびら君がゆっくり呼吸する（transform / opacity だけ）。
+ *   戻すとき：LaunchScreen.tsx の .launch-plate / .launch-sparkles を消し、.launch-halo / .launch-ground を戻す。 */
+.launch-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); mask-image: radial-gradient(closest-side, #000 86%, transparent 100%); }
+.launch-sparkles { position: absolute; inset: 0; pointer-events: none; }
+.launch-sparkles > i { position: absolute; width: 3.2%; aspect-ratio: 1; opacity: 0;
+  background: radial-gradient(circle, #ffffff 0 22%, #fff3c4 38%, transparent 70%); border-radius: 50%; }
+.launch-sparkles > i:nth-child(1) { left: 30%; top: 10%; }
+.launch-sparkles > i:nth-child(2) { left: 88%; top: 48%; }
+.launch-sparkles > i:nth-child(3) { left: 10%; top: 50%; }
+.launch-sparkles > i:nth-child(4) { left: 74%; top: 72%; }
+.launch-sparkles > i:nth-child(5) { left: 64%; top: 6%; }
+.launch-sparkles > i:nth-child(6) { left: 6%; top: 34%; }
+@media (prefers-reduced-motion: no-preference) {
+  .launch-stage[data-phase=done] .launch-sparkles > i { animation: launch-twinkle 3.4s ease-in-out infinite; }
+  .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(2) { animation-delay: .6s; }
+  .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(3) { animation-delay: 1.3s; }
+  .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(4) { animation-delay: 1.9s; }
+  .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(5) { animation-delay: 2.5s; }
+  .launch-stage[data-phase=done] .launch-sparkles > i:nth-child(6) { animation-delay: 2.9s; }
+  .launch-stage[data-phase=done] .launch-arrival.is-idle .launch-gait { animation: launch-idle-breathe 3.6s ease-in-out .4s infinite; }
+  @keyframes launch-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 45% { opacity: 1; transform: scale(1.15) rotate(45deg); } 60% { opacity: .7; transform: scale(.9) rotate(60deg); } }
+  @keyframes launch-idle-breathe { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-1.6%) scale(1.012, .992); } }
+}
+html[data-perf=lite] .launch-sparkles > i, html[data-perf=lite] .launch-arrival.is-idle .launch-gait { animation: none; }
+
+/* F6（2026-11-04）タイトル画面の演出（ボタン・文字の位置は変えない。transform / opacity だけ）
+ *   ・ロゴ → 主コピー → チップ → はじめる の順に、少しずつふわっと出る
+ *   ・「これ1本」にマーカーが引かれる
+ *   ・「はじめる」に光がときどき走る
+ *   戻すとき：このかたまりを消す。 */
+.launch-copy em { position: relative; z-index: 0; }
+.launch-copy em::after { content: ''; position: absolute; z-index: -1; left: -2%; right: -2%; bottom: .06em; height: .34em; border-radius: 4px;
+  background: #f6d48a; opacity: .7; transform-origin: 0 50%; }
+.launch-start { position: relative; overflow: hidden; isolation: isolate; }
+.launch-start::after { content: ''; position: absolute; z-index: 1; top: 0; bottom: 0; left: 0; width: 40%; pointer-events: none;
+  background: linear-gradient(100deg, transparent 0%, #ffffff66 50%, transparent 100%); transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .launch-brand { animation: launch-rise .6s cubic-bezier(.2,.8,.2,1) .05s both; }
+  .launch-copy { animation: launch-rise .6s cubic-bezier(.2,.8,.2,1) .25s both; }
+  .launch-copy em::after { animation: launch-marker .5s ease-out 1.1s both; }
+  .launch-chips li { animation: launch-rise .5s cubic-bezier(.2,.8,.2,1) both; }
+  .launch-chips li:nth-child(1) { animation-delay: .45s; }
+  .launch-chips li:nth-child(2) { animation-delay: .55s; }
+  .launch-chips li:nth-child(3) { animation-delay: .65s; }
+  .launch-actions { animation: launch-rise .6s cubic-bezier(.2,.8,.2,1) .7s both; }
+  .launch-start::after { animation: launch-shine 4.2s ease-in-out 2.2s infinite; }
+  @keyframes launch-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes launch-marker { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes launch-shine { 0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; } 8% { opacity: 1; } 30%, 100% { transform: translateX(320%) skewX(-18deg); opacity: 0; } }
+}
+html[data-perf=lite] :is(.launch-brand, .launch-copy, .launch-chips li, .launch-actions) { animation: none; }
+html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start::after { animation: none; }

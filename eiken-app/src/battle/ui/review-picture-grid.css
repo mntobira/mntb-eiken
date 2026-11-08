@@ -1,0 +1,9 @@
+/* 対戦の答え合わせ：絵の4コマを小さく1列に（スマホでも1行に収まる大きさ） */
+.rpg { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.rpg li { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 3px; border-radius: 10px; border: 1.5px solid #e2d8c6; background: #fff; }
+.rpg li[data-tone=right] { border-color: #2f9e64; background: #ecf8f1; box-shadow: 0 0 0 1px #2f9e64; }
+.rpg li[data-tone=wrong] { border-color: #d2584a; background: #fdeeea; }
+.rpg-pic { display: block; width: 100%; border-radius: 7px; background-size: 200% 200%; background-repeat: no-repeat; background-color: #fff; }
+.rpg-mark { font-size: 12px; font-weight: 800; line-height: 1.2; text-align: center; color: #344451; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rpg li[data-tone=right] .rpg-mark { color: #1e7d46; }
+.rpg li[data-tone=wrong] .rpg-mark { color: #b03a2e; }

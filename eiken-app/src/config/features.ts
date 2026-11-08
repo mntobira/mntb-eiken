@@ -1,0 +1,156 @@
+/**
+ * ===================================================================
+ * フィーチャーフラグ（公開/非公開の一元管理）
+ * ===================================================================
+ *
+ * -------------------------------------------------------------------
+ * ■ なぜこのファイルが必要なのか
+ * -------------------------------------------------------------------
+ * 「まだ完成していない機能が、ユーザーから見えてしまう」ことを防ぐため。
+ *
+ * これまでは公開/非公開の判断が画面ごとにバラバラに書かれていた。
+ * 例えば科目カードには `available: true` というフラグが1つずつ
+ * 手書きで置かれていたが、
+ *
+ *   ・そのフラグはカードの見た目にしか効かない
+ *   ・ナビ・進捗一覧・復習タブ・遷移先の判定は別の場所で決まっている
+ *
+ * ため、「1か所だけ隠したつもりで、別の入口からは入れてしまう」
+ * という状態が起こりうる。★これが一番まずい形である。★
+ * 「隠れているのに触れる」のは、隠れていないより信頼を損なう。
+ *
+ * -------------------------------------------------------------------
+ * ■ ★このフラグは「4箇所すべて」で参照すること★
+ * -------------------------------------------------------------------
+ * 隠すというのは「見えない」ことではなく「到達できない」ことである。
+ * したがって次の4箇所すべてで同じフラグを見る。
+ *
+ *   1. ナビ           … 下部ナビのボタン（ランキングなど）
+ *   2. トップのカード   … 科目選択画面のカード
+ *   3. ルーティング     … 画面遷移の受け口（状態の復元も含む）
+ *   4. 一覧・検索結果   … ホームの科目別進捗、復習リストの科目タブ、
+ *                        先生ダッシュボードの科目一覧
+ *
+ * ★3（ルーティング）が抜けていると、ナビだけ隠しても
+ *   保存済みの状態が復元されて中に入れてしまう。★
+ * このアプリは URL でページを切り替えていない（画面状態は React の
+ * state と localStorage で持っている）ので「URL直打ち」は存在しないが、
+ * 代わりに ★localStorage に残った古い選択が復元される★ という
+ * まったく同じ抜け道がある。だから 3 を必ず通す。
+ *
+ * 4箇所すべてを通っていることを人の記憶に頼らず確かめるテストを置く予定
+ * （以前の説明にあった tests/featureFlags.test.ts は現在のリポジトリには無い。2026-10-28 確認）。
+ *
+ * -------------------------------------------------------------------
+ * ■ import してよいのは教科の登録簿（data/subjects.ts、これも葉）だけ
+ * -------------------------------------------------------------------
+ * ここから教科データや画面を import すると、
+ * 「フラグを1つ見たいだけ」の場所が重いデータを引き込んでしまう。
+ * 教科の公開/非公開は登録簿の enabled が唯一の出どころ。
+ */
+import { SUBJECT_REGISTRY } from '../data/subjects';
+
+/**
+ * 公開/非公開の一覧。
+ *
+ * true  … ユーザーに見せる／入れる
+ * false … ユーザーから完全に隠す（見えないし、入れない）
+ *
+ * ★false にした理由は必ずコメントに残すこと。★
+ * 理由が書かれていないフラグは、後で誰も戻せなくなる。
+ */
+export const FEATURES = {
+  // bgm：起動時は ON（起動画面の効果音・起動後のBGM）。勉強中は設定画面から OFF にできる
+  // （2026-10-28 どこからも使われていなかった "my_words" を削除）
+  "bgm": true,
+  "ranking": false,
+  "battle": false
+} as const;
+
+export type FeatureKey = keyof typeof FEATURES;
+
+/**
+ * フラグを1つ引く。
+ *
+ * 未知のキーが来たときは false（＝隠す）を返す。
+ * ★安全側を「隠す」に倒しているのは意図的である。★
+ * 綴りを間違えたときに「うっかり公開される」よりも
+ * 「うっかり隠れる」ほうが被害が小さい（隠れていればすぐ気づく）。
+ */
+export function isFeatureEnabled(key: string | null | undefined): boolean {
+  if (!key) return false;
+  return (FEATURES as Record<string, boolean>)[key] === true;
+}
+
+/** 教科ID → 公開中か（data/subjects.ts の enabled から作る） */
+const SUBJECT_ENABLED: Readonly<Record<string, boolean>> = Object.fromEntries(
+  SUBJECT_REGISTRY.map((s) => [s.id, s.enabled]),
+);
+
+/**
+ * その科目をユーザーに見せる／入れてよいか。
+ *
+ * 4箇所すべて（ナビ／カード／ルーティング／一覧）がこの1つの関数を呼ぶ。
+ * 判断が1か所しかないので、片方だけ直して片方を忘れることが起きない。
+ */
+export function isSubjectEnabled(subjectId: string | null | undefined): boolean {
+  // 登録簿に無い教科ID（旧版の化学・数学など）は false＝隠す。安全側は「隠す」。
+  return !!subjectId && SUBJECT_ENABLED[subjectId] === true;
+}
+
+/**
+ * 公開中の科目だけに絞る（一覧・検索結果用）。
+ *
+ * 一覧を作っている場所が「自分で if を書く」のをやめさせるための入口。
+ * 呼び出し側は元の配列の形を保ったまま絞れる。
+ */
+export function filterEnabledSubjects<T>(
+  list: readonly T[],
+  getId: (item: T) => string,
+): T[] {
+  return (list || []).filter((item) => isSubjectEnabled(getId(item)));
+}
+
+/**
+ * 非公開の科目が選ばれていたときに戻す先。
+ *
+ * localStorage に残った古い選択（例：数学を選んだ状態で非公開にした）を
+ * 復元してしまわないようにするための受け口。
+ * ★ここが「URL直打ち相当」の穴を塞ぐ場所である。★
+ *
+ * 公開中の科目が1つも無い場合は null を返す（呼び出し側が判断する）。
+ * 「必ず化学基礎に倒す」と書いてしまうと、化学基礎を非公開にした日に
+ * 非公開の科目へ倒す関数になってしまうため。
+ */
+export function fallbackSubjectId(candidates: readonly string[]): string | null {
+  for (const id of candidates) {
+    if (isSubjectEnabled(id)) return id;
+  }
+  return null;
+}
+
+/**
+ * まだ公開しない「みんなで」系の機能（2026-10-05）。false の間は入口に「準備中」を出し、中身は開かない。
+ *   classroom … 設定 › クラス（先生が作ったクラスに参加）
+ *   manaClan  … 対戦 › マナクラン／ランキングのマナクランタブ
+ * 理由：サーバー側（Cloud Functions・ルール）の公開準備がまだのため。公開するときは true にするだけ。
+ *   classroom を true にする前に docs/JUKU_PLAN.md の「公開前のチェック」を必ず済ませる
+ *   （クラス機能は Cloud Functions を使わない。本番にルールが反映されているかだけが条件）。
+ */
+export const SOCIAL_FEATURES = { classroom: false, manaClan: false } as const;
+
+/**
+ * クラス機能の先行確認（2026-10-28 ご要望）。
+ *   公開前（classroom: false）でも、この一覧のメールでログインした人だけは
+ *   設定 › クラス（参加・先生ダッシュボード）と解説の「選んだ理由」を使える。教師役として動作を確かめるため。
+ *   ほかの人には今までどおり「準備中」。公開するときは SOCIAL_FEATURES.classroom を true にする（この一覧は消してよい）。
+ *   ※画面の入口を開けるだけ。読み書きできるかは本番の firestore.rules で決まる（docs/JUKU_PLAN.md の4）。
+ */
+export const CLASSROOM_PREVIEW_EMAILS: readonly string[] = [];
+
+/** クラス機能をこの人に見せるか（公開済み、または先行確認のメールで、メール確認済みのとき） */
+export function isClassroomEnabledFor(user: { email?: string | null; emailVerified?: boolean } | null | undefined): boolean {
+  if (SOCIAL_FEATURES.classroom) return true;
+  const email = (user?.email || '').trim().toLowerCase();
+  return !!email && user?.emailVerified === true && CLASSROOM_PREVIEW_EMAILS.includes(email);
+}

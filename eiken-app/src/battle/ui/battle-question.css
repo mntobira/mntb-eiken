@@ -1,0 +1,235 @@
+/*
+ * 対戦の出題画面（2026-09-30）。
+ * ★1画面で完結★ 音源は1行（約40px）、絵は2×2で絵そのものを押して答える、選択肢は画面内に収める。
+ * 色はホームに合わせる（クリーム紙・金・水色）。文字は 12px 以上。
+ */
+
+/* A10：コンパクトな音源プレーヤー */
+.bqa { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto 44px; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 8px; padding: 2px 6px 2px 2px; border-radius: 999px; background: #eaf6fb; box-shadow: inset 0 0 0 1.5px #b9dcea; }
+.bqa audio { display: none; }
+.bqa-play { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(#7cc4e0, #4ba3c7); color: #fff; box-shadow: 0 2px 0 #3b87a8; }
+.bqa-play:disabled { background: #cbd5e1; box-shadow: none; }
+.bqa-track { position: relative; height: 8px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px #b9dcea; overflow: hidden; }
+.bqa-track > i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: #4ba3c7; transition: width .25s linear; }
+.bqa-status { font-size: 12px; font-weight: 800; color: #2f6f8a; white-space: nowrap; }
+.bqa-info { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #4b6b7a; }
+.bqa-note { grid-column: 1 / -1; margin: 2px 8px 6px; font-size: 12px; line-height: 1.5; color: var(--mt-ink-2); }
+.bqa:has(.bqa-note) { border-radius: 18px; }
+
+/* A11：2×2 の絵を押して答える */
+.bq-picture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bq-picture { position: relative; display: block; min-width: 0; padding: 4px; border-radius: 14px; background: #fff; box-shadow: 0 2px 0 #e3d3b4, inset 0 0 0 2px #e6dcc8; transition: transform .12s; }
+.bq-picture:active:not(:disabled) { transform: scale(.97); }
+.bq-picture-img { display: block; height: min(calc((100dvh - var(--bq-chrome, 420px)) / 2), 40vw); width: auto; max-width: 100%; min-height: 72px; margin: 0 auto; border-radius: 10px; background-repeat: no-repeat; background-color: #fff; }
+.bq-picture-badge { position: absolute; top: 6px; left: 6px; display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; border-radius: 999px; background: #fffaf0; box-shadow: 0 0 0 2px #d9b75a; color: #5b4a1f; font-size: 16px; font-weight: 900; line-height: 1; }
+.bq-picture[data-picked] { box-shadow: 0 2px 0 #c9a23c, inset 0 0 0 3px #e5b93c; background: #fff7df; }
+.bq-picture[data-right] { box-shadow: 0 2px 0 #14633a, inset 0 0 0 3px #1e7d46; background: #ecfdf3; }
+.bq-picture[data-wrong] { box-shadow: 0 2px 0 #8f1f1f, inset 0 0 0 3px var(--mt-danger); background: #fff1f2; }
+.bq-picture-tag { position: absolute; right: 6px; bottom: 6px; display: inline-flex; align-items: center; gap: 2px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; }
+.bq-picture-tag[data-kind=right] { background: #1e7d46; }
+.bq-picture-tag[data-kind=wrong] { background: var(--mt-danger); }
+.arena-question-prompt[data-picture-grid] { overflow: visible !important; max-height: none !important; }
+@media (prefers-reduced-motion: reduce) { .bq-picture, .bqa-track > i { transition: none; } }
+
+/* ===== A9：出題画面を1画面に収める（上部を詰める） ===== */
+.arena-live-stage > .arena-fighters { min-height: 56px !important; padding: 2px 10px !important; margin-bottom: 4px !important; border-radius: 18px; background: linear-gradient(125deg, #fbf3df, #fffaf0 55%, #eaf6fb) !important; box-shadow: inset 0 0 0 1.5px #ead9b9; }
+.arena-live-stage .arena-fighter { flex-direction: row !important; gap: 6px; }
+.arena-live-stage .arena-fighter .relative, .arena-live-stage .arena-fighter.opponent > img { width: 40px !important; height: 40px !important; }
+.arena-live-stage .arena-fighter small { font-size: 12px !important; }
+.arena-live-stage .arena-clash svg { width: 20px; height: 20px; }
+.arena-live-stage .arena-clash strong { font-size: 14px; }
+.arena-live-stage #battle-live-scoreboard { padding: 4px 12px !important; border-radius: 18px !important; border-color: #ead9b9 !important; background: var(--mt-bg-card) !important; box-shadow: 0 2px 0 #e3d3b4; }
+.arena-live-stage #battle-live-scoreboard strong { font-size: 22px !important; }
+.arena-live-stage #battle-live-scoreboard p { font-size: 12px !important; }
+.arena-live-stage #battle-live-scoreboard .battle-vs-pulse { font-size: 12px !important; }
+#battle-question > .mb-3:first-child { margin-bottom: 6px; }
+#battle-question > .mb-3:first-child .text-\[10px\] { font-size: 12px !important; }
+@media (max-height: 760px) {
+  #battle-question .grid > button.min-h-\[58px\] { min-height: 48px; padding-block: 6px; }
+  #battle-question > .mb-3:first-child > .mb-2 { margin-bottom: 2px; }
+  .arena-question-prompt:not([data-picture-grid]) { padding: 8px 12px !important; margin-bottom: 8px !important; }
+  .arena-live-stage > .arena-fighters { display: none !important; } /* 低い画面ではスコア表だけにする（とびら君はスコア表の中の状態表示で代わりに伝わる） */
+  .bq-picture-grid { --bq-chrome: 480px; }
+  .arena-question-prompt[data-picture-grid] { padding-block: 4px !important; }
+  .arena-question-prompt[data-picture-grid] p { font-size: 14px !important; }
+}
+@media (max-height: 760px) {
+  #battle-shell:has(.arena-live-stage) > main { padding-top: 6px; padding-bottom: 6px; }
+  #battle-shell:has(.arena-live-stage) > main > .notebook-paper { padding: 8px 10px; }
+}
+
+/* 低い画面（SE・320×568）：1列の選択肢でも4つ目まで画面に収める */
+@media (max-height: 640px) {
+  #battle-question > .mb-3:first-child { margin-bottom: 4px; }
+  /* 進捗の行は常に出す（以前は「相手は回答ずみ！」が出たときだけ行が現れ、4択が下に動いていた・2026-10-23） */
+  #battle-question > .mb-3:first-child > .bq-progress-row { margin-bottom: 2px; }
+  #battle-question .grid.grid-cols-1 { gap: 6px; }
+  #battle-question .grid > button.min-h-\[58px\] { min-height: 44px; padding-block: 4px; }
+  .arena-question-prompt:not([data-picture-grid]) { padding: 6px 10px !important; margin-bottom: 6px !important; }
+  .arena-question-prompt:not([data-picture-grid]) > p:first-child:not(.bq-english) { font-size: 12px !important; margin-bottom: 0 !important; }
+  /* 英文法の英文は低い画面でも読める太さ・大きさを保つ（一人で学ぶと同じ） */
+  .arena-question-prompt > p.bq-english { font-size: 15px !important; padding: 4px 8px !important; margin-bottom: 4px !important; }
+  .arena-live-stage #battle-live-scoreboard { padding: 2px 10px !important; }
+  .arena-live-stage #battle-live-scoreboard strong { font-size: 18px !important; }
+}
+.arena-live-stage .arena-fighter .relative span { font-size: 12px !important; }
+/* 図つきの問題（例：第2問の地図）：問題枠の高さ上限で絵が切れないよう、絵のぶんは枠を伸ばし、絵は画面の高さに合わせて縮める */
+.arena-question-prompt:has([data-battle-figure]) { max-height: none !important; overflow: visible !important; }
+.arena-question-prompt [data-battle-figure] img { max-height: min(30dvh, 280px) !important; }
+@media (max-height: 700px) { .arena-question-prompt [data-battle-figure] img { max-height: 24dvh !important; } }
+/* 375×667 クラス：1列の選択肢（英文）を4つ目まで画面に。ボタンは44px以上のまま */
+@media (max-height: 700px) {
+  #battle-question .grid.grid-cols-1 { gap: 6px; }
+  #battle-question .grid.grid-cols-1 > button { min-height: 44px !important; padding-block: 6px !important; }
+  #battle-question > .mb-3:first-child { margin-bottom: 4px; }
+  #battle-question > .mb-3:first-child > .mb-2 { margin-bottom: 0; }
+}
+/* 320×568：リスニングの長い場面説明は1行にたたむ（タップで全文）。設問と選択肢を1画面に */
+@media (max-height: 640px) {
+  .bq-scene[data-long]:not([data-open]) { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; cursor: pointer; }
+  .bq-scene[data-long]:not([data-open])::before { content: '場面 ▸ '; font-weight: 800; color: #2f6f8a; }
+  #battle-question .arena-question-prompt > p:last-of-type { font-size: 14px !important; line-height: 1.4 !important; }
+  .bqa { margin-bottom: 6px; }
+}
+/* 相手の状態：狭い画面では「第N問…」だけにして折り返さない */
+@media (max-width: 360px) { .bl-long { display: none; } }
+/* 320×568：残り時間の行と音源の帯を少し詰める */
+@media (max-height: 640px) {
+  #battle-question > .mb-3:first-child { margin-bottom: 2px; }
+  .bqa { min-height: 44px; padding-block: 0; }
+  #battle-question .grid.grid-cols-1 > button { padding-block: 4px !important; }
+  #battle-question .grid.grid-cols-1 { gap: 5px; }
+}
+/* 320×568：「のこりN問」の帯は問題数表示（N/10もん）と重なるので、低い画面では読み上げ用だけ残して見た目は消す */
+@media (max-height: 640px) {
+  .bl-closing { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 !important; }
+  /* たたんだ場面説明：「場面 ▸」＋本文の頭が1行に入るよう、疑似要素ではなく横並びにする */
+  .bq-scene[data-long]:not([data-open]) { display: block; white-space: nowrap; text-overflow: ellipsis; }
+}
+/* 375×667 クラスにも同じ詰め方を広げる（場面説明は1行・のこり帯は隠す） */
+@media (max-height: 700px) {
+  .bq-scene[data-long]:not([data-open]) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; }
+  .bq-scene[data-long]:not([data-open])::before { content: '場面 ▸ '; font-weight: 800; color: #2f6f8a; }
+  .bl-closing { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 !important; }
+  .arena-question-prompt:not([data-picture-grid]) { padding: 6px 12px !important; margin-bottom: 6px !important; }
+}
+/* 地図などの図：低い画面では選択肢ぶんの高さを先に確保して、図はその残りに合わせる */
+@media (max-height: 640px) { .arena-question-prompt [data-battle-figure] img { max-height: 18dvh !important; } }
+/* 場面説明のたたみ（最終版）：ふだんは全文。低い画面でたたんでいる間は1行版を表示 */
+.bq-scene-line { display: none; }
+@media (max-height: 700px) {
+  .bq-scene[data-long]:not([data-open]) { white-space: nowrap !important; }
+  .bq-scene[data-long]:not([data-open]) .bq-scene-full { display: none; }
+  .bq-scene[data-long]:not([data-open]) .bq-scene-line { display: inline; }
+  #battle-question .grid.grid-cols-1 { grid-auto-rows: auto; align-content: start; }
+}
+/* 320×568：「対戦をやめる」は上の余白（mt-3）をなくし、44pxの1行だけにする */
+@media (max-height: 640px) {
+  .bl-footer > div { margin-top: 0 !important; }
+  .bl-footer > div > button:only-child { min-height: 44px; padding-block: 0; }
+}
+
+/* 2026-10-01 図つき4択（選択肢が①〜④だけ）：横一列。数字を大きく、高さは44px以上 */
+[data-choice-row] { gap: 6px !important; }
+[data-choice-row] > button { min-height: 48px !important; padding: 4px 2px !important; font-size: 20px !important; flex-direction: column; gap: 0 !important; }
+[data-choice-row] > button > svg { position: absolute; top: 3px; right: 3px; }
+[data-choice-row] > button { position: relative; }
+[data-choice-row] > button .text-xs { margin: 0 !important; font-size: 12px !important; line-height: 1.1; white-space: nowrap; }
+@media (max-width: 360px) { [data-choice-row] > button .text-xs { letter-spacing: -.04em; } }
+/* 低い画面では、横一列にした分を図にも少し回して、問題をスクロールなしで収める */
+@media (max-height: 640px) { #battle-question:has([data-choice-row]) [data-battle-figure] img { max-height: 16dvh !important; } }
+/* 文の4択（1列）も低い画面では 58px → 48px（タップ44px以上は守る） */
+@media (max-height: 640px) { #battle-question .grid.grid-cols-1 > button { min-height: 48px !important; padding-block: 6px !important; } }
+/* 320×568：問題の上の行と余白を詰めて、文の4択も最後まで見えるように */
+@media (max-height: 600px) {
+  #battle-question > .mb-3:first-child { margin-bottom: 4px !important; }
+  #battle-question > .bqa { margin-bottom: 4px; }
+  #battle-question > .arena-question-prompt { margin-bottom: 6px !important; }
+  #battle-question .grid.grid-cols-1 { gap: 5px !important; }
+  #battle-question .grid.grid-cols-1 > button { min-height: 44px !important; padding-block: 3px !important; }
+}
+/* 低い画面で問題文が長いとき：選択肢は必ず見える位置に置き、問題文だけを中でスクロールさせる */
+@media (max-height: 640px) {
+  .arena-question-area:has(> #battle-question) { display: flex; flex-direction: column; }
+  #battle-question { min-height: 0; max-height: 100%; }
+  #battle-question > .arena-question-prompt:not([data-picture-grid]):not(:has([data-battle-figure])) { flex: 0 1 auto; min-height: 44px; overflow-y: auto !important; overscroll-behavior: contain; }
+  #battle-question > .grid, #battle-question > .bq-picture-grid { flex-shrink: 0; }
+}
+/* 低い画面：FINAL・のこりN問の帯は細く（最後の問題の選択肢が切れないように） */
+@media (max-height: 640px) {
+  #battle-final-banner { margin-bottom: 2px !important; padding-block: 0 !important; min-height: 18px; }
+  .bl-closing { margin-bottom: 2px !important; }
+}
+
+/* ★絵の4択は「残りの高さ」いっぱいに2×2で収める（2026-10-01）★
+   以前は 100dvh − 決め打ちの余白 で絵の高さを決めていたため、幅の広いスマホ（430px）や
+   相手の回答・正誤カードが出たときに③④が画面の外へはみ出していた。
+   いまは問題エリアの残りを2行で分け、各マスの中で絵を縦横比のまま最大にする（コンテナ単位）。 */
+.arena-question-area:has(.bq-picture-grid) { display: flex; flex-direction: column; }
+#battle-question:has(> .bq-picture-grid) { min-height: 0; }
+#battle-question:has(> .bq-picture-grid) > :not(.bq-picture-grid) { flex-shrink: 0; }
+#battle-question > .bq-picture-grid { flex: 1 1 0; min-height: 150px; max-height: 560px; grid-template-rows: 1fr 1fr; }
+.bq-picture-grid > .bq-picture { container-type: size; display: grid; place-items: center; min-height: 0; }
+.bq-picture-grid .bq-picture-img { width: min(100cqw, 100cqh * var(--ar, 1)); height: min(100cqh, 100cqw / var(--ar, 1)); min-height: 0; max-width: none; margin: 0; }
+
+/* 英文法の英文：空欄の前後で改行されないよう、文の切れ端は普通の文字として流す（2026-10-03） */
+.bq-english .battle-text { display: inline; vertical-align: baseline; }
+.bq-english [data-answer-blank] { font-size: 14px; vertical-align: baseline; }
+
+/* ===== PC（1100px以上）：スマホ幅の縦長ではなく、画面いっぱいの2カラムにする（2026-10-04）=====
+ * 左：とびら君・得点表・実況（状況）／右：問題と選択肢。スマホ（1099px以下）は何も変えない。 */
+@media (min-width: 1100px) {
+  #battle-shell.arena-live-shell > main { max-width: min(1240px, 100%); padding: 16px 28px; }
+  #battle-shell.arena-live-shell > main > .notebook-paper { padding: 18px 22px; }
+  .arena-live-stage { display: grid !important; grid-template-columns: 340px minmax(0, 1fr); grid-auto-rows: min-content; column-gap: 28px; row-gap: 8px; align-content: center; flex: 1; }
+  .arena-live-stage > * { grid-column: 1; min-width: 0; }
+  .arena-live-stage > .arena-question-area { grid-column: 2; grid-row: 1 / span 12; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
+  .arena-live-stage > .bl-footer { grid-column: 1 / -1; }
+  .arena-live-stage > .arena-fighters { display: flex !important; min-height: 120px !important; }
+  .arena-live-stage .arena-fighter { flex-direction: column !important; }
+  .arena-live-stage .arena-fighter .relative, .arena-live-stage .arena-fighter.opponent > img { width: 72px !important; height: 72px !important; }
+  .arena-live-stage #battle-live-scoreboard strong { font-size: 30px !important; }
+  .arena-live-stage #battle-live-feed { max-height: 160px; }
+  .arena-live-stage > .arena-opponent-answer { max-height: none; }
+  .arena-question-area #battle-question .arena-question-prompt { padding: 22px 26px !important; }
+  .arena-question-area #battle-question .arena-question-prompt .battle-text { font-size: 20px !important; line-height: 1.7; }
+  .arena-question-area #battle-question .grid > button { min-height: 76px; font-size: 17px; }
+  .arena-question-area #battle-question .grid > button .text-xs, .arena-question-area #battle-question .grid > button .text-sm { font-size: 17px !important; }
+}
+
+/* 2026-10-04：実況ログが重なって見えにくい → 行の高さと行間に余白を持たせ、2行がきちんと収まる高さに */
+.arena-live-stage #battle-live-feed { display: flex !important; flex-direction: column; gap: 6px !important; max-height: none !important; height: auto; padding: 4px 0 !important; overflow: visible !important; margin-block: 6px 10px !important; }
+.arena-live-stage #battle-live-feed > li { display: block; line-height: 22px !important; min-height: 24px; padding: 1px 10px !important; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-live-stage #battle-live-feed + * { margin-top: 4px; }
+
+@media (max-height: 700px) and (max-width: 1023px) { .arena-live-stage #battle-live-feed > li:nth-last-child(n+3) { display: none; } .arena-live-stage #battle-live-feed { gap: 5px !important; margin-block: 4px 8px !important; } }
+
+/* 試合終了の FINISH（結果画面へ移るまでの間ずっと出す） */
+.battle-finish-overlay { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: radial-gradient(circle at 50% 45%, rgba(255, 214, 102, .55) 0%, rgba(20, 30, 48, .82) 62%); animation: battle-finish-bg .35s ease-out both; pointer-events: auto; }
+.battle-finish-word { margin: 0; font: 900 clamp(56px, 18vw, 120px)/1 var(--mt-font-display, 'M PLUS Rounded 1c', sans-serif); letter-spacing: .06em; color: #fff; -webkit-text-stroke: 3px #c0392b; text-shadow: 0 6px 0 #8e2a1f, 0 12px 28px rgba(0,0,0,.45); transform-origin: center; animation: battle-finish-slam .55s cubic-bezier(.2, 1.6, .4, 1) both; }
+.battle-finish-sub { margin: 0; color: #fff3cd; font-size: 15px; font-weight: 700; letter-spacing: .1em; animation: battle-finish-pulse 1.2s ease-in-out .6s infinite; }
+@keyframes battle-finish-bg { from { opacity: 0; } to { opacity: 1; } }
+@keyframes battle-finish-slam { 0% { opacity: 0; transform: scale(2.4) rotate(-6deg); } 70% { opacity: 1; transform: scale(.94) rotate(1deg); } 100% { transform: scale(1) rotate(-2deg); } }
+@keyframes battle-finish-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .battle-finish-overlay, .battle-finish-word, .battle-finish-sub { animation: none; } }
+
+/* ===== 2026-10-23 回答中に4択ボタンが上下に揺れる問題の修正 =====
+ * 実況（🔵/🔴 の札）・相手の確定回答・「相手は回答ずみ！」が出たり消えたりするたびに高さが変わり、
+ * 下の4択ボタンが動いて押し間違いが起きていた。どれも「高さを先に決めた箱」にして、中身だけ入れ替える。 */
+.arena-live-stage { --live-feed-h: 28px; --opp-answer-h: 34px; }
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] {
+  display: flex !important; flex-direction: column; justify-content: flex-end; gap: 0 !important;
+  height: var(--live-feed-h) !important; min-height: var(--live-feed-h) !important; max-height: var(--live-feed-h) !important;
+  margin-block: 2px 4px !important; padding: 0 !important; overflow: hidden !important; flex-shrink: 0;
+}
+/* いちばん新しい札だけを見せる（古い札は箱の上にはみ出して隠れる） */
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] > li { flex-shrink: 0; line-height: 22px !important; min-height: 24px; }
+.arena-live-stage #battle-live-feed[data-live-feed-fixed] > li:not(:last-child) { display: none !important; }
+.arena-live-stage > .arena-opponent-answer[data-opponent-answer-slot] {
+  height: var(--opp-answer-h); min-height: var(--opp-answer-h); max-height: var(--opp-answer-h) !important;
+  margin-bottom: 4px; padding-block: 4px; overflow: hidden; flex-shrink: 0; align-items: center;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.arena-live-stage > .arena-opponent-answer[data-empty] { visibility: hidden; }
+/* 問題文の上の「相手は回答ずみ！」も1行の高さを固定（出ても消えても下が動かない） */
+#battle-question .bq-progress-notice { min-height: 18px; max-height: 18px; overflow: hidden; }

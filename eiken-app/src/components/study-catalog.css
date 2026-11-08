@@ -1,0 +1,116 @@
+/*
+ * 演習する：科目選択・学習コンテンツ選択（共通UI）2026-10-01
+ * ホームと同じクリーム地・角丸カード・やわらかい影。文字12px以上・タップ44px以上・1画面。
+ */
+.sc-page { --sc-line: #e5dccc; --sc-card: #fffdf5; --sc-ink: #344451; --sc-ink-2: #5a6573;
+  display: flex; flex-direction: column; gap: 10px; height: calc(100% - var(--app-nav-h, 80px)); min-height: 0; overflow: hidden;
+  padding: 10px 14px 10px; background: radial-gradient(ellipse at 50% 20%, #fffdf8 12%, #f9f1ec 75%, #f4e8eb); color: var(--sc-ink); font-family: var(--mt-font-body); }
+@media (min-width: 1100px) { .sc-page { height: 100%; padding: 24px 32px; max-width: 880px; margin: 0 auto; background: none; } }
+.sc-page button { cursor: pointer; }
+.sc-page :focus-visible { outline: none; box-shadow: var(--mt-focus); }
+
+.sc-head { display: flex; align-items: center; gap: 10px; min-height: 56px; flex-shrink: 0; }
+.sc-back { flex-shrink: 0; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 14px 0 10px; border: 1px solid var(--sc-line); border-radius: 999px; background: var(--sc-card); color: var(--sc-ink); font: 700 14px/1 var(--mt-font-body); box-shadow: 0 2px 0 #e6dccb; }
+.sc-head-title { flex: 1; min-width: 0; }
+.sc-crumb { margin: 0; font-size: 12px; font-weight: 700; color: #8b7a5c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-crumb b { color: #6d4c61; }
+.sc-head-title h1 { margin: 1px 0 0; font: 800 22px/1.2 var(--mt-font-display); color: #3b4a56; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-head-title > p:last-child { margin: 2px 0 0; font-size: 12px; color: #6e6d5b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sc-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 6px; }
+
+/* 共通カード（科目・コンテンツ） */
+.sc-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 84px; padding: 12px 14px; text-align: left;
+  border: 1.5px solid var(--sc-line); border-radius: 20px; background: var(--sc-card); box-shadow: 0 3px 0 #e6dccb; color: var(--sc-ink); transition: transform .12s; }
+.sc-card:active { transform: translateY(2px); box-shadow: 0 1px 0 #e6dccb; }
+.sc-card[data-primary] { border-color: #e3c77f; background: linear-gradient(#fdf4de, #f7e6bb); box-shadow: 0 3px 0 #d7b865; }
+.sc-icon { flex-shrink: 0; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: #fff7e8; color: #8a6a2c; box-shadow: inset 0 0 0 1.5px #ecdcb8; }
+.sc-card[data-primary] .sc-icon { background: #fffaf0; }
+.sc-letters { font: 700 22px/1 Georgia, 'Times New Roman', serif; color: #6b6a35; }
+.sc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.sc-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.sc-title strong { font: 800 17px/1.25 var(--mt-font-display); color: var(--mt-ink-warm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-title em { flex-shrink: 0; padding: 1px 8px; border-radius: 999px; background: var(--mt-brand-soft); color: var(--mt-brand); font: 700 12px/1.5 var(--mt-font-body); font-style: normal; }
+.sc-title em[data-badge=new] { background: #d9483b; color: #fff; font-weight: 800; letter-spacing: .04em; box-shadow: 0 2px 0 #a3302a; }
+.sc-desc { font-size: 13px; line-height: 1.4; color: var(--sc-ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sc-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sc-meta small { font-size: 12px; font-weight: 700; color: var(--mt-ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-progress { flex: 1; display: flex; align-items: center; gap: 6px; max-width: 150px; min-width: 76px; margin-left: auto; }
+.sc-track { position: relative; flex: 1; height: 8px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px #d9cba9; overflow: hidden; }
+.sc-track i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: #e0a43c; }
+.sc-progress b { flex-shrink: 0; min-width: 34px; text-align: right; font-size: 12px; line-height: 1; color: #8a6a2c; }
+.sc-arrow { flex-shrink: 0; color: #9a8a6a; }
+.sc-note { flex-shrink: 0; margin: 0; font-size: 12px; line-height: 1.5; color: #6e6d5b; text-align: center; }
+[data-study-catalog="subjects"] .sc-list { flex: 0 1 auto; }
+[data-study-catalog="subjects"] .sc-note { padding: 14px 12px; border: 1.5px dashed #e0d3b8; border-radius: 20px; background: rgba(255,253,245,.6); }
+
+/* 低い画面：カードを少し詰めて4枚が1画面に入るように */
+@media (max-height: 700px) {
+  .sc-page { gap: 8px; padding-top: 6px; }
+  .sc-list { gap: 8px; }
+  .sc-card { min-height: 72px; padding: 8px 12px; gap: 10px; }
+  .sc-icon { width: 42px; height: 42px; border-radius: 14px; }
+  .sc-desc { -webkit-line-clamp: 1; }
+}
+@media (max-height: 600px) {
+  .sc-head-title > p:last-child { display: none; }
+  .sc-head-title h1 { font-size: 20px; }
+  .sc-card { min-height: 64px; }
+  .sc-desc { display: none; }
+}
+@media (max-width: 360px) { .sc-back span { display: none; } .sc-back { width: 44px; padding: 0; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .sc-card { transition: none; } }
+
+/* E: 演習画面にも、とびら君（2026-10-01） */
+.sc-buddy { flex-shrink: 0; margin: 2px 0 6px; }
+.sc-buddy .tb-bubble { flex: 0 1 auto; }
+@media (max-height: 600px) { .sc-buddy { display: none; } }
+
+/* 2026-10-01 夜：問題の列とは別の「覚える」枠（暗記帳） */
+.sc-section { margin: 4px 2px -2px; font: 800 13px/1.4 var(--mt-font-display); color: #8b7a5c; letter-spacing: .08em; display: flex; align-items: center; gap: 8px; }
+.sc-section::after { content: ''; flex: 1; height: 1.5px; background: var(--sc-line); }
+
+/* ==========================================================================
+   2026-10-11：アプリ版は下に広告（50px）が入るため、背の低い端末で「英単語帳」が広告の裏へ隠れていた。
+   広告ありのときは、同じ見た目のままカードの上下を少し詰め、説明は1行に。
+   ========================================================================== */
+@media (max-height: 860px) {
+  :root[data-ad-banner=true] .sc-page { gap: 6px; padding-top: 6px; }
+  :root[data-ad-banner=true] .sc-head { min-height: 48px; }
+  :root[data-ad-banner=true] .sc-list { gap: 7px; }
+  :root[data-ad-banner=true] .sc-card { min-height: 66px; padding: 7px 12px; gap: 10px; }
+  :root[data-ad-banner=true] .sc-icon { width: 40px; height: 40px; border-radius: 14px; }
+  :root[data-ad-banner=true] .sc-desc { -webkit-line-clamp: 1; }
+  :root[data-ad-banner=true] .sc-buddy { margin: 0 0 2px; }
+}
+@media (max-height: 760px) {
+  :root[data-ad-banner=true] .sc-head-title > p:last-child { display: none; }
+  :root[data-ad-banner=true] .sc-card { min-height: 58px; padding: 5px 12px; }
+  :root[data-ad-banner=true] .sc-desc { display: none; }
+}
+
+/* 2026-10-21 見出しをマイページと同じ「中央・23px・900」にそろえる（左寄りだった）。
+   戻す: このブロックを削除 */
+.sc-head { position: relative; justify-content: center; }
+.sc-head > .sc-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+.sc-head-title { flex: 0 1 auto; text-align: center; }
+.sc-head:has(.sc-back) .sc-head-title { padding-inline: 92px; }
+.sc-head-title h1 { font: 900 23px/1.2 var(--mt-font-display); color: var(--mt-ink); }
+@media (min-width: 1024px) { .sc-head-title h1 { font-size: 28px; letter-spacing: .04em; } }
+
+/* 2026-10-28 TOEIC：とびら君の吹き出しの右に置く小さな入口（赤丸の位置）。
+   カードの列（リスニング〜英単語帳）は動かさない。文字12px以上・タップ44px以上。戻す: このブロックと StudyCatalog の sc-buddy-row を削除 */
+.sc-buddy-row { flex-shrink: 0; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sc-buddy-row .sc-buddy { flex: 1 1 auto; min-width: 0; margin: 2px 0 6px; }
+.sc-spot { position: relative; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; min-height: 52px; max-width: 46%; padding: 6px 10px 6px 6px;
+  border: 1.5px solid #c3cfea; border-radius: 16px; background: #f5f7fc; box-shadow: 0 3px 0 #b3c1e2; color: #1f3566; text-align: left; transition: transform .12s; }
+.sc-spot:active { transform: translateY(2px); box-shadow: 0 1px 0 #b3c1e2; }
+.sc-spot-icon { flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: #fff; color: #3d5a99; box-shadow: inset 0 0 0 1.5px #c3cfea; }
+.sc-spot-body { display: flex; flex-direction: column; min-width: 0; }
+.sc-spot-body strong { font: 900 16px/1.15 var(--mt-font-display); color: #1f3566; letter-spacing: .02em; }
+.sc-spot-body small { font-size: 12px; font-weight: 700; line-height: 1.3; color: #3b4e78; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-spot em { position: absolute; top: -8px; right: -6px; padding: 0 7px; border-radius: 999px; background: var(--mt-brand-soft); color: var(--mt-brand); font: 800 12px/1.6 var(--mt-font-body); font-style: normal; }
+.sc-spot em[data-badge=new] { background: #c53d31; color: #fff; box-shadow: 0 2px 0 #9a2c24; /* 白文字で 5.1:1（4.5:1 以上） */ }
+@media (max-width: 360px) { .sc-spot-body small { display: none; } .sc-spot { max-width: 40%; } }
+@media (max-height: 600px) { .sc-buddy-row .sc-buddy { display: none; } .sc-buddy-row { justify-content: flex-end; } }
+@media (prefers-reduced-motion: reduce) { .sc-spot { transition: none; } }

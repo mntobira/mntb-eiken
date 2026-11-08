@@ -1,0 +1,285 @@
+/*
+ * 設定 › 基本設定（ProfileModal）。ホームと同じクリーム地・細い線・やわらかい影。
+ * ★UIの決まり★ 文字12px以上・タップ44px以上・つまみはトラックの内側。
+ */
+.profile-journal { --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; padding-bottom: calc(var(--app-nav-h, 120px) + 24px); }
+@media (min-width: 640px) {
+  .profile-journal { padding-bottom: 6rem; }
+}
+.profile-journal .mtb-kicker { font-size: 12px; }
+.profile-journal .profile-tabs button { min-height: 44px; font-size: 13px; }
+.profile-workspace .ps-card, .profile-workspace .ps-preview, .profile-workspace .ps-sound { padding: 12px; }
+
+/* プロフィールカード */
+.ps-card { display: grid; gap: 8px; }
+.ps-card-top { display: flex; align-items: center; gap: 12px; }
+.ps-avatar { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ps-avatar-edit { display: inline-flex; align-items: center; gap: 3px; min-height: 32px; padding: 0 10px; border: 1px solid var(--ps-line); border-radius: 999px; background: #fff; color: #825c78; font: 700 12px/1 var(--mt-font-body); }
+.ps-avatar-edit::after { content: ''; position: absolute; inset: -6px -10px; } /* 見た目32px・タップ44px以上 */
+.ps-id { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.ps-name { position: relative; display: flex; align-items: center; }
+.ps-name input { width: 100%; min-height: 44px; padding: 0 36px 0 12px; border: 1px solid var(--ps-line); border-radius: 12px; background: #fff; font: 800 17px/1.2 var(--mt-font-display); color: var(--ps-ink); }
+.ps-name input[aria-invalid=true] { border-color: var(--mt-danger); }
+.ps-name svg, .ps-select > svg:last-child { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ps-ink-2); }
+.ps-rank { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 700 12px/1.3 var(--mt-font-body); color: var(--ps-ink-2); }
+.ps-rank > span:first-child { font-size: 12px !important; }
+.ps-help { font-size: 12px; line-height: 1.5; color: var(--ps-ink-2); }
+.ps-help[data-error] { color: var(--mt-danger); font-weight: 700; }
+.ps-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.ps-stats > div { padding: 8px; border-radius: 12px; background: #fdf6e8; }
+.ps-stats dt { display: flex; align-items: center; gap: 4px; font: 700 12px/1.2 var(--mt-font-body); color: var(--ps-ink-2); }
+.ps-stats dt svg { color: var(--mt-accent-strong); }
+.ps-stats dd { margin-top: 4px; font: 800 17px/1.1 var(--mt-font-body); color: var(--ps-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ps-stats dd small { font-size: 12px; margin-left: 1px; }
+.ps-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font: 700 12px/1.4 var(--mt-font-body); color: var(--ps-ink-2); }
+.ps-badges > span { margin-right: 4px; color: var(--ps-ink); }
+.ps-badges i { font-style: normal; padding: 1px 8px; border-radius: 999px; background: #f7eaf1; color: #825c78; }
+.ps-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ps-select { position: relative; display: flex; align-items: center; }
+.ps-select > svg:first-child { position: absolute; left: 10px; color: var(--ps-ink-2); pointer-events: none; }
+.ps-select input, .ps-select select { width: 100%; min-height: 44px; padding: 0 32px 0 32px; border: 1px solid var(--ps-line); border-radius: 12px; background: #fff; font: 700 14px/1.2 var(--mt-font-body); color: var(--ps-ink); appearance: none; -webkit-appearance: none; }
+
+/* 対戦カードのプレビュー */
+.ps-preview > p { font: 700 12px/1.4 var(--mt-font-body); color: var(--ps-ink-2); margin-bottom: 6px; }
+.ps-mini { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: linear-gradient(#eaf5fb, #d3e8f4); box-shadow: 0 3px 0 #a3c3d6, 0 0 0 1px #bcd5e3; }
+.ps-mini > div { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.ps-mini strong { font: 800 15px/1.2 var(--mt-font-display); color: #2b5d7a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ps-mini span { display: flex; align-items: center; gap: 6px; font: 700 12px/1.2 var(--mt-font-body); color: #2b5d7a; }
+.ps-mini span > span { font-size: 12px !important; }
+.ps-mini > b { font: 900 14px/1 var(--mt-font-display); color: #7aa4be; letter-spacing: .08em; }
+
+/* サウンド */
+.ps-sound { display: grid; gap: 6px; }
+.ps-sound h3 { font-size: 12px !important; }
+.ps-sub { display: flex; align-items: center; gap: 5px; margin-top: 4px; padding-top: 8px; border-top: 1px dashed var(--ps-line); font: 700 12px/1.3 var(--mt-font-body); color: var(--ps-ink-2); }
+.ps-toggle-row { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 4px 4px 4px 10px; border-radius: 12px; background: #fdf8ee; }
+.ps-toggle-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--mt-todo-soft); color: var(--ps-ink-2); }
+.ps-toggle-icon[data-on] { background: #dcebf6; color: var(--mt-brand); }
+.ps-toggle-text { flex: 1; min-width: 0; }
+.ps-toggle-text p { font: 700 14px/1.3 var(--mt-font-body); color: var(--ps-ink); }
+.ps-toggle-text small { font: 400 12px/1.4 var(--mt-font-body); color: var(--ps-ink-2); }
+/* トグル：押せる範囲は 48×44、見た目のトラックは 48×28。つまみ 22px は left 3px ⇔ 23px（48-22-3）で必ず内側 */
+.ps-switch { position: relative; flex-shrink: 0; width: 56px; height: 44px; background: none; border: 0; padding: 0; }
+.ps-switch::before { content: ''; position: absolute; left: 4px; top: 8px; width: 48px; height: 28px; border-radius: 999px; background: #cfd4da; transition: background .2s; }
+.ps-switch > span { position: absolute; left: 7px; top: 11px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.ps-switch[aria-checked=true]::before { background: var(--mt-brand); }
+.ps-switch[data-tone=gold][aria-checked=true]::before { background: var(--mt-doing); }
+.ps-switch[aria-checked=true] > span { transform: translateX(20px); }
+.ps-switch:focus-visible { outline: none; }
+.ps-switch:focus-visible::before { box-shadow: var(--mt-focus); }
+@media (prefers-reduced-motion: reduce) { .ps-switch::before, .ps-switch > span { transition: none; } }
+/* 音量：塗りつぶしたトラック（6px）＋ 20px のつまみ。値は右に% */
+.ps-volume { --ps-accent: var(--mt-brand); display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px; color: var(--ps-ink-2); }
+.ps-volume[data-tone=gold] { --ps-accent: var(--mt-doing); }
+.ps-volume input { flex: 1; min-width: 0; height: 44px; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: none; user-select: none; }
+.ps-volume input::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--ps-accent) var(--ps-fill), #d9dee4 var(--ps-fill)); }
+.ps-volume input::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; background: #fff; border: 2px solid var(--ps-accent); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.ps-volume input::-moz-range-track { height: 6px; border-radius: 999px; background: #d9dee4; }
+.ps-volume input::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--ps-accent); }
+.ps-volume input::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--ps-accent); }
+.ps-volume input:focus-visible { outline: none; }
+.ps-volume input:focus-visible::-webkit-slider-thumb { box-shadow: var(--mt-focus); }
+.ps-volume output { width: 40px; text-align: right; font: 700 13px/1 var(--mt-font-body); color: var(--ps-ink); font-variant-numeric: tabular-nums; }
+
+/* 残りの節（アカウント・安全）の小さな文字を12pxへ */
+.profile-workspace section h3 { font-size: 12px !important; }
+.profile-workspace .text-\[9px\], .profile-workspace .text-\[10px\], .profile-workspace .text-\[11px\] { font-size: 12px !important; }
+.profile-workspace button { min-height: 44px; }
+.ps-badges small { font-size: 12px; font-weight: 700; }
+.profile-workspace a, .profile-workspace small { font-size: 12px; }
+.ps-mini-avatar { flex: 0 0 44px; width: 44px; }
+.ps-mini > div { flex: 1 1 auto; }
+.ps-help:not([data-error]) { font-size: 12px; }
+.profile-workspace .account-link { font-size: 12px !important; min-height: 44px; }
+
+/* 保存バー：スマホでは画面の下に貼り付ける（スクロールの途中でも押せる） */
+@media (max-width: 767px) {
+  .ps-savebar { position: sticky; bottom: 0; z-index: 5; margin-inline: -4px; padding: 10px 4px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, #fff8f3 80%, rgba(255, 248, 243, 0)); }
+}
+.ps-benefits > summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; list-style: none; }
+.ps-benefits > summary::-webkit-details-marker { display: none; }
+.ps-benefits > summary::after { content: '▾'; margin-left: auto; padding-left: 6px; color: #b0607f; transition: transform .2s; }
+.ps-benefits[open] > summary::after { transform: rotate(180deg); }
+
+/* C15（2026-10-01）設定を共通UIで統一：グループ見出し（kicker）＋共通カード＋共通の一覧行 */
+.profile-journal.mt-screen { background: var(--mt-bg-screen); font-family: var(--mt-font-body); color: var(--mt-ink); }
+.profile-journal .mt-app-header-title > h2 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm) !important; }
+.ps-group-title { margin: 6px 4px 2px; font: var(--mt-text-kicker) !important; letter-spacing: var(--mt-kicker-spacing); color: var(--mt-ink-muted) !important; text-transform: none; }
+.profile-workspace > div > .ps-group-title:first-child { margin-top: 0; }
+.profile-workspace .mt-card { padding: 12px; }
+.profile-workspace .ps-safety > .mt-card { padding: 10px 12px; }
+.profile-workspace .mt-list-item { min-height: 48px; font-size: 14px; }
+.profile-workspace .mt-list-item small { font-size: 12px; }
+.profile-journal .profile-tabs.mt-tabs > button { min-height: 44px; font-size: 13px; }
+.ps-savebar > button:last-child { background: var(--mt-brand) !important; box-shadow: 0 3px 0 var(--mt-brand-strong); border-radius: var(--mt-radius-md) !important; }
+.ps-savebar > button:first-child { border-radius: var(--mt-radius-md) !important; }
+/* 古い「ノート風の section」を共通カードへ置き換える（index.css 1893 の上書き） */
+.profile-workspace section.mt-card { border: 1.5px solid var(--mt-line); border-radius: var(--mt-radius-lg); box-shadow: var(--mt-shadow-card); background: var(--mt-bg-card); padding: 12px; }
+.profile-workspace section.ps-safety { border: 0; padding: 0; box-shadow: none; background: none; border-radius: 0; }
+.profile-workspace .ps-safety .mt-list { box-shadow: var(--mt-shadow-card); }
+.profile-workspace section h3:not(.sr-only) { border-bottom: 0; padding-bottom: 0; margin-bottom: 6px; color: var(--mt-ink-muted); }
+.profile-workspace .ps-preview > p { color: var(--mt-ink-muted); }
+.profile-workspace .ps-safety .mt-list-item { padding-inline: 12px; }
+.ps-safety > .mt-card { margin-top: 8px; }
+/* 2026-10-11：保存バーはスクロールの外（下）に固定。sticky は使わない */
+.ps-savebar.is-fixed { position: static !important; margin: 0 !important; padding: 0 !important; background: none !important; }
+
+/* ===== 2026-10-16 PC：設定を画面いっぱいに表示する =====
+   以前は最大幅 896px の2列で、右列（サウンド・連携・データ）と左列の下が画面の外に出ていた（448px）。
+   PC では幅いっぱいの3列にする：プロフィール／アプリ（サウンド）／アカウント連携・データ。
+   スマホは従来どおり1列（md の2列も変えない）。 */
+@media (min-width: 1100px) {
+  .profile-frame { max-width: 1400px !important; }
+  .profile-workspace { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr) !important; overflow-x: hidden !important; overflow-y: auto !important; align-content: start; }
+}
+@media (min-width: 768px) and (max-width: 1099.98px) {
+  /* 2列のときは、サウンドと連携を右列に縦に積む（従来どおりの並び） */
+  .profile-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+  .profile-workspace > .ps-col-account { grid-column: 2; }
+}
+/* PC（1100px〜）はナビが左にあるので、スマホ用の下のナビ分の余白はいらない。その分カードに高さを回す */
+@media (min-width: 1100px) {
+  .profile-journal { padding-bottom: 12px !important; }
+}
+@media (min-width: 1100px) {
+  /* アバターと「変更」を横に並べ、プロフィール欄の縦を詰める（変更ボタンのタップ域は44pxのまま） */
+  .profile-workspace .ps-avatar { flex-direction: row; align-items: flex-end; }
+  /* 列内のカード間を 12px → 8px。一覧の行は 48px → 44px（タップの最小サイズは守る） */
+  .profile-workspace > div > * + * { margin-top: 8px !important; }
+  .profile-workspace .mt-list-item { min-height: 44px; }
+}
+@media (min-width: 1100px) {
+  /* 見出し「設定」とタブを1行にまとめ、縦をカードに回す */
+  .profile-frame { display: grid !important; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); column-gap: 20px; }
+  .profile-frame > .mt-app-header { margin-bottom: 8px !important; }
+  .profile-frame > .profile-tabs { align-self: center; margin-bottom: 8px !important; }
+  .profile-frame > main { grid-column: 1 / -1; }
+}
+
+/* 2026-10-21 設定の見出しを中央へ（マイページと同じ 23px・900）。とびら君は右に固定。
+   戻す: このブロックを削除し、ProfileModal の MY ACCOUNT を戻す */
+.profile-journal .mt-app-header { position: relative; justify-content: center; }
+.profile-journal .mt-app-header > .mt-app-header-title { flex: 0 1 auto; text-align: center; padding-inline: 56px; }
+.profile-journal .mt-app-header-title > h2 { margin: 0; font: 900 23px/1.2 var(--mt-font-display) !important; color: var(--mt-ink) !important; }
+.profile-journal .mt-app-header > .door-mascot-slot { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+@media (min-width: 1024px) { .profile-journal .mt-app-header-title > h2 { font-size: 28px !important; letter-spacing: .04em; } }
+@media (min-width: 1100px) {
+  /* 見出しは1行目で中央（マイページと同じ）、タブは2行目いっぱい（2026-10-21） */
+  .profile-frame { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto minmax(0, 1fr) !important; }
+  .profile-frame > .mt-app-header { grid-column: 1 / -1; margin-bottom: 4px !important; }
+  .profile-frame > .profile-tabs { grid-column: 1 / -1; }
+}
+
+/* PC設定：空のプロフィール列をなくし、見出し・タブ・本文を同じ幅にそろえる。 */
+@media (min-width: 1100px) {
+  .profile-journal[data-settings-tab="general"] {
+    height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-bottom: 12px !important;
+  }
+  .profile-journal[data-settings-tab="general"] > .profile-frame {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 100%;
+    margin-inline: 0 !important;
+    padding-inline: clamp(20px, 2vw, 36px) !important;
+  }
+  .profile-journal[data-settings-tab="general"] > .profile-frame > main {
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  .profile-journal[data-settings-tab="general"] > .profile-frame > main > div {
+    height: auto !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    gap: 16px !important;
+    overflow: visible !important;
+    align-content: start !important;
+    align-items: start;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account {
+    min-width: 0;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > *,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > * + *,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account > * + * {
+    margin-top: 8px !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > .ps-group-title,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account > .ps-group-title {
+    margin-top: 18px !important;
+    margin-bottom: 0 !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > .ps-group-title:first-child,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account > .ps-group-title:first-child {
+    margin-top: 0 !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > .ps-group-title + .mt-card,
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-account > .ps-group-title + .mt-card {
+    margin-top: 4px !important;
+  }
+  .profile-journal[data-settings-tab="general"] .profile-workspace > .ps-col-app > .ps-preview {
+    margin-top: 12px !important;
+  }
+}
+
+.ps-toggle-text small,
+.ps-help { text-wrap: pretty; line-break: strict; }
+.ps-nowrap { white-space: nowrap; }
+/* 2026-10-28 A5：テスト通知のボタン */
+.ps-test-notify { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 44px; margin-top: 4px; border: 1px solid #c9d8e3; border-radius: 12px; background: #f3f8fb; color: #245e7a; font-size: 13px; font-weight: 800; }
+
+/* ===== 2026-10-29 C3：設定を詰めてスクロールを減らす（大改訂） =====
+   ・空のプロフィール列を削除（中身はマイページへ移済み）
+   ・通知と「使われ方の記録」を1枚のカードに、ログアウト／切り替えは横並び
+   ・カードの余白 12→8px、行 52→44px、見出しの上下を詰める、説明文は1〜2行に
+   ・タップ44px・文字12px以上は守る */
+.profile-journal .profile-frame { padding-top: 6px !important; }
+.profile-journal .mt-app-header { margin-bottom: 4px !important; min-height: 40px; }
+.profile-journal .mt-app-header-title > h2 { font-size: 20px !important; }
+.profile-journal .profile-tabs { margin-bottom: 6px !important; }
+.profile-workspace { gap: 6px !important; }
+.profile-workspace > div { gap: 0 !important; }
+.profile-workspace > div > * + * { margin-top: 6px !important; }
+.profile-workspace .ps-group-title { margin: 8px 4px 0 !important; font-size: 12px !important; }
+.profile-workspace > div > .ps-group-title:first-child { margin-top: 0 !important; }
+.profile-workspace section.mt-card, .profile-workspace .mt-card { padding: 6px 8px !important; }
+.profile-workspace .ps-sound { gap: 0; }
+.profile-workspace .ps-toggle-row { min-height: 44px; padding: 0 2px 0 8px; background: none; border-radius: 0; }
+.profile-workspace .ps-toggle-row + .ps-toggle-row, .profile-workspace .ps-reminders + .ps-reminders .ps-toggle-row:first-child { border-top: 1px solid #efe7d8; }
+.profile-workspace .ps-toggle-icon { width: 28px; height: 28px; }
+.profile-workspace .ps-toggle-text p { font-size: 14px; }
+.profile-workspace .ps-toggle-text small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.profile-workspace .ps-volume { min-height: 40px; }
+.profile-workspace .ps-sub { margin-top: 0; padding-top: 4px; }
+.profile-workspace .ps-help { margin: 2px 8px 4px; }
+.profile-workspace .ps-test-notify { min-height: 44px; margin: 2px 0 4px; }
+.ps-account-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ps-account-actions > .compact-action { margin: 0 !important; min-height: 44px; }
+.profile-workspace .ps-account { gap: 6px; }
+.profile-workspace .ps-account > p { margin: 0; }
+.profile-workspace .ps-safety > .mt-card { margin-top: 6px !important; }
+.profile-workspace .mt-list-item { min-height: 44px !important; }
+/* スマホ（〜767px）：サウンドと通知を2列のタイルにはせず1列のまま、縦の余白だけを削る */
+@media (max-width: 767px) {
+  .profile-journal { padding-bottom: calc(var(--app-nav-h, 120px) + 4px) !important; }
+  .profile-workspace { padding-bottom: 8px; }
+}
+/* 横幅がある端末（〜1099px でも 560px 以上）：2列に並べて縦を半分に */
+@media (min-width: 560px) and (max-width: 1099.98px) {
+  .profile-journal[data-settings-tab="general"] .profile-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; overflow-y: auto !important; align-content: start; }
+  .profile-workspace > .ps-col-account { grid-column: 2; }
+}

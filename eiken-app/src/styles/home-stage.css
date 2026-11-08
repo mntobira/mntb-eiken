@@ -1,0 +1,91 @@
+/*
+ * ★D7（2026-10-30）ホームの背景（とびら君のステージ）をガチャで当てて選べる★
+ *   ホーム：.game-home .game-mascot-stage[data-stage=…]（何もつけなければ cosmos＝今までの宇宙。world.css のまま）
+ *   見本　：[data-stage-swatch=…]（ガチャの絵・きせかえ・持ち物の一覧で同じ色）
+ *   動きは transform / opacity だけ。動きを減らす設定と低スペック端末では止める。
+ */
+:root {
+  --stage-cosmos: radial-gradient(ellipse 70% 40% at 50% 100%, #ffd89a 0%, #f3a55a55 45%, transparent 70%), linear-gradient(180deg, #172a4f 0%, #2d4f8e 55%, #6d6fa8 82%, #e9a36b 100%);
+  --stage-sunrise: radial-gradient(circle at 70% 22%, #fff4c9 0 9%, #ffd88a66 16%, transparent 34%), linear-gradient(180deg, #ffc9a3 0%, #fbb3a3 40%, #f7dcb8 70%, #a9d98f 86%, #7fc06d 100%);
+  --stage-forest: radial-gradient(ellipse 60% 30% at 50% 0%, #fff7cf55, transparent 70%), linear-gradient(180deg, #1f3d2b 0%, #2f6b45 52%, #5d9d5c 80%, #b7dc93 100%);
+  --stage-ocean: radial-gradient(ellipse 50% 70% at 50% -10%, #bff4ff66, transparent 70%), linear-gradient(180deg, #06243f 0%, #0b4f7a 48%, #1b86a8 80%, #6ccfdc 100%);
+  --stage-sakura: radial-gradient(circle at 78% 18%, #fff3f8 0 6%, #ffd6e7 9%, transparent 22%), linear-gradient(180deg, #24193f 0%, #4a2e66 52%, #9a5486 82%, #efb1c9 100%);
+  --stage-library: repeating-linear-gradient(90deg, #00000000 0 34px, #00000024 34px 36px), radial-gradient(ellipse 50% 40% at 50% 30%, #ffd98c55, transparent 70%), linear-gradient(180deg, #2a1c14 0%, #5a3a24 55%, #946436 82%, #e3bd82 100%);
+  --stage-candy: radial-gradient(circle at 20% 25%, #ffffff 0 4%, transparent 5%), radial-gradient(circle at 80% 35%, #ffffff 0 3%, transparent 4%), linear-gradient(180deg, #ffd0e8 0%, #ffe6b5 48%, #c4efff 82%, #ffffff 100%);
+  --stage-aurora: radial-gradient(ellipse 80% 35% at 30% 30%, #43e97b55, transparent 70%), radial-gradient(ellipse 70% 30% at 75% 40%, #7a5cc766, transparent 70%), linear-gradient(180deg, #071a2c 0%, #0f3b4f 50%, #1d7f74 82%, #63c9a4 100%);
+  --stage-neon: linear-gradient(0deg, #ff3fa433 0 2px, transparent 2px) 0 100%/100% 18px, linear-gradient(180deg, #0d0628 0%, #2a0b55 52%, #8e1471 80%, #ff9a4d 100%);
+  /* F7（2026-11-04）追加 */
+  --stage-meadow: radial-gradient(circle at 18% 82%, #ffd1e0 0 3%, transparent 4%), radial-gradient(circle at 70% 88%, #fff3a6 0 3%, transparent 4%), linear-gradient(180deg, #bfe6ff 0%, #e3f5ff 46%, #bfe5a0 74%, #8fcf72 100%);
+  --stage-snowfield: radial-gradient(ellipse 60% 25% at 50% 100%, #ffffff, transparent 70%), linear-gradient(180deg, #a9c8e8 0%, #d3e4f4 50%, #f1f6fb 80%, #ffffff 100%);
+  --stage-classroom: repeating-linear-gradient(90deg, #00000000 0 60px, #0000001a 60px 62px), linear-gradient(180deg, #ffb36b 0%, #e98a5a 40%, #6e5a4a 72%, #3e4b3a 100%);
+  --stage-desert: radial-gradient(circle at 78% 20%, #fff4d1 0 5%, transparent 9%), linear-gradient(180deg, #1c1640 0%, #3e2d66 50%, #a86a4e 80%, #d9a066 100%);
+  --stage-rainbow: radial-gradient(circle at 50% 110%, transparent 0 38%, #ff8fab55 39% 42%, #ffd43b55 43% 46%, #8ce99a55 47% 50%, #74c0fc55 51% 54%, transparent 55%), linear-gradient(180deg, #cfe9ff 0%, #f0f8ff 55%, #c5eab0 82%, #99d67f 100%);
+  --stage-starlit: radial-gradient(ellipse 80% 40% at 50% 0%, #3b4b9a66, transparent 70%), linear-gradient(180deg, #05081f 0%, #121a45 55%, #283a7a 85%, #4a5fa8 100%);
+}
+
+/* ---------- ホーム（ステージ本体）---------- */
+.game-home .game-mascot-stage[data-stage=sunrise] { background: var(--stage-sunrise); }
+.game-home .game-mascot-stage[data-stage=forest] { background: var(--stage-forest); }
+.game-home .game-mascot-stage[data-stage=ocean] { background: var(--stage-ocean); }
+.game-home .game-mascot-stage[data-stage=sakura] { background: var(--stage-sakura); }
+.game-home .game-mascot-stage[data-stage=library] { background: var(--stage-library); }
+.game-home .game-mascot-stage[data-stage=candy] { background: var(--stage-candy); }
+.game-home .game-mascot-stage[data-stage=aurora] { background: var(--stage-aurora); }
+.game-home .game-mascot-stage[data-stage=neon] { background: var(--stage-neon); }
+.game-home .game-mascot-stage[data-stage=meadow] { background: var(--stage-meadow); }
+.game-home .game-mascot-stage[data-stage=snowfield] { background: var(--stage-snowfield); }
+.game-home .game-mascot-stage[data-stage=classroom] { background: var(--stage-classroom); }
+.game-home .game-mascot-stage[data-stage=desert] { background: var(--stage-desert); }
+.game-home .game-mascot-stage[data-stage=rainbow] { background: var(--stage-rainbow); }
+.game-home .game-mascot-stage[data-stage=starlit] { background: var(--stage-starlit); }
+
+/* 星（world.css の白い点）を背景ごとの「舞うもの」にする。world.css 側が変数で受けるので強制指定は要らない */
+.game-home .game-mascot-stage:is([data-stage=sunrise], [data-stage=candy]) { --stage-dot: #ffffff; --stage-dot-op: .85; }
+.game-home .game-mascot-stage[data-stage=forest] { --stage-dot: #f6ff9e; }
+.game-home .game-mascot-stage[data-stage=ocean] { --stage-dot: #d4f6ff; --stage-dot-border: 1px solid #ffffff99; }
+.game-home .game-mascot-stage[data-stage=sakura] { --stage-dot: #ffc6dc; }
+.game-home .game-mascot-stage[data-stage=library] { --stage-dot: #ffd98c; }
+.game-home .game-mascot-stage[data-stage=aurora] { --stage-dot: #b6ffe0; }
+.game-home .game-mascot-stage[data-stage=neon] { --stage-dot: #ff77c8; }
+.game-home .game-mascot-stage:is([data-stage=meadow], [data-stage=rainbow]) { --stage-dot: #ffffff; --stage-dot-op: .85; }
+.game-home .game-mascot-stage[data-stage=snowfield] { --stage-dot: #ffffff; --stage-dot-border: 1px solid #a9c8e8; }
+.game-home .game-mascot-stage[data-stage=classroom] { --stage-dot: #ffe3b0; }
+.game-home .game-mascot-stage:is([data-stage=desert], [data-stage=starlit]) { --stage-dot: #fff4d1; }
+
+/* 明るい背景では、ステージの文字を濃い色に（読みやすさ） */
+.game-home .game-mascot-stage:is([data-stage=sunrise], [data-stage=candy], [data-stage=meadow], [data-stage=snowfield], [data-stage=rainbow]) { --stage-label: #4a2c00; --stage-label-shadow: 0 1px 0 #fff8; --stage-label-b: var(--mt-ink-warm); }
+
+/* 背景ごとのゆっくりした動き（オーロラは揺らぐ・海はゆらめく・ネオンは点滅） */
+.game-home .game-mascot-stage[data-stage]::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; }
+.game-home .game-mascot-stage[data-stage=aurora]::after { opacity: 1; background: radial-gradient(ellipse 60% 25% at 40% 32%, #52ffb855, transparent 70%); }
+.game-home .game-mascot-stage[data-stage=ocean]::after { opacity: .6; background: repeating-linear-gradient(115deg, #ffffff00 0 22px, #ffffff1a 22px 26px); }
+.game-home .game-mascot-stage[data-stage=neon]::after { opacity: 1; background: radial-gradient(ellipse 70% 20% at 50% 100%, #ff3fa466, transparent 70%); }
+@media (prefers-reduced-motion: no-preference) {
+  .game-home .game-mascot-stage[data-stage=aurora]::after { animation: stage-aurora 9s ease-in-out infinite alternate; }
+  .game-home .game-mascot-stage[data-stage=ocean]::after { animation: stage-ocean 7s linear infinite; }
+  .game-home .game-mascot-stage[data-stage=neon]::after { animation: stage-neon 3.2s ease-in-out infinite; }
+  @keyframes stage-aurora { from { translate: -8% 0; opacity: .55; } to { translate: 8% 3%; opacity: 1; } }
+  @keyframes stage-ocean { from { translate: 0 0; } to { translate: 26px 0; } }
+  @keyframes stage-neon { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+}
+html[data-perf=lite] .game-home .game-mascot-stage[data-stage]::after { animation: none; }
+
+/* ---------- 見本（ガチャの絵・きせかえ・持ち物の一覧）---------- */
+[data-stage-swatch] { display: inline-block; border-radius: 10px; overflow: hidden; }
+span[data-stage-swatch] { background: var(--stage-cosmos); }
+[data-stage-swatch] .stage-swatch-fill { fill: #2d4f8e; }
+[data-stage-swatch=sunrise] .stage-swatch-fill { fill: #fbb3a3; } span[data-stage-swatch=sunrise] { background: var(--stage-sunrise); }
+[data-stage-swatch=forest] .stage-swatch-fill { fill: #2f6b45; } span[data-stage-swatch=forest] { background: var(--stage-forest); }
+[data-stage-swatch=ocean] .stage-swatch-fill { fill: #0b4f7a; } span[data-stage-swatch=ocean] { background: var(--stage-ocean); }
+[data-stage-swatch=sakura] .stage-swatch-fill { fill: #7a4479; } span[data-stage-swatch=sakura] { background: var(--stage-sakura); }
+[data-stage-swatch=library] .stage-swatch-fill { fill: #5a3a24; } span[data-stage-swatch=library] { background: var(--stage-library); }
+[data-stage-swatch=candy] .stage-swatch-fill { fill: #ffd0e8; } span[data-stage-swatch=candy] { background: var(--stage-candy); }
+[data-stage-swatch=aurora] .stage-swatch-fill { fill: #1d7f74; } span[data-stage-swatch=aurora] { background: var(--stage-aurora); }
+[data-stage-swatch=neon] .stage-swatch-fill { fill: #5a0f63; } span[data-stage-swatch=neon] { background: var(--stage-neon); }
+[data-stage-swatch=meadow] .stage-swatch-fill { fill: #bfe5a0; } span[data-stage-swatch=meadow] { background: var(--stage-meadow); }
+[data-stage-swatch=snowfield] .stage-swatch-fill { fill: #d3e4f4; } span[data-stage-swatch=snowfield] { background: var(--stage-snowfield); }
+[data-stage-swatch=classroom] .stage-swatch-fill { fill: #e98a5a; } span[data-stage-swatch=classroom] { background: var(--stage-classroom); }
+[data-stage-swatch=desert] .stage-swatch-fill { fill: #3e2d66; } span[data-stage-swatch=desert] { background: var(--stage-desert); }
+[data-stage-swatch=rainbow] .stage-swatch-fill { fill: #cfe9ff; } span[data-stage-swatch=rainbow] { background: var(--stage-rainbow); }
+[data-stage-swatch=starlit] .stage-swatch-fill { fill: #121a45; } span[data-stage-swatch=starlit] { background: var(--stage-starlit); }
+svg[data-stage-swatch] { display: block; }

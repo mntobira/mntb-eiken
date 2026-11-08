@@ -1,0 +1,7 @@
+/* とびら君の背景なしモーション（TobiraMotion.tsx）。静止画と同じ箱に収める */
+.tobira-motion { position: relative; display: block; width: 100%; height: 100%; pointer-events: none; }
+.tobira-motion > img, .tobira-motion > video { display: block; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; background: transparent; }
+/* 置き場所ごとの大きさ（静止画の TobiraBuddy と同じくらい） */
+.mission-clear-motion .tobira-motion { width: 64px; height: 64px; margin: 0 auto; }
+.battle-result-motion.tobira-motion { width: 96px; height: 96px; margin: 0 auto; }
+.battle-radar-motion.tobira-motion { width: 56px; height: 56px; }

@@ -1,0 +1,32 @@
+/* お供（2026-11-03）カギノスケの絵。画像は1枚で、色違いは filter（金＝そのまま）。
+ * 戻すとき：CompanionArt.tsx とこのファイルを消す。 */
+.companion-art { width: auto; object-fit: contain; }
+.companion-art[data-companion=key_silver] { filter: saturate(0) brightness(1.12) contrast(1.05); }
+.companion-art[data-companion=key_rose] { filter: hue-rotate(-38deg) saturate(.85) brightness(1.05); }
+.companion-art[data-companion=key_mint] { filter: hue-rotate(95deg) saturate(.75) brightness(1.05); }
+.companion-art[data-companion=key_sky] { filter: hue-rotate(165deg) saturate(.85); }
+.companion-art[data-companion=key_night] { filter: hue-rotate(205deg) saturate(.9) brightness(.82); }
+.companion-art[data-companion=key_aurora] { filter: hue-rotate(250deg) saturate(1.35) brightness(1.08); }
+/* ガチャ・コレクションのマス目では、真ん中・下にそろえる */
+.gacha-companion-art, .collection-companion-art { display: inline-flex; align-items: flex-end; justify-content: center; }
+/* F7（2026-11-04）色ちがいの追加（絵は同じ1枚。filter だけ） */
+.companion-art[data-companion=key_lemon] { filter: hue-rotate(12deg) saturate(1.2) brightness(1.12); }
+.companion-art[data-companion=key_peach] { filter: hue-rotate(-18deg) saturate(.8) brightness(1.1); }
+.companion-art[data-companion=key_cocoa] { filter: sepia(.6) saturate(.7) brightness(.78); }
+.companion-art[data-companion=key_snow] { filter: saturate(0) brightness(1.3) contrast(.92); }
+.companion-art[data-companion=key_forest] { filter: hue-rotate(60deg) saturate(.8) brightness(.86); }
+.companion-art[data-companion=key_teal] { filter: hue-rotate(130deg) saturate(.9); }
+.companion-art[data-companion=key_grape] { filter: hue-rotate(230deg) saturate(.9) brightness(.9); }
+.companion-art[data-companion=key_sunset] { filter: hue-rotate(-22deg) saturate(1.4); }
+.companion-art[data-companion=key_ruby] { filter: hue-rotate(-50deg) saturate(1.6) brightness(.9); }
+.companion-art[data-companion=key_emerald] { filter: hue-rotate(85deg) saturate(1.5) brightness(.95); }
+.companion-art[data-companion=key_galaxy] { filter: hue-rotate(220deg) saturate(1.6) brightness(.75) contrast(1.15); }
+/* にじいろ：無限アニメに filter は使わない決まり（低スペック端末・tests/lowSpecMotion.test.ts）なので、色は固定 */
+.companion-art[data-companion=key_rainbow] { filter: hue-rotate(160deg) saturate(1.5) brightness(1.08) contrast(1.05); }
+.companion-art[data-companion=key_amber] { filter: sepia(.4) saturate(1.3) brightness(.95); }
+.companion-art[data-companion=key_ice] { filter: hue-rotate(175deg) saturate(.45) brightness(1.2); }
+.companion-art[data-companion=key_lilac] { filter: hue-rotate(240deg) saturate(.6) brightness(1.1); }
+.companion-art[data-companion=key_ink] { filter: saturate(0) brightness(.55) contrast(1.2); }
+.companion-art[data-companion=key_lava] { filter: hue-rotate(-30deg) saturate(1.8) brightness(.85) contrast(1.1); }
+.companion-art[data-companion=key_sapphire] { filter: hue-rotate(195deg) saturate(1.5) brightness(.85); }
+.companion-art[data-companion=key_platinum] { filter: saturate(.15) brightness(1.18) contrast(1.15); }

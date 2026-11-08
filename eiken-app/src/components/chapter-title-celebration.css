@@ -1,0 +1,14 @@
+/* C12（2026-10-29）：章の称号ゲット。土台はミッション達成の演出（mission-clear.css）。
+   ミッションは 1.5 秒で消えるが、称号は「つける／とじる」を選ぶまで残す（自分で閉じる）。 */
+.chapter-title-celebration { animation: ctc-in .35s ease both; }
+.chapter-title-card { width: min(340px, calc(100vw - 32px)); gap: 8px; padding: 22px 20px 18px; }
+.chapter-title-stamp { font-size: 30px; }
+.chapter-title-chapter { margin: 8px 0 0; font: 800 14px/1.4 var(--mt-font-display); color: #6b4300; text-align: center; }
+.chapter-title-name { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 4px; padding: 6px 14px; border: 2px solid var(--mt-rare-ur-line); border-radius: 999px; background: linear-gradient(120deg, var(--mt-rare-ur-bg), #ffe7a6); font: 900 22px/1.2 var(--mt-font-display); color: var(--mt-rare-ur-ink); }
+.chapter-title-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 6px; }
+.chapter-title-actions button { min-height: 48px; border-radius: 14px; font-weight: 800; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.chapter-title-equip { border: 0; background: var(--mt-brand); color: #fff; }
+.chapter-title-equip:disabled { background: var(--mt-done); opacity: 1; }
+.chapter-title-close { border: 1.5px solid var(--mt-line-strong); background: #fff; color: var(--mt-ink); }
+@keyframes ctc-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .chapter-title-celebration { animation: none; } }

@@ -1,0 +1,3891 @@
+{
+ "subjectId": "listening-q5",
+ "subjectName": "共通テスト英語リスニング 第5問",
+ "format": {
+  "q27": "3点。講義の大意を4択から1つ",
+  "q28_31": "6つの共有選択肢から各空所に1つ。問28・29 で完答2点、問30・31 で完答2点（部分点なし）",
+  "q32": "4点。A・Bの発言が講義と一致するかを4択で判定",
+  "q33": "5点。講義＋追加の会話＋図表を統合して推論",
+  "total": 16,
+  "playOnce": true
+ },
+ "count": 15,
+ "sets": [
+  {
+   "id": "q5set01",
+   "no": 1,
+   "level": "easy",
+   "levelJa": "やや易",
+   "topic": "垂直農業（都市で食料を作る）",
+   "situation": "あなたはアメリカの大学で、都市の食料供給についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set01_lecture.mp3",
+    "script": "Good morning. Today we look at vertical farming: growing food in stacked layers inside buildings, under electric light, in the middle of a city. It sounds futuristic, but the first commercial farms of this kind opened only about fifteen years ago.\n\nStart with a simple question: where does a city's salad come from? In most cities, lettuce is trucked in from farms hundreds of kilometres away. That journey costs money and the leaves lose freshness before they reach the shelf. Farming closer to the city sounds obvious, but around most large cities there is very little land left.\n\nVertical farms answer this by moving indoors. Because the building controls temperature and light, the season outside stops mattering, and you can harvest lettuce in January in a cold climate. Many of these farms occupy abandoned warehouses, which are cheap and already wired for electricity.\n\nThe water story surprises people. In an open field, most of the water you apply sinks into the soil or evaporates. In a closed indoor system, the same water goes around the system again and again, so one of these farms can use ninety per cent less water than a field growing the identical crop.\n\nSpace works differently too. A field can only get bigger sideways. Indoors, when you want more growing area, you stack another layer on top rather than buy another field, so ten layers in one building equal ten fields of surface. The difficulty is electricity. Lighting is the single largest cost, and researchers are still testing which crops earn that cost back. Leafy greens do. Wheat, so far, does not.",
+    "wordCount": 267,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Vertical Farming in Cities",
+    "image": "q5set01_worksheet.png",
+    "lead": {
+     "text": "Vertical farming is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Problems with the current city food supply",
+      "rows": [
+       {
+        "label": "Vegetables for cities:",
+        "text": "(28) over long distances",
+        "blank": 28
+       },
+       {
+        "label": "Land around cities:",
+        "text": "increasingly (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Advantages of vertical farming",
+      "rows": [
+       {
+        "text": "Crops can be harvested all year in any climate."
+       },
+       {
+        "text": "The same water is (30) inside the system.",
+        "blank": 30
+       },
+       {
+        "text": "Growing area is (31) upward, not sideways.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "a farming method that depends on rainfall and natural sunlight",
+     "a farming method that grows crops in stacked layers indoors",
+     "a farming method that has been in commercial use for over a century",
+     "a farming method that works only in warm tropical regions"
+    ],
+    "answer": 2,
+    "points": 3,
+    "explain": "冒頭の定義文がそのまま大意。growing food in stacked layers inside buildings, under electric light と述べられている。③は「約15年前に始まった」と矛盾。①は「建物が温度と光を管理する」と矛盾。④は「寒冷地の1月でも収穫できる」と矛盾。",
+    "keyPhrases": [
+     "growing food in stacked layers inside buildings",
+     "only about fifteen years ago"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "屋内で電灯を使う方式なので雨と自然光には依存しない。the building controls temperature and light と正反対。"
+     },
+     {
+      "no": 3,
+      "why": "「100年以上」は誤り。講義は「この種の最初の商業農場は約15年前に開いた」と明言。歴史の古さと現在の数を混同させる罠。"
+     },
+     {
+      "no": 4,
+      "why": "熱帯限定という記述はない。harvest lettuce in January in a cold climate が反例。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "abandoned",
+     "expanded",
+     "recycled",
+     "scarce",
+     "shipped",
+     "tested"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 5,
+      "heard": "trucked in from farms hundreds of kilometres away",
+      "collocationNote": "空所は受動態の過去分詞。後に over long distances が続くので「運ばれる」系の語のみ成立する。"
+     },
+     {
+      "no": 29,
+      "answer": 4,
+      "heard": "there is very little land left",
+      "collocationNote": "直前が increasingly。increasingly + 形容詞の形なので、過去分詞ではなく形容詞 scarce が入る。"
+     },
+     {
+      "no": 30,
+      "answer": 3,
+      "heard": "the same water goes around the system again and again",
+      "collocationNote": "The same water is (30) inside the system. 主語が water なので「循環させられる」意味の過去分詞。"
+     },
+     {
+      "no": 31,
+      "answer": 2,
+      "heard": "you stack another layer on top rather than buy another field",
+      "collocationNote": "Growing area is (31) upward の形。upward と結びつく「広げられる」意味の過去分詞。"
+     }
+    ],
+    "unused": [
+     1,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "第5問の要は言い換え。(28)は音声の trucked in を shipped に、(29)は very little land left を scarce に、(30)は goes around the system again and again を recycled に、(31)は stack another layer on top を expanded に置き換える。使わない2つは音声に出た語に引っ張られる罠で、abandoned は abandoned warehouses、tested は researchers are still testing の反響。どちらも空所の内容とは無関係。",
+    "keyPhrases": [
+     "trucked in from farms hundreds of kilometres away",
+     "there is very little land left",
+     "the same water goes around the system again and again",
+     "you stack another layer on top rather than buy another field",
+     "abandoned warehouses",
+     "researchers are still testing"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set01_q32_A.mp3",
+     "q5set01_q32_B.mp3"
+    ],
+    "statements": [
+     "Vertical farms save water mainly because they occupy a much smaller area.",
+     "The cost of lighting decides which crops are worth growing indoors."
+    ],
+    "wordCounts": [
+     12,
+     11
+    ],
+    "matches": [
+     false,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 2,
+    "points": 4,
+    "explain": "Aは因果関係のすり替え。節水の理由は「閉じた系で同じ水が何度も循環するから」で、面積の小ささが理由ではない。結論（節水する）が正しいだけに引っかかりやすい。Bは Lighting is the single largest cost と which crops earn that cost back の2文をまとめた正しい要約。よって②。",
+    "keyPhrases": [
+     "the same water goes around the system again and again",
+     "Lighting is the single largest cost",
+     "which crops earn that cost back"
+    ]
+   },
+   "q33": {
+    "audio": "q5set01_q33.mp3",
+    "image": "q5set01_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Average Industrial Electricity Price (US cents per kWh)",
+     "axis": {
+      "x": "Country",
+      "y": "US cents per kWh"
+     },
+     "series": [
+      {
+       "name": "Norway",
+       "value": 6.2
+      },
+      {
+       "name": "United States",
+       "value": 8.4
+      },
+      {
+       "name": "Singapore",
+       "value": 13.1
+      },
+      {
+       "name": "Japan",
+       "value": 17.5
+      },
+      {
+       "name": "Germany",
+       "value": 22.3
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "May",
+      "text": "If lighting is the biggest cost, this graph almost tells us where these farms can survive."
+     },
+     {
+      "who": "Joe",
+      "text": "Norway is by far the cheapest, but Norway also has plenty of open land, doesn't it?"
+     },
+     {
+      "who": "May",
+      "text": "Exactly, and Singapore sits in the middle on price, yet it imports nearly all its vegetables because it has almost no farmland."
+     },
+     {
+      "who": "Joe",
+      "text": "So a low price alone proves nothing."
+     }
+    ],
+    "wordCount": 61,
+    "choices": [
+     "Countries with cheap electricity are the countries that import most of their vegetables.",
+     "Germany's high electricity price shows that lighting cost no longer matters.",
+     "Vertical farming is attractive where electricity is not the cheapest but farmland is unavailable.",
+     "Vertical farming will spread fastest in the country with the lowest electricity price."
+    ],
+    "answer": 3,
+    "points": 5,
+    "explain": "講義（照明費が最大のコスト）＋会話（安さだけでは決まらない／シンガポールは農地がほぼ無く輸入依存）＋図表（シンガポールは価格が中位）の3点を統合する。電気代が最安でなくても農地が無い国では垂直農業に価値がある、という③が導かれる。",
+    "keyPhrases": [
+     "Lighting is the single largest cost",
+     "it imports nearly all its vegetables because it has almost no farmland",
+     "So a low price alone proves nothing"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "因果の捏造。輸入依存の理由は農地の欠如であり電気代の安さではない。図表で最安のノルウェーは土地が豊富とされている。"
+     },
+     {
+      "no": 2,
+      "why": "逆。電気代が高いことは照明費の負担が重いことを意味する。Lighting is the single largest cost と矛盾する。"
+     },
+     {
+      "no": 4,
+      "why": "Joe が「ノルウェーは最安だが土地も余っている」と述べ、May が「安さだけでは何も証明しない」と結論している。図表の最小値に飛びつく典型的な誤答。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set02",
+   "no": 2,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "睡眠と記憶の定着",
+   "situation": "あなたはアメリカの大学で、睡眠と学習についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set02_lecture.mp3",
+    "script": "Good afternoon. Tonight, while you sleep, your brain will be busy sorting through everything that happened today. Let me explain what we now know about sleep and memory.\n\nFor most of the twentieth century, sleep was treated as a kind of switching off. Textbooks described the sleeping brain as idle, simply waiting for morning. Students were told that if they wanted to remember something, the answer was more hours of study, and sleep was time taken away from that study.\n\nThe picture changed in the nineteen nineties, when researchers began recording brain activity through the night. They found that the patterns produced while an animal learned a maze during the day were played again during sleep, faster and in the same order. Nothing was switching off at all.\n\nWe now think of sleep as the stage where a memory becomes permanent. During the day, new information is held in a small structure near the centre of the brain. At night, the same information is copied out to the outer surface, where it can last for years. Wake someone repeatedly during the deepest stage of sleep, and the copying never finishes.\n\nThere is a second effect, and it is easier to demonstrate. Give two groups a list of word pairs. Let one group sleep for eight hours and keep the other awake for the same eight hours. Test them the next evening, when both are equally tired. The group that slept remembers about forty per cent more. So sleep is not a gap in learning. It is part of the process, and it cannot be replaced by extra hours at the desk.",
+    "wordCount": 271,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Sleep and the Making of Memory",
+    "image": "q5set02_worksheet.png",
+    "lead": {
+     "text": "According to recent research, sleep is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "The old view of sleep (until the 1990s)",
+      "rows": [
+       {
+        "label": "The sleeping brain:",
+        "text": "believed to be (28)",
+        "blank": 28
+       },
+       {
+        "label": "Time spent asleep:",
+        "text": "seen as (29) hours for learning",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "What sleep actually does",
+      "rows": [
+       {
+        "text": "Daytime brain patterns appear again during the night."
+       },
+       {
+        "text": "Memories are (30) to the outer surface of the brain.",
+        "blank": 30
+       },
+       {
+        "text": "Recall of word pairs is clearly (31) after sleeping.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "an essential stage in which memories are made permanent",
+     "a habit that can be replaced by longer hours of study",
+     "a period in which the brain shuts down until morning",
+     "a process that has been well understood for over a century"
+    ],
+    "answer": 1,
+    "points": 3,
+    "explain": "第4段落の We now think of sleep as the stage where a memory becomes permanent が講義全体の主張。③は1990年代以前の旧説で、講義はそれを否定している。②は最終文と正反対。④は「20世紀のほとんどの間は違う理解だった」「変わったのは1990年代」と矛盾。",
+    "keyPhrases": [
+     "the stage where a memory becomes permanent",
+     "it cannot be replaced by extra hours at the desk"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "最終文 it cannot be replaced by extra hours at the desk の真逆。旧説で学生に言われていた内容を結論と混同させる罠。"
+     },
+     {
+      "no": 3,
+      "why": "旧説そのもの。sleep was treated as a kind of switching off は「かつてそう考えられていた」という提示であり、講義の結論ではない。時系列の読み違いを誘う。"
+     },
+     {
+      "no": 4,
+      "why": "「1世紀にわたって理解されてきた」は誤り。転換点は the nineteen nineties と明示されている。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "inactive",
+     "recorded",
+     "strengthened",
+     "tested",
+     "transferred",
+     "wasted"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 1,
+      "heard": "described the sleeping brain as idle",
+      "collocationNote": "believed to be + 形容詞。idle の言い換えとなる形容詞のみ成立し、過去分詞系は意味が合わない。"
+     },
+     {
+      "no": 29,
+      "answer": 6,
+      "heard": "sleep was time taken away from that study",
+      "collocationNote": "空所は直後の hours を修飾する。「無駄な時間」の意味になる語のみ入る。"
+     },
+     {
+      "no": 30,
+      "answer": 5,
+      "heard": "the same information is copied out to the outer surface",
+      "collocationNote": "are (30) to the outer surface。前置詞 to を伴う「移される」意味の過去分詞。"
+     },
+     {
+      "no": 31,
+      "answer": 3,
+      "heard": "The group that slept remembers about forty per cent more",
+      "collocationNote": "Recall is clearly (31)。主語が recall なので「強化される」意味の過去分詞。"
+     }
+    ],
+    "unused": [
+     2,
+     4
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は idle を inactive に、(29)は time taken away from study を wasted に、(30)は copied out to を transferred to に、(31)は remembers forty per cent more を strengthened に言い換える。使わない2つは音声語の反響で、recorded は began recording brain activity、tested は Test them the next evening に引っ張られる。どちらも空所の内容ではない。",
+    "keyPhrases": [
+     "described the sleeping brain as idle",
+     "sleep was time taken away from that study",
+     "the same information is copied out to the outer surface",
+     "The group that slept remembers about forty per cent more",
+     "began recording brain activity",
+     "Test them the next evening"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set02_q32_A.mp3",
+     "q5set02_q32_B.mp3"
+    ],
+    "statements": [
+     "Brain patterns from daytime learning are repeated while an animal is asleep.",
+     "The group kept awake performed worse because they were more tired."
+    ],
+    "wordCounts": [
+     12,
+     11
+    ],
+    "matches": [
+     true,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 1,
+    "points": 4,
+    "explain": "Aは第3段落の the patterns produced while an animal learned a maze ... were played again during sleep の正しい要約。Bは実験設計の要点を落としている。講義は Test them the next evening, when both are equally tired と述べ、疲労差を打ち消したうえで差が出たと説明している。よって①。",
+    "keyPhrases": [
+     "were played again during sleep, faster and in the same order",
+     "when both are equally tired"
+    ]
+   },
+   "q33": {
+    "audio": "q5set02_q33.mp3",
+    "image": "q5set02_q33_graph.png",
+    "graph": {
+     "kind": "line",
+     "title": "Average Nightly Sleep by Age (hours)",
+     "axis": {
+      "x": "Age",
+      "y": "Hours of sleep per night"
+     },
+     "series": [
+      {
+       "name": "10",
+       "value": 9.6
+      },
+      {
+       "name": "13",
+       "value": 8.4
+      },
+      {
+       "name": "16",
+       "value": 7.1
+      },
+      {
+       "name": "19",
+       "value": 6.8
+      },
+      {
+       "name": "22",
+       "value": 7.3
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Sara",
+      "text": "Look at ages 16 and 19: that's when exam pressure is heaviest, and sleep is at its lowest."
+     },
+     {
+      "who": "Tom",
+      "text": "And it goes back up at 22, once university entrance exams are over?"
+     },
+     {
+      "who": "Sara",
+      "text": "Partly, though what worries me is that these are exactly the years when students are told to study longer."
+     },
+     {
+      "who": "Tom",
+      "text": "Which, according to the lecture, is the least efficient thing they could do."
+     }
+    ],
+    "wordCount": 63,
+    "choices": [
+     "Sleep falls to its lowest point in the very years when longer study is most often demanded.",
+     "Sleep length returns to the age 10 level once university entrance exams are finished.",
+     "Sleeping less between 13 and 19 is what causes students to study longer.",
+     "Students sleep least at age 22, when academic pressure reaches its peak."
+    ],
+    "answer": 1,
+    "points": 5,
+    "explain": "図表（16歳・19歳が最低）＋会話（その時期こそ長時間の勉強を求められる）＋講義（睡眠は学習の一部であり机に向かう時間では代替できない）を統合すると①。数値と講義の主張が噛み合う唯一の選択肢。",
+    "keyPhrases": [
+     "it cannot be replaced by extra hours at the desk",
+     "these are exactly the years when students are told to study longer"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "図表の数値を見誤っている。22歳は7.3時間で、10歳の9.6時間には全く戻っていない。"
+     },
+     {
+      "no": 3,
+      "why": "因果の逆転・捏造。会話は「長く勉強せよと言われる時期に睡眠が減る」と述べており、睡眠減少が勉強時間を生むとは言っていない。"
+     },
+     {
+      "no": 4,
+      "why": "図表と矛盾。最低は19歳の6.8時間で、22歳は7.3時間に戻っている。会話でも goes back up at 22 と述べられている。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set03",
+   "no": 3,
+   "level": "hard",
+   "levelJa": "やや難",
+   "topic": "海洋プラスチックと河川",
+   "situation": "あなたはアメリカの大学で、海洋汚染についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set03_lecture.mp3",
+    "script": "Hello everyone. When you picture plastic in the ocean, you probably picture a beach. Today I want to move your attention upstream, to rivers.\n\nFor twenty years, ocean clean-up campaigns focused almost entirely on the shoreline. Volunteers walked beaches with bags, and the photographs were powerful. But once plastic reaches open water, it breaks into pieces smaller than a grain of rice, and at that size no net can pick it up. Removing it out there costs roughly a hundred times what it costs to stop it on land.\n\nThat is why attention has shifted to rivers. A recent survey traced the plastic entering the sea and found something unexpected: a very small number of rivers carry the great majority of it. Just over a thousand rivers, out of about a hundred thousand worldwide, account for eighty per cent of the plastic reaching the ocean. Almost all of these are short rivers running through dense cities where waste collection has not kept pace with population growth.\n\nThis changes what a solution looks like. Instead of one global campaign, you can place barriers at a small number of specific points, because a floating barrier across a river mouth catches material while it is still large enough to grab.\n\nBut I want to be careful here. Barriers treat the symptom. The plastic still has to be paid for by someone, and in many of these cities the real gap is that rubbish is never picked up in the first place. A barrier is also useless during floods, when it must be opened. So the honest summary is this: rivers give us a cheaper place to act, not a complete answer.",
+    "wordCount": 278,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Rivers and Ocean Plastic",
+    "image": "q5set03_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that rivers are (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Limits of shoreline clean-up",
+      "rows": [
+       {
+        "label": "Plastic in open water:",
+        "text": "too (28) to be collected",
+        "blank": 28
+       },
+       {
+        "label": "Cost of offshore removal:",
+        "text": "extremely (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Acting at rivers instead",
+      "rows": [
+       {
+        "text": "A small number of rivers carry most of the plastic."
+       },
+       {
+        "text": "Sources of plastic are geographically (30).",
+        "blank": 30
+       },
+       {
+        "text": "Barriers are (31) when rivers flood.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "a cheaper place to intervene, though not a full solution",
+     "the least polluted part of the plastic problem",
+     "the only place where plastic can now be removed",
+     "a problem that beach clean-up campaigns already solved"
+    ],
+    "answer": 1,
+    "points": 3,
+    "explain": "最終文 rivers give us a cheaper place to act, not a complete answer が講義の結論そのもの。③は「唯一」が強すぎ、講義は海上除去も可能だが高価だと述べている。④は海岸清掃の限界を指摘する講義と正反対。②は河川が汚染の少ない場所という趣旨で、80%を運ぶという記述と矛盾。",
+    "keyPhrases": [
+     "rivers give us a cheaper place to act, not a complete answer",
+     "Barriers treat the symptom"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "逆。河川は海に届くプラスチックの80%を運ぶ経路であり、汚染の少ない場所ではない。"
+     },
+     {
+      "no": 3,
+      "why": "「唯一」が言い過ぎ。講義は海上でも除去は可能だが約100倍の費用がかかると述べている。only の強さを見抜く問題。"
+     },
+     {
+      "no": 4,
+      "why": "講義は海岸清掃を「写真は強力だが解決には至らない」と限界づけている。solved とは述べていない。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "concentrated",
+     "costly",
+     "ineffective",
+     "surveyed",
+     "tiny",
+     "unexpected"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 5,
+      "heard": "smaller than a grain of rice",
+      "collocationNote": "too (28) to be collected の形。too + 形容詞 + to do なので大きさを表す形容詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 2,
+      "heard": "costs roughly a hundred times what it costs to stop it on land",
+      "collocationNote": "extremely + 形容詞。費用の高さを表す形容詞のみ成立する。"
+     },
+     {
+      "no": 30,
+      "answer": 1,
+      "heard": "a very small number of rivers carry the great majority of it",
+      "collocationNote": "geographically + 形容詞。「一部の場所に集中している」意味の語が入る。"
+     },
+     {
+      "no": 31,
+      "answer": 3,
+      "heard": "A barrier is also useless during floods",
+      "collocationNote": "are (31) when rivers flood。useless の言い換えとなる形容詞。"
+     }
+    ],
+    "unused": [
+     4,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は smaller than a grain of rice を tiny に、(29)は a hundred times the cost を costly に、(30)は a very small number of rivers carry the great majority を concentrated に、(31)は useless during floods を ineffective に言い換える。使わない2つは音声語の反響で、surveyed は A recent survey traced、unexpected は found something unexpected に引っ張られる。どちらも空所の文脈には合わない。",
+    "keyPhrases": [
+     "smaller than a grain of rice",
+     "costs roughly a hundred times what it costs to stop it on land",
+     "a very small number of rivers carry the great majority of it",
+     "A barrier is also useless during floods",
+     "A recent survey traced",
+     "found something unexpected"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set03_q32_A.mp3",
+     "q5set03_q32_B.mp3"
+    ],
+    "statements": [
+     "About one per cent of the world's rivers carry most ocean plastic.",
+     "Cleaning plastic at sea costs about a hundred times as much as on land."
+    ],
+    "wordCounts": [
+     12,
+     14
+    ],
+    "matches": [
+     true,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 3,
+    "points": 4,
+    "explain": "Aは Just over a thousand rivers, out of about a hundred thousand worldwide の割り算（約1%）で正しい。Bも Removing it out there costs roughly a hundred times what it costs to stop it on land の正しい言い換えで、out there が「外洋で」を指すことを聞き取れば一致すると判断できる。よって両方一致で③。",
+    "keyPhrases": [
+     "Just over a thousand rivers, out of about a hundred thousand worldwide",
+     "Removing it out there costs roughly a hundred times what it costs to stop it on land"
+    ]
+   },
+   "q33": {
+    "audio": "q5set03_q33.mp3",
+    "image": "q5set03_q33_graph.png",
+    "graph": {
+     "kind": "hbar",
+     "title": "Estimated Plastic Reaching the Sea, Top Rivers (thousand tonnes per year)",
+     "axis": {
+      "x": "Thousand tonnes per year",
+      "y": "River"
+     },
+     "series": [
+      {
+       "name": "Pasig",
+       "value": 63
+      },
+      {
+       "name": "Klang",
+       "value": 37
+      },
+      {
+       "name": "Ulhas",
+       "value": 32
+      },
+      {
+       "name": "Tullahan",
+       "value": 24
+      },
+      {
+       "name": "Meycauayan",
+       "value": 20
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Nina",
+      "text": "Three of these five rivers run through the same metropolitan area, and none of them is long."
+     },
+     {
+      "who": "Ken",
+      "text": "So length has nothing to do with it. The Pasig alone is more than the other four combined?"
+     },
+     {
+      "who": "Nina",
+      "text": "Not quite. Klang, Ulhas, Tullahan and Meycauayan together come to more. Still, if one city fixed its rubbish collection, a big share would disappear."
+     }
+    ],
+    "wordCount": 59,
+    "choices": [
+     "Improving waste collection in a single city could cut a large share of this total.",
+     "Installing barriers on these five rivers would end ocean plastic pollution.",
+     "The Pasig releases more plastic than the other four rivers put together.",
+     "The rivers releasing the most plastic are the world's longest rivers."
+    ],
+    "answer": 1,
+    "points": 5,
+    "explain": "講義（多くの都市の真の欠落は「ゴミが回収されないこと」）＋会話（5河川のうち3つが同一都市圏、1都市が回収を改善すれば大きく減る）＋図表（上位が短い都市河川に集中）の統合で①。数値の罠（③）と講義の限定（②）を両方外させる設計。",
+    "keyPhrases": [
+     "rubbish is never picked up in the first place",
+     "if one city fixed its rubbish collection, a big share would disappear"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "講義の rivers give us a cheaper place to act, not a complete answer と矛盾。洪水時は障壁を開けねばならないという限定もある。"
+     },
+     {
+      "no": 3,
+      "why": "図表の計算違い。Pasig の63に対し、Klang 37・Ulhas 32・Tullahan 24・Meycauayan 20 の合計は113。Nina も Not quite と即座に訂正している。"
+     },
+     {
+      "no": 4,
+      "why": "会話で none of them is long、So length has nothing to do with it と明確に否定されている。講義でも Almost all of these are short rivers と述べられている。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set04",
+   "no": 4,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "自転車シェアリングと都市交通",
+   "situation": "あなたはアメリカの大学で、都市交通についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set04_lecture.mp3",
+    "script": "Good morning. Today's topic is the bicycle sharing system, and I want to use it to show you how a small design decision can decide whether a public service works.\n\nThe first generation appeared in Amsterdam in nineteen sixty-five. White bicycles were left unlocked around the city for anyone to use. The idea was beautiful and it collapsed within a month, because almost every bicycle was stolen or thrown into a canal. For thirty years afterwards, city governments treated the whole concept as impossible.\n\nThe second generation added coin locks, but it did not fix the deeper problem. Nobody knew who had taken a bicycle, so nobody was answerable for it. What changed everything in the two thousands was not the bicycle. It was the card reader. Once each trip is linked to a named account, the bicycle stops being anonymous, and losses fall to a level a city can live with.\n\nThat brings us to today's numbers. In the largest systems, each bicycle is now used between four and eight times a day. Compare that with a privately owned bicycle, which sits unused for more than twenty-three hours out of twenty-four. The same piece of metal serves many more people.\n\nAnd yet these systems rarely pay for themselves. Riders' fees typically cover about fifty per cent of the running cost. The heaviest expense is not repair. It is trucks, moving bicycles back uphill and out of the centre every night, because riders take them downhill in the morning and leave them there. Some cities now pay riders a small credit for returning a bicycle to an empty station, which is cheaper than sending a truck.",
+    "wordCount": 276,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Why Bicycle Sharing Finally Worked",
+    "image": "q5set04_worksheet.png",
+    "lead": {
+     "text": "The lecture explains that the success of bicycle sharing depended on (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Early systems and their failure",
+      "rows": [
+       {
+        "label": "1965, Amsterdam:",
+        "text": "bicycles were left (28)",
+        "blank": 28
+       },
+       {
+        "label": "Second generation:",
+        "text": "riders remained (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Today's systems",
+      "rows": [
+       {
+        "text": "Each bicycle is used four to eight times a day."
+       },
+       {
+        "text": "Fees cover only (30) of the running cost.",
+        "blank": 30
+       },
+       {
+        "text": "Bicycles must be (31) by truck every night.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "a decision to make the service completely free",
+     "government funding that covered all running costs",
+     "improvements in the strength of bicycle frames",
+     "a way of connecting each trip to an identified user"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "第3段落が核心。What changed everything ... was not the bicycle. It was the card reader. / Once each trip is linked to a named account と述べられている。③は「自転車ではなかった」と明言され否定。①は1965年の無料方式が1か月で崩壊した話と矛盾。②は「ほとんど採算が取れず、料金は約半分しか賄わない」と矛盾。",
+    "keyPhrases": [
+     "It was the card reader",
+     "Once each trip is linked to a named account"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "無料開放は1965年の第1世代で、1か月で崩壊した失敗例。成功要因と失敗例を入れ替える罠。"
+     },
+     {
+      "no": 2,
+      "why": "最終段落と矛盾。these systems rarely pay for themselves で、料金が約半分を賄うと述べられており全額公費ではない。"
+     },
+     {
+      "no": 3,
+      "why": "講義は明確に was not the bicycle と述べ、車体の改良を否定している。ハード面に原因を求める先入観を突く誤答。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "half",
+     "redistributed",
+     "repaired",
+     "stolen",
+     "unsecured",
+     "untraceable"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 5,
+      "heard": "White bicycles were left unlocked around the city",
+      "collocationNote": "were left + 過去分詞。unlocked の言い換え。stolen も文法上は入るが「置かれた状態」を述べる行なので不適。"
+     },
+     {
+      "no": 29,
+      "answer": 6,
+      "heard": "Nobody knew who had taken a bicycle",
+      "collocationNote": "remained + 形容詞。人を主語にした状態の形容詞が入る。音声の anonymous は自転車を主語にした語なので、そのままでは入らない。"
+     },
+     {
+      "no": 30,
+      "answer": 1,
+      "heard": "cover about fifty per cent of the running cost",
+      "collocationNote": "only (30) of the running cost。of が続くので割合を表す名詞が入る。"
+     },
+     {
+      "no": 31,
+      "answer": 2,
+      "heard": "trucks, moving bicycles back uphill and out of the centre every night",
+      "collocationNote": "must be (31) by truck。by truck を伴う「再配置される」意味の過去分詞。"
+     }
+    ],
+    "unused": [
+     3,
+     4
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は unlocked を unsecured に、(29)は Nobody knew who had taken a bicycle を untraceable に、(30)は cover about fifty per cent を half に、(31)は moving bicycles back uphill を redistributed に言い換える。(28)の罠は stolen で、音声に almost every bicycle was stolen と出るが、ワークシートは「どう置かれていたか」を記述する行なので入らない。repaired も The heaviest expense is not repair の反響で、空所の内容ではない。",
+    "keyPhrases": [
+     "White bicycles were left unlocked around the city",
+     "Nobody knew who had taken a bicycle",
+     "cover about fifty per cent of the running cost",
+     "trucks, moving bicycles back uphill and out of the centre every night",
+     "almost every bicycle was stolen",
+     "The heaviest expense is not repair"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set04_q32_A.mp3",
+     "q5set04_q32_B.mp3"
+    ],
+    "statements": [
+     "A shared bicycle is used far more often each day than a private one.",
+     "Repair work accounts for the largest part of the running cost."
+    ],
+    "wordCounts": [
+     14,
+     11
+    ],
+    "matches": [
+     true,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 1,
+    "points": 4,
+    "explain": "Aは第4段落の four and eight times a day と sits unused for more than twenty-three hours の対比を正しくまとめている。Bは The heaviest expense is not repair. It is trucks と明確に否定されている。not A. It is B の構造を聞き取れているかを問う。よって①。",
+    "keyPhrases": [
+     "used between four and eight times a day",
+     "sits unused for more than twenty-three hours",
+     "The heaviest expense is not repair"
+    ]
+   },
+   "q33": {
+    "audio": "q5set04_q33.mp3",
+    "image": "q5set04_q33_graph.png",
+    "graph": {
+     "kind": "pie",
+     "title": "Breakdown of Annual Running Costs, City Bicycle Share (%)",
+     "axis": {
+      "x": "Cost item",
+      "y": "Share of total cost (%)"
+     },
+     "series": [
+      {
+       "name": "Rebalancing trucks",
+       "value": 41
+      },
+      {
+       "name": "Repair",
+       "value": 24
+      },
+      {
+       "name": "Staff",
+       "value": 19
+      },
+      {
+       "name": "Stations",
+       "value": 16
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Emma",
+      "text": "Rebalancing trucks take forty-one per cent of the total, nearly twice what repair costs."
+     },
+     {
+      "who": "Raj",
+      "text": "So the small credit the lecturer mentioned is aimed at the biggest slice of all, not at a minor one."
+     },
+     {
+      "who": "Emma",
+      "text": "Right, and if riders returned even a quarter of those bicycles themselves, that forty-one would fall below repair."
+     },
+     {
+      "who": "Raj",
+      "text": "Staff and stations you cannot really cut, so trucks are the only place left to save money."
+     }
+    ],
+    "wordCount": 69,
+    "choices": [
+     "Cutting staff and station costs would balance the system's budget.",
+     "Paying riders to return bicycles targets the single largest cost item.",
+     "Rebalancing trucks cost more than all the other three items combined.",
+     "Repair is the item that city bicycle share systems should reduce first."
+    ],
+    "answer": 2,
+    "points": 5,
+    "explain": "講義（最大の費用はトラック／一部の都市は空きステーションへの返却に少額クレジットを払う）＋図表（トラック41%が最大）＋会話（クレジット制度は最大の項目を狙っている）の統合で②。",
+    "keyPhrases": [
+     "Some cities now pay riders a small credit for returning a bicycle to an empty station",
+     "So the small credit the lecturer mentioned is aimed at the biggest slice of all"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "会話で Staff and stations you cannot really cut と否定されている。合計35%で、料金が半分しか賄わない構造も解消しない。"
+     },
+     {
+      "no": 3,
+      "why": "図表の計算違い。他3項目の合計は59%で、41%はそれを超えない。会話でも nearly twice what repair costs と限定されている。"
+     },
+     {
+      "no": 4,
+      "why": "図表で repair は24%で2番目。講義でも The heaviest expense is not repair と否定されている。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set05",
+   "no": 5,
+   "level": "easy",
+   "levelJa": "やや易",
+   "topic": "ミツバチと農作物の受粉",
+   "situation": "あなたはアメリカの大学で、農業と昆虫についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set05_lecture.mp3",
+    "script": "Good morning. About one bite in three of the food on your plate exists because an insect visited a flower. Today I want to look at who those insects actually are.\n\nWhen people talk about pollination, they usually mean one species: the honeybee. Honeybees are easy to keep, easy to move, and a single hive holds tens of thousands of workers. So for decades, growers of almonds, apples and blueberries have solved pollination by renting hives, trucking them in when the flowers open and taking them away afterwards.\n\nThat approach has been under pressure since two thousand six, when beekeepers in North America began losing around a third of their hives each winter. The causes are still argued about, but the effect on growers is simple. The price of renting a hive has roughly tripled in twenty years.\n\nHere is the part that surprises people. Honeybees are not always the best pollinators. A honeybee packs pollen tightly onto its legs to carry it home, which means less of it rubs off on the next flower. A bumblebee is messier, and messier is better. Bumblebees also work in cool, wet weather that keeps honeybees inside the hive.\n\nAnd wild insects are already doing far more than growers assume. Careful counts in orchards show that wild bees and flies, arriving with no rent to pay, carry out roughly half the pollination even in fields where hives have been placed. Those insects need hedges and rough ground near the orchard. A farm that removes every hedge to gain a little planting area is quietly paying for something it used to get free.",
+    "wordCount": 269,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Who Really Pollinates Our Crops",
+    "image": "q5set05_worksheet.png",
+    "lead": {
+     "text": "The lecture claims that crop pollination is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "The standard approach: renting honeybee hives",
+      "rows": [
+       {
+        "label": "Hives:",
+        "text": "(28) into fields at flowering time",
+        "blank": 28
+       },
+       {
+        "label": "Rental price:",
+        "text": "has become far more (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Wild insects",
+      "rows": [
+       {
+        "text": "Bumblebees fly in cool, wet weather."
+       },
+       {
+        "text": "Wild insects supply pollination at no (30).",
+        "blank": 30
+       },
+       {
+        "text": "Bumblebees are (31) at transferring pollen.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "handled almost entirely by rented honeybee hives",
+     "impossible without cool and wet summer weather",
+     "a problem that has been fully solved since 2006",
+     "shared with wild insects that growers tend to overlook"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "最終段落 wild insects are already doing far more than growers assume / carry out roughly half the pollination が講義の主眼。①は「約半分は野生の昆虫」と矛盾。③は2006年以降むしろ悪化した話なので逆。②は冷涼多湿でも働くのがマルハナバチという部分的な記述の誇張。",
+    "keyPhrases": [
+     "wild insects are already doing far more than growers assume",
+     "carry out roughly half the pollination"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "講義は野生の昆虫が約半分を担うと述べている。冒頭で honeybee の話が続くため、前半だけ聞いて選ぶと引っかかる。"
+     },
+     {
+      "no": 2,
+      "why": "冷涼多湿で働けるのはマルハナバチの利点という部分的記述。受粉全体の必要条件ではない。"
+     },
+     {
+      "no": 3,
+      "why": "2006年は問題の始まりの年。以後20年で巣箱の賃料は約3倍になったと述べられており solved とは正反対。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "argued",
+     "charge",
+     "expensive",
+     "superior",
+     "tightly",
+     "trucked"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 6,
+      "heard": "trucking them in when the flowers open",
+      "collocationNote": "空所は受動態の過去分詞。後に into fields が続くので運搬を表す語のみ成立する。"
+     },
+     {
+      "no": 29,
+      "answer": 3,
+      "heard": "The price of renting a hive has roughly tripled in twenty years",
+      "collocationNote": "far more + 形容詞。価格の高さを表す形容詞が入る。"
+     },
+     {
+      "no": 30,
+      "answer": 2,
+      "heard": "arriving with no rent to pay",
+      "collocationNote": "at no (30)。前置詞 at と結ぶ名詞。at no charge で「無料で」。"
+     },
+     {
+      "no": 31,
+      "answer": 4,
+      "heard": "A bumblebee is messier, and messier is better",
+      "collocationNote": "are (31) at transferring pollen。at を伴う形容詞で「より優れている」意味。"
+     }
+    ],
+    "unused": [
+     1,
+     5
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は trucking them in を trucked に、(29)は has roughly tripled を expensive に、(30)は with no rent to pay を no charge に、(31)は messier is better を superior に言い換える。使わない2つは音声語の反響で、argued は The causes are still argued about、tightly は packs pollen tightly onto its legs から来る罠。tightly は副詞なので空所の文法とも合わない。",
+    "keyPhrases": [
+     "trucking them in when the flowers open",
+     "The price of renting a hive has roughly tripled in twenty years",
+     "arriving with no rent to pay",
+     "A bumblebee is messier, and messier is better",
+     "The causes are still argued about",
+     "packs pollen tightly onto its legs"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set05_q32_A.mp3",
+     "q5set05_q32_B.mp3"
+    ],
+    "statements": [
+     "The reasons for the winter loss of hives are still not agreed upon.",
+     "Wild insects do about half the pollination even where hives are rented."
+    ],
+    "wordCounts": [
+     13,
+     12
+    ],
+    "matches": [
+     true,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 3,
+    "points": 4,
+    "explain": "Aは The causes are still argued about の正しい言い換え。Bも wild bees and flies, arriving with no rent to pay, carry out roughly half the pollination even in fields where hives have been placed の正しい要約。no rent to pay と rented の対応を落ち着いて処理する必要がある。よって両方一致で③。",
+    "keyPhrases": [
+     "The causes are still argued about",
+     "carry out roughly half the pollination even in fields where hives have been placed"
+    ]
+   },
+   "q33": {
+    "audio": "q5set05_q33.mp3",
+    "image": "q5set05_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Apple Fruit Set by Pollinator Treatment (%)",
+     "axis": {
+      "x": "Treatment",
+      "y": "Fruit set (%)"
+     },
+     "series": [
+      {
+       "name": "No insects",
+       "value": 9
+      },
+      {
+       "name": "Honeybees only",
+       "value": 47
+      },
+      {
+       "name": "Wild insects only",
+       "value": 52
+      },
+      {
+       "name": "Both",
+       "value": 71
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Mia",
+      "text": "Wild insects only reach fifty-two per cent, slightly above honeybees only at forty-seven."
+     },
+     {
+      "who": "Dan",
+      "text": "But look at the Both column: seventy-one. That is well above either group on its own."
+     },
+     {
+      "who": "Mia",
+      "text": "And No insects still gives nine per cent, so a little fruit forms without any visitor at all."
+     },
+     {
+      "who": "Dan",
+      "text": "So renting hives helps most when the hedges around the orchard are still there."
+     }
+    ],
+    "wordCount": 61,
+    "choices": [
+     "Apple trees produce no fruit at all when insects are excluded.",
+     "Honeybees are unnecessary because wild insects score higher than they do.",
+     "The two groups of pollinators together give a result neither achieves alone.",
+     "Wild insects alone produce a higher fruit set than honeybees and wild insects together."
+    ],
+    "answer": 3,
+    "points": 5,
+    "explain": "図表（Both が71%で単独の47%・52%を大きく上回る）＋会話（well above either group on its own）＋講義（巣箱を置いた畑でも野生の昆虫が約半分を担う／生け垣が必要）の統合で③。単独比較の微差（①②）に飛びつかせない設計。",
+    "keyPhrases": [
+     "carry out roughly half the pollination even in fields where hives have been placed",
+     "That is well above either group on its own"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表で No insects でも9%の結実がある。会話でも some fruit forms without any visitor at all と確認されている。"
+     },
+     {
+      "no": 2,
+      "why": "52%と47%の差はわずかで、両方揃った71%が最大。講義も生け垣と巣箱を対立させていない。"
+     },
+     {
+      "no": 4,
+      "why": "図表と逆。Wild insects only は52%、Both は71%。数値の大小を読み違える誤答。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set06",
+   "no": 6,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "図書館の役割の変化",
+   "situation": "あなたはアメリカの大学で、公共図書館についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set06_lecture.mp3",
+    "script": "Good afternoon. Twenty years ago, a common prediction was that public libraries would close. The internet had arrived, everything was going online, and a building full of paper looked like a museum. That prediction turned out to be wrong, and the reason it was wrong is instructive.\n\nLet me describe the old model first. A library was defined by what it held. Success was measured by the number of volumes on the shelves and the number of items borrowed each year. Staff spent much of their day at a desk, stamping cards and answering questions about where a book was located. The visitor's purpose was assumed: you came in, you took something away, you left.\n\nBoth of those measures did fall. In most countries, book lending peaked in the late nineteen nineties and has declined every year since. If holdings and loans were the only test, the prediction would have been right.\n\nBut visits did not fall with them. In many cities, the number of people walking through the door has risen, and what those people are doing inside has changed completely. They are using free internet access, sitting in a warm room, taking a language class, printing a job application, or letting a child attend a reading hour. In one large system, two thirds of visitors last year borrowed nothing at all.\n\nSo the library has quietly become something else: not a store of books, but a place a city provides where you are not required to buy anything. That is harder to count than loans, which is precisely the problem. When budgets are cut, the number that gets shown to politicians is still the number of loans, and by that number every library looks like it is failing.",
+    "wordCount": 290,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "The Changing Public Library",
+    "image": "q5set06_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that libraries have become (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "The old model of a library",
+      "rows": [
+       {
+        "label": "Value judged by:",
+        "text": "the size of its (28)",
+        "blank": 28
+       },
+       {
+        "label": "Loans since the late 1990s:",
+        "text": "steadily (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "What libraries are now",
+      "rows": [
+       {
+        "text": "Visitor numbers have risen in many cities."
+       },
+       {
+        "text": "Most visitors come for purposes that are (30).",
+        "blank": 30
+       },
+       {
+        "text": "The library's real value is hard to (31).",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "buildings whose main purpose is still to lend printed books",
+     "institutions that have closed in most large cities",
+     "organisations judged successfully by the number of loans",
+     "public spaces that people can use without spending money"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "第5段落 not a store of books, but a place a city provides where you are not required to buy anything が結論。①は「貸出は減り続け、来館者の3分の2は何も借りない」と矛盾。②は20年前の予測が外れたという講義の主旨と正反対。③は最終文で「その数字で測ると全館が失敗に見える」と否定されている。",
+    "keyPhrases": [
+     "not a store of books, but a place a city provides",
+     "where you are not required to buy anything"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "貸出は1990年代後半をピークに減少し続け、来館者の3分の2は何も借りない。講義が「旧モデル」として退けた見方。"
+     },
+     {
+      "no": 2,
+      "why": "20年前の予測が外れたことを説明するのが講義の目的。That prediction turned out to be wrong と明言されている。"
+     },
+     {
+      "no": 3,
+      "why": "最終文と逆。貸出数で測ると全館が失敗に見える、というのが講義の問題提起。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "collection",
+     "declining",
+     "measure",
+     "non-commercial",
+     "predicted",
+     "stamped"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 1,
+      "heard": "the number of volumes on the shelves",
+      "collocationNote": "the size of its (28)。所有格の後に来る名詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 2,
+      "heard": "has declined every year since",
+      "collocationNote": "steadily + 語。動詞の現在分詞形が入り、副詞 steadily に修飾される。"
+     },
+     {
+      "no": 30,
+      "answer": 4,
+      "heard": "two thirds of visitors last year borrowed nothing at all",
+      "collocationNote": "purposes that are (30)。are に続く形容詞。「買い物を伴わない」意味の語。"
+     },
+     {
+      "no": 31,
+      "answer": 3,
+      "heard": "That is harder to count than loans",
+      "collocationNote": "hard to (31)。to 不定詞なので動詞の原形が入る。名詞形では成立しない。"
+     }
+    ],
+    "unused": [
+     5,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は the number of volumes on the shelves を collection に、(29)は has declined every year を declining に、(30)は borrowed nothing at all と you are not required to buy anything を合わせて non-commercial に、(31)は harder to count を measure に言い換える。使わない2つは音声語の反響で、predicted は a common prediction was、stamped は stamping cards から来る罠。stamped は文法的にも入らない。",
+    "keyPhrases": [
+     "the number of volumes on the shelves",
+     "has declined every year since",
+     "two thirds of visitors last year borrowed nothing at all",
+     "That is harder to count than loans",
+     "a common prediction was",
+     "stamping cards"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set06_q32_A.mp3",
+     "q5set06_q32_B.mp3"
+    ],
+    "statements": [
+     "Both loans and visits have fallen since the late nineteen nineties.",
+     "Budget decisions still rely on the figure that libraries look worst by."
+    ],
+    "wordCounts": [
+     11,
+     12
+    ],
+    "matches": [
+     false,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 2,
+    "points": 4,
+    "explain": "Aは半分だけ正しい典型的な誤り。貸出は減ったが But visits did not fall with them、来館者は増えている。Both を聞き逃すと一致と判断してしまう。Bは最終文 the number that gets shown to politicians is still the number of loans, and by that number every library looks like it is failing の正しい要約。よって②。",
+    "keyPhrases": [
+     "But visits did not fall with them",
+     "the number that gets shown to politicians is still the number of loans",
+     "by that number every library looks like it is failing"
+    ]
+   },
+   "q33": {
+    "audio": "q5set06_q33.mp3",
+    "image": "q5set06_q33_graph.png",
+    "graph": {
+     "kind": "hbar",
+     "title": "What Library Visitors Did Last Year (% of visitors)",
+     "axis": {
+      "x": "Share of visitors (%)",
+      "y": "Activity"
+     },
+     "series": [
+      {
+       "name": "Borrowing books",
+       "value": 34
+      },
+      {
+       "name": "Free internet",
+       "value": 28
+      },
+      {
+       "name": "Study space",
+       "value": 19
+      },
+      {
+       "name": "Classes and events",
+       "value": 12
+      },
+      {
+       "name": "Printing",
+       "value": 7
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Lena",
+      "text": "Borrowing books is the largest single item at thirty-four per cent, but that is nowhere near a majority."
+     },
+     {
+      "who": "Omar",
+      "text": "Free internet is twenty-eight and study space nineteen. Put those two together and they already beat borrowing."
+     },
+     {
+      "who": "Lena",
+      "text": "Which is exactly the two thirds the lecturer mentioned, and none of it appears in the loans figure at all."
+     }
+    ],
+    "wordCount": 55,
+    "choices": [
+     "Borrowing books is what brings the majority of visitors into the library.",
+     "Free internet use has completely replaced borrowing at this library.",
+     "The number of loans remains the most accurate measure of a library's value.",
+     "Two thirds of visitors come for services other than borrowing."
+    ],
+    "answer": 4,
+    "points": 5,
+    "explain": "講義（来館者の3分の2は何も借りない／本の保管庫ではなく買い物を求められない場所）＋図表（借りるは34%止まり）＋会話（無料インターネット28%と学習席19%を足すだけで借りるを超える）の統合で④。34%が「最大の項目」であることと「過半数」を区別できるかが分かれ目。",
+    "keyPhrases": [
+     "two thirds of visitors last year borrowed nothing at all",
+     "Which is exactly the two thirds the lecturer mentioned"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "34%は最大の単独項目だが過半数ではない。会話でも that is nowhere near a majority と否定されている。「最大」と「過半数」の混同を突く誤答。"
+     },
+     {
+      "no": 2,
+      "why": "図表で無料インターネットは28%、借りるは34%。completely replaced は数値と矛盾する。"
+     },
+     {
+      "no": 3,
+      "why": "講義の最終段落と正反対。貸出数で測ると全館が失敗に見える、というのが講義の問題提起。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set07",
+   "no": 7,
+   "level": "hard",
+   "levelJa": "やや難",
+   "topic": "電気自動車と充電インフラ",
+   "situation": "あなたはアメリカの大学で、自動車産業についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set07_lecture.mp3",
+    "script": "Good morning. Electric cars are often discussed as a battery problem. I want to argue that the harder problem is where the electricity is delivered.\n\nStart with the battery. In two thousand ten, a battery pack cost around one thousand one hundred dollars per kilowatt hour. Today it is under a hundred and forty. That is one of the fastest cost reductions in industrial history, and an electric car and a petrol car now cost roughly the same to build.\n\nSo why has adoption been so patchy? Survey after survey gives the same answer, and it is not price. Buyers say they are afraid of running out of charge on a long journey. Notice, though, that this fear does not match how people actually drive. The average daily distance in most countries is under fifty kilometres, well within any modern car's range. What buyers are really telling us is that they do not trust the network of charging points, not that they need a bigger battery.\n\nAnd the numbers support them. Where those chargers sit is another matter. In several European countries there is one charger for every ten electric cars; in others the figure is one for every forty. Worse, roughly one in five public chargers is out of order at any moment, and a driver cannot know before arriving.\n\nWhich points to the real lesson. Home charging solves this for anyone with a driveway, and about eighty per cent of charging already happens overnight at home. But in cities, most people park on the street, and for them no driveway means no overnight charging. So the group least able to charge conveniently is the urban population, exactly the group cities most want to move out of petrol cars.",
+    "wordCount": 290,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "The Real Obstacle for Electric Cars",
+    "image": "q5set07_worksheet.png",
+    "lead": {
+     "text": "The lecture claims that the main obstacle is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "What is no longer the problem",
+      "rows": [
+       {
+        "label": "Battery pack cost:",
+        "text": "has fallen (28) since 2010",
+        "blank": 28
+       },
+       {
+        "label": "Buyers' stated fear:",
+        "text": "not (29) with real driving distances",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "The charging network",
+      "rows": [
+       {
+        "text": "One in five public chargers is out of order."
+       },
+       {
+        "text": "Chargers per car are highly (30) between countries.",
+        "blank": 30
+       },
+       {
+        "text": "City residents without a driveway are (31).",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "the cost of manufacturing large batteries",
+     "the limited driving range of modern electric cars",
+     "the reluctance of city governments to act",
+     "unequal and unreliable access to charging"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "冒頭 the harder problem is where the electricity is delivered が主張で、第4・5段落がその具体化（分布の偏り・故障率・自宅充電の不可能さ）。①は「電池代はほぼ同等になった」と否定。②は「平均走行距離は現代の車の航続内」と明確に否定。③は最終文で市はむしろ転換を望んでいると述べられている。",
+    "keyPhrases": [
+     "the harder problem is where the electricity is delivered",
+     "they do not trust the network of charging points"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "第2段落で電池代は1100ドルから140ドル未満に下がり、ガソリン車と製造費がほぼ同等になったと述べられている。冒頭の battery problem という語に引っ張られる罠。"
+     },
+     {
+      "no": 2,
+      "why": "this fear does not match how people actually drive / well within any modern car's range と明確に否定されている。買い手の言い分と事実を区別できるかを問う。"
+     },
+     {
+      "no": 3,
+      "why": "最終文は「都市が最も転換させたい層こそ充電が難しい」であり、市の消極性を原因としていない。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "consistent",
+     "disadvantaged",
+     "sharply",
+     "surveyed",
+     "uneven",
+     "unreliable"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 3,
+      "heard": "one thousand one hundred dollars per kilowatt hour. Today it is under a hundred and forty",
+      "collocationNote": "has fallen (28)。動詞 fallen を修飾する副詞が入る。形容詞は文法的に不可。"
+     },
+     {
+      "no": 29,
+      "answer": 1,
+      "heard": "this fear does not match how people actually drive",
+      "collocationNote": "not (29) with。with と結ぶ形容詞。「一致していない」を not + 形容詞で表す。"
+     },
+     {
+      "no": 30,
+      "answer": 5,
+      "heard": "one charger for every ten electric cars; in others the figure is one for every forty",
+      "collocationNote": "highly (30) between countries。highly + 形容詞。highly unreliable は故障の話で分布とずれる。"
+     },
+     {
+      "no": 31,
+      "answer": 2,
+      "heard": "no driveway means no overnight charging",
+      "collocationNote": "residents are (31)。人を主語にした状態の形容詞・過去分詞が入る。"
+     }
+    ],
+    "unused": [
+     4,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は1100ドルから140ドル未満という数値の落差を sharply に、(29)は does not match を not consistent with に、(30)は10台に1基と40台に1基の対比を uneven に、(31)は no driveway means no overnight charging を disadvantaged に言い換える。使わない2つが本セットの罠で、unreliable は音声の one in five public chargers is out of order を連想させるが (30) の行は分布の話。surveyed は Survey after survey の反響。",
+    "keyPhrases": [
+     "one thousand one hundred dollars per kilowatt hour",
+     "this fear does not match how people actually drive",
+     "one charger for every ten electric cars",
+     "no driveway means no overnight charging",
+     "Survey after survey",
+     "one in five public chargers is out of order"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set07_q32_A.mp3",
+     "q5set07_q32_B.mp3"
+    ],
+    "statements": [
+     "Most charging is already done at home during the night.",
+     "Battery packs today cost about a quarter of what they cost in 2010."
+    ],
+    "wordCounts": [
+     10,
+     13
+    ],
+    "matches": [
+     true,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 1,
+    "points": 4,
+    "explain": "Aは about eighty per cent of charging already happens overnight at home の正しい要約。Bは数値の計算違い。1100ドルから140ドル未満なので約8分の1で、4分の1ではない。数字を聞き取って割り算する出題。よって①。",
+    "keyPhrases": [
+     "about eighty per cent of charging already happens overnight at home",
+     "one thousand one hundred dollars per kilowatt hour",
+     "Today it is under a hundred and forty"
+    ]
+   },
+   "q33": {
+    "audio": "q5set07_q33.mp3",
+    "image": "q5set07_q33_graph.png",
+    "graph": {
+     "kind": "hbar",
+     "title": "Share of Households with Off-Street Parking (%)",
+     "axis": {
+      "x": "Share of households (%)",
+      "y": "Area type"
+     },
+     "series": [
+      {
+       "name": "Rural",
+       "value": 88
+      },
+      {
+       "name": "Small town",
+       "value": 74
+      },
+      {
+       "name": "Suburb",
+       "value": 66
+      },
+      {
+       "name": "Inner city",
+       "value": 21
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Yuki",
+      "text": "Only twenty-one per cent in the inner city, against eighty-eight per cent in rural areas."
+     },
+     {
+      "who": "Marc",
+      "text": "So the home charging solution works best exactly where people drive the longest distances anyway."
+     },
+     {
+      "who": "Yuki",
+      "text": "And the suburb figure of sixty-six is still three times the inner city, so the gap is not just rural against urban."
+     },
+     {
+      "who": "Marc",
+      "text": "Public chargers matter most in the one place they are hardest to install."
+     }
+    ],
+    "wordCount": 65,
+    "choices": [
+     "Home charging is least available in the areas where public charging is most needed.",
+     "Inner city residents drive the longest distances and so need the largest batteries.",
+     "Off-street parking is rare everywhere except in rural areas.",
+     "Suburbs and inner cities face almost identical charging conditions."
+    ],
+    "answer": 1,
+    "points": 5,
+    "explain": "講義（自宅充電が8割・駐車場がなければ夜間充電不可・都市住民が最も不利）＋図表（都心21%対農村88%）＋会話（公共充電が最も必要な場所こそ設置が最も難しい）の統合で①。",
+    "keyPhrases": [
+     "no driveway means no overnight charging",
+     "Public chargers matter most in the one place they are hardest to install"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "会話で長距離を走るのは農村部と述べられ、講義も航続距離は問題でないとしている。二重に誤り。"
+     },
+     {
+      "no": 3,
+      "why": "図表と矛盾。小都市74%、郊外66%も高い水準にある。低いのは都心21%だけで、everywhere except rural は誤り。"
+     },
+     {
+      "no": 4,
+      "why": "会話で the suburb figure of sixty-six is still three times the inner city と明確に差が指摘されている。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set08",
+   "no": 8,
+   "level": "easy",
+   "levelJa": "やや易",
+   "topic": "手洗いと感染症の歴史",
+   "situation": "あなたはアメリカの大学で、医学の歴史についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set08_lecture.mp3",
+    "script": "Good morning. Today's story is about the simplest medical intervention ever discovered, and about how long it took to be accepted.\n\nVienna, eighteen forty-seven. A young doctor named Semmelweis worked in a hospital with two maternity wards. In the first ward, staffed by doctors, about one mother in ten died after giving birth. In the second, staffed by midwives, the figure was closer to one in thirty. The wards took women on alternate days, so the patients were not different. Something about the first ward was killing them.\n\nSemmelweis noticed that the doctors, unlike the midwives, came straight from performing autopsies. He could not explain why that mattered, because nobody yet knew that microbes existed. But he insisted that every doctor rinse his hands in a chlorine solution before entering the ward. Deaths in the first ward fell to the level of the second within a year.\n\nAnd here is the uncomfortable part. His colleagues rejected him. Some were insulted by the suggestion that a gentleman's hands could be dirty. Others pointed out, correctly, that he had no theory to explain the result. Semmelweis was eventually dismissed from the hospital, and hand washing was not general practice for another forty years, until Pasteur's work made the mechanism clear.\n\nThe modern lesson is not just historical. Studies in today's hospitals find that staff clean their hands on well under half the occasions when guidelines require it. And the reason given is almost never disagreement. It is time. A nurse on a busy ward may have dozens of such occasions in an hour, and the sink is not always close by. So the barrier has moved from belief to design.",
+    "wordCount": 278,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Hand Washing: From Rejection to Routine",
+    "image": "q5set08_worksheet.png",
+    "lead": {
+     "text": "The lecture shows that the delay in adopting hand washing was (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Vienna, 1847",
+      "rows": [
+       {
+        "label": "Deaths in the doctors' ward:",
+        "text": "three times (28) than in the midwives' ward",
+        "blank": 28
+       },
+       {
+        "label": "Semmelweis's explanation:",
+        "text": "completely (29) at the time",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Hospitals today",
+      "rows": [
+       {
+        "text": "Hand washing is required by written guidelines."
+       },
+       {
+        "text": "Compliance is under half and therefore (30).",
+        "blank": 30
+       },
+       {
+        "text": "The main obstacle is now (31) rather than belief.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "caused by a lack of evidence that the method worked",
+     "caused by professional resistance and the absence of a theory",
+     "caused by the high cost of chlorine solution",
+     "resolved immediately once the death rates were published"
+    ],
+    "answer": 2,
+    "points": 3,
+    "explain": "第4段落 His colleagues rejected him / Some were insulted / Others pointed out ... he had no theory の2点が遅れの理由。①は誤り。死亡率は1年で低下しており証拠はあった。③は費用の記述がない。④は「一般的な慣行になるまでさらに40年かかった」と真逆。",
+    "keyPhrases": [
+     "His colleagues rejected him",
+     "he had no theory to explain the result"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "結果は出ていた。Deaths in the first ward fell to the level of the second within a year。欠けていたのは説明理論であり証拠ではない。"
+     },
+     {
+      "no": 3,
+      "why": "塩素液の費用に関する記述は講義に一切ない。もっともらしいが根拠のない選択肢。"
+     },
+     {
+      "no": 4,
+      "why": "hand washing was not general practice for another forty years と正反対。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "autopsies",
+     "higher",
+     "inadequate",
+     "practical",
+     "rejected",
+     "unexplained"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 2,
+      "heard": "about one mother in ten died",
+      "collocationNote": "three times (28) than。than が続くので比較級の形容詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 6,
+      "heard": "He could not explain why that mattered",
+      "collocationNote": "completely + 形容詞。rejected も文法上は入るが、行のラベルが「説明」なので理論の欠如を表す語になる。"
+     },
+     {
+      "no": 30,
+      "answer": 3,
+      "heard": "staff clean their hands on well under half the occasions when guidelines require it",
+      "collocationNote": "therefore (30)。順守率の低さを評価する形容詞が入る。"
+     },
+     {
+      "no": 31,
+      "answer": 4,
+      "heard": "It is time. A nurse on a busy ward may have dozens of such occasions in an hour",
+      "collocationNote": "(31) rather than belief。belief と対比される名詞的な語。「実務上の事情」の意味。"
+     }
+    ],
+    "unused": [
+     1,
+     5
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は1/10と1/30の対比を higher に、(29)は could not explain を unexplained に、(30)は well under half を inadequate に、(31)は時間と流し台の距離という現場事情を practical に言い換える。使わない2つは音声語の反響で、autopsies は came straight from performing autopsies、rejected は His colleagues rejected him に引っ張られる。どちらも空所の行の趣旨ではない。",
+    "keyPhrases": [
+     "about one mother in ten died",
+     "He could not explain why that mattered",
+     "staff clean their hands on well under half the occasions when guidelines require it",
+     "A nurse on a busy ward may have dozens of such occasions in an hour",
+     "came straight from performing autopsies",
+     "His colleagues rejected him"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set08_q32_A.mp3",
+     "q5set08_q32_B.mp3"
+    ],
+    "statements": [
+     "The two wards admitted a different type of patient, which explains the gap.",
+     "Today's low compliance is caused mainly by lack of time, not by disbelief."
+    ],
+    "wordCounts": [
+     13,
+     13
+    ],
+    "matches": [
+     false,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 2,
+    "points": 4,
+    "explain": "Aは講義が明確に排除した可能性。The wards took women on alternate days, so the patients were not different と述べられている。Bは最終段落 the reason given is almost never disagreement. It is time の正しい要約。よって②。",
+    "keyPhrases": [
+     "so the patients were not different",
+     "the reason given is almost never disagreement",
+     "It is time"
+    ]
+   },
+   "q33": {
+    "audio": "q5set08_q33.mp3",
+    "image": "q5set08_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Hand Hygiene Compliance by Distance to Nearest Sink (%)",
+     "axis": {
+      "x": "Distance to sink",
+      "y": "Compliance (%)"
+     },
+     "series": [
+      {
+       "name": "Bedside",
+       "value": 71
+      },
+      {
+       "name": "Three metres",
+       "value": 58
+      },
+      {
+       "name": "Ten metres",
+       "value": 39
+      },
+      {
+       "name": "Over ten metres",
+       "value": 22
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Ana",
+      "text": "Compliance runs from seventy-one per cent at the bedside down to twenty-two over ten metres away."
+     },
+     {
+      "who": "Paul",
+      "text": "So moving the sink closer changes behaviour more than any amount of persuasion would."
+     },
+     {
+      "who": "Ana",
+      "text": "And even at the bedside it is only seventy-one, so distance is not the whole story either."
+     },
+     {
+      "who": "Paul",
+      "text": "Within three metres is fifty-eight, already a big drop from bedside."
+     }
+    ],
+    "wordCount": 58,
+    "choices": [
+     "Compliance reaches one hundred per cent when a sink is at the bedside.",
+     "The distance to the sink has no measurable effect on compliance.",
+     "Placing sinks nearer to patients raises compliance but does not solve it entirely.",
+     "Staff who work over ten metres from a sink do not believe hand washing works."
+    ],
+    "answer": 3,
+    "points": 5,
+    "explain": "講義（障壁は信念から設計へ移った／流し台が近くにない）＋図表（71%から22%への段階的低下）＋会話（ベッドサイドでも71%止まりで距離だけが原因ではない）の統合で③。全か無かの選択肢（①④②）を全て外させる設計。",
+    "keyPhrases": [
+     "So the barrier has moved from belief to design",
+     "even at the bedside it is only seventy-one"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表でベッドサイドは71%。会話でも it is only seventy-one と確認されている。数値を100%と読み替える誤り。"
+     },
+     {
+      "no": 2,
+      "why": "図表は71%から22%へ明確に低下している。距離の影響を否定する選択肢は数値と正反対。"
+     },
+     {
+      "no": 4,
+      "why": "講義は the reason given is almost never disagreement と述べており、信念ではなく設計の問題としている。因果の捏造。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set09",
+   "no": 9,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "食品ロスとその発生段階",
+   "situation": "あなたはアメリカの大学で、食料システムについての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set09_lecture.mp3",
+    "script": "Good afternoon. Roughly a third of the food grown in the world is never eaten. Today I want to be precise about where in the chain that food is lost, because the answer decides what you should do about it.\n\nThere is a common assumption that waste is mainly a consumer failure: shoppers buying too much and throwing it away. Public campaigns have followed this assumption for years, with posters about planning your meals and checking your fridge.\n\nBut the picture depends entirely on which country you look at. In low income countries, most of the loss happens before the food ever reaches a shop. Grain sits in the open and gets wet before anyone can store it. Vegetables travel for days in unrefrigerated trucks on poor roads, and much of a harvest can be gone by the time it arrives. There, food never reaches consumers at all, so consumer advice is beside the point.\n\nIn high income countries the pattern inverts. Storage and transport are good, and the largest single share is lost in kitchens, both household and restaurant. So the same global figure hides two completely different problems requiring two different remedies.\n\nOne further point, and it is the one people find least intuitive. Not all waste weighs the same environmentally. A kilogram of beef thrown away represents around sixty times the greenhouse emissions of a kilogram of potatoes, because of everything that went into producing it. So a campaign that reduces the total weight of waste may achieve very little, while a campaign focused narrowly on meat and dairy could achieve a great deal. Weight is the easy thing to measure. It is not the thing that matters.",
+    "wordCount": 281,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Where Food Is Actually Lost",
+    "image": "q5set09_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that food waste figures are (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Two different patterns",
+      "rows": [
+       {
+        "label": "Low income countries:",
+        "text": "losses occur mostly (28) of the shop",
+        "blank": 28
+       },
+       {
+        "label": "High income countries:",
+        "text": "losses occur mostly in (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Measuring waste properly",
+      "rows": [
+       {
+        "text": "A kilogram of beef and a kilogram of potatoes are not equivalent."
+       },
+       {
+        "text": "Total weight of waste is a (30) measure.",
+        "blank": 30
+       },
+       {
+        "text": "Campaigns should be (31) on high impact foods.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "an accurate measure of environmental damage",
+     "misleading because they combine very different problems",
+     "proof that consumers are the main cause of waste",
+     "reliable enough to guide a single global campaign"
+    ],
+    "answer": 2,
+    "points": 3,
+    "explain": "第4段落 the same global figure hides two completely different problems requiring two different remedies が主張の中心。④はその真逆。③は低所得国では消費者に届く前に失われるという記述と矛盾。①は最終段落 Weight is ... not the thing that matters と正反対。",
+    "keyPhrases": [
+     "the same global figure hides two completely different problems",
+     "requiring two different remedies"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "最終段落と正反対。牛肉1kgはじゃがいも1kgの約60倍の排出量で、重量は環境影響を測れない。"
+     },
+     {
+      "no": 3,
+      "why": "冒頭で提示される「よくある思い込み」であり、講義はそれを国によって異なると否定している。"
+     },
+     {
+      "no": 4,
+      "why": "講義は単一の世界規模キャンペーンを否定し、2つの異なる対処が必要だと述べている。a third of the food という数字の存在を有効性と混同する罠。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "concentrated",
+     "cooking",
+     "misleading",
+     "refrigerated",
+     "unmeasured",
+     "upstream"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 6,
+      "heard": "most of the loss happens before the food ever reaches a shop",
+      "collocationNote": "(28) of the shop。前置詞 of が続くので、位置関係を表す語が入る。upstream of で「〜より前の段階で」。"
+     },
+     {
+      "no": 29,
+      "answer": 2,
+      "heard": "the largest single share is lost in kitchens, both household and restaurant",
+      "collocationNote": "mostly in (29)。前置詞 in の後に来る名詞。kitchens の言い換え。"
+     },
+     {
+      "no": 30,
+      "answer": 3,
+      "heard": "Weight is the easy thing to measure. It is not the thing that matters",
+      "collocationNote": "a (30) measure。名詞 measure を修飾する形容詞が入る。unmeasured では意味が通らない。"
+     },
+     {
+      "no": 31,
+      "answer": 1,
+      "heard": "a campaign focused narrowly on meat and dairy could achieve a great deal",
+      "collocationNote": "be (31) on。on を伴う過去分詞。「絞り込まれる」意味。"
+     }
+    ],
+    "unused": [
+     4,
+     5
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は before the food ever reaches a shop を upstream of the shop に、(29)は in kitchens を cooking に、(30)は not the thing that matters を misleading に、(31)は focused narrowly on を concentrated on に言い換える。使わない2つは音声語の反響で、refrigerated は unrefrigerated trucks、unmeasured は the easy thing to measure に引っ張られる罠。",
+    "keyPhrases": [
+     "most of the loss happens before the food ever reaches a shop",
+     "the largest single share is lost in kitchens, both household and restaurant",
+     "Weight is the easy thing to measure",
+     "a campaign focused narrowly on meat and dairy could achieve a great deal",
+     "unrefrigerated trucks",
+     "It is not the thing that matters"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set09_q32_A.mp3",
+     "q5set09_q32_B.mp3"
+    ],
+    "statements": [
+     "Advice about planning meals is of little use in low income countries.",
+     "In rich countries the biggest single share of food is lost in kitchens."
+    ],
+    "wordCounts": [
+     12,
+     13
+    ],
+    "matches": [
+     true,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 3,
+    "points": 4,
+    "explain": "Aは food never reaches consumers at all, so consumer advice is beside the point の正しい言い換え。Bも In high income countries ... the largest single share is lost in kitchens, both household and restaurant の正しい要約。低所得国と高所得国のどちらの話かを取り違えないことが鍵。よって両方一致で③。",
+    "keyPhrases": [
+     "food never reaches consumers at all, so consumer advice is beside the point",
+     "the largest single share is lost in kitchens, both household and restaurant"
+    ]
+   },
+   "q33": {
+    "audio": "q5set09_q33.mp3",
+    "image": "q5set09_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Greenhouse Emissions per Kilogram of Food (kg CO2 equivalent)",
+     "axis": {
+      "x": "Food",
+      "y": "kg CO2 equivalent per kg"
+     },
+     "series": [
+      {
+       "name": "Beef",
+       "value": 60
+      },
+      {
+       "name": "Cheese",
+       "value": 21
+      },
+      {
+       "name": "Chicken",
+       "value": 6.1
+      },
+      {
+       "name": "Rice",
+       "value": 4
+      },
+      {
+       "name": "Potatoes",
+       "value": 1
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Hana",
+      "text": "Beef is sixty and potatoes are one, so the lecturer's sixty times figure is exactly this chart."
+     },
+     {
+      "who": "Theo",
+      "text": "Then throwing away one steak matters more than throwing away a whole sack of potatoes."
+     },
+     {
+      "who": "Hana",
+      "text": "Cheese at twenty-one surprised me. It is far above chicken at six point one and rice at four."
+     },
+     {
+      "who": "Theo",
+      "text": "So dairy belongs in the campaign too, not only meat."
+     }
+    ],
+    "wordCount": 60,
+    "choices": [
+     "Cheese produces lower emissions per kilogram than chicken does.",
+     "Chicken and rice should be the main focus of any waste campaign.",
+     "The heaviest foods thrown away always cause the greatest emissions.",
+     "A small amount of beef or cheese wasted can outweigh a large amount of vegetables."
+    ],
+    "answer": 4,
+    "points": 5,
+    "explain": "講義（牛肉1kgはじゃがいも1kgの約60倍／肉と乳製品に絞ったキャンペーンが有効）＋図表（牛肉60・チーズ21対じゃがいも1）＋会話（ステーキ1枚がじゃがいも1袋を上回る／乳製品も対象）の統合で④。",
+    "keyPhrases": [
+     "around sixty times the greenhouse emissions of a kilogram of potatoes",
+     "Then throwing away one steak matters more than throwing away a whole sack of potatoes"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表と逆。チーズは21で鶏肉6.1を大きく上回る。会話でも far above chicken と明言されている。"
+     },
+     {
+      "no": 2,
+      "why": "図表で鶏肉6.1・米4.0は下位。会話でも乳製品と肉を対象にすべきと述べられている。"
+     },
+     {
+      "no": 3,
+      "why": "講義の Weight is the easy thing to measure. It is not the thing that matters と正反対。図表でも軽い牛肉が最大の排出量を持つ。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set10",
+   "no": 10,
+   "level": "hard",
+   "levelJa": "やや難",
+   "topic": "言語の消滅と記録",
+   "situation": "あなたはアメリカの大学で、言語学についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set10_lecture.mp3",
+    "script": "Good morning. There are about seven thousand languages spoken today, and by the end of this century linguists expect roughly half of them to have no speakers left. I want to look at how that happens, and at what the standard response gets wrong.\n\nFirst, how a language ends. It is almost never sudden. The usual pattern takes three generations. Grandparents speak the local language at home. Parents understand it but answer their own children in the national language, because that is the language of school and work. The grandchildren can follow a conversation but cannot produce a sentence. Nothing is banned and nobody decides. Each family simply makes a reasonable choice, and the sum of those choices ends a language.\n\nSecond, what linguists do about it. For most of the twentieth century, the response was documentation. Send a researcher, record the last fluent speakers, write a grammar and a dictionary, and place them in a university archive. The tapes are safe. Nobody listens to them.\n\nAnd this is where I want to be blunt. A recorded language is not a living one. A grammar in an archive lets a scholar study a language; it does not let a child grow up in it. If the goal is speakers rather than data, the work has to happen where families make daily decisions.\n\nThere is one encouraging case. Hebrew had no native speakers for centuries and now has millions. But look at what it required: a state, a school system, and an army all operating in the language. No archive did that. Which means archives are worth keeping, but nobody should mistake them for a rescue.",
+    "wordCount": 275,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "How Languages End, and What Recording Cannot Do",
+    "image": "q5set10_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that documentation is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "How a language disappears",
+      "rows": [
+       {
+        "label": "Speed of the change:",
+        "text": "(28) rather than sudden",
+        "blank": 28
+       },
+       {
+        "label": "Cause of the change:",
+        "text": "the (29) decisions of individual families",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "What actually revives a language",
+      "rows": [
+       {
+        "text": "Hebrew regained millions of native speakers."
+       },
+       {
+        "text": "Revival required support from major public (30).",
+        "blank": 30
+       },
+       {
+        "text": "Archives alone are (31) for producing speakers.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "the most effective way of keeping a language alive",
+     "a practice that linguists abandoned in the last century",
+     "the reason why half the world's languages are disappearing",
+     "worth doing but not a substitute for living speakers"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "最終文 archives are worth keeping, but nobody should mistake them for a rescue が結論。①はその真逆で、A recorded language is not a living one と否定されている。②は20世紀を通じて標準的対応だったと述べられており、放棄されたとは言っていない。③は消滅の原因を三世代の家族の選択に帰す第2段落と矛盾。",
+    "keyPhrases": [
+     "archives are worth keeping, but nobody should mistake them for a rescue",
+     "A recorded language is not a living one"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "A recorded language is not a living one / it does not let a child grow up in it と明確に否定。archives are worth keeping の前半だけを聞くと選んでしまう。"
+     },
+     {
+      "no": 2,
+      "why": "記録は今も価値があると述べられており放棄されていない。For most of the twentieth century という表現を「もう終わった」と読み替える罠。"
+     },
+     {
+      "no": 3,
+      "why": "因果の捏造。消滅の原因は3世代にわたる家族の合理的な選択の総和であり、記録活動ではない。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "banned",
+     "gradual",
+     "inadequate",
+     "institutions",
+     "rational",
+     "recorded"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 2,
+      "heard": "It is almost never sudden. The usual pattern takes three generations",
+      "collocationNote": "(28) rather than sudden。sudden と対比される形容詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 5,
+      "heard": "Each family simply makes a reasonable choice",
+      "collocationNote": "the (29) decisions。名詞 decisions を修飾する形容詞。reasonable の言い換え。"
+     },
+     {
+      "no": 30,
+      "answer": 4,
+      "heard": "a state, a school system, and an army all operating in the language",
+      "collocationNote": "major public (30)。形容詞2つに続く複数名詞が入る。"
+     },
+     {
+      "no": 31,
+      "answer": 3,
+      "heard": "nobody should mistake them for a rescue",
+      "collocationNote": "are (31) for producing speakers。for を伴う形容詞。「不十分」の意味。"
+     }
+    ],
+    "unused": [
+     1,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は almost never sudden / three generations を gradual に、(29)は a reasonable choice を rational に、(30)は a state, a school system, and an army を institutions に、(31)は mistake them for a rescue を inadequate に言い換える。使わない2つは音声語の反響で、banned は Nothing is banned、recorded は record the last fluent speakers と A recorded language に強く引っ張られる。特に recorded は (31) の行に文法的には入るが「記録されている」では意味が逆になる。",
+    "keyPhrases": [
+     "It is almost never sudden",
+     "Each family simply makes a reasonable choice",
+     "a state, a school system, and an army all operating in the language",
+     "nobody should mistake them for a rescue",
+     "Nothing is banned",
+     "record the last fluent speakers"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set10_q32_A.mp3",
+     "q5set10_q32_B.mp3"
+    ],
+    "statements": [
+     "Language loss usually happens because governments forbid the local language.",
+     "Hebrew's revival depended on institutions rather than on written records."
+    ],
+    "wordCounts": [
+     10,
+     10
+    ],
+    "matches": [
+     false,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 2,
+    "points": 4,
+    "explain": "Aは Nothing is banned and nobody decides と明確に否定されている。禁止という直感的な説明を講義は退けている。Bは a state, a school system, and an army all operating in the language / No archive did that の正しい要約。よって②。",
+    "keyPhrases": [
+     "Nothing is banned and nobody decides",
+     "a state, a school system, and an army all operating in the language",
+     "No archive did that"
+    ]
+   },
+   "q33": {
+    "audio": "q5set10_q33.mp3",
+    "image": "q5set10_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Speakers of One Local Language by Age Group (% able to speak fluently)",
+     "axis": {
+      "x": "Age group",
+      "y": "Fluent speakers (%)"
+     },
+     "series": [
+      {
+       "name": "Over 70",
+       "value": 92
+      },
+      {
+       "name": "Forties",
+       "value": 54
+      },
+      {
+       "name": "Twenties",
+       "value": 11
+      },
+      {
+       "name": "Under 10",
+       "value": 2
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Rin",
+      "text": "Over seventy is ninety-two per cent, the forties fifty-four, the twenties only eleven."
+     },
+     {
+      "who": "Ivan",
+      "text": "That is the three generation pattern from the lecture, laid out as a single chart."
+     },
+     {
+      "who": "Rin",
+      "text": "And under ten is two per cent, so recording the oldest group now would capture the language just as it stops being passed on."
+     },
+     {
+      "who": "Ivan",
+      "text": "Capture, yes. Continue, no."
+     }
+    ],
+    "wordCount": 56,
+    "choices": [
+     "The chart proves that documentation projects cause languages to disappear.",
+     "The chart shows a language that is being successfully passed to children.",
+     "Fluency has declined equally across all four age groups.",
+     "Recording the oldest speakers would preserve data while transmission is already ending."
+    ],
+    "answer": 4,
+    "points": 5,
+    "explain": "講義（3世代の型／記録された言語は生きた言語ではない）＋図表（92→54→11→2の落差）＋会話（Capture, yes. Continue, no.）の統合で④。記録の価値と継承の断絶を切り分けられているかを問う。",
+    "keyPhrases": [
+     "A recorded language is not a living one",
+     "recording the oldest group now would capture the language just as it stops being passed on"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "因果の捏造。講義は記録を「救済と誤認するな」と述べるだけで、記録が消滅を引き起こすとは言っていない。"
+     },
+     {
+      "no": 2,
+      "why": "図表で10歳未満は2%。会話でも継承が止まりつつあると述べられており successfully passed とは正反対。"
+     },
+     {
+      "no": 3,
+      "why": "図表は世代ごとに落差が大きく異なる。70代以上92%と20代11%を equally とはできない。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set11",
+   "no": 11,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "都市の緑と気温",
+   "situation": "あなたはアメリカの大学で、都市環境についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set11_lecture.mp3",
+    "script": "Good morning. On a summer afternoon, the centre of a large city can be seven degrees warmer than the farmland outside it. That gap has a name, the urban heat island, and today I want to explain both why it exists and why the obvious remedy is more complicated than it looks.\n\nThe cause is mostly material. Asphalt and dark roofing absorb sunlight all day and give it back little by little all through the night, so a city never fully cools down before the next morning. Add the heat thrown out by air conditioners and engines, and you have a surface that stays warm around the clock.\n\nNow, trees. A mature street tree does two things at once. Its canopy blocks sunlight before it reaches the pavement, and it releases water vapour from its leaves, which draws heat out of the air just as sweating does. Measurements under a good canopy show temperatures several degrees below the open street a few metres away.\n\nBut here is the difficulty. Cooling depends on canopy area, and canopy area takes decades. A tree planted this spring will provide almost no shade for fifteen years, and roughly a third of newly planted street trees die within five, usually from lack of water in their first two summers. So a planting programme announced today is a promise about the twenty-forties.\n\nAnd the trees are not distributed evenly. In city after city, wealthy districts have two to three times the canopy of poor ones. The neighbourhoods with the least shade also tend to have the smallest homes and the fewest air conditioners. So the heat falls hardest on the people least equipped to escape it.",
+    "wordCount": 280,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Trees and the Urban Heat Island",
+    "image": "q5set11_worksheet.png",
+    "lead": {
+     "text": "The lecture explains that planting trees is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Why cities stay hot",
+      "rows": [
+       {
+        "label": "Dark surfaces:",
+        "text": "heat is released (28)",
+        "blank": 28
+       },
+       {
+        "label": "Machines:",
+        "text": "add heat (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Limits of tree planting",
+      "rows": [
+       {
+        "text": "A third of new street trees die within five years."
+       },
+       {
+        "text": "The cooling effect is (30).",
+        "blank": 30
+       },
+       {
+        "text": "Existing canopy is socially (31).",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "effective but slow, and unevenly available",
+     "an immediate solution to summer heat in cities",
+     "impossible in districts with small homes",
+     "less useful than installing more air conditioners"
+    ],
+    "answer": 1,
+    "points": 3,
+    "explain": "第4段落（樹冠が育つまで数十年）と第5段落（富裕地区は貧困地区の2〜3倍の樹冠）が講義の2つの留保。②は a promise about the twenty-forties と真逆。④はエアコンを解決策として推奨する記述はなく、むしろ排熱源として挙げられている。③は分布の不均衡を「不可能」と誇張したもの。",
+    "keyPhrases": [
+     "a planting programme announced today is a promise about the twenty-forties",
+     "wealthy districts have two to three times the canopy of poor ones"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "第4段落と正反対。植えた木は15年間ほとんど日陰を作らず、効果は2040年代の話になる。「木は涼しい」という一般常識に引っ張られる誤答。"
+     },
+     {
+      "no": 3,
+      "why": "講義は分布が不均衡だと述べているだけで、植栽が不可能とは言っていない。impossible が言い過ぎ。"
+     },
+     {
+      "no": 4,
+      "why": "エアコンは第2段落で熱の排出源として挙げられている。解決策として比較されていない。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "continuously",
+     "delayed",
+     "planted",
+     "slowly",
+     "unequal",
+     "ventilated"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 4,
+      "heard": "give it back little by little all through the night",
+      "collocationNote": "is released (28)。動詞を修飾する副詞が入る。形容詞は文法的に不可。"
+     },
+     {
+      "no": 29,
+      "answer": 1,
+      "heard": "a surface that stays warm around the clock",
+      "collocationNote": "add heat (29)。動詞 add を修飾する副詞。「昼夜を通じて」の意味。"
+     },
+     {
+      "no": 30,
+      "answer": 2,
+      "heard": "A tree planted this spring will provide almost no shade for fifteen years",
+      "collocationNote": "The cooling effect is (30)。is に続く形容詞・過去分詞。時間の遅れを表す語。"
+     },
+     {
+      "no": 31,
+      "answer": 5,
+      "heard": "wealthy districts have two to three times the canopy of poor ones",
+      "collocationNote": "socially (31)。副詞 socially に修飾される形容詞が入る。"
+     }
+    ],
+    "unused": [
+     3,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は give it back little by little を副詞 slowly に、(29)は around the clock を continuously に、(30)は almost no shade for fifteen years を delayed に、(31)は two to three times the canopy を unequal に言い換える。使わない2つは音声語の反響で、planted は A tree planted this spring と a planting programme に強く引っ張られる罠。ventilated は建物の話を連想させるが講義には出ない語。",
+    "keyPhrases": [
+     "give it back little by little all through the night",
+     "a surface that stays warm around the clock",
+     "A tree planted this spring will provide almost no shade for fifteen years",
+     "wealthy districts have two to three times the canopy of poor ones",
+     "a planting programme announced today"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set11_q32_A.mp3",
+     "q5set11_q32_B.mp3"
+    ],
+    "statements": [
+     "Poor districts have two to three times the canopy of wealthy ones.",
+     "Most newly planted street trees die because of damage from traffic."
+    ],
+    "wordCounts": [
+     12,
+     11
+    ],
+    "matches": [
+     false,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 4,
+    "points": 4,
+    "explain": "Aは主体が逆。講義は wealthy districts have two to three times the canopy of poor ones と述べており、樹冠が多いのは富裕地区。Bも2点で誤りで、死亡率は roughly a third であって most ではなく、原因は usually from lack of water と明示されている。よってどちらも一致せず④。",
+    "keyPhrases": [
+     "wealthy districts have two to three times the canopy of poor ones",
+     "roughly a third of newly planted street trees die within five",
+     "usually from lack of water in their first two summers"
+    ]
+   },
+   "q33": {
+    "audio": "q5set11_q33.mp3",
+    "image": "q5set11_q33_graph.png",
+    "graph": {
+     "kind": "hbar",
+     "title": "Tree Canopy Cover by District (%)",
+     "axis": {
+      "x": "Canopy cover (%)",
+      "y": "District"
+     },
+     "series": [
+      {
+       "name": "Hillcrest",
+       "value": 38
+      },
+      {
+       "name": "Riverside",
+       "value": 29
+      },
+      {
+       "name": "Eastgate",
+       "value": 17
+      },
+      {
+       "name": "Dockside",
+       "value": 11
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Cara",
+      "text": "Hillcrest has thirty-eight per cent canopy, Dockside eleven. That is almost three and a half times."
+     },
+     {
+      "who": "Sam",
+      "text": "Which matches the two to three times the lecturer mentioned, and Dockside is the poorest district here."
+     },
+     {
+      "who": "Cara",
+      "text": "So if the city planted in Dockside tomorrow, those residents would still spend the next fifteen summers without shade."
+     },
+     {
+      "who": "Sam",
+      "text": "Eastgate at seventeen is barely better off."
+     }
+    ],
+    "wordCount": 59,
+    "choices": [
+     "Canopy cover is roughly the same in all four districts.",
+     "The districts most in need of shade will benefit only after many years.",
+     "Districts with more canopy have smaller homes and fewer air conditioners.",
+     "Planting trees in Dockside would reduce its temperature within a year."
+    ],
+    "answer": 2,
+    "points": 5,
+    "explain": "講義（樹冠の効果は15年遅れる／貧困地区の樹冠は2〜3分の1／最も暑い地区の住民が最も逃げ場がない）＋図表（Dockside 11%）＋会話（明日植えても次の15年は日陰なし）の統合で②。",
+    "keyPhrases": [
+     "will provide almost no shade for fifteen years",
+     "those residents would still spend the next fifteen summers without shade"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表で38%と11%の差がある。会話でも almost three and a half times と指摘されている。"
+     },
+     {
+      "no": 3,
+      "why": "関係が逆。講義は The neighbourhoods with the least shade also tend to have the smallest homes and the fewest air conditioners と述べている。"
+     },
+     {
+      "no": 4,
+      "why": "講義と会話の両方が15年という遅れを明示している。within a year は正反対。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set12",
+   "no": 12,
+   "level": "easy",
+   "levelJa": "やや易",
+   "topic": "コーヒーの世界的流通と生産者の収入",
+   "situation": "あなたはアメリカの大学で、国際貿易についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set12_lecture.mp3",
+    "script": "Good morning. You paid something like four dollars for a cup of coffee this morning. Today I want to follow that four dollars backwards, from your hand to the farm, because the shape of the answer tells you a lot about international trade.\n\nOf your four dollars, the farmer who grew the beans receives somewhere between three and ten cents. The rest is divided among shipping, roasting, packaging, the shop's rent, and the wages of the person who served you. This is not a story of one greedy company. It is the ordinary arithmetic of a long chain.\n\nWhy so little at the farm end? Because the farmer sells the cheapest version of the product. Green coffee, unroasted, is a commodity. Any sack is interchangeable with any other sack of the same grade, so the price is set on a world exchange and no individual grower can influence it. Meanwhile, the roasted, branded, ground coffee in your cup is not interchangeable at all, and whoever owns that stage sets their own price.\n\nSo the interesting question is where along the chain value gets added. And notice what that implies. If a producing country roasts and packages its own coffee, it captures far more of the final price. Ethiopia has been trying exactly this for two decades.\n\nBut it is harder than it sounds. Roasted coffee goes stale within weeks, so shipping it means air freight or refrigeration. Importing countries also charge a far heavier duty on roasted coffee than on green beans, which quietly discourages the very step that would help. And building recognised brands abroad takes money that a small grower simply does not have.",
+    "wordCount": 276,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Following the Price of a Cup of Coffee",
+    "image": "q5set12_worksheet.png",
+    "lead": {
+     "text": "The lecture explains that a coffee farmer's small share is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Why the farm share is small",
+      "rows": [
+       {
+        "label": "Green coffee:",
+        "text": "any sack is (28) with another",
+        "blank": 28
+       },
+       {
+        "label": "The world price:",
+        "text": "beyond a single grower's (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Obstacles to roasting at origin",
+      "rows": [
+       {
+        "text": "Roasted coffee goes stale within weeks."
+       },
+       {
+        "text": "Transport must be (30) and therefore costly.",
+        "blank": 30
+       },
+       {
+        "text": "Import duties are deliberately (31) on roasted coffee.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "caused entirely by the high cost of air freight",
+     "a consequence of selling an interchangeable raw product",
+     "a problem that Ethiopia has already solved",
+     "the result of a single company taking excessive profit"
+    ],
+    "answer": 2,
+    "points": 3,
+    "explain": "第3段落が核心。Green coffee, unroasted, is a commodity / Any sack is interchangeable / no individual grower can influence it。④は This is not a story of one greedy company と明確に否定されている。①は焙煎後の輸送の話で、農家の取り分が小さい理由ではない。③は Ethiopia has been trying ... But it is harder than it sounds と矛盾。",
+    "keyPhrases": [
+     "Any sack is interchangeable with any other sack of the same grade",
+     "This is not a story of one greedy company"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "航空輸送は「原産国で焙煎する場合の障害」として第5段落に出る。農家の取り分の理由ではなく、段落を混同させる罠。"
+     },
+     {
+      "no": 3,
+      "why": "20年間試みているが難しいという趣旨。has been trying を「達成した」と読み替える誤り。"
+     },
+     {
+      "no": 4,
+      "why": "講義が先取りして否定している。This is not a story of one greedy company / It is the ordinary arithmetic of a long chain。道徳的な説明に飛びつく誤答。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "branded",
+     "control",
+     "exchangeable",
+     "higher",
+     "refrigerated",
+     "stale"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 3,
+      "heard": "Any sack is interchangeable with any other sack of the same grade",
+      "collocationNote": "is (28) with another。with を伴う形容詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 2,
+      "heard": "no individual grower can influence it",
+      "collocationNote": "beyond a grower's (29)。所有格の後なので名詞が入る。beyond one's control で「手に及ばない」。"
+     },
+     {
+      "no": 30,
+      "answer": 5,
+      "heard": "shipping it means air freight or refrigeration",
+      "collocationNote": "must be (30)。輸送方法を表す過去分詞。refrigeration の形容詞形。"
+     },
+     {
+      "no": 31,
+      "answer": 4,
+      "heard": "a far heavier duty on roasted coffee than on green beans",
+      "collocationNote": "duties are deliberately (31)。比較級の形容詞が入り、than 節は省略されている。"
+     }
+    ],
+    "unused": [
+     1,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は interchangeable を exchangeable に、(29)は no individual grower can influence it を beyond a grower's control に、(30)は refrigeration を refrigerated に、(31)は a far heavier duty を higher に言い換える。使わない2つは音声語の反響で、branded は the roasted, branded, ground coffee と building recognised brands、stale は Roasted coffee goes stale within weeks から来る罠。stale はワークシートの固定行に既に書かれているため、空所には入らない。",
+    "keyPhrases": [
+     "Any sack is interchangeable with any other sack of the same grade",
+     "no individual grower can influence it",
+     "shipping it means air freight or refrigeration",
+     "a far heavier duty on roasted coffee than on green beans",
+     "the roasted, branded, ground coffee in your cup",
+     "Roasted coffee goes stale within weeks"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set12_q32_A.mp3",
+     "q5set12_q32_B.mp3"
+    ],
+    "statements": [
+     "The grower receives roughly a third of the four dollars you pay.",
+     "The lecturer blames coffee companies for the farmers' low income."
+    ],
+    "wordCounts": [
+     12,
+     10
+    ],
+    "matches": [
+     false,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 4,
+    "points": 4,
+    "explain": "Aは数値の誤り。農家が受け取るのは somewhere between three and ten cents であり、4ドルの3分の1ではない。cents と a third の混同を誘う。Bも This is not a story of one greedy company と真逆で、講義は長い流通経路の算術だと説明している。よってどちらも一致せず④。",
+    "keyPhrases": [
+     "the farmer who grew the beans receives somewhere between three and ten cents",
+     "This is not a story of one greedy company",
+     "It is the ordinary arithmetic of a long chain"
+    ]
+   },
+   "q33": {
+    "audio": "q5set12_q33.mp3",
+    "image": "q5set12_q33_graph.png",
+    "graph": {
+     "kind": "pie",
+     "title": "Where the Price of a Cup of Coffee Goes (%)",
+     "axis": {
+      "x": "Stage",
+      "y": "Share of retail price (%)"
+     },
+     "series": [
+      {
+       "name": "Shop rent and wages",
+       "value": 52
+      },
+      {
+       "name": "Roasting and packaging",
+       "value": 24
+      },
+      {
+       "name": "Shipping and trading",
+       "value": 12
+      },
+      {
+       "name": "Brand and marketing",
+       "value": 10
+      },
+      {
+       "name": "Farmer",
+       "value": 2
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Ines",
+      "text": "The farmer gets two per cent while shop rent and wages take fifty-two."
+     },
+     {
+      "who": "Ben",
+      "text": "So most of what you pay never leaves the country you bought the cup in."
+     },
+     {
+      "who": "Ines",
+      "text": "And roasting and packaging is twenty-four, twelve times the farmer's share. That is the stage Ethiopia wants."
+     },
+     {
+      "who": "Ben",
+      "text": "Even capturing part of it would change a grower's income completely."
+     }
+    ],
+    "wordCount": 56,
+    "choices": [
+     "The farmer's share and the brand's share are roughly equal.",
+     "Moving roasting to the producing country targets a stage worth far more than farming.",
+     "Paying more for coffee in a shop would mainly increase the farmer's income.",
+     "Shipping and trading take the largest share of the retail price."
+    ],
+    "answer": 2,
+    "points": 5,
+    "explain": "講義（原産国で焙煎・包装すれば最終価格の多くを取れる／エチオピアが20年試みている）＋図表（焙煎包装24%対農家2%）＋会話（12倍・その段階こそエチオピアが狙う）の統合で②。",
+    "keyPhrases": [
+     "If a producing country roasts and packages its own coffee, it captures far more of the final price",
+     "twelve times the farmer's share"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表でブランド10%対農家2%。5倍の差があり roughly equal ではない。"
+     },
+     {
+      "no": 3,
+      "why": "図表で農家の取り分は2%。店の家賃と人件費が52%を占めるので、店頭価格の上昇分の大半は現地に留まる。会話の most of what you pay never leaves the country とも整合しない。"
+     },
+     {
+      "no": 4,
+      "why": "図表で輸送・取引は12%。最大は店の家賃と人件費52%。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set13",
+   "no": 13,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "スマートフォンと集中力",
+   "situation": "あなたはアメリカの大学で、認知心理学についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set13_lecture.mp3",
+    "script": "Good afternoon. Today's subject is attention, and I want to start by narrowing the question. The popular claim is that phones have shortened our attention spans permanently. That claim is much weaker than the evidence for something more specific and more interesting.\n\nBegin with the well-established part. Switching between two tasks carries a cost. When you move from writing an essay to reading a message and back again, you do not resume where you left off. Part of your mind stays on the message, and studies put the recovery time at up to twenty minutes for demanding work. Over a day of frequent switching, that adds up to hours of reduced capacity.\n\nNow the finding that surprised researchers. In one series of experiments, students sat a test with their phone either in another room, in a bag, or face down on the desk. The phone was silent in all three conditions. Scores were highest with the phone in another room and lowest with it on the desk, even though nobody in that group reported feeling distracted. The device did not have to do anything. Its presence was enough, because part of the mind was occupied with not looking at it.\n\nSo the important claim is not about damage. It is about location. And notice the practical consequence: turning off notifications is a smaller intervention than most people assume, because the effect measured here was produced by a silent phone.\n\nOne caution before we finish. These effects are averages, and the size varies a great deal between individuals. And permanent change in the brain is not what has been shown. Move the phone to another room and the capacity comes back the same afternoon.",
+    "wordCount": 283,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Attention and the Presence of a Phone",
+    "image": "q5set13_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that the key factor is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "The cost of switching tasks",
+      "rows": [
+       {
+        "label": "Recovery after an interruption:",
+        "text": "up to twenty minutes, and therefore (28)",
+        "blank": 28
+       },
+       {
+        "label": "Effect across a whole day:",
+        "text": "losses that are (29)",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "The experiment with a silent phone",
+      "rows": [
+       {
+        "text": "Scores were lowest with the phone on the desk."
+       },
+       {
+        "text": "Participants were (30) of any effect.",
+        "blank": 30
+       },
+       {
+        "text": "The loss of capacity is (31).",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "individual differences in natural attention span",
+     "the number of notifications a person receives each day",
+     "permanent damage to the brain caused by heavy phone use",
+     "where the phone is, rather than whether it makes a sound"
+    ],
+    "answer": 4,
+    "points": 3,
+    "explain": "第4段落 the important claim is not about damage. It is about location が明示的な主張。③は最終段落 permanent change in the brain is not what has been shown と正反対。②は turning off notifications is a smaller intervention than most people assume と否定されている。①は最後の留保にすぎず主張ではない。",
+    "keyPhrases": [
+     "It is about location",
+     "the effect measured here was produced by a silent phone"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "個人差は最終段落の留保として1文触れられるだけ。講義の中心主張ではない。"
+     },
+     {
+      "no": 2,
+      "why": "実験では3条件すべてで電話は無音だった。turning off notifications is a smaller intervention than most people assume と述べられている。"
+     },
+     {
+      "no": 3,
+      "why": "最終段落で明確に否定。permanent change in the brain is not what has been shown / the capacity comes back the same afternoon。冒頭の「よくある主張」を結論と混同させる罠。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "cumulative",
+     "distracted",
+     "reversible",
+     "silent",
+     "substantial",
+     "unaware"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 5,
+      "heard": "the recovery time at up to twenty minutes for demanding work",
+      "collocationNote": "therefore (30) ではなく (28)。20分という長さを評価する形容詞が入る。"
+     },
+     {
+      "no": 29,
+      "answer": 1,
+      "heard": "Over a day of frequent switching, that adds up to hours",
+      "collocationNote": "losses that are (29)。adds up to の言い換えとなる形容詞。"
+     },
+     {
+      "no": 30,
+      "answer": 6,
+      "heard": "even though nobody in that group reported feeling distracted",
+      "collocationNote": "were (30) of any effect。of を伴う形容詞。distracted は of を取らないので文法的に不可。"
+     },
+     {
+      "no": 31,
+      "answer": 3,
+      "heard": "Move the phone to another room and the capacity comes back the same afternoon",
+      "collocationNote": "The loss is (31)。回復可能性を表す形容詞が入る。"
+     }
+    ],
+    "unused": [
+     2,
+     4
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は up to twenty minutes という長さを substantial に、(29)は adds up to hours を cumulative に、(30)は nobody reported feeling distracted を unaware に、(31)は comes back the same afternoon を reversible に言い換える。使わない2つが本セットの主な罠で、distracted は音声にそのまま出るが (30) の空所は of が続くため文法的に入らない。silent も The phone was silent の反響だが、人を主語にした行には入らない。",
+    "keyPhrases": [
+     "the recovery time at up to twenty minutes for demanding work",
+     "Over a day of frequent switching, that adds up to hours",
+     "even though nobody in that group reported feeling distracted",
+     "Move the phone to another room and the capacity comes back the same afternoon",
+     "The phone was silent in all three conditions"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set13_q32_A.mp3",
+     "q5set13_q32_B.mp3"
+    ],
+    "statements": [
+     "Students scored worst when the phone lay face down on the desk.",
+     "The lost capacity returns as soon as the phone is moved away."
+    ],
+    "wordCounts": [
+     12,
+     12
+    ],
+    "matches": [
+     true,
+     true
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 3,
+    "points": 4,
+    "explain": "Aは Scores were highest with the phone in another room and lowest with it on the desk の正しい要約。Bも最終段落 Move the phone to another room and the capacity comes back the same afternoon の正しい言い換え。permanent という語に引っ張られず、否定されている側を聞き分ける。よって両方一致で③。",
+    "keyPhrases": [
+     "lowest with it on the desk",
+     "Move the phone to another room and the capacity comes back the same afternoon"
+    ]
+   },
+   "q33": {
+    "audio": "q5set13_q33.mp3",
+    "image": "q5set13_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Mean Test Score by Phone Location (out of 100)",
+     "axis": {
+      "x": "Phone location",
+      "y": "Mean score"
+     },
+     "series": [
+      {
+       "name": "Another room",
+       "value": 74
+      },
+      {
+       "name": "In a bag",
+       "value": 68
+      },
+      {
+       "name": "On the desk",
+       "value": 61
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Kai",
+      "text": "Another room seventy-four, in a bag sixty-eight, on the desk sixty-one. Thirteen points from top to bottom."
+     },
+     {
+      "who": "Nora",
+      "text": "And in a bag sits in between, so even hiding it recovers only about half the gap."
+     },
+     {
+      "who": "Kai",
+      "text": "Which means distance matters in degrees, not all or nothing."
+     },
+     {
+      "who": "Nora",
+      "text": "Though these are group averages, and the lecturer warned that individuals differ a lot."
+     }
+    ],
+    "wordCount": 58,
+    "choices": [
+     "The chart shows that phone location affects everyone by the same amount.",
+     "Greater distance from the phone helps progressively, though results vary by person.",
+     "Putting the phone in a bag gives the same benefit as leaving it in another room.",
+     "Scores are unaffected as long as the phone makes no sound."
+    ],
+    "answer": 2,
+    "points": 5,
+    "explain": "講義（重要なのは場所／効果は平均で個人差が大きい）＋図表（74・68・61の段階的差）＋会話（距離は程度の問題／これは群平均）の統合で②。程度差と個人差の両方を保持した唯一の選択肢。",
+    "keyPhrases": [
+     "These effects are averages, and the size varies a great deal between individuals",
+     "Which means distance matters in degrees, not all or nothing"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "講義の These effects are averages, and the size varies a great deal between individuals と矛盾。会話でも群平均だと注意されている。"
+     },
+     {
+      "no": 3,
+      "why": "図表で鞄の中は68、別室は74。会話でも recovers only about half the gap と限定されている。"
+     },
+     {
+      "no": 4,
+      "why": "実験では3条件すべて無音だったのに得点差が出た。無音なら影響がないという結論は実験の要点と正反対。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set14",
+   "no": 14,
+   "level": "hard",
+   "levelJa": "やや難",
+   "topic": "リサイクルの実態と設計",
+   "situation": "あなたはアメリカの大学で、廃棄物政策についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set14_lecture.mp3",
+    "script": "Good morning. Most of you sorted your rubbish this week and felt you had done something useful. Today I want to look at what actually happens to it, and I should warn you that the picture is not flattering.\n\nBegin with the numbers for plastic. Globally, about nine per cent of all plastic ever produced has been recycled. Twelve per cent has been burned. The remaining seventy-nine per cent is in landfill or in the environment. Note that this is a figure for the whole history of plastic, not for one bad year.\n\nWhy so low, when collection rates in many countries are high? The problem is that collection and recycling are different things. A household may sort perfectly, and the material may still be turned away further down the line. Some is contaminated with food. Some is a mixture of layers that no process can separate. And some has simply been produced in a form nobody has built a market for.\n\nThis is where the design of the product decides everything. A clear drinks bottle made of a single material can be turned back into a bottle many times. A pouch made of plastic film bonded to a metal layer cannot be pulled apart economically by any known method, no matter how carefully it is sorted.\n\nSo the decisive moment for a package is not the moment you put it in a bin. It is the moment an engineer chose its materials, years earlier and hundreds of kilometres away. Which suggests where regulation should point. Several countries now charge producers a fee that rises with how hard their packaging is to process, and that fee, unlike a public campaign, changes what gets designed.",
+    "wordCount": 284,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "What Really Determines Recycling",
+    "image": "q5set14_worksheet.png",
+    "lead": {
+     "text": "The lecture argues that recycling outcomes are decided by (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Why recycling rates stay low",
+      "rows": [
+       {
+        "label": "Plastic ever recycled:",
+        "text": "under (28) of the total",
+        "blank": 28
+       },
+       {
+        "label": "Sorted material:",
+        "text": "often (29) later in the process",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "Where the decision really happens",
+      "rows": [
+       {
+        "text": "A single material bottle can become a bottle again."
+       },
+       {
+        "text": "Multi layer pouches are (30) to separate.",
+        "blank": 30
+       },
+       {
+        "text": "Producer fees can make packaging design (31).",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "choices made when the packaging was designed",
+     "how carefully households sort their waste",
+     "the number of public recycling campaigns",
+     "the total amount of plastic a country collects"
+    ],
+    "answer": 1,
+    "points": 3,
+    "explain": "第5段落 the decisive moment ... is the moment an engineer chose its materials が結論。②は A household may sort perfectly, and the material may still be rejected と否定されている。④は collection and recycling are different things と否定。③は最終文で「公共キャンペーンとは違い」料金が設計を変えると述べられ、キャンペーンの効果は否定的に扱われている。",
+    "keyPhrases": [
+     "It is the moment an engineer chose its materials",
+     "A household may sort perfectly, and the material may still be turned away"
+    ],
+    "distractors": [
+     {
+      "no": 2,
+      "why": "完璧に分別しても後工程で弾かれると明言されている。no matter how carefully it is sorted とも述べられ、二重に否定されている。"
+     },
+     {
+      "no": 3,
+      "why": "最終文 that fee, unlike a public campaign, changes what gets designed でキャンペーンの効果は明確に低く見られている。"
+     },
+     {
+      "no": 4,
+      "why": "collection and recycling are different things が講義の要点。回収率が高い国でも実際の再生率は低いという前提から議論が始まる。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "burned",
+     "contaminated",
+     "impossible",
+     "measurable",
+     "rejected",
+     "tenth"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 6,
+      "heard": "about nine per cent of all plastic ever produced has been recycled",
+      "collocationNote": "under (28) of the total。of が続くので割合を表す名詞。9%なので「10分の1未満」。"
+     },
+     {
+      "no": 29,
+      "answer": 5,
+      "heard": "the material may still be turned away further down the line",
+      "collocationNote": "often (29) later in the process。受動態の過去分詞。contaminated も入りうるが、行の主語は分別済み材料全体で、汚染は原因の一つに過ぎない。"
+     },
+     {
+      "no": 30,
+      "answer": 3,
+      "heard": "cannot be pulled apart economically by any known method",
+      "collocationNote": "are (30) to separate。to 不定詞を伴う形容詞。"
+     },
+     {
+      "no": 31,
+      "answer": 4,
+      "heard": "charge producers a fee that rises with how hard their packaging is to process",
+      "collocationNote": "make design (31)。make + 目的語 + 形容詞。料金で設計の難易度が金額として表れる、という意味。"
+     }
+    ],
+    "unused": [
+     1,
+     2
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は about nine per cent を a tenth 未満と捉え直し、(29)は be turned away further down the line を rejected に、(30)は cannot be pulled apart economically by any known method を impossible に、(31)は a fee that rises with how hard their packaging is to process を measurable に言い換える。使わない2つは音声語の反響で、burned は Twelve per cent has been burned、contaminated は Some is contaminated with food から来る。特に (29) で contaminated を選ばせる設計になっており、汚染が「複数ある原因の一つ」であることを聞き分ける必要がある。",
+    "keyPhrases": [
+     "about nine per cent of all plastic ever produced has been recycled",
+     "the material may still be turned away further down the line",
+     "cannot be pulled apart economically by any known method",
+     "charge producers a fee that rises with how hard their packaging is to process",
+     "Twelve per cent has been burned",
+     "Some is contaminated with food"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set14_q32_A.mp3",
+     "q5set14_q32_B.mp3"
+    ],
+    "statements": [
+     "More plastic has been burned than has been recycled worldwide.",
+     "The nine per cent figure refers to plastic produced in a single year."
+    ],
+    "wordCounts": [
+     10,
+     13
+    ],
+    "matches": [
+     true,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 1,
+    "points": 4,
+    "explain": "Aは9%と12%を比較した正しい推論。2つの数値を保持して大小を判断させる出題。Bは講義が念を押した部分と正反対で、this is a figure for the whole history of plastic, not for one bad year と述べられている。よって①。",
+    "keyPhrases": [
+     "about nine per cent of all plastic ever produced has been recycled",
+     "Twelve per cent has been burned",
+     "this is a figure for the whole history of plastic, not for one bad year"
+    ]
+   },
+   "q33": {
+    "audio": "q5set14_q33.mp3",
+    "image": "q5set14_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Share of Collected Material Actually Reprocessed, by Package Type (%)",
+     "axis": {
+      "x": "Package type",
+      "y": "Reprocessed (%)"
+     },
+     "series": [
+      {
+       "name": "Clear bottle",
+       "value": 81
+      },
+      {
+       "name": "Coloured bottle",
+       "value": 54
+      },
+      {
+       "name": "Rigid tray",
+       "value": 29
+      },
+      {
+       "name": "Multi layer pouch",
+       "value": 3
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Vera",
+      "text": "Clear bottle eighty-one per cent, multi layer pouch three. All of this is material that was collected."
+     },
+     {
+      "who": "Tom",
+      "text": "So the pouch fails after the household did everything right, which is the lecturer's point exactly."
+     },
+     {
+      "who": "Vera",
+      "text": "And coloured bottle at fifty-four against clear at eighty-one, just from adding dye. Rigid tray sits at twenty-nine."
+     },
+     {
+      "who": "Tom",
+      "text": "A fee scaled to these numbers would price the pouch out."
+     }
+    ],
+    "wordCount": 62,
+    "choices": [
+     "Colouring a bottle has almost no effect on whether it is reprocessed.",
+     "A fee based on these rates would fall most heavily on the least recyclable design.",
+     "Households that sort more carefully raise the reprocessing rate of pouches.",
+     "Rigid trays are reprocessed at a rate close to that of clear bottles."
+    ],
+    "answer": 2,
+    "points": 5,
+    "explain": "講義（設計の難しさに応じて上がる料金が設計を変える）＋図表（透明ボトル81%対多層パウチ3%）＋会話（この数値に連動する料金ならパウチは市場から外れる）の統合で②。③は分別の限界、①④は数値の読み違いを突く。",
+    "keyPhrases": [
+     "charge producers a fee that rises with how hard their packaging is to process",
+     "A fee scaled to these numbers would price the pouch out"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "図表で透明81%対着色54%。会話でも just from adding dye と27ポイントの差が指摘されている。"
+     },
+     {
+      "no": 3,
+      "why": "図表の数値はすべて回収済み材料についてのもの。講義も no matter how carefully it is sorted と述べており、分別の精度では変わらない。"
+     },
+     {
+      "no": 4,
+      "why": "図表で硬質トレー29%対透明ボトル81%。close とは言えない差である。"
+     }
+    ]
+   }
+  },
+  {
+   "id": "q5set15",
+   "no": 15,
+   "level": "standard",
+   "levelJa": "標準",
+   "topic": "光害と渡り鳥（夜の照明が最初の原因）",
+   "situation": "あなたはアメリカの大学で、都市生態学についての講義を聞いています。講義を聞きながら、ワークシートにメモを取っています。",
+   "activities": {
+    "act1": "活動1：講義を聞き、ワークシートの空所 (27)〜(31) に入れるのに最も適切なものを選ぶ。",
+    "act2": "活動2：グループのメンバー A・B の発言を聞き、講義の内容と一致するものを選ぶ。",
+    "act3": "活動3：追加の会話と図表を踏まえ、講義全体から言えることを選ぶ。"
+   },
+   "lecture": {
+    "audio": "q5set15_lecture.mp3",
+    "script": "Good afternoon. Most people know that city lights are bad for migrating birds. Rather fewer can say why, and the why turns out to matter a great deal for what we should do about it.\n\nStart with the scale. In North America, collisions with buildings kill somewhere between a hundred million and a billion birds a year. The range is wide because the counting is hard, but even the low figure is very large. And here is the first point that surprises people: the great majority of the birds involved are travelling at night.\n\nNow the mechanism. These birds steer partly by the pattern of the stars. A brightly lit tower breaks that pattern. The birds lose the sky they were reading, circle the light for hours, and arrive at dawn exhausted in the middle of a city. Then they meet the glass, which is reflective and shows them trees and open air that are not there. So the glass is the last step in a chain, not the beginning of it.\n\nOne large building in Chicago gave us a natural experiment. Its window bays were sometimes lit and sometimes dark, depending on the events held inside. Across twenty-one years of records, on nights when half the bays were dark, collisions fell to roughly one sixth of the number counted on fully lit nights. Weather explained a little of that difference, but nowhere near all of it.\n\nOne caution before we stop. The birds do not pass evenly. Concentrate on the two or three weeks in spring and autumn when most of them move, and a lights-out rule buys almost the whole benefit for very little cost. Chicago's rule is voluntary, and that, not its design, is its weakness.",
+    "wordCount": 289,
+    "paragraphs": 5
+   },
+   "worksheet": {
+    "title": "Night Lighting and Migrating Birds",
+    "image": "q5set15_worksheet.png",
+    "lead": {
+     "text": "The lecture's main point is (27).",
+     "blank": 27
+    },
+    "blocks": [
+     {
+      "heading": "Why the lights come first",
+      "rows": [
+       {
+        "label": "Birds reading the stars:",
+        "text": "become (28) above lit towers",
+        "blank": 28
+       },
+       {
+        "label": "Death at the glass:",
+        "text": "a (29) step in the chain",
+        "blank": 29
+       }
+      ]
+     },
+     {
+      "heading": "What darkening the windows achieved",
+      "rows": [
+       {
+        "text": "Half the bays dark, twenty-one years of records."
+       },
+       {
+        "text": "The fall in collisions was (30).",
+        "blank": 30
+       },
+       {
+        "text": "A useful lights-out rule must be (31), not year round.",
+        "blank": 31
+       }
+      ]
+     }
+    ]
+   },
+   "q27": {
+    "choices": [
+     "that birds enter cities because lit streets give them more insects to eat",
+     "that lighting begins the chain, so darkening buildings in the migration weeks helps most",
+     "that switching city lights off would end bird deaths in cities completely",
+     "that the amount of glass used in modern buildings is the root of the problem"
+    ],
+    "answer": 2,
+    "points": 3,
+    "explain": "第3段落の the glass is the last step in a chain, not the beginning of it と第5段落の Concentrate on the two or three weeks in spring and autumn … buys almost the whole benefit を合わせたものが講義の主張。④はガラスを最初の原因とする点で第3段落と正反対。③は completely が強すぎ、講義は almost the whole benefit と述べている。①は音声に一切根拠がない。",
+    "keyPhrases": [
+     "the glass is the last step in a chain, not the beginning of it",
+     "Concentrate on the two or three weeks in spring and autumn when most of them move"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "虫が集まるという因果は講義に登場しない。もっともらしいが完全な捏造。"
+     },
+     {
+      "no": 3,
+      "why": "completely（完全になくなる）が過剰。講義は almost the whole benefit（ほぼ全ての効果）と限定している。"
+     },
+     {
+      "no": 4,
+      "why": "ガラスは chain の last step であって beginning ではないと明言されている。近い原因と根本原因の取り違えを誘う罠。"
+     }
+    ]
+   },
+   "q2831": {
+    "choices": [
+     "disoriented",
+     "dramatic",
+     "reflective",
+     "seasonal",
+     "secondary",
+     "voluntary"
+    ],
+    "blanks": [
+     {
+      "no": 28,
+      "answer": 1,
+      "heard": "The birds lose the sky they were reading, circle the light for hours",
+      "collocationNote": "become (28) above lit towers。become に続く形容詞。星のパターンを失って旋回する状態を1語で表す。"
+     },
+     {
+      "no": 29,
+      "answer": 5,
+      "heard": "the glass is the last step in a chain, not the beginning of it",
+      "collocationNote": "a (29) step in the chain。名詞 step を修飾する形容詞。「最初ではなく後に来る」ことを表す語。"
+     },
+     {
+      "no": 30,
+      "answer": 2,
+      "heard": "collisions fell to roughly one sixth of the number counted on fully lit nights",
+      "collocationNote": "The fall in collisions was (30)。be 動詞に続く、変化の大きさを評価する形容詞。6分の1という数値の評価。"
+     },
+     {
+      "no": 31,
+      "answer": 4,
+      "heard": "Concentrate on the two or three weeks in spring and autumn when most of them move",
+      "collocationNote": "must be (31), not year round。直後の not year round と対比されるので、時期の限定を表す形容詞。"
+     }
+    ],
+    "unused": [
+     3,
+     6
+    ],
+    "pairs": [
+     [
+      28,
+      29
+     ],
+     [
+      30,
+      31
+     ]
+    ],
+    "pointsPerPair": 2,
+    "allOrNothing": true,
+    "explain": "(28)は lose the sky they were reading, circle the light for hours を disoriented に、(29)は the last step in a chain, not the beginning を secondary に、(30)は fell to roughly one sixth を dramatic に、(31)は spring and autumn の2〜3週間に集中せよという指示を seasonal に言い換える。使わない2つはいずれも音声にそのまま出る語で、reflective は the glass, which is reflective、voluntary は Chicago's rule is voluntary の反響。聞こえた語を機械的に入れると必ず外れる。",
+    "keyPhrases": [
+     "The birds lose the sky they were reading, circle the light for hours",
+     "the glass is the last step in a chain, not the beginning of it",
+     "collisions fell to roughly one sixth of the number counted on fully lit nights",
+     "Concentrate on the two or three weeks in spring and autumn when most of them move",
+     "the glass, which is reflective",
+     "Chicago's rule is voluntary"
+    ]
+   },
+   "q32": {
+    "audios": [
+     "q5set15_q32_A.mp3",
+     "q5set15_q32_B.mp3"
+    ],
+    "statements": [
+     "Darkening half the window bays cut the collisions by about half.",
+     "Most of the birds that strike the towers are flying by day."
+    ],
+    "wordCounts": [
+     11,
+     12
+    ],
+    "matches": [
+     false,
+     false
+    ],
+    "choicesJa": [
+     "Aの発言のみ講義の内容と一致する",
+     "Bの発言のみ講義の内容と一致する",
+     "AとBの発言の両方が講義の内容と一致する",
+     "AとBの発言のどちらも講義の内容と一致しない"
+    ],
+    "answer": 4,
+    "points": 4,
+    "explain": "Aは数値の誤り。暗くしたのは半分の窓（half the bays）だが、衝突が減ったのは about half ではなく roughly one sixth（約6分の1）まで。「half」という語が音声に出るため引っかかりやすい。Bも事実が逆で、the great majority of the birds involved are travelling at night と述べられている。よって両方一致せず④。",
+    "keyPhrases": [
+     "on nights when half the bays were dark, collisions fell to roughly one sixth",
+     "the great majority of the birds involved are travelling at night"
+    ]
+   },
+   "q33": {
+    "audio": "q5set15_q33.mp3",
+    "image": "q5set15_q33_graph.png",
+    "graph": {
+     "kind": "bar",
+     "title": "Recorded Bird Collisions by Month at One Chicago Building",
+     "axis": {
+      "x": "Month",
+      "y": "Number of collisions"
+     },
+     "series": [
+      {
+       "name": "April",
+       "value": 210
+      },
+      {
+       "name": "May",
+       "value": 480
+      },
+      {
+       "name": "September",
+       "value": 640
+      },
+      {
+       "name": "October",
+       "value": 300
+      }
+     ]
+    },
+    "conversation": [
+     {
+      "who": "Ellie",
+      "text": "September six hundred and forty, May four hundred and eighty. So autumn is the worse peak here."
+     },
+     {
+      "who": "Tom",
+      "text": "April is only two hundred and ten and October three hundred, so the peaks are narrow."
+     },
+     {
+      "who": "Ellie",
+      "text": "Four weeks out of the whole year account for most of the deaths at this building."
+     },
+     {
+      "who": "Tom",
+      "text": "Though it is one tower beside a lake, so I would not assume the same shape everywhere."
+     }
+    ],
+    "wordCount": 66,
+    "choices": [
+     "Autumn is more dangerous because cool air makes the birds fly more slowly.",
+     "The chart shows that bird deaths are spread fairly evenly across the year.",
+     "Darkening this one building would remove the risk for birds at every site.",
+     "Since the deaths cluster in a few weeks, short seasonal blackouts could prevent most of them at buildings like this one."
+    ],
+    "answer": 4,
+    "points": 5,
+    "explain": "講義（照明が連鎖の始まり／2〜3週間に集中せよ）＋図表（9月640・5月480に対し4月210・10月300という鋭い山）＋会話（4週間で大半／ただし湖畔の1棟）の統合で④。効果の大きさと適用範囲の限定の両方を保っている唯一の選択肢。",
+    "keyPhrases": [
+     "Concentrate on the two or three weeks in spring and autumn when most of them move",
+     "Four weeks out of the whole year account for most of the deaths at this building",
+     "Though it is one tower beside a lake, so I would not assume the same shape everywhere"
+    ],
+    "distractors": [
+     {
+      "no": 1,
+      "why": "気温と飛行速度という因果は講義にも会話にも一切ない。秋の山が高い理由は説明されていない。"
+     },
+     {
+      "no": 2,
+      "why": "図表の山は鋭い。9月640に対し4月は210で3倍以上の差があり、講義も The birds do not pass evenly と明言している。"
+     },
+     {
+      "no": 3,
+      "why": "every site が過剰。会話の最後で I would not assume the same shape everywhere と限定されている。"
+     }
+    ]
+   }
+  }
+ ]
+}

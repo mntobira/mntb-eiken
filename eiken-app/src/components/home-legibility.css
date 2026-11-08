@@ -1,0 +1,119 @@
+/*
+ * ホームの読みやすさの上書き（2026-09-30）。
+ * ★色と配置は変えない★（利用者：「ホームの色の感じが好き。色のバランスは変えないで」）
+ * 変えるのは文字の大きさ（12px 以上）と、MY TOBIRA の札が足元に埋もれないことだけ。
+ */
+.game-home .game-hud-wallet > span, .game-home .game-hud-wallet small,
+.game-home .game-hud-bonus span, .game-home .game-side-action small,
+.game-home .home-battle-button small, .game-home .game-study-bar small,
+.game-home .game-stage-shortcuts button, .game-home .game-home-utility button,
+.game-home .game-home-header p, .game-home .arena-friends, .game-home .arena-friends * { font-size: 12px !important; }
+.game-home .game-hud-xp div { font-size: 12px !important; }
+.game-home .game-mascot-button > span { bottom: -26px; padding: 3px 10px; border-radius: 999px; background: #fffaf0e6; box-shadow: 0 1px 0 #e3d3b4; color: #7e6a4c; font-size: 12px !important; letter-spacing: .06em; }
+.game-home .game-mascot-button b { font-size: 13px !important; }
+.game-home .game-stage-caption { font-size: 12px !important; }
+.desktop-study-summary > p, .desktop-study-summary > div > span, .desktop-study-summary label, .desktop-study-summary strong small { font-size: 12px !important; }
+@media (max-width: 360px), (max-height: 700px) {
+  .game-home .game-stage-shortcuts button { width: 60px; }
+  .game-home .home-battle-button small { display: none; }
+  .game-home .game-study-bar small { display: none; }
+  .game-home .game-home-utility button svg { width: 15px; height: 15px; }
+}
+.game-home .game-study-bar button, .game-home .game-study-bar label { font-size: 12px !important; }
+@media (max-width: 340px) { .game-home .game-study-bar button { font-size: 12px !important; letter-spacing: -.02em; } }
+/* 幅 340px 以下：折り返しをなくして1画面に収める（色・配置は同じ） */
+@media (max-width: 340px) {
+  .game-home .game-hud-label { display: none; }
+  .game-home .game-hud-bonus strong { margin-top: 0; }
+  .game-home .game-study-bar button, .game-home .game-home-utility button { white-space: nowrap; }
+  .game-home .game-study-bar button svg, .game-home .game-home-utility button svg { display: none; }
+  .game-home .game-home-viewport > .arena-friends { display: none; }
+}
+.game-home .game-hud-label { font-style: normal; }
+/* 2026-10-04：左上は「ランキング」（5文字）。折り返すと下の「ショップ」に重なるので1行に収める */
+.game-home .game-stage-shortcuts .stage-gacha span { white-space: nowrap; letter-spacing: -.06em; }
+
+/* ==========================================================================
+   Android 専用: とびら君ホームステージのレイアウト改善（2026-10-09）
+   - とびら君を円盤ステージの真ん中にしっかり配置。
+   - 吹き出し（セリフ）が左右ボタンに重ならないよう安全幅を制限。
+   - iOS 側には一切影響を与えない。
+   ========================================================================== */
+[data-platform="android"] .game-home .game-stage-say {
+  max-width: min(calc(100% - 120px), 320px) !important;
+  top: 8px !important;
+}
+
+[data-platform="android"] .game-home .game-stage-say .tb-bubble {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  padding: 5px 12px !important;
+}
+
+[data-platform="android"] .game-home .game-stage-shortcuts button {
+  width: 54px !important;
+  min-height: 52px !important;
+  font-size: 10px !important;
+  border-radius: 14px !important;
+}
+
+[data-platform="android"] .game-home .game-stage-shortcuts svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+[data-platform="android"] .game-home .game-stage-shortcuts .stage-gacha,
+[data-platform="android"] .game-home .game-stage-shortcuts .stage-outfit {
+  top: 20% !important;
+}
+
+[data-platform="android"] .game-home .game-stage-shortcuts .stage-shop,
+[data-platform="android"] .game-home .game-stage-shortcuts .stage-badges {
+  top: calc(20% + 64px) !important;
+}
+
+@media (max-width: 350px) {
+  [data-platform="android"] .game-home .game-stage-shortcuts button {
+    width: 46px !important;
+    min-height: 46px !important;
+    font-size: 9px !important;
+    border-radius: 11px !important;
+  }
+  [data-platform="android"] .game-home .game-stage-shortcuts svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  [data-platform="android"] .game-home .game-stage-say {
+    max-width: min(calc(100% - 100px), 240px) !important;
+  }
+}
+
+/* Android 専用：下部ボタン群（ミッション、学習記録、使い方、学びの扉）と
+   広告の間にゆったりとした心地よい安全マージンを確保（iOS は変更なし） */
+[data-platform="android"] .game-home .game-home-utility {
+  margin-bottom: 16px !important;
+}
+
+
+/* ==========================================================================
+   2026-10-11 大改訂①⑤
+   ① 広告が入ると舞台が低くなり、とびら君の顔が吹き出しの裏に入っていた。
+      吹き出しの下端（--say-bottom を Home.tsx で測る）から下だけを、とびら君の立つ場所にする。
+   ⑤ ロゴの横に「共通テスト／2次(前期)まで ○日」。
+   ========================================================================== */
+.game-home .game-mascot-stage .game-mascot-button { top: calc(var(--say-bottom, 0px) + 2px); height: auto !important; min-height: 64px; }
+.game-home .game-mascot-stage .home-mascot-art { object-position: 50% 100%; }
+
+.game-home-header { gap: 8px; }
+.game-home-countdown { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; margin: 0; }
+.game-home-countdown > div { display: flex; align-items: baseline; gap: 4px; padding: 1px 8px; border-radius: 999px; background: #fffaf0e6; border: 1px solid #ead9b9; white-space: nowrap; }
+.game-home-countdown dt { font-size: 12px; font-weight: 700; color: #8b7a5c; }
+.game-home-countdown dd { margin: 0; font-size: 12px; font-weight: 700; color: #6d4c61; }
+.game-home-countdown dd b { font: 900 16px/1.1 var(--mt-font-display, inherit); color: #b0464f; font-variant-numeric: tabular-nums; }
+.game-home-countdown > div + div dd b { color: #3c627a; }
+@media (max-width: 360px) {
+  .game-home .game-home-header p { display: none; }
+  .game-home-logo { width: 92px !important; height: 32px !important; }
+  .game-home-countdown > div { padding: 0 6px; gap: 2px; }
+  .game-home-countdown dd b { font-size: 14px; }
+}

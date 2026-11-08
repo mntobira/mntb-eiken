@@ -1,0 +1,349 @@
+/*
+ * ランキング（2026-10-01 C14）：共通UI（system.css）に合わせる。
+ * 「LEARNING RECORDS」の世界観（金の表彰台・罫線のノート）は残し、文字・タブ・カード・角丸・余白を共通に。
+ */
+.ranking-hall.mt-screen { background: var(--mt-bg-screen); font-family: var(--mt-font-body); color: var(--mt-ink); }
+.ranking-hall .ranking-hall-header { gap: 10px; }
+.ranking-hall .ranking-hall-header > button.mt-icon-btn { width: 44px; height: 44px; border-radius: 50%; padding: 0; }
+.ranking-hall .ranking-hall-header > div:nth-child(2) > div:first-child { transform: none; border-radius: 16px; background: #f6e7bf; box-shadow: 0 3px 0 #dcc58d; }
+.ranking-hall .mt-app-header-title > h2 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm) !important; }
+.ranking-hall .ranking-hall-caption { font: var(--mt-text-lg) !important; color: var(--mt-ink-muted) !important; }
+.ranking-hall .ranking-battle-bridge { border-radius: var(--mt-radius-lg); border: 1.5px solid #bcd9ea; background: linear-gradient(#f2f9fd, #e1f0f8); box-shadow: 0 3px 0 #b4d2e3; }
+.ranking-bridge-title { font: var(--mt-text-sm); font-weight: 800; color: #1b4f72; line-height: 1.25; }
+.ranking-bridge-sub { font: var(--mt-text-xs); font-weight: 500; color: var(--mt-ink-3); }
+/* タブ：共通の .mt-tabs（範囲は少し細く中央） */
+.ranking-hall .ranking-scope { max-width: 420px; margin-inline: auto; border: 0; }
+.ranking-hall .ranking-scope > button, .ranking-hall .ranking-tabs > button, .ranking-hall .ranking-subselect > button { min-height: 44px; }
+.ranking-hall .ranking-tabs { margin-top: 8px; }
+/* 自分のカード：紺の板 → 金のカード（ガチャ・ホームと同じ札） */
+.ranking-hall .ranking-me-card { color: var(--mt-ink-warm); }
+.ranking-hall .ranking-me-card .opacity-60, .ranking-hall .ranking-me-card .opacity-70 { opacity: 1 !important; color: var(--mt-ink-muted); }
+.ranking-hall .ranking-me-card [class*="border-white"] { border-color: #e5cf98 !important; }
+.ranking-hall .ranking-me-card [class*="bg-white/10"] { background: #fff8e3 !important; color: var(--mt-ink-muted); }
+.ranking-hall .ranking-me-card .text-\[\#F4D03F\] { color: #b37400 !important; }
+/* 一覧：共通カードの中に罫線のノート（LEARNING RECORDS） */
+.ranking-hall .ranking-record-paper { padding: 0; border-top: 5px solid #d9bd7c; }
+.ranking-hall .ranking-record-paper li { font-family: var(--mt-font-body); }
+.ranking-hall .ranking-record-paper .text-gray-400 { color: var(--mt-ink-3) !important; }
+.ranking-hall .mt-num { font-family: var(--mt-font-display); }
+.ranking-hall select { font-family: var(--mt-font-body) !important; }
+.ranking-hall .ranking-subselect > label { border-radius: var(--mt-radius-md); border: 1.5px solid var(--mt-line); box-shadow: none; }
+.ranking-hall .ranking-scope.mt-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px; }
+.ranking-hall .ranking-scope.mt-tabs > button[aria-pressed=true] { color: var(--mt-ink-warm); }
+.ranking-hall .ranking-guest-wrap > * { border-radius: var(--mt-radius-lg) !important; }
+
+/* Rating leagues: fixed summary and controls, a single contained list scroller. */
+.league-hall { height:100%; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:8px; padding:12px 12px calc(var(--app-nav-h,80px) + 8px); background:#fcf8ef; color:#293b48; max-width:850px; margin:auto; font-size:14px; }
+.league-hall button,.league-hall input,.league-hall select { min-height:44px; font-size:14px; border:1px solid #d8cdb9; border-radius:12px; padding:8px 12px; background:#fffdf7; color:#293b48; }
+.league-hall button { min-width:44px; }
+.league-hall button:disabled { opacity:.55; }
+.league-header { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; }
+.league-header > button { min-width:44px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.league-header h1 { display:flex; align-items:center; gap:8px; margin:0; font-size:23px; font-weight:900; }
+.league-header small { font-size:12px; color:#6e6455; letter-spacing:.12em; }
+.league-tabs,.league-actions { display:flex; gap:5px; flex-shrink:0; }
+.league-tabs button,.league-actions button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; }
+.league-tabs [aria-selected=true],.league-actions [aria-current=page] { background:#f6e4b6; border-color:#b18434; }
+.league-top-switch { display:flex; gap:5px; flex-shrink:0; }
+.league-top-switch button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; border:1px solid #d8c7a5; border-radius:12px; background:#fffdf7; color:#5d503f; font-weight:900; }
+.league-top-switch button[aria-current=page] { background:#f6e4b6; border-color:#b18434; color:var(--mt-ink-warm); }
+.league-my-card { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1.5px solid; border-radius:18px; flex-shrink:0; }
+.league-my-card div { flex:1; min-width:0; }
+.league-my-card strong { display:block; font-size:19px; font-weight:900; }
+.league-my-card small,.league-my-card span,.league-rows small { display:block; font-size:12px; font-style:normal; }
+.league-my-card>b { text-align:right; font-size:25px; font-variant-numeric:tabular-nums; }
+.league-my-card b small { font-size:12px; }
+.league-progress { display:flex; align-items:center; gap:8px; font-size:12px; flex-shrink:0; }
+.league-progress progress { flex:1; width:30px; accent-color:#997135; height:8px; }
+.league-filter { display:flex; align-items:center; gap:10px; font-size:12px; flex-shrink:0; }
+.league-filter select { min-width:0; flex:1; }
+.league-scroll { min-height:0; flex:1; overflow-y:auto; overscroll-behavior:contain; }
+.league-rows { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+.league-rows li { display:flex; align-items:center; gap:8px; padding:10px; border:1px solid #ddd2bf; border-radius:15px; background:white; min-height:64px; }
+.league-rows li[data-me=true] { background:#fff0c6; border:2px solid #b98627; }
+.league-rows li>b { min-width:30px; text-align:center; font-size:18px; }
+.league-rows li[data-top=true]>b { background:#f2dc9c; border-radius:50%; padding:3px; }
+.league-rows li>span { flex:1; min-width:0; }
+.league-rows li strong { display:block; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.league-rows em { font-style:normal; font-size:21px; font-weight:900; text-align:right; font-variant-numeric:tabular-nums; }
+.league-footer { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:12px; flex-shrink:0; }
+.league-footer button { display:flex; align-items:center; gap:5px; background:#dceff9; font-weight:800; }
+.league-info { background:#fffdf7; border:1px solid #dfd4bf; border-radius:14px; padding:10px 12px; margin:8px 0; font-size:13px; line-height:1.6; }
+.league-info summary { min-height:44px; display:flex; align-items:center; cursor:pointer; font-weight:800; }
+.league-info h2 { display:flex; align-items:center; gap:6px; font-size:18px; margin:0; }
+.league-info p { margin:6px 0; }
+.league-info label,.league-info form { display:grid; gap:6px; }
+.league-info input { width:100%; }
+.league-error { padding:10px; background:#fce7e1; color:#893325; border-radius:12px; }
+.league-empty { padding:20px 10px; text-align:center; }
+.league-list-title { font-size:16px; font-weight:900; margin:10px 0; }
+.league-list-title small { font-size:12px; }
+@media(max-height:620px) { .league-hall{gap:4px;padding-top:6px;} .league-header h1{font-size:20px;} .league-my-card{padding:6px 10px;} .league-my-card strong{font-size:16px;} }
+
+/* Compact standings: league-colored edge and medals, not a tall podium. */
+.league-rows li { border-left-width:4px; gap:6px; padding:8px; }
+.league-rows li > b { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; flex:0 0 30px; color:#72561d; }
+.league-rows .league-public-profile { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#425c6d; font-size:12px; line-height:1.5; }
+.league-rows .league-public-motto { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#6b5a3a; font-size:12px; font-weight:700; line-height:1.5; }
+.league-rows li[data-top=true] { background:linear-gradient(100deg,#fff9e9,#fff 60%); }
+.league-rows li[data-me=true] { background:#fff0c6; }
+
+/* マナクランの導線（2026-10-03） */
+.clan-steps { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.clan-steps li { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; color: #6b5a43; background: #f7f1e3; }
+.clan-steps li b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #d8c9a6; color: #fff; font-size: 12px; flex: none; }
+.clan-steps li[data-active] { background: #fff1c9; color: var(--mt-ink-warm); box-shadow: inset 0 0 0 2px #e5b93c; }
+.clan-steps li[data-active] b { background: #b18434; }
+.clan-steps li[data-done] { opacity: .75; }
+.clan-steps li[data-done] b { background: #4caf7a; }
+.clan-invite { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; padding: 8px 10px; border-radius: 12px; background: #fff8e4; border: 1px dashed #d9b75a; }
+.clan-invite span { font-size: 12px; font-weight: 700; color: #6b5a43; }
+.clan-invite strong { font: 900 20px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; color: #2c3e50; }
+.clan-invite button { margin-left: auto; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; gap: 4px; padding: 0 12px; border-radius: 10px; font-weight: 800; }
+.clan-hint { font-size: 12px; color: #6b5a43; }
+.clan-notice { margin: 6px 0; padding: 8px 10px; border-radius: 10px; background: #e9f7ef; color: #1f6b44; font-size: 13px; font-weight: 700; }
+.league-error button { margin-left: 8px; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
+
+/* ===== シーズン報酬カード（2026-10-04）：何がもらえるかを必ず見えるところに ===== */
+.season-card { flex-shrink: 0; border: 1.5px solid #e6c766; border-radius: 16px; background: linear-gradient(180deg,#fff8dc,#fffdf4); }
+.season-card > summary { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 44px; padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 800; color: #6b4e00; }
+.season-card > summary::-webkit-details-marker { display: none; }
+.season-card > summary::after { content: '▼ もらえるもの'; margin-left: auto; font-size: 12px; color: #a07400; }
+.season-card[open] > summary::after { content: '▲ 閉じる'; }
+.season-badge { padding: 2px 10px; border-radius: 999px; background: #172a4f; color: #ffd36b; font-size: 12px; }
+.season-when { color: #4a3a10; }
+.season-mine { color: #b26b00; }
+.season-body { padding: 0 12px 12px; font-size: 12px; color: #4a3a10; }
+.season-body h3 { margin: 10px 0 6px; font-size: 13px; font-weight: 900; }
+.season-cond { margin: 0; line-height: 1.6; }
+.season-join { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.season-join li { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border: 1.5px solid; border-radius: 12px; background: #fff; }
+.season-join li[data-me] { box-shadow: 0 0 0 3px #f4d03f; }
+.season-join strong { font-size: 12px; }
+.season-join span { font-size: 16px; font-weight: 900; color: var(--mt-ink-warm); }
+.season-join small { font-size: 12px; margin-left: 1px; color: #7a6a40; }
+.season-rank { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.season-rank li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: #fff; border: 1px solid #f0e2b0; }
+.season-rank strong { font-size: 12px; white-space: nowrap; }
+.season-rank span { font-size: 12px; text-align: right; }
+.season-note { margin: 8px 0 0; color: #8a7556; }
+@media (max-width: 360px) { .season-join { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.season-join span { display: flex; flex-direction: column; align-items: center; line-height: 1.1; white-space: nowrap; }
+.season-join small { margin: 0; }
+.season-rank li { flex-direction: column; gap: 2px; }
+.season-rank span { text-align: left; color: #6b4e00; font-weight: 700; }
+
+/* ==========================================================================
+   2026-10-11：ランキングは2種目（対戦レート／学習時間）。
+   全国・フレンド・マナクランのボタンが大きすぎて一覧が見えなかったので、低いタブにする。
+   ========================================================================== */
+.league-hall .league-metric { flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; border: 1px solid #ddd0b8; border-radius: 14px; background: #f3ecdd; }
+.league-hall .league-metric button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 11px; background: transparent; color: #6e6455; font-size: 14px; font-weight: 800; padding: 0 8px; }
+.league-hall .league-metric [aria-selected=true] { background: #fffdf7; color: #293b48; box-shadow: 0 1px 3px #8a6b3a33; }
+.league-hall .league-tabs { gap: 0; border-bottom: 1.5px solid #e2d6c1; }
+.league-hall .league-tabs button { min-height: 44px; padding: 0 6px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; font-size: 13px; font-weight: 800; color: #6e6455; white-space: nowrap; }
+.league-hall .league-tabs [aria-selected=true] { background: transparent; border-bottom-color: #b18434; color: #293b48; }
+.league-hall .league-tabs .soon-tag { padding: 0 5px; }
+.league-my-card.is-time { background: #eef6fb; border-color: #7aa7c4; }
+.league-my-card.is-time > svg { color: #3c7ca0; }
+.league-rows em.is-time { font-size: 16px; white-space: nowrap; }
+/* 自分のカードも少し低く（一覧を広く） */
+.league-hall .league-my-card { padding: 6px 12px; }
+.league-hall .league-my-card strong { font-size: 17px; }
+.league-hall .league-my-card > b { font-size: 22px; }
+/* 範囲タブとリーグ選びを1行に（一覧を1行ぶん広く） */
+.league-hall .league-scope-row { display: flex; align-items: flex-end; gap: 6px; flex-shrink: 0; border-bottom: 1.5px solid #e2d6c1; }
+.league-hall .league-scope-row .league-tabs { flex: 1; min-width: 0; border-bottom: 0; }
+.league-hall .league-filter.is-inline { flex: 0 0 auto; margin-bottom: 4px; }
+.league-hall .league-filter.is-inline select { min-height: 44px; max-width: 132px; padding: 4px 8px; font-size: 13px; }
+@media (max-width: 899px) {
+  .league-hall { gap: 6px; padding-top: 6px; }
+  .league-hall .league-header small { display: none; }
+  .league-hall .league-header h1 { font-size: 20px; }
+}
+/* ★2026-10-11★ 全国／フレンド／マナクラン(準備中) は同じ幅の3ボタン。リーグ選びはカードの中の小さなボタン */
+.league-hall .league-tabs.is-scope { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 6px; border-bottom: 0; flex-shrink: 0; }
+.league-hall .league-tabs.is-scope button { min-height: 44px; padding: 2px 4px; border: 1.5px solid #e2d6c1; border-radius: 12px; background: #fffdf7; color: #6e6455; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; line-height: 1.2; font-size: 13px; }
+.league-hall .league-tabs.is-scope [aria-selected=true] { background: #f6e4b6; border-color: #b18434; color: #293b48; }
+.league-hall .league-tabs.is-scope .soon-tag { display: block; padding: 0; background: none; font-size: 12px; font-weight: 700; color: #8a7d68; }
+.league-hall .league-my-card div { min-width: 0; }
+.league-other { position: relative; flex: 0 0 auto; display: flex; align-items: center; min-height: 44px; cursor: pointer; }
+.league-other > span { display: block; padding: 4px 8px; border: 1px solid #b9ad97; border-radius: 10px; background: rgba(255,255,255,.85); color: #4b5a66; font-size: 12px; font-weight: 800; line-height: 1.25; text-align: center; white-space: nowrap; }
+.league-other select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.league-other:focus-within > span { outline: 2px solid #b18434; outline-offset: 1px; }
+
+/* ===== 2026-10-20：ランキングの見直し =====
+   ① 次のリーグまでのバー：いまのリーグ色→次のリーグ色のグラデーション＋両端の札＋「あと○」を大きく
+   ② スマホ：上の部品を低くまとめ、一覧（.league-scroll）の高さを広げる。下の「この範囲で1位」バーは削除済み
+   元に戻すときはこのブロックを消し、Leaderboard.tsx の league-progress-rich を元の <progress> に戻す */
+.league-progress-rich { display: flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1.5px solid #e6d6b2; border-radius: 14px; background: linear-gradient(180deg, var(--mt-bg-card), #fbf2dc); flex-shrink: 0; }
+.league-progress-rich .lp-chip { flex-shrink: 0; padding: 2px 8px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 900; line-height: 1.4; letter-spacing: .02em; box-shadow: inset 0 -1.5px 0 #0003; }
+.league-progress-rich .lp-track { position: relative; flex: 1; min-width: 40px; height: 14px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #fff; overflow: hidden; box-shadow: inset 0 1px 2px #0000001a; }
+.league-progress-rich .lp-track i { position: relative; display: block; height: 100%; overflow: hidden; border-radius: inherit; background: linear-gradient(90deg, var(--from), var(--to)); transition: width .9s cubic-bezier(.34, 1.56, .64, 1); }
+/* つやの帯（transform だけで流す・低スペック規則 L-05） */
+.league-progress-rich .lp-track i::after { content: ''; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, #ffffff8c, transparent); transform: translateX(-120%); animation: lp-shine 2.4s linear infinite; }
+@keyframes lp-shine { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
+.league-progress-rich .lp-remain { flex-shrink: 0; font-size: 12px; font-weight: 800; color: #3c4f6b; white-space: nowrap; }
+.league-progress-rich .lp-remain strong { margin-left: 2px; font-size: 20px; font-weight: 900; line-height: 1; color: #1f3354; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .league-progress-rich .lp-track i { transition: none; } .league-progress-rich .lp-track i::after { animation: none; display: none; } }
+
+@media (max-width: 899px) {
+  .league-hall { gap: 6px; padding-inline: 10px; }
+  .league-hall .league-header { min-height: 44px; }
+  .league-hall .league-header h1 { font-size: 20px; }
+  /* 自分のカード：説明文は1行で切る・高さを詰める */
+  .league-hall .league-my-card { padding: 5px 10px; gap: 8px; }
+  .league-hall .league-my-card small, .league-hall .league-my-card span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .league-hall .league-my-card > svg { width: 22px; height: 22px; flex-shrink: 0; }
+  /* シーズンの帯は1行だけ（期間はたたむ） */
+  .league-hall .season-card > summary { min-height: 40px; padding: 4px 10px; }
+  .league-hall .season-card > summary .season-when { display: none; }
+  /* 一覧はできるだけ広く */
+  .league-hall .league-scroll { min-height: 240px; flex: 1 1 auto; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-metric button, .league-hall .league-tabs.is-scope button { min-height: 44px; padding-block: 0; }
+  .league-hall .league-my-card span { display: none; }
+  .league-hall .league-scroll { min-height: 160px; }
+}
+/* シーズン報酬を開いたときは中身だけスクロール（一覧を押し出しすぎない） */
+.season-card[open] > .season-body { max-height: 42dvh; overflow-y: auto; overscroll-behavior: contain; }
+/* スマホ：見出しの行と「ランキング／とびらバトル」の切替を1行にまとめて、一覧を広げる（2026-10-20）
+   見出しの「ランキング」の文字は切替ボタンが兼ねるので隠し、戻る・再読み込みは左右の端に置く */
+@media (max-width: 899px) {
+  .league-hall { position: relative; }
+  .league-hall > .league-header { position: absolute; top: 6px; left: 10px; right: 10px; min-height: 44px; pointer-events: none; }
+  .league-hall > .league-header > * { pointer-events: auto; }
+  .league-hall:has(> .league-top-switch) > .league-header > div { visibility: hidden; }
+  .league-hall:has(> .league-top-switch) > .league-top-switch { margin-inline: 52px; }
+  .league-hall:not(:has(> .league-top-switch)) > .league-header { position: static; }
+  .league-hall > .league-top-switch button { padding-inline: 6px; font-size: 14px; white-space: nowrap; }
+  .league-hall > .league-scroll { min-height: 0 !important; flex: 1 1 0; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-metric { padding: 2px; }
+  .league-hall .league-metric button { min-height: 44px; font-size: 13px; }
+  .league-hall .league-my-card { padding-block: 3px; }
+  .league-hall .league-my-card > svg { display: none; }
+}
+/* 「もらえるもの」が左右に2回出ていたので右端の札だけに（2026-10-20） */
+.season-card > summary::after { content: 'もらえるもの ▼'; }
+.season-card[open] > summary::after { content: '閉じる ▲'; }
+/* スマホの一覧の行を低く（1画面に入る人数を増やす） */
+@media (max-width: 899px) {
+  .league-hall .league-rows li { min-height: 52px; padding-block: 6px !important; }
+  .league-hall .league-rows li em { display: flex; align-items: baseline; gap: 3px; }
+  .league-hall .league-rows li em small { font-size: 12px; }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-my-card small { display: none; }
+}
+/* 低い画面でも「他のリーグを見る」は押せる幅を残す */
+.league-hall .league-my-card .league-other { flex-shrink: 0; min-width: 64px; }
+
+/* ==========================================================================
+   2026-10-27：ランキングの見た目をガチャ画面にそろえる（ご要望「渋い・ガチャと合ってない」）
+   使う色は共通トークン（tokens.css）とリーグ色だけ。新しい色は足さない。
+   ・背景はガチャと同じ --mt-bg-screen、字は丸ゴシック
+   ・「対戦レート／学習時間」はガチャの切替（.gacha-page-switch）と同じ形
+   ・「全国／フレンド／マナクラン」は共通タブ（.mt-tabs）と同じ形
+   ・自分のカードはガチャの目玉カードと同じ：白い縁＋下の厚み。次のリーグまでのバーはカードの中へ（1段へらす）
+   ・一覧の行は共通カード（--mt-line・角丸・下の厚み）、1〜3位は金・銀・銅
+   元に戻すときはこのブロックを消し、Leaderboard.tsx の is-in-card / data-rank を戻す
+   ========================================================================== */
+.league-hall { background: var(--mt-bg-screen); color: var(--mt-ink); font-family: var(--mt-font-body); }
+.league-hall .league-header h1 { font: var(--mt-text-xl); color: var(--mt-ink-warm); }
+.league-hall .league-header > button { border: 1px solid var(--mt-line); border-radius: 50%; background: var(--mt-bg-card); color: var(--mt-ink-warm); box-shadow: var(--mt-shadow-press); }
+
+/* 上の切替（ランキング／とびらバトル）と種目：ガチャの切替と同じ */
+.league-hall .league-top-switch,
+.league-hall .league-metric { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border: 1px solid var(--mt-line); border-radius: var(--mt-radius-lg); background: var(--mt-bg-sunken); box-shadow: inset 0 0 0 1px rgba(255,255,255,.55); }
+.league-hall .league-top-switch button,
+.league-hall .league-metric button { min-height: 44px; border: 0; border-radius: calc(var(--mt-radius-lg) - 4px); background: transparent; color: var(--mt-ink-2); font: 800 14px/1.2 var(--mt-font-body); box-shadow: none; }
+.league-hall .league-top-switch button[aria-current=page],
+.league-hall .league-metric [aria-selected=true] { background: var(--mt-bg-card); color: var(--mt-ink-warm); box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08); }
+.league-hall .league-top-switch button:active, .league-hall .league-metric button:active { transform: translateY(1px); }
+
+/* 範囲：共通タブ（.mt-tabs）と同じ */
+.league-hall .league-tabs.is-scope { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: none; gap: 3px; padding: 4px; border-radius: var(--mt-radius-lg); background: var(--mt-bg-sunken); box-shadow: inset 0 0 0 1px var(--mt-line); }
+.league-hall .league-tabs.is-scope button { min-height: 44px; border: 0; border-radius: calc(var(--mt-radius-lg) - 4px); background: transparent; color: var(--mt-ink-2); font: 700 13px/1.2 var(--mt-font-body); box-shadow: none; }
+.league-hall .league-tabs.is-scope [aria-selected=true] { background: var(--mt-bg-card); color: var(--mt-ink-warm); font-weight: 800; box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08); }
+.league-hall .league-tabs.is-scope .soon-tag { color: var(--mt-ink-muted); }
+
+/* 自分のカード：ガチャの目玉カードと同じ作り（リーグ色の淡い面＋白い縁＋下の厚み） */
+.league-hall .league-my-card { flex-wrap: wrap; row-gap: 6px; padding: 8px 12px; border: 2px solid var(--league, var(--mt-rare-ur-line)); border-radius: var(--mt-radius-lg); background: linear-gradient(120deg, var(--league-tint, var(--mt-rare-ur-bg)), var(--mt-bg-card) 75%); box-shadow: 0 0 0 3px #fff, 0 3px 0 4px #efd28d; color: var(--mt-ink-warm); }
+.league-hall .league-my-card.is-time { --league: var(--mt-brand); --league-tint: var(--mt-brand-soft); box-shadow: 0 0 0 3px #fff, 0 3px 0 4px #e6dccb; }
+.league-hall .league-my-card.is-time > svg { color: var(--mt-brand); }
+.league-hall .league-my-card strong { font: 800 18px/1.25 var(--mt-font-display); color: var(--mt-ink-warm); }
+.league-hall .league-my-card small { color: var(--mt-ink-muted); font-weight: 700; }
+.league-hall .league-my-card span { color: var(--mt-ink-2); }
+.league-hall .league-my-card > b { font: 800 26px/1 var(--mt-font-display); color: var(--mt-ink-warm); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.league-hall .league-my-card > b small { font: var(--mt-text-xs); color: var(--mt-ink-muted); }
+.league-hall .league-other > span { border: 1.5px solid var(--mt-line-strong); border-radius: var(--mt-radius-sm); background: var(--mt-bg-card); color: var(--mt-ink-warm); box-shadow: var(--mt-shadow-press); }
+.league-hall .league-progress-rich.is-in-card { flex: 1 0 100%; padding: 0; border: 0; background: none; }
+.league-hall .league-progress-rich .lp-track { border-color: var(--mt-line); }
+.league-hall .league-progress-rich .lp-remain, .league-hall .league-progress-rich .lp-remain strong { color: var(--mt-ink-warm); font-family: var(--mt-font-display); }
+
+/* シーズンの帯：ガチャの「注目アイテム」の枠と同じ金の面。押せる高さは44px */
+.league-hall .season-card { border: 1.5px solid #ead9b4; border-radius: var(--mt-radius-lg); background: linear-gradient(var(--mt-bg-card), #fdf3dc); box-shadow: var(--mt-shadow-card); }
+.league-hall .season-card > summary { min-height: 44px; color: var(--mt-ink-warm); }
+.league-hall .season-card > summary::after { color: var(--mt-rare-ur-ink); }
+.league-hall .season-badge { background: var(--mt-rare-ur-grad); color: var(--mt-rare-ur-ink); box-shadow: inset 0 0 0 1.5px var(--mt-rare-ur-line); }
+.league-hall .season-mine { color: var(--mt-accent-ink); }
+
+/* 一覧：共通カードの行。左の帯はリーグ色、1〜3位は金・銀・銅のメダル */
+.league-hall .league-rows { gap: 8px; padding: 2px 2px 6px; }
+.league-hall .league-rows li { border: 1px solid var(--mt-line); border-left: 5px solid var(--league, var(--mt-line-strong)); border-radius: var(--mt-radius-lg); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-card); }
+.league-hall .league-rows li > b { flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%; padding: 0; background: var(--mt-bg-sunken); color: var(--mt-ink-warm); font: 800 15px/1 var(--mt-font-display); box-shadow: inset 0 0 0 1.5px var(--mt-line); }
+.league-hall .league-rows li > b > svg { display: none; }
+.league-hall .league-rows li[data-rank="1"] > b { background: var(--mt-rare-r-bg); color: var(--mt-rare-r-ink); box-shadow: inset 0 0 0 2px var(--mt-rare-r-line), 0 2px 0 var(--mt-rare-r-line); }
+.league-hall .league-rows li[data-rank="2"] > b { background: var(--mt-rare-n-bg); color: var(--mt-rare-n-ink); box-shadow: inset 0 0 0 2px var(--mt-rare-n-line), 0 2px 0 var(--mt-rare-n-line); }
+.league-hall .league-rows li[data-rank="3"] > b { background: var(--mt-accent-soft); color: var(--mt-accent-ink); box-shadow: inset 0 0 0 2px var(--mt-accent), 0 2px 0 var(--mt-accent); }
+.league-hall .league-rows li[data-rank="1"] { background: linear-gradient(100deg, var(--mt-rare-r-bg), var(--mt-bg-card) 55%); }
+.league-hall .league-rows li[data-me=true] { border-color: var(--mt-rare-ur-line); border-width: 2px 2px 2px 5px; background: linear-gradient(100deg, var(--mt-rare-ur-bg), var(--mt-bg-card) 70%); box-shadow: 0 3px 0 #efd28d; }
+.league-hall .league-rows li strong { font: 800 15px/1.3 var(--mt-font-display); color: var(--mt-ink-warm); }
+.league-hall .league-rows em { font: 800 20px/1 var(--mt-font-display); color: var(--mt-ink-warm); }
+.league-hall .league-rows em small { color: var(--mt-ink-muted); font-weight: 700; }
+.league-hall .league-rows .user-safety-trigger { border: 1px solid var(--mt-line); border-radius: 50%; background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); }
+.league-hall .league-info { border: 1px solid var(--mt-line); border-radius: var(--mt-radius-lg); background: var(--mt-bg-card); box-shadow: var(--mt-shadow-card); color: var(--mt-ink-2); }
+.league-hall .league-info summary { color: var(--mt-ink-warm); }
+.league-hall .league-empty { color: var(--mt-ink-3); }
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-my-card { padding-block: 5px; row-gap: 4px; }
+  .league-hall .league-my-card > b { font-size: 22px; }
+}
+/* 行が一覧の幅より広がって右端（レート・…）が切れていたのを直す（grid の子は min-width:auto なので） */
+.league-hall .league-rows { grid-template-columns: minmax(0, 1fr); }
+.league-hall .league-rows li { min-width: 0; }
+.league-hall .league-rows li > em, .league-hall .league-rows li > .user-safety-trigger { flex-shrink: 0; }
+/* カードの中の「あと○」は1行で */
+.league-hall .league-my-card .lp-remain strong { display: inline; font-size: 20px; }
+.league-hall .league-my-card .lp-track { flex: 1; }
+/* シーズンの帯は1行（参加賞の文は入りきらなければ「…」） */
+.league-hall .season-card > summary { flex-wrap: nowrap; }
+.league-hall .season-card > summary .season-mine { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.league-hall .season-card > summary::after { flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 899px) and (max-height: 700px) {
+  /* 低い画面でカードの説明文を隠すとき、「他のリーグを見る」とリーグの札まで消えていたのを戻す */
+  .league-hall .league-my-card .league-other > span, .league-hall .league-my-card .lp-chip { display: block; }
+}
+/* 幅の狭いスマホ（〜360px）：名前の欄を広く。レートの「レート」の字・カードの盾を省き、シーズンの札は1行 */
+.league-hall .season-badge { flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 360px) {
+  .league-hall .league-rows li { gap: 4px; padding-inline: 6px; }
+  .league-hall .league-rows li > b { flex-basis: 30px; width: 30px; height: 30px; font-size: 14px; }
+  .league-hall .league-rows em { font-size: 17px; }
+  .league-hall .league-rows em > small { display: none; }
+  .league-hall .league-my-card > svg { display: none; }
+  .league-hall .league-my-card strong { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .league-hall .league-my-card > b { font-size: 22px; }
+}
+/* 学習時間のカード：低い画面でも「何の数字か・何位か」の1行は残す（数字だけだと分からない） */
+@media (max-width: 899px) and (max-height: 700px) {
+  .league-hall .league-my-card.is-time { flex-wrap: nowrap; }
+  .league-hall .league-my-card.is-time > div { display: flex; align-items: baseline; gap: 8px; }
+  .league-hall .league-my-card.is-time span { display: block; min-width: 0; }
+}
+.league-hall .league-my-card.is-time strong { white-space: nowrap; flex-shrink: 0; }
+/* 2026-10-28 A8：志望校・志（夢）は切らずに2行まで見せる（以前は1行で「…」になっていた） */
+.league-rows .league-public-profile, .league-rows .league-public-motto, .league-hall .league-rows .league-public-profile, .league-hall .league-rows .league-public-motto { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; overflow: hidden; overflow-wrap: anywhere; }

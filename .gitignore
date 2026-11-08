@@ -43,7 +43,17 @@ lerna-debug.log*
 # misc
 .DS_Store
 
+# Original uploaded app snapshot and local fork build output
+.reference/
+eiken-app/dist/
+public/eiken/
+
 # uploaded reference PDFs / temp
 *.pdf
 shot.mjs
 check.mjs
+
+# Crash dumps and temporary original verification bundles
+core
+core.*
+.reference-preview/

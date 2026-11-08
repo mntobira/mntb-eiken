@@ -1,0 +1,509 @@
+/* ミッションの短い説明は PC だけ（スマホは従来の詳しい説明を出す） */
+.missions-note-short { display: none; }
+/*
+ * ガチャ・マイページの共通部分（2026-10-01 C16）。ガチャと行き来しても違和感がないよう、
+ * 同じ地・同じ見出し・同じカード・同じタブ（共通UI）にそろえる。機能・並びは変えない。
+ */
+.mana-hub { background: var(--mt-bg-screen) !important; color: var(--mt-ink); font-family: var(--mt-font-body); }
+/* ヘッダー：ホームへ戻る（共通の丸いピル） */
+.mana-hub-header button { border: var(--mt-border); border-radius: var(--mt-r-pill) !important; background: var(--mt-bg-card); box-shadow: var(--mt-shadow-press); color: var(--mt-ink); font: 700 14px/1 var(--mt-font-body) !important; padding: 0 14px 0 10px !important; }
+.growth-shared-label { font: var(--mt-text-xs); color: var(--mt-ink-muted); }
+/* ガチャ欄専用の切替（マイページのタブとは別UI） */
+.gacha-page-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: calc(100% - 24px); max-width: 680px; margin: 4px auto 8px; padding: 4px; border: 1px solid var(--mt-line) !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-sunken) !important; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55); }
+.gacha-page-switch button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; width: 100%; padding: 8px 12px; border: 1px solid transparent !important; border-radius: calc(var(--mt-radius-lg) - 4px) !important; background: transparent !important; color: var(--mt-ink-2) !important; font: 800 15px/1.2 var(--mt-font-body) !important; cursor: pointer; transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.gacha-page-switch button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, .08) !important; }
+.gacha-page-switch button:active { transform: translateY(1px); }
+/* ガチャ画面の親レイアウトに旧マイページUIが残っても、階層に関係なく表示しない */
+.mana-hub-gacha[data-gacha-page] .mana-hub-header,
+.mana-hub-gacha[data-gacha-page] .mypage-tabs,
+.mana-hub-gacha[data-gacha-page] .mypage-entries { display: none !important; }
+
+/* マイページ本体 */
+.mana-hub-main .mana-eyebrow { font: var(--mt-text-kicker); letter-spacing: var(--mt-kicker-spacing); color: var(--mt-ink-muted); }
+.mana-hub-main > h1 { font: var(--mt-text-xl) !important; color: var(--mt-ink-warm); margin: 2px 0 4px !important; }
+.mana-hub-main > h1 + p { font: var(--mt-text-sm) !important; color: var(--mt-ink-3) !important; margin-bottom: 12px !important; }
+.mana-hub-card { border: 1.5px solid var(--mt-line) !important; border-radius: var(--mt-radius-lg) !important; background: var(--mt-bg-card) !important; box-shadow: var(--mt-shadow-card); margin-top: 14px !important; padding: 14px 16px !important; }
+.mana-hub-card h2 { font: var(--mt-text-lg) !important; color: var(--mt-ink-warm); }
+.mana-hub-card > p, .mana-storage-info { font: var(--mt-text-sm) !important; color: var(--mt-ink-3) !important; }
+.mana-earn-actions button { border-radius: var(--mt-radius-lg) !important; box-shadow: var(--mt-shadow-press); }
+.mana-earn-actions strong { font: var(--mt-text-md) !important; }
+.mana-earn-actions small { font: var(--mt-text-xs) !important; font-weight: 500 !important; }
+.mana-text-action { font: 700 13px/1.3 var(--mt-font-body) !important; color: var(--mt-brand) !important; }
+.mana-week > div { border-radius: var(--mt-radius-sm) !important; }
+.mana-week span { font: 700 12px/1 var(--mt-font-body) !important; white-space: nowrap; letter-spacing: -.04em; }
+.mana-week strong { font: var(--mt-num); font-size: 15px; }
+.mana-rush-banner { border-radius: var(--mt-radius-lg) !important; box-shadow: 0 3px 0 #d39a1a; }
+.mana-rush-banner strong { font: 800 18px/1.2 var(--mt-font-display) !important; }
+.mana-rush-banner small { font: 700 12px/1.3 var(--mt-font-body) !important; }
+/* きせかえ・称号・ミッション・記録のタブ＝共通タブ */
+.mana-hub-tabs { background: var(--mt-bg-sunken); border-radius: var(--mt-radius-lg); padding: 4px !important; gap: 3px !important; box-shadow: inset 0 0 0 1px var(--mt-line); width: calc(100% - 24px); }
+.mana-hub-tabs button { border: 0 !important; border-radius: calc(var(--mt-radius-lg) - 4px) !important; background: transparent !important; color: var(--mt-ink-2) !important; font: 700 12px/1.1 var(--mt-font-body) !important; min-height: 52px; }
+.mana-hub-tabs button[aria-current=page] { background: var(--mt-bg-card) !important; color: var(--mt-ink-warm) !important; font-weight: 800 !important; box-shadow: 0 2px 0 #e6dccb !important; }
+/* マイページ内の見出し（ミッションなど）も丸ゴシック */
+.mana-hub h1.font-handwriting, .mana-hub .font-handwriting { font-family: var(--mt-font-display) !important; }
+/* マイページの「とびら君」カード（GrowthHomeStrip）：共通カード＋12px以上 */
+.mana-hub .mana-dashboard { border: 1.5px solid #e3c77f; border-radius: var(--mt-radius-xl) !important; box-shadow: 0 3px 0 #d7b865, 0 6px 14px rgba(120, 90, 20, .08); }
+.mana-hub .mana-player-meta, .mana-hub .mana-player-meta * { font-size: 12px !important; }
+.mana-hub .mana-wallet { border-radius: var(--mt-radius-md) !important; }
+.mana-hub .mana-wallet > span, .mana-hub .mana-wallet small { font-size: 12px !important; }
+.mana-hub .mana-wallet > strong { font-family: var(--mt-font-display); }
+.mana-hub .mana-shortcuts button { border-radius: var(--mt-radius-md) !important; font-size: 12px !important; box-shadow: var(--mt-shadow-press); }
+.mana-hub .mana-shortcuts button * { font-size: 12px; }
+.mana-hub .mana-shortcuts b { font-size: 12px !important; }
+.mana-hub :is(.text-\[9px\], .text-\[10px\], .text-\[11px\]) { font-size: 12px !important; }
+.mana-hub .mana-save-note, .mana-hub .mana-login small { font-size: 12px !important; }
+.mana-hub .mana-login { border-radius: var(--mt-radius-md) !important; }
+.mana-hub .mana-shortcuts button span { white-space: nowrap; letter-spacing: -.05em; }
+@media (max-width: 400px) { .mana-hub .mana-shortcuts button { padding-inline: 2px !important; } }
+
+.mypage-hub { height:100%; min-height:0; display:flex; flex-direction:column; overflow:hidden; padding-bottom:calc(var(--app-nav-h,80px) + 8px); }
+.mypage-hub .mana-hub-header { padding:8px 12px; min-height:56px; flex-shrink:0; }
+.mypage-hub h1 { font-size:23px; font-weight:900; margin:0; }
+.mypage-tabs { display:flex; flex-shrink:0; gap:3px; padding:0 8px 8px; }
+.mypage-tabs button { min-width:0; flex:1; min-height:44px; border:1px solid #d9cdbb; border-radius:12px; background:var(--mt-bg-card); font-size:12px; font-weight:800; }
+.mypage-tabs [aria-current=page] { background:#f3dfa7; border-color:#a57524; }
+.mypage-body { min-height:0; flex:1; max-width:820px; width:100%; margin:auto; display:flex; flex-direction:column; }
+.mypage-overview { min-height:0; flex:1; overflow-y:auto; padding:4px 12px; }
+.mypage-hero { display:flex; align-items:center; gap:12px; padding:10px 12px; background:#f7e5b4; border:1px solid #d4b66a; border-radius:20px; margin-bottom:10px; }
+.mypage-hero>div { flex:1; min-width:0; }
+.mypage-hero h2 { font-size:17px; font-weight:900; }
+.mypage-hero p { display:flex; align-items:center; gap:4px; font-size:12px; margin:5px 0; }
+.mypage-hero strong { font-size:22px; }
+.mypage-menu { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.mypage-menu button { display:flex; align-items:center; gap:8px; min-height:74px; padding:10px; border:1px solid #d5cabb; border-radius:17px; background:#fffdf7; text-align:left; }
+.mypage-menu button:nth-child(4n+1) { background:#e6f1f8; }
+.mypage-menu button:nth-child(4n+2) { background:#f7e3e3; }
+.mypage-menu button span { flex:1; min-width:0; }
+.mypage-menu strong { display:block; font-size:14px; }
+.mypage-menu small { display:block; font-size:12px; line-height:1.35; color:#5f605e; }
+.my-collection { min-height:0; flex:1; display:flex; flex-direction:column; gap:8px; padding:4px 12px; }
+.my-collection>header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.my-collection h2 { font-size:18px; font-weight:900; display:flex; align-items:center; gap:5px; }
+.my-collection header b { display:flex; align-items:center; gap:3px; font-size:18px; }
+.collection-controls { display:flex; gap:6px; }
+.collection-controls input { flex:1; min-width:0; }
+.my-collection input,.my-collection select,.my-collection button,.my-collection a { font-size:13px; min-height:44px; border:1px solid #d6cbbb; border-radius:10px; background:#fffdf8; padding:8px; }
+.collection-kind { display:flex; align-items:center; gap:10px; font-size:12px; }
+.collection-kind select { flex:1; }
+.collection-scroll { min-height:0; flex:1; overflow-y:auto; overscroll-behavior:contain; }
+.collection-grid { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.collection-grid li,.collection-reward { padding:10px; border:1px solid #dbcfbb; border-radius:16px; background:white; display:flex; flex-direction:column; gap:5px; }
+.collection-grid li[data-owned=true] { border-color:#b9994e; background:#fffaf0; }
+.collection-grid h3 { font-size:14px; font-weight:800; }
+.collection-grid p,.collection-tag { font-size:12px; }
+.collection-gift-tag { display:inline-flex; align-items:center; gap:3px; align-self:flex-start; padding:1px 8px; border-radius:999px; background:#fff3d6; color:#8a5a00; font-size:12px; font-weight:800; }
+.collection-art { height:84px; display:flex; justify-content:center; align-items:center; }
+.collection-art img { height:80px; max-width:100%; object-fit:contain; }
+.collection-grid a { display:flex; align-items:center; justify-content:center; gap:5px; font-weight:800; color:#245e7a; text-decoration:none; }
+.collection-storage { font-size:12px; color:#605d57; line-height:1.4; margin:4px 0; }
+.collection-message { font-size:13px; padding:8px; background:#e2eff8; border-radius:10px; }
+.collection-empty { padding:20px 8px; font-size:14px; }
+.mypage-extra-scroll { min-height:0; overflow-y:auto; flex:1; }
+@media(min-width:700px){.collection-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+@media(max-height:620px){.mypage-hero{padding:6px 8px;} .mypage-hero>span{max-height:64px;} .mypage-menu button{min-height:59px;padding:7px;} .mypage-menu small{display:none;} .mypage-overview{padding-top:0;} }
+.profile-standalone { padding:4px 12px 16px; }
+.profile-standalone-head { display:flex; align-items:center; gap:10px; margin:2px 0 10px; }
+.profile-standalone-head button { width:40px; height:40px; flex-shrink:0; display:grid; place-items:center; border:1px solid #d9cdbb; border-radius:12px; background:var(--mt-bg-card); }
+.profile-standalone-head h2 { font-size:19px; font-weight:900; margin:0; }
+.profile-standalone-head p { font-size:12px; color:#5f605e; margin:2px 0 0; }
+/* マイページ：とびら君を中央に、部位ごとに着がえ */
+.mypage-stage { position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 12px 10px; margin-bottom:10px; border:1px solid #d4b66a; border-radius:22px; background:radial-gradient(circle at 50% 42%, #fff8e1 0, #f7e5b4 62%, #efd79a 100%); }
+.mypage-stage-title { font-size:13px; font-weight:900; color:#7a5212; background:var(--mt-bg-card); border:1px solid #e0c27a; border-radius:999px; padding:3px 12px; margin:0; }
+.mypage-stage-avatar { display:grid; place-items:center; padding:4px 0; }
+.mypage-stage-meta { width:100%; max-width:300px; display:flex; flex-direction:column; gap:4px; }
+.mypage-stage-meta>span { display:flex; align-items:center; justify-content:center; gap:4px; font-size:12px; font-weight:700; }
+.mypage-stage-meta strong { font-size:19px; }
+.mypage-parts h2 { font-size:14px; font-weight:900; margin:0 2px 6px; }
+.mypage-parts ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:0 0 10px; padding:0; list-style:none; }
+.mypage-parts li:last-child:nth-child(odd) { grid-column:1 / -1; }
+.mypage-parts button { width:100%; display:flex; align-items:center; gap:6px; min-height:46px; padding:6px 10px; border:1px solid #d9cdbb; border-radius:14px; background:#fffdf7; text-align:left; }
+.mypage-part-label { font-size:13px; font-weight:900; flex-shrink:0; }
+.mypage-part-cur { flex:1; min-width:0; font-size:12px; color:#6b6a66; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
+.mypage-more { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; padding-bottom:8px; }
+.mypage-more button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-height:58px; border:1px solid #d9cdbb; border-radius:14px; background:#f3f0e8; font-size:12px; font-weight:800; }
+@media(min-width:720px){ .mypage-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-content:start;} .mypage-stage{grid-row:span 2;margin:0;justify-content:center;} .mypage-more{grid-column:2;} }
+@media(max-height:700px){ .mypage-stage-avatar{transform:scale(.8);margin:-12px 0;} .mypage-parts button{min-height:44px;} .mypage-more button{min-height:48px;} }
+/* 2026-10-04 セルフチェック：文字12px以上・操作44px以上をここでも保証 */
+.profile-standalone-head button { width:44px !important; height:44px !important; }
+.mana-rush .mana-rush-rules li, .mana-rush small, .mana-rush .mana-rush-coin,
+.mana-rush .mana-rush-best span, .mana-rush [class*="bottom-1.5"] { font-size: 12px !important; }
+
+/* ===== 2026-10-04 PC のマイページ（1024px 以上）=====
+   ・ヘッダーは「ホーム」を左、見出しを中央（ボタンと見出しがくっついていた）
+   ・タブと本文の幅をそろえ（最大 1040px）、とびら君の舞台を大きく・高さいっぱいに
+   ・右側は「着がえ」→「そのほか」を縦に並べ、余白を意図して取る */
+@media (min-width: 1024px) {
+  .mypage-hub { padding: 0 32px calc(var(--app-nav-h, 0px) + 24px); }
+  .mypage-hub .mana-hub-header { position: relative; display: flex; align-items: center; justify-content: center; max-width: none; width: 100%; margin: 0 auto; padding: 20px 0 12px; min-height: 72px; }
+  .mypage-hub .mana-hub-header > button { position: absolute; left: 0; top: 50%; transform: translateY(-50%); min-height: 44px; }
+  .mypage-hub h1 { font-size: 28px; letter-spacing: .04em; }
+  .mypage-tabs { max-width: none; width: 100%; margin: 0 auto; padding: 0 0 16px; gap: 8px; }
+  .mypage-tabs button { min-height: 48px; font-size: 14px; border-radius: 14px; transition: background .15s, border-color .15s, transform .15s; }
+  .mypage-tabs button:hover:not([aria-current=page]) { background: #fff6dc; border-color: #c9a85a; }
+  /* 2026-11-01：概要にカードが1枚だけのとき、2列目の空列でカードが左半分に縮まないようPC幅を使う */
+  .mypage-body { max-width: none; width: 100%; margin: 0 auto; }
+  .mypage-overview[data-mypage-overview] > [data-my-study] { grid-column: 1 / -1; width: 100%; }
+  .mypage-overview { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) !important; grid-template-rows: auto auto; gap: 20px 24px !important; padding: 0 !important; align-content: start; overflow: visible; }
+  .mypage-stage { grid-row: 1 / span 2 !important; gap: 14px; padding: 28px 24px 24px; border-radius: 28px; min-height: 0; height: 100%; box-shadow: 0 10px 30px rgba(120, 86, 20, .12), inset 0 0 0 6px #fff8e655; }
+  .mypage-stage-title { font-size: 15px; padding: 5px 16px; }
+  .mypage-stage-avatar { transform: scale(1.35); margin: 26px 0; }
+  .mypage-stage-meta { max-width: 360px; gap: 8px; }
+  .mypage-stage-meta strong { font-size: 24px; }
+  .mypage-parts { align-self: start; }
+  .mypage-parts h2 { font-size: 16px; margin-bottom: 10px; }
+  .mypage-parts ul { gap: 10px !important; }
+  .mypage-parts button { min-height: 52px !important; border-radius: 14px; transition: background .15s, border-color .15s; }
+  .mypage-parts button:hover { background: #fff6dc; border-color: #c9a85a; }
+  .mypage-more { grid-column: 2 !important; align-self: start; gap: 10px !important; padding-top: 14px; border-top: 1px dashed #e0cfa6; }
+  .mypage-more button { min-height: 72px !important; border-radius: 16px; font-size: 13px; transition: background .15s, transform .15s; }
+  .mypage-more button:hover { background: #fff6dc; transform: translateY(-1px); }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { .mypage-more button:hover { transform: none; } }
+.mypage-more.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mana-hub-rush { display: flex; flex-direction: column; height: 100%; }
+/* レベルの道 */
+.level-road { border: 1.5px solid #ead9b5; border-radius: 18px; background: #fffaf0; padding: 12px 14px; margin-bottom: 10px; }
+.level-road h2 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 15px; font-weight: 800; color: #6a495d; }
+.level-road-next { margin: 0 0 8px; font-size: 13px; color: #5b4300; line-height: 1.6; }
+.level-road-next b { font-size: 20px; color: #b26b00; }
+.level-road-next strong { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px; background: #fff0c8; color: var(--mt-accent-ink); }
+.level-road-next strong[data-rarity=UR] { background: linear-gradient(90deg, #ffe08a, #ffc2e2, #b8e1ff); color: #5a2a7a; }
+.level-road ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.level-road li { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 8px; border-radius: 10px; background: #fff; font-size: 13px; color: #6b7a86; }
+.level-road li[data-got] { color: #2f7a52; background: #eef8f1; }
+.level-road li[data-rarity=UR]:not([data-got]) { box-shadow: inset 0 0 0 1.5px #e8b4ff; }
+.lr-lv { width: 44px; font-weight: 800; color: #2c3e50; }
+.lr-icon { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 999px; background: #f2ede2; }
+.level-road li[data-got] .lr-icon { background: #cdebd8; }
+.lr-label b { margin-right: 6px; font-size: 12px; color: var(--mt-accent-ink); }
+.level-road li[data-rarity=UR] .lr-label b { color: #8b3fb8; }
+.level-road-note { margin: 8px 0 0; font-size: 12px; color: #6b7a86; }
+@media (min-width: 720px) { .mypage-overview .level-road { grid-column: 2; margin: 0; } .mypage-overview .mypage-stage { grid-row: span 3; } }
+/* ★装備を外す（2026-10-06）★ */
+.collection-grid button.collection-unequip { background:#fff; color:#7a4b12; border:1.5px solid #c9a85a; }
+.mypage-parts li { position:relative; }
+.mypage-parts li[data-removable] > button[data-part] { padding-right:72px; min-height:54px; }
+.mypage-parts button.mypage-part-off { position:absolute; top:50%; right:5px; transform:translateY(-50%); width:auto; min-height:44px; min-width:60px; padding:0 8px; justify-content:center; gap:2px; border:1.5px solid #c9a85a; border-radius:11px; background:#fff; color:#7a4b12; font-size:12px; font-weight:800; }
+@media (min-width: 720px) { .mypage-parts button.mypage-part-off { min-height:40px !important; right:6px; } }
+
+/* 2026-10-11：広告ありの背の低い端末で「ほっぺ・オーラ・壁紙」が広告の裏に隠れていた → 部位を3列に、とびら君を少し小さく */
+@media (max-width: 719px) and (max-height: 860px) {
+  :root[data-ad-banner=true] .mypage-hub .mana-hub-header { min-height: 44px; padding: 4px 12px; }
+  :root[data-ad-banner=true] .mypage-stage { padding: 6px 10px; gap: 2px; margin-bottom: 6px; }
+  :root[data-ad-banner=true] .mypage-stage-avatar { transform: scale(.72); margin: -18px 0; }
+  :root[data-ad-banner=true] .mypage-parts h2 { margin-bottom: 4px; }
+  :root[data-ad-banner=true] .mypage-parts ul { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+  :root[data-ad-banner=true] .mypage-parts li:last-child:nth-child(odd) { grid-column: auto; }
+  :root[data-ad-banner=true] .mypage-parts button { min-height: 44px; padding: 4px 8px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+  :root[data-ad-banner=true] .mypage-parts button > svg { display: none; }
+  :root[data-ad-banner=true] .mypage-part-cur { text-align: left; width: 100%; }
+}
+
+/* ===== 2026-10-16 PC：マイページの一覧をスクロールさせない（入るぶんだけ並べてページでめくる）===== */
+@media (min-width: 1024px) {
+  .mypage-body > .mypage-extra-scroll:has(> .profile-standalone[data-profile-standalone=badges]) { overflow: hidden; display: flex; flex-direction: column; }
+  .profile-standalone[data-profile-standalone=badges] { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .profile-standalone[data-profile-standalone=badges] .badges-tab { flex: 1; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+  .badges-locked { min-height: 0; display: flex; flex-direction: column; }
+  .badge-locked-frame { flex: 1; min-height: 0; overflow: hidden; }
+  .badge-locked-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+}
+
+/* ミッション（PC）：縦1列で 1410px はみ出していたので、横3列に並べて1画面に収める（並び順＝DOM はスマホと同じ）
+   左＝今日の状態・宝箱・説明／中＝対戦ミッション・レベルで手に入るもの／右＝ボーナスミッション。ボタンは下に横並び。
+   各列は上から詰めて積む。どの行から何行ぶん使うかは useMasonrySpans が実際の高さから決める。 */
+@media (min-width: 1024px) {
+  .mypage-body > .mypage-extra-scroll:has(> .missions-shell) { overflow: hidden; display: flex; }
+  .missions-shell { min-height: 0 !important; flex: 1; background: transparent !important; }
+  .missions-shell > main { max-width: none !important; padding: 0 !important; min-height: 0; }
+  .missions-shell > main > .notebook-paper {
+    display: grid !important; column-gap: 16px; row-gap: 0; padding: 10px 16px !important; min-height: 0; overflow: hidden; position: relative;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 4px; align-content: start;
+  }
+  /* 高さは中身ぶん（行に引き伸ばさない）にしてから測る */
+  .missions-shell > main > .notebook-paper > * { margin: 0 0 10px !important; align-self: start; }
+  .missions-shell h1 { grid-column: 1 / -1; font-size: 22px !important; }
+  .missions-shell .missions-lead { display: none; }
+  .missions-shell #battle-missions-summary { grid-column: 1; padding: 12px !important; }
+  .missions-shell #battle-missions-chest { grid-column: 1; padding: 12px !important; }
+  .missions-shell .missions-note { display: none; grid-column: 3; font-size: 12px !important; padding: 10px 12px; border-radius: 16px; background: #fffaf0; border: 1px solid #ead9b5; }
+  .missions-shell .missions-col-battle { grid-column: 2; }
+  .missions-shell .missions-extra { grid-column: 2; }
+  .missions-shell .missions-col-bonus { grid-column: 3; }
+  .missions-shell .missions-note-short { display: flex; grid-column: 3; align-items: flex-start; gap: 6px; font-size: 12px; font-weight: 700; line-height: 1.5; padding: 8px 10px; border-radius: 14px; background: #fffaf0; border: 1px solid #ead9b5; }
+  .missions-shell .missions-col > h2 { margin: 0 0 6px !important; font-size: 13px !important; }
+  .missions-shell .missions-col > .grid { gap: 6px !important; }
+  .missions-shell .missions-col > .grid > div { flex-wrap: nowrap; padding: 6px 10px !important; }
+  .missions-shell .missions-col > .grid > div > span:first-child { display: none; }
+  .missions-shell .missions-extra .level-road { margin: 0; padding: 10px 12px; }
+  .missions-shell .missions-extra .level-road-note { display: none; }
+  /* レベルで手に入るもの：2列で並べる */
+  .missions-shell .missions-extra .level-road ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .missions-shell .missions-extra .level-road li { min-height: 44px; font-size: 12px; gap: 4px; padding: 4px 6px; }
+  .missions-shell .missions-extra .level-road .lr-lv { width: auto; }
+  .missions-shell .missions-extra .level-road .lr-icon { display: none; }
+  .missions-shell .missions-extra .level-road .lr-label { line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .missions-shell > footer { max-width: none !important; padding: 0 16px 4px !important; }
+  .missions-shell .missions-actions { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
+  .missions-shell .missions-actions button { min-height: 48px; }
+}
+@media (min-width: 1024px) {
+  .missions-shell .missions-toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5; margin: 0 !important; min-width: 360px; }
+}
+
+/* ★マイページの入口（2026-10-19）★ きせかえ・称号。ショップはガチャ欄に独立 */
+.mypage-entries { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 2px 4px 12px 0; }
+.mypage-entries button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 92px; padding: 10px 4px; border: 1.5px solid #e2d3b6; border-radius: 18px; color: #1f3354; box-shadow: 0 4px 0 #d9c8a3; transition: transform .14s cubic-bezier(.3,1.6,.5,1), box-shadow .14s; }
+.mypage-entries button:active { transform: translateY(4px); box-shadow: 0 0 0 #d9c8a3; }
+.mypage-entries button strong { font: 900 16px/1.2 var(--mt-font-display); white-space: nowrap; }
+.mypage-entries button > svg:last-child { display: none; }
+.mypage-entries [data-mypage-entry=outfit] { background: #ffc6da; }
+.mypage-entries [data-mypage-entry=badges] { background: #fff1b8; }
+@media (prefers-reduced-motion: reduce) { .mypage-entries button { transition: none; } .mypage-entries button:active { transform: none; } }
+
+/* ★ショップの背景（2026-10-19 ご要望「質素すぎる」）★ 屋台の日よけ（ストライプ）と、方眼の床。
+   商品カードは縁取り＋ずらし影でホームと同じ「押せる」質感に。中身・並び・操作は変えない */
+.my-collection[data-my-collection=shop] { position: relative; isolation: isolate; border-radius: 22px 22px 0 0; padding-top: 34px;
+  background:
+    linear-gradient(#e9dfcc66 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, #e9dfcc66 1px, transparent 1px) 0 0 / 20px 20px,
+    radial-gradient(ellipse at 50% 0%, #fff4cf 0%, transparent 60%),
+    #fdf8ee; }
+.my-collection[data-my-collection=shop]::before { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: 0; height: 26px;
+  background: repeating-linear-gradient(90deg, #ff9db8 0 26px, #fffaf0 26px 52px);
+  border-bottom: 1.5px solid #e2b7c6;
+  -webkit-mask: radial-gradient(13px at 13px 100%, #0000 98%, #000) 0 0 / 26px 100%; mask: radial-gradient(13px at 13px 100%, #0000 98%, #000) 0 0 / 26px 100%; }
+.my-collection[data-my-collection=shop]::after { content: ''; position: absolute; z-index: -1; right: 14px; top: 40px; width: 64px; height: 64px; border-radius: 50%; background: #ffd257; opacity: .35; }
+.my-collection[data-my-collection=shop] > header h2 { font-family: var(--mt-font-display); }
+.my-collection[data-my-collection=shop] > header b { padding: 4px 12px; border: 1.5px solid #e2d3b6; border-radius: 999px; background: #ffd257; box-shadow: 0 2px 0 #d9c8a3; }
+.my-collection[data-my-collection=shop] .collection-grid > li { border: 1.5px solid #e2d3b6 !important; box-shadow: 0 3px 0 #d9c8a3 !important; background: #fff !important; }
+.my-collection[data-my-collection=shop] .store-guide { border: 1.5px dashed #d9c8a3; background: #fffaf0cc; }
+
+/* 2026-10-19 見直し：黒い縁取り・斜めの影はやめ、ホームと同じ「各色の濃い色で真下に影」 */
+.mypage-entries [data-mypage-entry=outfit] { border-color: #ecb7cb; box-shadow: 0 4px 0 #c98aa6; }
+.mypage-entries [data-mypage-entry=badges] { border-color: #ead48a; box-shadow: 0 4px 0 #c9a640; }
+.my-collection[data-my-collection=shop]::before { background: repeating-linear-gradient(90deg, #f7b9c9 0 26px, #fffaf0 26px 52px); opacity: .9; }
+.my-collection[data-my-collection=shop] .collection-grid > li { border-color: #e6d7b8 !important; box-shadow: 0 3px 0 #e6d7b8 !important; }
+/* ショップ上の「ショップとガチャの違い」は1行に */
+.store-guide.is-compact { display: flex !important; align-items: center; gap: 10px; padding: 8px 10px !important; }
+.store-guide.is-compact p { flex: 1; margin: 0; font-size: 13px; line-height: 1.45; color: #3c4f6b; }
+.store-guide.is-compact p b { color: #1f3354; }
+.store-guide.is-compact p strong { color: #b8641a; }
+.store-guide.is-compact button { flex-shrink: 0; width: auto !important; min-height: 44px; padding: 0 14px !important; margin: 0 !important; white-space: nowrap; }
+
+/* ===== 2026-10-21 マイページ：とびら君＋レベルを横1段に詰め、その下にプロフィール（旧：設定のアカウント・プロフィール） =====
+   スマホでも1画面に収める（スクロールなし）。PC は左にとびら君、右にプロフィール。 */
+.mypage-overview[data-mypage-overview] { display: flex; flex-direction: column; gap: 8px; padding: 2px 12px 8px; }
+.mypage-overview[data-mypage-overview] .mypage-stage { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 12px; margin: 0; padding: 8px 12px; border-radius: 18px; }
+.mypage-overview[data-mypage-overview] .mypage-stage-title { order: -1; flex-basis: 100%; width: max-content; max-width: 100%; margin: 0 auto; text-align: center; font-size: 12px; padding: 2px 12px; flex-grow: 0; }
+.mypage-overview[data-mypage-overview] .mypage-stage-avatar { flex-shrink: 0; padding: 0; transform: none !important; margin: 0 !important; }
+.mypage-overview[data-mypage-overview] .mypage-stage { flex-wrap: nowrap; }
+.mypage-overview[data-mypage-overview] .mypage-stage-title { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); flex-basis: auto; }
+.mypage-overview[data-mypage-overview] .mypage-stage-meta { padding-top: 18px; flex: 1; min-width: 0; max-width: 300px; }
+.mypage-overview[data-mypage-overview] .mypage-stage-meta > span { justify-content: flex-start; }
+.mypage-profile { display: grid; gap: 7px; padding: 10px 12px; --ps-line: #e5dccc; --ps-card: #fffdf5; --ps-ink: #344451; --ps-ink-2: #5a6573; }
+.mypage-profile-top { display: flex; gap: 8px; align-items: center; }
+.mypage-profile-top .ps-name { flex: 1; min-width: 0; }
+.mypage-profile-save { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 0; background: var(--mt-brand, var(--mt-brand)); color: #fff; font: 800 13px/1 var(--mt-font-body); box-shadow: 0 3px 0 var(--mt-brand-strong, #14315f); }
+.mypage-profile-save:disabled { background: #e9e3d6; color: #7b7466; box-shadow: none; }
+.mypage-profile .ps-stats > div { padding: 6px 8px; }
+.mypage-profile .ps-stats dd { margin-top: 2px; font-size: 16px; }
+.mypage-profile .ps-fields { gap: 6px; }
+.mypage-profile-motto { grid-column: 1 / -1; }
+.mypage-profile-public { min-height: 44px; padding: 0 2px 0 10px; }
+.mypage-profile-public .ps-toggle-text p { font-size: 13px; }
+@media (max-height: 700px) {
+  .mypage-overview[data-mypage-overview] { gap: 6px; }
+  .mypage-overview[data-mypage-overview] .mypage-stage { padding: 4px 10px; }
+  .mypage-profile { gap: 5px; padding: 8px 10px; }
+  .mypage-profile .ps-badges { display: none; }
+  .mypage-profile .ps-stats dt { font-size: 12px; }
+}
+@media (min-width: 720px) {
+  .mypage-overview[data-mypage-overview] { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) !important; grid-template-rows: auto !important; align-items: start; gap: 16px !important; }
+  .mypage-overview[data-mypage-overview] .mypage-stage { grid-row: auto !important; flex-direction: column; padding: 40px 20px 20px; height: auto; }
+  .mypage-overview[data-mypage-overview] .mypage-stage-meta { padding-top: 0; }
+  .mypage-overview[data-mypage-overview] .mypage-stage-meta > span { justify-content: center; }
+  .mypage-profile { padding: 14px 16px; gap: 10px; }
+}
+/* 320×568 などとても低い画面：学習の数字を1行に詰めて1画面に収める */
+@media (max-height: 600px) {
+  .mypage-profile .ps-stats { display: none; }
+  .mypage-profile .ps-fields { gap: 5px; }
+}
+/* 2026-10-26 公開プロフィールの充実：自己紹介ボタン（入力欄と同じ見た目）・見え方ボタン・自己紹介の窓 */
+.mypage-profile-bio { width: 100%; min-height: 44px; padding: 0 32px; border: 1px solid var(--ps-line); border-radius: 12px; background: #fff; font: 700 14px/1.2 var(--mt-font-body); color: var(--ps-ink); text-align: left; cursor: pointer; }
+.mypage-profile-bio > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mypage-profile-bio[aria-invalid=true] { border-color: var(--mt-danger); }
+.mypage-profile-preview { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 12px; border: 1px solid var(--ps-line); border-radius: 12px; background: #fff; color: #436d83; font: 800 13px/1 var(--mt-font-body); }
+.mypage-bio-body { display: grid; gap: 10px; }
+.mypage-bio-body textarea { width: 100%; padding: 10px 12px; border: 1px solid #e5dccc; border-radius: 12px; background: #fff; font: 400 15px/1.6 var(--mt-font-body); color: #344451; resize: vertical; }
+.mypage-bio-body textarea[aria-invalid=true] { border-color: var(--mt-danger); }
+.mypage-bio-body .mypage-profile-save { justify-self: end; }
+.mypage-profile .ps-fields > * { min-width: 0; }
+.mypage-profile-public .ps-toggle-text { min-width: 0; }
+/* 2026-10-27：マイページのタブを5つに（記録を追加）。320px でも文字が切れない幅 */
+.mypage-tabs button { padding: 0 2px; white-space: nowrap; }
+.mypage-body > .slog { flex: 1; min-height: 0; }
+.mypage-profile-edit .profile-standalone-head { margin: 0 0 6px; }
+.mypage-profile-edit .profile-standalone-head button { font: 800 18px/1 var(--mt-font-body); }
+/* 2026-10-28 B1：ミッションはそれだけの画面（マイページの見出し・タブは出さない）。マナラッシュと同じ作り */
+.mana-hub-missions { display: flex; flex-direction: column; height: 100%; }
+.mana-hub-missions > .mypage-extra-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+/* 2026-10-29 B3：プロフィールを編集＝1画面。項目名を枠の中に出し、枠を大きく（56px）。
+   名前・志・自己紹介は横いっぱい、学年/文理・志望校/目標は2列。公開の行と保存は下にそろえ、下の余白をなくす。
+   高さの低いPCでもフォーム下部の公開設定・保存ボタンまで到達できるよう、このページ自身をスクロール領域にする。 */
+.mypage-profile-edit[data-mypage-profile-edit] { display: flex !important; flex: 1 1 0; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 12px; }
+.mypage-profile-edit .mypage-profile { flex: 1; display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 14px); padding: clamp(12px, 2vh, 18px) 14px; }
+.mypage-profile-edit .mypage-profile-top { display: grid; grid-template-columns: 1fr; }
+.mypage-profile-edit .ps-fields { gap: clamp(8px, 1.6vh, 14px) 10px; }
+.mypage-profile-edit .ps-fields > [data-motto], .mypage-profile-edit .ps-fields > .mypage-profile-bio { grid-column: 1 / -1; }
+.mypage-profile-edit .ps-field-label { position: absolute; top: 7px; left: 34px; z-index: 1; font: 700 12px/1 var(--mt-font-body); color: var(--ps-ink-2); pointer-events: none; }
+.mypage-profile-edit .ps-name .ps-field-label { left: 13px; }
+.mypage-profile-edit .ps-select > svg:first-child { top: 30px; }
+.mypage-profile-edit .ps-select input, .mypage-profile-edit .ps-select select { min-height: 56px; padding-top: 18px; font-size: 15px; }
+.mypage-profile-edit .ps-name input { min-height: 58px; padding-top: 18px; font-size: 18px; }
+.mypage-profile-edit .ps-name > svg, .mypage-profile-edit .ps-select > svg:last-child { top: 34px; }
+.mypage-profile-edit .mypage-profile-bio { position: relative; min-height: 56px; padding: 18px 32px 0 13px; }
+.mypage-profile-edit .mypage-profile-bio .ps-field-label { left: 13px; }
+.mypage-profile-bio-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.mypage-profile-edit .mypage-profile-public { min-height: 60px; margin-top: auto; padding: 6px 6px 6px 14px; }
+.mypage-profile-edit .mypage-profile-public .ps-toggle-text p { font-size: 15px; }
+.mypage-profile-edit .mypage-profile-public .ps-toggle-text small { display: block; font-size: 12px; }
+.mypage-profile-edit .mypage-profile-public:has([aria-checked=false]) .ps-toggle-text small { color: var(--mt-danger); font-weight: 700; }
+.mypage-profile-edit .mypage-profile > .mypage-profile-save { width: 100%; justify-content: center; min-height: 52px; font-size: 15px; }
+@media (max-height: 620px) {
+  .mypage-profile-edit .ps-select input, .mypage-profile-edit .ps-select select, .mypage-profile-edit .mypage-profile-bio { min-height: 50px; }
+  .mypage-profile-edit .ps-name input { min-height: 50px; }
+  .mypage-profile-edit .mypage-profile > .mypage-profile-save { min-height: 46px; }
+}
+/* B3：プロフィールが非公開なら、マイページの「編集」に赤い点 */
+.mystudy-edit-alert { position: relative; }
+.mystudy-edit-alert::after { content: ''; position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: var(--mt-danger, #d33); box-shadow: 0 0 0 2px #fff; }
+/* 2026-10-29 B9：マイページのタブにアイコン（文字だけより何のタブかわかりやすい）。低い画面ではアイコンを隠す */
+.mypage-tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; line-height: 1.1; }
+.mypage-tabs button > svg { flex-shrink: 0; color: #8a6a2c; }
+.mypage-tabs [aria-current=page] > svg { color: #6b4a10; }
+@media (max-height: 680px) { .mypage-tabs button > svg { display: none; } }
+/* 2026-10-29 B4：もっているもの・マイPDF・ショップ。種類はアプリ風のチップ（横スクロール）、所有状況は3つの切替、
+   一覧は小さなタイル（押すと詳細の窓。装備・保存・購入は窓の中） */
+.collection-controls { align-items: stretch; }
+.collection-state { display: grid; grid-template-columns: repeat(3, auto); gap: 2px; padding: 3px; border: 1px solid #ddd0b8; border-radius: 12px; background: #f3ecdd; flex-shrink: 0; }
+.my-collection .collection-state button { min-height: 38px; min-width: 44px; padding: 0 8px; border: 0; border-radius: 9px; background: transparent; color: #6e6455; font: 800 12px/1 var(--mt-font-body); }
+.my-collection .collection-state button[aria-pressed=true] { background: #fffdf7; color: var(--mt-ink-warm); box-shadow: 0 1px 3px #8a6b3a33; }
+.collection-kinds { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 4px; margin: 0 -2px; flex-shrink: 0; }
+.collection-kinds::-webkit-scrollbar { display: none; }
+.my-collection .collection-kinds button { flex-shrink: 0; min-height: 44px; padding: 0 14px; border: 1.5px solid #e2d6c1; border-radius: 999px; background: #fffdf8; color: #5d503f; font: 800 13px/1 var(--mt-font-body); white-space: nowrap; }
+.my-collection .collection-kinds button[aria-pressed=true] { background: var(--mt-ink-warm); border-color: var(--mt-ink-warm); color: #fff; }
+.collection-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+@media (min-width: 520px) { .collection-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
+@media (min-width: 900px) { .collection-tiles { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; } }
+.collection-tiles > li { padding: 0 !important; border: 0 !important; background: none !important; }
+.my-collection .collection-tile { position: relative; width: 100%; height: 100%; min-height: 112px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px 6px; border: 1.5px solid #e2d6c1; border-radius: 14px; background: #fff; text-align: center; }
+.collection-tiles li[data-owned=true] .collection-tile { border-color: #c9a85a; background: #fffaf0; }
+.collection-tiles li[data-equipped] .collection-tile { border: 2.5px solid #2f8f5b; box-shadow: 0 0 0 2px #dff3e7; }
+.collection-tiles li[data-owned=false] .collection-tile .collection-art { opacity: .5; filter: grayscale(.6); }
+.collection-tile .collection-art { height: 58px; }
+.collection-tile .collection-art img { height: 56px; }
+.collection-tile-name { width: 100%; font: 800 12px/1.25 var(--mt-font-body); color: var(--mt-ink-warm); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.collection-tile-tag { display: inline-flex; align-items: center; gap: 2px; margin-top: auto; padding: 1px 7px; border-radius: 999px; background: #f3ecdd; color: #6e6455; font: 800 12px/1.4 var(--mt-font-body); }
+.collection-tiles li[data-equipped] .collection-tile-tag { background: #2f8f5b; color: #fff; }
+.collection-tile .collection-gift-tag { position: absolute; top: 3px; left: 3px; padding: 0 5px; }
+.collection-detail-body { display: grid; gap: 10px; }
+.collection-detail-head { display: flex; align-items: center; gap: 12px; }
+.collection-detail-head .collection-art { width: 96px; height: 100px; flex-shrink: 0; border-radius: 14px; background: #fdf6e8; }
+.collection-detail-head .collection-art img { height: 96px; }
+.collection-detail-head > div { display: grid; gap: 4px; min-width: 0; }
+.collection-detail-head strong { font: 900 17px/1.3 var(--mt-font-display); color: var(--mt-ink-warm); }
+.collection-detail-actions { display: grid; gap: 8px; }
+.collection-detail-actions > p { font-size: 13px; color: #5a6573; }
+.collection-detail-actions > button, .collection-detail-actions > a { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; font: 800 15px/1 var(--mt-font-body); }
+.collection-detail-actions > button:not(.collection-unequip):not(:disabled) { background: var(--mt-brand, var(--mt-brand)); color: #fff; border: 0; box-shadow: 0 3px 0 var(--mt-brand-strong, #14315f); }
+.collection-detail-actions > a { color: #245e7a; text-decoration: none; border: 1.5px solid #b9d3e2; background: #f2f8fc; }
+/* 2026-10-29 B4：称号＝小さなタイルの一覧。達成は色つき＋「達成」、つけている称号は太い枠、まだは灰色＋進み具合 */
+.badges-tiles-wrap { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.badges-tiles-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badges-tiles-head h3 { display: inline-flex; align-items: baseline; gap: 4px; margin: 0; font: 800 13px/1 var(--mt-font-body); color: #5a6573; }
+.badges-tiles-head h3 b { font: 900 20px/1 var(--mt-font-display); color: #b7791f; }
+.badges-tiles-head h3 small { font-size: 12px; }
+.badges-tiles-bar { flex: 1; min-width: 80px; height: 8px; border-radius: 999px; background: #ece4d4; overflow: hidden; }
+.badges-tiles-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f2c14e, #b7791f); }
+.badges-tiles-head button { min-height: 44px; padding: 0 12px; border: 1px solid #e2d6c1; border-radius: 999px; background: #fff; color: #5a6573; font: 700 12px/1 var(--mt-font-body); }
+.badges-tiles-frame { flex: 1; min-height: 0; overflow-y: auto; }
+.badges-tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+@media (min-width: 520px) { .badges-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .badges-tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.badge-tile { position: relative; width: 100%; min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; padding: 8px 4px 6px; border: 1.5px solid #e6dfd2; border-radius: 14px; background: #faf8f4; text-align: center; }
+.badge-tile .badge-tile-emoji { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: #eeeae2; font-size: 22px; line-height: 1; filter: grayscale(1); opacity: .5; }
+.badge-tile-name { width: 100%; font: 800 12px/1.25 var(--mt-font-body); color: #8a8478; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.badge-tile[data-earned] { border-color: color-mix(in srgb, var(--tier) 55%, white); background: color-mix(in srgb, var(--tier) 9%, white); box-shadow: 0 2px 0 color-mix(in srgb, var(--tier) 30%, white); }
+.badge-tile[data-earned] .badge-tile-emoji { filter: none; opacity: 1; background: color-mix(in srgb, var(--tier) 18%, white); }
+.badge-tile[data-earned] .badge-tile-name { color: #2f2a22; }
+.badge-tile[data-equipped] { border: 3px solid #b7791f; }
+.badge-tile-done { margin-top: auto; padding: 1px 8px; border-radius: 999px; background: var(--tier); color: #fff; font: 800 12px/1.4 var(--mt-font-body); }
+.badge-tile[data-equipped] .badge-tile-done { background: #b7791f; }
+.badge-tile-lock { display: inline-flex; align-items: center; gap: 2px; margin-top: auto; font: 700 12px/1.4 var(--mt-font-body); color: #9a948a; }
+.badge-tile-progress { display: block; width: 80%; height: 6px; margin-top: auto; border-radius: 999px; background: #e3ddd2; overflow: hidden; }
+.badge-tile-progress i { display: block; height: 100%; background: #c9a85a; border-radius: inherit; }
+.badge-detail-body { display: grid; gap: 10px; }
+.badge-detail-head { display: flex; align-items: center; gap: 12px; }
+.badge-detail-head .badge-tile-emoji { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 18px; font-size: 34px; background: #eeeae2; filter: grayscale(1); opacity: .55; }
+.badge-detail-head[data-earned] .badge-tile-emoji { filter: none; opacity: 1; background: color-mix(in srgb, var(--tier) 18%, white); }
+.badge-detail-head > div { display: grid; gap: 3px; }
+.badge-detail-head small { font: 800 12px/1.3 var(--mt-font-body); color: var(--tier); }
+.badge-detail-head strong { font: 900 18px/1.3 var(--mt-font-display); color: #2f2a22; }
+.badge-detail-desc { font: 600 14px/1.6 var(--mt-font-body); color: var(--mt-ink-warm); }
+.badge-detail-goal { display: flex; align-items: center; gap: 8px; font: 700 13px/1 var(--mt-font-body); color: #5a6573; }
+.badge-detail-goal .badge-tile-progress { flex: 1; margin: 0; height: 8px; }
+.badge-detail-btn { min-height: 48px; border: 0; border-radius: 12px; background: var(--mt-brand, var(--mt-brand)); color: #fff; font: 800 15px/1 var(--mt-font-body); box-shadow: 0 3px 0 var(--mt-brand-strong, #14315f); }
+.badge-detail-btn:disabled { background: #e9e3d6; color: #7b7466; box-shadow: none; }
+.badge-detail-note { font: 600 12px/1.5 var(--mt-font-body); color: #5a6573; }
+/* 2026-10-29 C6：ミッション画面の上に ←（下まで行かなくても戻れる） */
+.missions-top { position: relative; display: flex; align-items: center; justify-content: center; min-height: 48px; margin: 0 0 8px; }
+.missions-top h1 { margin: 0; text-align: center; }
+.missions-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #d9cdbb; border-radius: 50%; background: var(--mt-bg-card); color: var(--mt-ink-warm); box-shadow: 0 2px 0 #e6dccb; }
+.missions-top .missions-back + * { padding-inline: 48px; }
+/* 2026-10-29 C1/C2：アイテムの詳細＝大きな絵（きせかえは拡大図・PDFは表紙ページ）＋種類・状態のチップ＋軽い説明＋操作（PDFは「保存する」） */
+.collection-detail-body { display: grid; gap: 10px; }
+.collection-detail-hero { display: grid; place-items: center; min-height: 170px; padding: 10px; border-radius: 18px; background: radial-gradient(120% 90% at 50% 0%, #fff6dc 0, #f6ead0 70%, #efdfbd 100%); }
+.collection-detail-cover { width: auto; max-width: 70%; max-height: 260px; border-radius: 6px; box-shadow: 0 6px 18px rgba(60,40,10,.25); background: #fff; }
+.collection-detail-title { display: flex; flex-wrap: wrap; gap: 6px; }
+.collection-detail-chip { padding: 2px 10px; border-radius: 999px; background: #f3ecdd; color: #5d503f; font: 800 12px/1.5 var(--mt-font-body); }
+.collection-detail-chip[data-rarity=LR] { background: #efe6ff; color: #6b36b0; }
+.collection-detail-chip[data-rarity=UR] { background: #fff1c9; color: #8a5a00; }
+.collection-detail-chip[data-state=equipped] { background: #2f8f5b; color: #fff; }
+.collection-detail-chip[data-state=owned] { background: #e3f1e8; color: #2f6b47; }
+.collection-detail-name { font: 900 18px/1.35 var(--mt-font-display); color: #2f2a22; }
+.collection-detail-desc { font: 600 13px/1.6 var(--mt-font-body); color: #4a4f57; }
+.collection-detail-actions > button, .collection-detail-actions > a { min-height: 48px; padding: 0 14px; border: 1px solid #d6cbbb; border-radius: 12px; background: #fffdf8; }
+.collection-detail-actions audio { width: 100%; }
+/* 2026-10-29 C4：非公開のとき、「プロフィールを公開」の行にも「編集」と同じ赤い印（理由がわかるように） */
+.mypage-profile-public[data-not-public] { background: #fff1ef; box-shadow: inset 0 0 0 2px #f2b8b0; }
+.mypage-public-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: var(--mt-danger, #d33); box-shadow: 0 0 0 2px #fff; vertical-align: middle; }
+.mypage-profile-public[data-not-public] .ps-toggle-text small { color: var(--mt-danger, #c0392b); font-weight: 700; }
+
+/* ===== E3（2026-11-03）マナラッシュの最初の画面をほかの独立画面にそろえる =====
+   ・見出しは .profile-standalone-head（← 44px ＋ 見出し ＋ 一言）。文字だけの「←もどる」はやめた
+   ・ルールは1枚のカードに 2×2 で短く。科目 → 自己ベスト → スタート の順に、スクロールなしで収める
+   ・文字は12px以上、押すところは44px以上 */
+.mana-rush-menu { display: flex; flex-direction: column; gap: 10px; padding-top: 10px !important; }
+.mana-rush-menu > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+.mana-rush-head { margin: 0 !important; }
+.mana-rush-head h2 { display: flex; align-items: center; gap: 6px; color: var(--mt-ink-warm, #6d4c0f); }
+.mana-rush-head h2 svg { color: #e0a800; flex-shrink: 0; }
+.mana-rush-head p { font-size: 12px !important; line-height: 1.5; }
+.mana-rush-menu .mana-rush-rules { gap: 4px 10px; padding: 10px 12px; border: 1px solid #ebe2cf; border-radius: 16px; background: #fffdf5; }
+.mana-rush-menu .mana-rush-rules li { padding: 2px 0; border: 0; background: none; line-height: 1.45; color: #4f5b66; }
+.mana-rush-menu .mana-rush-subtitle { font-size: 13px; }
+.mana-rush-menu .mana-rush-subjects button { min-height: 52px; }
+.mana-rush-menu .mana-rush-subjects button small { font-size: 12px; }
+.mana-rush-menu .mana-rush-best { padding: 10px 12px; }
+.mana-rush-menu .mana-rush-best strong { font-size: 24px; }
+.mana-rush-menu .mana-rush-coin { text-align: center; }
+.mana-rush-menu .mana-rush-start { min-height: 54px; margin: 0 !important; font-size: 19px; border: 0; box-shadow: 0 4px 0 #c98200; }
+.mana-rush-menu .mana-storage-info { font-size: 12px; text-align: center; color: #6b6a66; }
+@media (max-height: 680px) { .mana-rush-menu { gap: 7px; } .mana-rush-menu .mana-rush-best { padding: 7px 12px; } .mana-rush-menu .mana-rush-start { min-height: 48px; } }
+/* 2026-11-04 PDF の棚（ショップの「PDF」・マイPDF）。種類のチップと同じ見た目で、件数を小さく添える */
+.my-collection .collection-shelves button small { margin-left: 5px; font-size: 12px; font-weight: 700; opacity: .7; }
+/* 低い画面（iPhone SE など）で棚が出ている間は、下の保存の注意書きを畳んで一覧の場所を空ける */
+@media (max-height: 600px) { .my-collection:has([data-print-shelves]) .collection-storage { display: none; } }

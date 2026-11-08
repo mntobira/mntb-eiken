@@ -1,0 +1,13 @@
+/* とびら君のお祝い動画（CelebrationClip）。再生が始まってから見せる */
+.cinematic-celebration { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 16px; background: #2c3e5000; opacity: 0; pointer-events: none; transition: opacity .2s ease, background .2s ease; }
+.cinematic-celebration.is-active { opacity: 1; pointer-events: auto; background: #2c3e5059; }
+.cinematic-celebration-frame { position: relative; width: min(82vw, 62vh, 340px); aspect-ratio: 1; border-radius: 24px; overflow: hidden; background: #fbf5e8; box-shadow: 0 0 0 4px #fff, 0 0 0 7px #f1d58a, 0 18px 40px -12px #0006; }
+.cinematic-celebration .cinematic-clip video { object-fit: cover; }
+.cinematic-celebration .cinematic-skip { font-size: 12px; }
+/* 結果画面の「全問正解」：とびら君の絵の上で動画を流し、最後のコマを残す */
+.practice-stage-cinema { position: relative; width: clamp(120px, 34vw, 170px); aspect-ratio: 1; border-radius: 20px; overflow: hidden; }
+.practice-stage-cinema > img { width: 100%; height: 100%; object-fit: contain; }
+.practice-stage-cinema .cinematic-clip video { object-fit: cover; }
+.practice-stage-cinema .cinematic-skip { display: none; }
+@media (max-height: 700px) { .practice-stage-cinema { width: 100px; } }
+@media (prefers-reduced-motion: reduce) { .cinematic-celebration { transition: none; } }

@@ -1,0 +1,360 @@
+/* TOEIC Part 5「1ページに複数問・マーク式」の見た目（2026-10-28）
+   文字の種類・太さ・大きさは今の演習画面と同じ（英文 16px 太字・選択肢 15px 中太、どちらも font-modern）。
+   変えたのは並べ方・行間・余白だけ。タップは44px以上、文字12px以上、コントラスト4.5:1以上。
+   戻し方：Quiz.tsx の TOEIC の分岐を消せば、このファイルは読まれなくなる。 */
+
+.tp-root { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: #f9fafb; color: #1f2937; }
+.tp-battle-return { min-height: 44px; flex-shrink: 0; border-bottom: 1px solid #bfdbfe; background: #eff6ff; padding: 8px 12px; font-size: 14px; font-weight: 700; color: #1e3a8a; }
+
+/* 上の帯（固定）：戻る・演習・単元名・ページ位置・回答済み */
+.tp-head { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; border-bottom: 1px solid #eadfc8; background: #fffaf0; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.tp-back { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; color: #6b7280; }
+.tp-back:hover { background: var(--mt-rare-n-bg); }
+.tp-mode { flex-shrink: 0; border-radius: 999px; background: #f3c64f; padding: 0 8px; font-size: 12px; font-weight: 800; line-height: 20px; color: #5b3d00; }
+.tp-title { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 700; color: #2c3e50; }
+.tp-stats { display: flex; flex-shrink: 0; gap: 4px; margin: 0; }
+.tp-stats > div { display: flex; align-items: center; gap: 4px; border-radius: 999px; background: var(--mt-rare-n-bg); padding: 4px 10px; }
+.tp-stats dt { display: flex; color: #4b5563; }
+.tp-stats dd { margin: 0; font-size: 13px; font-weight: 700; color: #4b5563; white-space: nowrap; }
+.tp-stats dd b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; color: #2c3e50; }
+.tp-stats dd small { margin-left: 1px; font-size: 12px; font-weight: 700; }
+
+/* 問題の一覧（ここだけ縦にスクロール。スマホは6問を縦に読む） */
+.tp-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.tp-list { display: grid; gap: 10px; padding: 12px 12px 16px; }
+
+.tp-item { border: 1px solid #e5e7eb; border-radius: 14px; background: #fff; padding: 12px 12px 10px; }
+.tp-item { border-left-width: 4px; border-left-color: #e5e7eb; }
+.tp-item[data-status=answered] { border-left-color: #1f3566; }
+.tp-item[data-status=unanswered] { border-left-color: #d97706; }
+.tp-item[data-status=correct] { border-color: #9fd8c3; }
+.tp-item[data-status=wrong], .tp-item[data-status=blank] { border-color: #f0b8b3; }
+
+/* 番号は小さな丸にして英文の1行目の先頭へ（問題文の幅を広く取る） */
+.tp-sentence { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.75; color: #111827; font-family: var(--font-modern); overflow-wrap: anywhere; }
+.tp-no { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-right: 8px; padding: 0 4px; border-radius: 999px; background: #2c3e50; color: #fff; font-size: 13px; font-weight: 800; line-height: 1; vertical-align: 2px; }
+.tp-tag { display: inline-block; margin-left: 6px; border-radius: 999px; border: 1px solid #f5c26b; background: #fff7e6; padding: 0 8px; font-size: 12px; font-weight: 700; line-height: 20px; color: #92400e; vertical-align: 2px; }
+/* 空所：太い下線の枠。選んだ語が入る */
+.tp-blank { display: inline-block; min-width: 4.5em; margin: 0 2px; padding: 0 6px; border-bottom: 3px solid #1f3566; border-radius: 4px 4px 0 0; background: #eef2fb; line-height: 1.45; text-align: center; vertical-align: baseline; }
+.tp-blank[data-filled] { color: #1f3566; }
+.tp-blank[data-result=right] { border-bottom-color: var(--mt-done); background: #ecfdf5; color: #166534; }
+.tp-blank[data-result=wrong] { border-bottom-color: var(--mt-danger); background: #fef2f2; color: #991b1b; text-decoration: line-through; text-decoration-thickness: 2px; }
+.tp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 選択肢：2×2（(A)(B) が上段、(C)(D) が下段）。長い選択肢がある問題だけ1列 */
+.tp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; margin: 8px 0 0; border-radius: 10px; outline: none; }
+.tp-choices.is-single { grid-template-columns: 1fr; }
+.tp-choices:focus-visible { box-shadow: 0 0 0 3px #3d5a99; }
+
+.tp-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 8px 4px 4px; border: 1.5px solid transparent; border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tp-choice-check { margin-left: auto; flex-shrink: 0; color: #1f3566; }
+.tp-choice:hover { background: #f8fafc; }
+.tp-choices[aria-disabled=true] .tp-choice { cursor: default; }
+.tp-choices[aria-disabled=true] .tp-choice:hover { background: none; }
+.tp-choice-body { display: flex; min-width: 0; flex: 1; flex-direction: column; justify-content: center; }
+/* 単語の途中では折らない（anywhere だと「hav/e/rec/eiv/ed」のように1文字ずつ縦に伸びた） */
+.tp-choice-text { min-width: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #1f2937; font-family: var(--font-modern); overflow-wrap: break-word; word-break: normal; hyphens: none; }
+
+/* マークの丸：未選択は細い枠、選択は塗り＋太い枠（色だけに頼らない） */
+.tp-bubble { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; border: 1.5px solid #6b7280; background: #fff; font-size: 13px; font-weight: 800; color: #374151; transition: background-color .12s, border-color .12s, color .12s; }
+.tp-choice[data-checked] { border-color: #1f3566; background: #eef2fb; }
+.tp-choice[data-checked] .tp-choice-text { font-weight: 700; color: #1f3566; }
+.tp-choice[data-checked] .tp-bubble { border-width: 3px; border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp-choice[data-result=right] { border-color: var(--mt-done); background: #ecfdf5; }
+.tp-choice[data-result=right] .tp-bubble { border-width: 3px; border-color: var(--mt-done); background: var(--mt-done); color: #fff; }
+.tp-choice[data-result=wrong] { border-color: var(--mt-danger); background: #fef2f2; }
+.tp-choice[data-result=wrong] .tp-bubble { border-color: var(--mt-danger); background: var(--mt-danger); color: #fff; }
+
+
+
+
+/* 下の帯（固定）：前のページ・未回答数・採点／次へ */
+.tp-foot { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #e5e7eb; background: #fff; }
+.tp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border-radius: 999px; padding: 0 16px; font-size: 15px; font-weight: 700; }
+.tp-btn-sub { flex-shrink: 0; border: 2px solid #e5e7eb; background: #fff; color: #374151; }
+.tp-btn-sub:disabled { color: #9ca3af; cursor: not-allowed; }
+.tp-btn-main { margin-left: auto; min-width: 0; flex: 1; max-width: 420px; background: #2c3e50; color: #fff; }
+.tp-btn:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-unanswered { flex-shrink: 0; font-size: 13px; font-weight: 700; color: #92400e; }
+.tp-empty { padding: 24px; text-align: center; font-size: 14px; color: #4b5563; }
+
+/* 狭いスマホ：ボタンの字を縮めず、余白を詰める */
+@media (max-width: 380px) {
+  .tp-head { gap: 4px; padding-left: 4px; padding-right: 6px; }
+  .tp-stats > div { padding: 4px 7px; gap: 2px; }
+  .tp-list { padding: 10px 8px 14px; gap: 8px; }
+  .tp-item { padding: 10px 8px 8px; }
+  .tp-choices { gap: 2px 6px; }
+  .tp-btn { padding: 0 12px; }
+  .tp-btn-sub span { display: none; }
+  .tp-btn-sub { width: 48px; padding: 0; }
+}
+
+/* 広い画面：1ページを2列（3問ずつ）にして、全問を見渡せるようにする */
+@media (min-width: 1024px) {
+  .tp-head { padding: 12px 24px; gap: 12px; }
+  .tp-title { font-size: 18px; }
+  .tp-list { grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(3, auto); align-items: start; gap: 12px 16px; max-width: 1280px; margin: 0 auto; padding: 16px 24px 24px; }
+  /* 採点後は1列（全幅）に並べ直す：長さの違う解説を2列に置くと、短い側の下に大きな空白ができるため */
+  .tp-list.is-scored { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-rows: none; max-width: 880px; }
+  .tp-foot { padding: 10px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-bubble, .tp-ex-chev, .tp-timer-fill { transition: none; }
+  .tp-scroll { scroll-behavior: auto; }
+}
+
+/* ===== 2026-10-29 採点後の解説を英文法と同じ水準に（TOEIC 専用。英文法・リスニングの部品は変えていない） ===== */
+
+/* 時間：細い線＋小さな文字。目安を過ぎても赤や点滅は使わない（続けて解ける仕様はそのまま） */
+.tp-timer { flex: none; background: #fff; border-bottom: 1px solid #f1f5f9; }
+.tp-timer-text { display: flex; align-items: center; gap: 4px; margin: 0; padding: 3px 12px 2px; font-size: 12px; font-weight: 700; color: #334155; font-variant-numeric: tabular-nums; }
+.tp-timer-limit { color: #64748b; font-weight: 600; }
+.tp-timer-guide-status { margin-left: auto; padding-left: 8px; color: #334155; font-weight: 700; white-space: nowrap; }
+.tp-timer-track { height: 2px; background: #eef2f7; overflow: hidden; }
+.tp-timer-fill { height: 100%; background: #3d5a99; transition: width .25s linear; }
+.tp-timer[data-state=low] .tp-timer-fill { background: #b7791f; }
+.tp-timer[data-state=low] .tp-timer-text { color: #7c4a03; }
+.tp-timer[data-state=over] .tp-timer-fill, .tp-timer[data-state=done] .tp-timer-fill { background: #94a3b8; }
+.tp-timer[data-state=over] .tp-timer-text, .tp-timer[data-state=done] .tp-timer-text { color: #475569; }
+
+/* 結果の帯：このページ n/6問正解・6問の ○× の並び（押すとその問題へ）・分野別 */
+.tp-result { display: grid; gap: 8px; margin: 12px 12px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid #c3cfea; background: #f5f7fc; color: #1f3566; }
+.tp-result[data-perfect] { border-color: #9fd8c3; background: #ecfdf5; color: #14532d; }
+.tp-result-score { display: flex; align-items: baseline; gap: 4px; margin: 0; font-size: 14px; font-weight: 800; }
+.tp-result-score svg { align-self: center; }
+.tp-result-score b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 24px; line-height: 1; margin-left: 2px; }
+.tp-result-marks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tp-result-mark { display: flex; width: 100%; min-height: 44px; flex-direction: column; align-items: center; justify-content: center; gap: 0; border-radius: 10px; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; }
+.tp-result-mark:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-result-no { font-size: 12px; font-weight: 700; line-height: 1.1; color: #475569; }
+.tp-result-sym { font-size: 18px; font-weight: 900; line-height: 1.1; }
+.tp-result-mark[data-result=correct] { border-color: #3fae7d; background: #eaf8f1; }
+.tp-result-mark[data-result=correct] .tp-result-sym { color: #166534; }
+.tp-result-mark[data-result=wrong] { border-color: #e0786f; background: #fdeeed; }
+.tp-result-mark[data-result=wrong] .tp-result-sym { color: var(--mt-danger); }
+.tp-result-mark[data-result=blank] .tp-result-sym { color: #475569; }
+.tp-result-skills { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0; font-size: 12px; font-weight: 700; color: #334155; }
+.tp-result-skill { display: inline-flex; gap: 4px; }
+.tp-result-skill b { color: #1f3566; }
+
+/* 問ごとの見出し：正誤・分野タグ・ノートに保存（英文法のヘッダーと同じ並び） */
+.tp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 10px 0 0; }
+.tp-judge { display: flex; align-items: center; gap: 4px; margin: 0; font-size: 14px; font-weight: 800; }
+.tp-judge[data-result=correct] { color: #166534; }
+.tp-judge[data-result=wrong], .tp-judge[data-result=blank] { color: #991b1b; }
+.tp-skill { display: inline-flex; align-items: baseline; gap: 4px; border-radius: 999px; background: #c3cfea59; padding: 2px 10px; font-size: 12px; font-weight: 800; color: #2f4a82; }
+.tp-skill small { font-size: 12px; font-weight: 600; color: #334155; }
+.tp-save { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin-left: auto; padding: 0 12px; border-radius: 999px; border: 1px solid #fcd34d; background: #fffbeb; font-size: 13px; font-weight: 800; color: #92400e; cursor: pointer; }
+.tp-save:hover { background: #fef3c7; }
+.tp-save[data-saved] { border-color: #e5e7eb; background: var(--mt-rare-n-bg); color: #374151; cursor: default; }
+.tp-save:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+
+/* 「あなた・正解」のバッジ：英文法の答え合わせ（.lx-choice-tag）と同じ形・同じ色。枠の右上に重ねて選択肢の幅を食わない */
+.tp-choices.is-scored { row-gap: 14px; padding-top: 8px; }
+.tp-choice { position: relative; }
+.tp-choice-badge { position: absolute; top: -9px; right: 6px; z-index: 1; border-radius: 999px; padding: 1px 8px; font-size: 12px; font-weight: 800; line-height: 16px; color: #fff; white-space: nowrap; box-shadow: 0 1px 2px #0002; }
+.tp-choice-badge[data-tone=right] { background: #1f7a52; }
+.tp-choice-badge[data-tone=wrong] { background: #c9483e; }
+
+/* 手がかりのマーカー：英文法・リスニング（.listening-evidence）と同じ見た目 */
+.tp-cue { background: #ffed9e; color: #43361b; border-bottom: 2px solid #b58c26; border-radius: 3px; padding: 1px 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.tp-cue sup { font: 800 12px/1 sans-serif; margin-right: 2px; color: #79530e; vertical-align: 4px; }
+
+/* 解説：入れ子の枠を減らし、上の細線と余白で区切る */
+.tp-ex { margin: 8px 0 0; border-top: 1px solid #e5e7eb; }
+.tp-ex > summary { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; cursor: pointer; font-size: 14px; font-weight: 800; color: #1f3566; list-style: none; }
+.tp-ex > summary::-webkit-details-marker { display: none; }
+.tp-ex-chev { margin-left: auto; transition: transform .15s; }
+.tp-ex[open] .tp-ex-chev { transform: rotate(180deg); }
+.tp-ex > summary:focus-visible { outline: 3px solid #3d5a99; outline-offset: -3px; border-radius: 8px; }
+.tp-ex-body { display: grid; gap: 12px; padding: 2px 0 6px; }
+.tp-ex-recap { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.8; color: #111827; font-family: var(--font-modern); overflow-wrap: break-word; }
+.tp-sec { display: grid; gap: 4px; }
+.tp-sec p, .tp-sec li { margin: 0; font-size: 14px; line-height: 1.7; color: #1f2937; }
+.tp-sec ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+/* 札：英文法の【着眼点】【ポイント】【選択肢】【入試ではここ】と同じ色（白文字・角丸の小札）＋アイコン＋文言 */
+.tp-lbl { display: inline-flex; align-items: center; gap: 4px; justify-self: start; margin: 0; padding: 1px 8px; border-radius: 6px; font-size: 12px; font-weight: 800; line-height: 20px; color: #fff; background: #5a6573; }
+.tp-lbl[data-role=hint] { background: #2f7c74; }
+.tp-lbl[data-role=rule] { background: #b0464f; }
+.tp-lbl[data-role=choices] { background: #5a6573; }
+.tp-lbl[data-role=tip] { background: #1f5fa8; }
+.tp-lbl[data-role=tr], .tp-lbl[data-role=kw] { background: none; color: #475569; padding: 0; }
+/* いちばん先に読む「正解の理由」：紺の札＋淡い紺の面＋左の太線＋太字 */
+.tp-sec-key { padding: 10px 12px; border-radius: 10px; background: #eef2fb; box-shadow: inset 4px 0 0 #1f3566; }
+.tp-sec-key .tp-lbl { background: #1f3566; font-size: 13px; }
+.tp-sec-key p { font-size: 15px; font-weight: 700; color: #111827; }
+.tp-sec[data-role=tip] p { font-weight: 700; color: #1f3f6a; }
+.tp-ex-choices li { display: flex; gap: 6px; align-items: baseline; }
+.tp-ex-mark { flex-shrink: 0; width: 1.2em; font-weight: 900; color: var(--mt-danger); }
+.tp-ex-choices li[data-correct] .tp-ex-mark { color: #166534; }
+.tp-ex-choices li[data-correct] b { color: #166534; }
+.tp-sec[data-role=tr] p, .tp-sec[data-role=kw] li { color: #374151; }
+
+/* 広い画面：結果の帯を問題の列（最大832px）と同じ幅で中央に置く（上の基本の指定より後ろに書く） */
+@media (min-width: 1024px) {
+  .tp-result { max-width: 832px; margin: 16px auto 0; }
+}
+
+/* ───────── Part 6（長文穴埋め）：1ページ＝文書1つ＋その4問（2026-10-31）。Part 5 のクラスは変えない ───────── */
+.tp-p6 { display: grid; gap: 0; }
+.tp-doc { margin: 12px 12px 0; border: 1px solid #c3cfea; border-radius: 14px; background: #fff; padding: 12px 14px; font-family: var(--font-modern); }
+.tp-doc-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #334155; }
+.tp-doc-genre { border-radius: 999px; background: #eef2fb; padding: 0 10px; line-height: 22px; color: #1f3566; }
+.tp-doc-title { margin: 0 0 6px; font-size: 16px; font-weight: 800; line-height: 1.4; color: #111827; }
+.tp-doc p[lang=en] { margin: 0 0 8px; font-size: 15px; line-height: 1.8; color: #1f2937; overflow-wrap: break-word; }
+.tp-doc p[lang=en]:last-child { margin-bottom: 0; }
+/* 文書の中の空所：長い文（文挿入）でも行の中で折り返す */
+.tp-doc .tp-doc-blank { display: inline; min-width: 0; padding: 1px 4px; line-height: 1.8; text-align: left; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.tp-doc .tp-doc-blank:not([data-filled]) { display: inline-block; min-width: 4.5em; }
+/* Part 6 は1ページ4問なので、結果の印も4つに広げる（Part 5 の6列は変えない） */
+.tp-result-marks[data-count="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tp-result-marks[data-count="1"], .tp-result-marks[data-count="2"], .tp-result-marks[data-count="3"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tp-doc-no { margin-right: 4px; font-size: 13px; font-weight: 800; color: #1f3566; }
+.tp-p6 .tp-sentence { font-size: 15px; }
+@media (min-width: 1024px) {
+  .tp-p6 { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: start; gap: 16px; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .tp-p6 .tp-doc { position: sticky; top: 16px; margin: 16px 0 24px; }
+  .tp-p6 .tp-list,
+  .tp-p6 .tp-list.is-scored { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-rows: none; max-width: none; margin: 0; padding: 16px 0 24px; }
+}
+
+/* TOEIC Part 5：1ページの予算だけを簡潔に表示。timer本体の計時・時間切れは変更しない */
+.tp-time-row { position: relative; z-index: 5; display: flex; flex: none; align-items: center; background: #fff; }
+.tp-time-row .tp-timer { min-width: 0; flex: 1; }
+.tp-time-row .tp-timer-text { min-height: 40px; padding-top: 4px; padding-bottom: 4px; }
+.tp-budget-settings { position: relative; z-index: 6; flex: none; margin: 0 4px; }
+.tp-budget-settings > summary { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid transparent; border-radius: 10px; cursor: pointer; color: #334155; list-style: none; }
+.tp-budget-settings > summary::-webkit-details-marker { display: none; }
+.tp-budget-settings > summary:hover { background: #f1f5f9; }
+.tp-budget-settings > summary:focus-visible { outline: 3px solid #3d5a99; outline-offset: 1px; }
+.tp-budget-settings-body { position: absolute; top: calc(100% + 4px); right: 0; display: flex; width: min(320px, calc(100vw - 24px)); flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px; border: 1px solid #94a3b8; border-radius: 12px; background: #fff; box-shadow: 0 4px 16px #0f172a26; font-size: 12px; color: #1f2937; }
+.tp-budget-settings-body label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; }
+.tp-budget-settings-body input { width: 18px; height: 18px; accent-color: #1f3566; }
+.tp-budget-settings-body select { min-height: 40px; flex: 1; max-width: 100%; border: 1px solid #64748b; border-radius: 8px; background: #fff; padding: 0 8px; color: #1f2937; font: inherit; }
+.tp-budget-settings-body select:focus-visible, .tp-budget-settings-body input:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-budget { flex: none; padding: 1px 12px 3px; border-bottom: 1px solid #f1f5f9; background: #fff; color: #334155; }
+.tp-budget-headline { display: flex; min-height: 18px; align-items: center; justify-content: space-between; gap: 8px; }
+.tp-budget-feedback { min-width: 0; margin: 0; white-space: nowrap; font-size: 12px; line-height: 16px; font-weight: 700; color: #334155; }
+.tp-budget-pages { display: grid; width: 100px; flex: none; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; height: 14px; margin: 0; padding: 0; list-style: none; }
+.tp-budget-pages li { display: grid; min-height: 14px; place-items: center; border: 1px solid #64748b; border-radius: 3px; background: #fff; color: #334155; font-size: 12px; line-height: 10px; }
+.tp-budget-pages li[data-progress=done] { border-color: #1f3566; background: #1f3566; color: #fff; font-weight: 800; }
+.tp-budget-pages li[data-progress=current] { border: 2px solid #1f3566; background: #dbe6f3; color: #172554; font-weight: 900; }
+.tp-budget-track { position: relative; height: 24px; margin: 0 2px; overflow: visible; }
+.tp-budget-track::before { position: absolute; right: 0; bottom: 2px; left: 0; height: 6px; border-radius: 999px; background: #e8ebf0; content: ''; }
+.tp-budget-band { position: absolute; bottom: 2px; z-index: 1; height: 6px; border-radius: 0 999px 999px 0; background: #dbe6f3; }
+.tp-budget-tick-target { position: absolute; bottom: 0; z-index: 2; width: 2px; height: 12px; transform: translateX(-50%); background: #1f3566; }
+.tp-budget-tick-target::after { position: absolute; top: 0; left: 50%; width: 6px; height: 6px; transform: translateX(-50%) rotate(45deg); border: 1px solid #fff; background: #1f3566; content: ''; }
+.tp-budget-target-label { position: absolute; top: 0; z-index: 3; transform: translateX(-50%); border: 1px solid #64748b; border-radius: 5px; background: #fff; padding: 0 6px; white-space: nowrap; font-size: 12px; line-height: 16px; font-weight: 800; color: #1f3566; font-variant-numeric: tabular-nums; }
+.tp-budget-target-label[data-near-start] { transform: translateX(0); }
+.tp-budget-target-label[data-near-end] { transform: translateX(-100%); }
+.tp-result-time { margin: 0; font-size: 12px; line-height: 1.5; font-weight: 700; color: #334155; font-variant-numeric: tabular-nums; }
+@media (max-width: 380px) {
+  .tp-budget { padding-right: 8px; padding-left: 8px; }
+  .tp-time-row .tp-timer-text { padding-right: 6px; padding-left: 8px; gap: 3px; }
+  .tp-timer-guide-status { padding-left: 4px; font-size: 12px; }
+  .tp-budget-feedback { font-size: 12px; }
+}
+@media (min-width: 1024px) {
+  .tp-budget { padding-right: 24px; padding-left: 24px; }
+  .tp-time-row .tp-timer-text { padding-right: 16px; padding-left: 24px; }
+  .tp-budget-settings { margin-right: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tp-budget-pages li { transition: none; }
+}
+
+/* ───────── Part 7（読解）：1ページ＝1セット（文書1〜3つ＋設問2〜5問）（2026-11-02）。Part 5・6 のクラスは変えない ───────── */
+.tp-p7 { display: grid; gap: 0; }
+.tp7-docs { margin: 12px 12px 0; }
+.tp7-set-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #334155; }
+.tp7-set-kind { border-radius: 999px; background: #1f3566; padding: 0 10px; line-height: 22px; color: #fff; }
+.tp7-docs .tp-doc { margin: 0 0 12px; }
+.tp7-tabs { position: sticky; top: 0; z-index: 2; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; margin: 0 0 8px; padding: 4px 0; background: #f8fafc; }
+.tp7-tab { display: grid; min-height: 44px; place-items: center; gap: 0; border: 1px solid #94a3b8; border-radius: 10px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; cursor: pointer; }
+.tp7-tab b { font-size: 13px; line-height: 1.2; }
+.tp7-tab small { font-size: 12px; line-height: 1.2; color: #475569; }
+.tp7-tab[aria-selected="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp7-tab[aria-selected="true"] small { color: #dbe4f5; }
+.tp7-tab:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp7-panel:not([data-active]) { display: none; }
+.tp7-head { display: grid; gap: 2px; margin: 0 0 8px; padding: 6px 8px; border-radius: 8px; background: #f1f5f9; font-size: 13px; line-height: 1.5; color: #1f2937; }
+.tp7-head > div { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px; }
+.tp7-head dt { font-weight: 700; color: #334155; }
+.tp7-head dd { margin: 0; overflow-wrap: anywhere; }
+.tp7-insert { display: inline-block; margin: 0 4px; border: 1px solid #1f3566; border-radius: 6px; padding: 0 6px; font-size: 13px; font-weight: 800; line-height: 1.5; color: #1f3566; background: #eef2fb; }
+.tp7-chat { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tp7-bubble { max-width: 88%; justify-self: start; border-radius: 14px 14px 14px 4px; background: #eef2fb; padding: 6px 10px; }
+.tp7-bubble[data-side="right"] { justify-self: end; border-radius: 14px 14px 4px 14px; background: #ecfdf5; }
+.tp7-bubble-who { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 2px; font-size: 12px; color: #475569; }
+.tp7-bubble-who b { color: #1f2937; }
+.tp-doc .tp7-bubble p[lang=en] { margin: 0; font-size: 15px; line-height: 1.6; }
+.tp7-table-wrap { margin: 8px 0 0; overflow-x: auto; }
+.tp7-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: #1f2937; }
+.tp7-table th, .tp7-table td { border: 1px solid #cbd5e1; padding: 4px 6px; text-align: left; vertical-align: top; }
+.tp7-table th { background: #f1f5f9; font-weight: 700; }
+.tp-result-marks[data-count="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.tp-p7 .tp-sentence { font-size: 15px; }
+@media (min-width: 1024px) {
+  .tp-p7 { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; gap: 16px; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .tp-p7 .tp7-docs { position: sticky; top: 16px; max-height: calc(100vh - 220px); overflow-y: auto; margin: 16px 0 24px; padding-right: 4px; }
+  .tp-p7 .tp7-tabs { display: none; }
+  .tp-p7 .tp7-panel:not([data-active]) { display: block; }
+  .tp-p7 .tp-list,
+  .tp-p7 .tp-list.is-scored { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-rows: none; max-width: none; margin: 0; padding: 16px 0 24px; }
+}
+
+/* ───────── Part 6・7 のスマホ：「文書」と「設問・選択肢」を切り替えて1つずつ見せる（2026-11-03） ─────────
+   1024px 未満だけ。上に切り替えのボタン（高さ48px）、文書の最後に「設問・選択肢へ進む」。
+   PC（1024px 以上）は今までどおり左に文書・右に設問の2列で、切り替えのボタンは出さない。
+   戻し方：この段を消し、ToeicPageQuiz.tsx の tp-pane-switch / tp-pane-next / data-pane を外す。 */
+.tp-pane-switch { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #e5e7eb; background: #fff; }
+.tp-pane-tab { display: grid; min-height: 48px; place-items: center; align-content: center; gap: 0; border: 1px solid #94a3b8; border-radius: 12px; background: #fff; padding: 4px 6px; color: #1f3566; font: inherit; cursor: pointer; }
+.tp-pane-label { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; line-height: 1.3; }
+.tp-pane-tab small { font-size: 12px; font-weight: 700; line-height: 1.3; color: #475569; }
+.tp-pane-tab small[data-tone="todo"] { color: #92400e; }
+.tp-pane-tab[aria-pressed="true"] { border-color: #1f3566; background: #1f3566; color: #fff; }
+.tp-pane-tab[aria-pressed="true"] small { color: #dbe4f5; }
+.tp-pane-tab:focus-visible, .tp-pane-next:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-pane-next { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; margin: 12px 12px 16px; border: 2px solid #1f3566; border-radius: 999px; background: #eef2fb; padding: 0 16px; font: inherit; font-size: 15px; font-weight: 800; color: #1f3566; cursor: pointer; }
+@media (max-width: 1023.98px) {
+  .tp-scroll[data-pane="doc"] .tp-list,
+  .tp-scroll[data-pane="doc"] .tp-result { display: none; }
+  .tp-scroll[data-pane="q"] .tp-p6 > .tp-doc,
+  .tp-scroll[data-pane="q"] .tp7-docs,
+  .tp-scroll[data-pane="q"] .tp-pane-next { display: none; }
+}
+@media (max-width: 380px) {
+  .tp-pane-switch { padding: 6px 8px; }
+  .tp-pane-label { font-size: 13px; }
+}
+@media (min-width: 1024px) {
+  .tp-pane-switch, .tp-pane-next { display: none; }
+}
+
+/* ───────── 採点後「文書で根拠を見る」（Part 7）／「文書で空所を見る」（Part 6）（2026-11-03） ─────────
+   解説の上の行にボタン（高さ44px）。押すと文書に切り替え（スマホ）、根拠の英文に黄色いマーカー・空所に枠を付けてそこまで動かす。
+   上に「問n の根拠を文書に表示中／解説に戻る／×」の帯。マーカーの色は解説の手がかり（.tp-cue）と同じ系統。
+   戻し方：この段を消し、ToeicPageQuiz.tsx の tp-evbtn・tp-ev-bar・showEvidence と、両 Passage の evidence／focusBlank を外す。 */
+.tp-evbtn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #94a3b8; background: #fff; font-size: 13px; font-weight: 800; color: #1f3566; cursor: pointer; }
+.tp-evbtn:hover { background: #eef2fb; }
+.tp-evbtn[data-active] { border-color: #b58c26; background: #fff7d6; color: #5b4310; }
+.tp-evbtn:focus-visible, .tp-ev-back:focus-visible, .tp-ev-clear:focus-visible { outline: 3px solid #3d5a99; outline-offset: 2px; }
+.tp-ev-bar { flex: none; display: flex; align-items: center; gap: 6px; padding: 4px 8px 4px 12px; border-bottom: 1px solid #f0d77a; background: #fff8dc; }
+.tp-ev-bar p { display: flex; min-width: 0; flex: 1; align-items: center; gap: 4px; margin: 0; font-size: 13px; font-weight: 800; color: #5b4310; }
+.tp-ev-bar p span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-ev-back { flex-shrink: 0; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #b58c26; background: #fff; font-size: 13px; font-weight: 800; color: #5b4310; cursor: pointer; }
+.tp-ev-clear { display: grid; flex-shrink: 0; width: 44px; height: 44px; place-items: center; border-radius: 999px; color: #5b4310; cursor: pointer; }
+.tp-ev-clear:hover { background: #fdeeb5; }
+.tp7-ev { background: #ffed9e; color: #43361b; border-bottom: 2px solid #b58c26; border-radius: 3px; padding: 1px 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.tp7-head > div[data-ev], .tp7-table tr[data-ev] td { background: #ffed9e; color: #43361b; }
+.tp7-head > div[data-ev] { margin: 0 -4px; padding: 0 4px; border-radius: 4px; box-shadow: inset 0 -2px 0 #b58c26; }
+.tp7-table tr[data-ev] td { border-bottom: 2px solid #b58c26; }
+.tp7-bubble[data-ev] { box-shadow: 0 0 0 3px #e2b93b; }
+.tp7-tab-ev { margin-left: 4px; border-radius: 999px; background: #ffed9e; padding: 0 6px; font-size: 12px; font-style: normal; font-weight: 800; line-height: 18px; color: #5b4310; vertical-align: 1px; }
+.tp-doc .tp-doc-blank[data-focus] { outline: 3px solid #e2b93b; outline-offset: 2px; border-radius: 4px; }
+@media (max-width: 380px) {
+  .tp-ev-bar { padding-left: 8px; gap: 4px; }
+  .tp-ev-back { padding: 0 10px; }
+}

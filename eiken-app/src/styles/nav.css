@@ -1,0 +1,40 @@
+/*
+ * 下部ナビ（スマホ）／サイドバー（PC）の見た目（2026-09-30）。トークンは tokens.css。
+ * App.tsx の各ボタンには Tailwind の色（text-[#4B5563]/60 など・コントラスト不足）と
+ * 10px のラベルが直書きされているため、ここでまとめて上書きする。
+ *   - 非選択でも ink-2（8:1）。選択中は色面＋太字＋左ライン（PC）／上ライン（スマホ）。
+ *   - ラベルは 12px 以上。
+ */
+.app-bottom-nav { background: color-mix(in srgb, var(--mt-paper) 94%, transparent) !important; border-color: var(--mt-line) !important; }
+.app-bottom-nav > button { position: relative; color: var(--mt-ink-2) !important; font-weight: 700; border-radius: var(--mt-r-md); }
+.app-bottom-nav > button > span { font-size: var(--mt-fs-xs) !important; letter-spacing: 0 !important; font-family: var(--mt-font-body) !important; white-space: nowrap; }
+@media (max-width: 1099px) { .app-bottom-nav { padding-left: 2px !important; padding-right: 2px !important; } .app-bottom-nav > button { min-width: 0; padding-inline: 0 !important; } }
+.app-bottom-nav > button[aria-current=page] { color: var(--mt-brand) !important; font-weight: 800 !important; }
+.app-bottom-nav > button[aria-current=page]::before { content: ''; position: absolute; top: -12px; left: 28%; right: 28%; height: 3px; border-radius: 0 0 3px 3px; background: var(--mt-brand); }
+.app-bottom-nav > button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
+@media (min-width: 1100px) {
+  .app-bottom-nav { padding: var(--mt-s5) var(--mt-s3) !important; gap: var(--mt-s1) !important; border-right: 1px solid var(--mt-line) !important; background: var(--mt-surface) !important; }
+  .app-bottom-nav::before { content: ''; display: block; height: 46px; margin: 0 8px 24px; background: url('/brand/manatobi-logo.webp') left center / contain no-repeat; }
+  .app-bottom-nav::after { content: '学ぶ、遊ぶ、成長する。'; margin-top: auto; padding-top: var(--mt-s4); font: 700 var(--mt-fs-xs)/1.4 var(--mt-font-body); color: var(--mt-ink-3); text-align: center; }
+  .app-bottom-nav > button { flex: 0 0 auto !important; flex-direction: row !important; justify-content: flex-start !important; gap: var(--mt-s3) !important; min-height: 48px; padding: 0 var(--mt-s3) !important; }
+  .app-bottom-nav > button > span { font-size: var(--mt-fs-sm) !important; }
+  .app-bottom-nav > button:hover { background: var(--mt-paper); }
+  .app-bottom-nav > button[aria-current=page] { background: var(--mt-brand-soft); }
+  .app-bottom-nav > button[aria-current=page]::before { top: 10px; bottom: 10px; left: 0; right: auto; width: 3px; height: auto; border-radius: 0 3px 3px 0; }
+}
+/* 「スマホ版でプレビュー」ボタン（PCのみ）：ラベルを常に出し、ホームの主要ボタンと重ならない左下（サイドバー内）へ */
+
+/* C19（2026-10-01）共通の BottomNavigation 用。全項目同じ文字・同じ色・同じ線幅。現在地だけ青＋上の線＋太字 */
+.app-bottom-nav { color: var(--mt-ink-2); }
+.app-bottom-nav > button { color: var(--mt-ink-2) !important; }
+.app-nav-label { font: 700 var(--mt-fs-xs)/1 var(--mt-font-body); letter-spacing: 0; white-space: nowrap; }
+.app-bottom-nav > button[aria-current=page] .app-nav-label { font-weight: 800; }
+.app-nav-icon { display: inline-grid; place-items: center; }
+.app-nav-badge { position: absolute; top: -6px; right: -9px; min-width: 18px; height: 18px; padding: 0 4px; border: 2px solid var(--mt-paper); border-radius: 999px; background: var(--mt-danger); color: #fff; font: 800 12px/14px var(--mt-font-body); font-style: normal; text-align: center; }
+
+/* Android 専用：選択インジケーター（青線）がナビバー枠外（-12px）に飛び出して広告に被るのを防止（iOSは変更なし） */
+[data-platform="android"] .app-bottom-nav > button[aria-current=page]::before {
+  top: 0px !important;
+  left: 20%;
+  right: 20%;
+}

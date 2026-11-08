@@ -1,0 +1,39 @@
+/*
+ * ホームのとびら君：継続的なIdle Animation
+ *   呼吸をベースに、重心移動・小さな弾み・着地のやわらかさを3.2秒周期で切れ目なく循環。
+ *   ・回している間（data-spinning / data-settling）は停止し、操作後に自然に再開
+ *   ・transform ではなく個別の translate / scale / rotate を使い、回転用 inline transform と競合させない
+ *   ・影もキャラクターの浮き沈みに連動
+ *   ・動きを減らす設定では止める
+ */
+.game-home .spin-mascot .spin-mascot-front { transform-origin: 50% 100%; }
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-front {
+  animation: home-mascot-idle 3.2s ease-in-out 0s infinite;
+  will-change: translate, scale, rotate;
+}
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-shadow {
+  animation: home-mascot-idle-shadow 3.2s ease-in-out 0s infinite;
+  will-change: scale, opacity;
+}
+@keyframes home-mascot-idle {
+  0%, 100% { translate: 0 0; scale: 1 1; rotate: 0deg; }
+  12% { translate: 0 0; scale: 1.018 .985; rotate: -.5deg; }
+  27% { translate: 0 -1.2%; scale: .99 1.018; rotate: .4deg; }
+  42% { translate: 0 -2.8%; scale: .985 1.025; rotate: -.8deg; }
+  56% { translate: 0 -1.5%; scale: 1.015 .99; rotate: .7deg; }
+  70% { translate: 0 0; scale: 1.025 .975; rotate: .25deg; }
+  84% { translate: 0 -.7%; scale: .995 1.012; rotate: -.35deg; }
+}
+@keyframes home-mascot-idle-shadow {
+  0%, 100% { scale: 1 1; opacity: .82; }
+  12% { scale: 1.035 1; opacity: .78; }
+  27% { scale: .94 1; opacity: .68; }
+  42% { scale: .84 1; opacity: .56; }
+  56% { scale: .91 1; opacity: .64; }
+  70% { scale: 1.04 1; opacity: .82; }
+  84% { scale: .97 1; opacity: .76; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-home .spin-mascot .spin-mascot-front,
+  .game-home .spin-mascot .spin-mascot-shadow { animation: none !important; will-change: auto; }
+}

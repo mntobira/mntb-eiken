@@ -15,6 +15,8 @@ function resolveSet(id: string) {
   return getSet(id)
 }
 
+app.get('/eiken', (c) => c.redirect('/eiken/'))
+
 app.get('/', (c) => c.render(<Home />))
 
 app.get('/grades/:grade', (c) => {

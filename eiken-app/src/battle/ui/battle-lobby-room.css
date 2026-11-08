@@ -1,0 +1,55 @@
+/*
+ * F10（2026-11-05）対戦の部屋（BattleLobbyRoom）。
+ * 色は tokens.css の --mt-* だけを使う（新しい色は足さない）。文字は 12px 以上、押せるところは 44px 以上。
+ * 1画面に収める：説明1行・2人の席・状態1行。下のボタン2つは BattleShell の footer。
+ */
+.lobby-room .notebook-paper { gap: 0; }
+.lobby-room #battle-title { margin-bottom: 8px; }
+.lobby-howto { margin: 0 0 10px; font-size: var(--mt-fs-sm); font-weight: 700; line-height: 1.5; color: var(--mt-ink); text-align: center; }
+.lobby-howto b { color: var(--mt-accent-ink); }
+
+/* モバイルは操作を固定し、広告・下部ナビに「部屋を出る」が隠れないようにする */
+.lobby-room .lobby-footer-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (max-width: 1099px) {
+  #battle-shell.lobby-room { min-height: calc(100dvh - var(--app-safe-top, 0px) - var(--app-nav-h, 76px)); }
+  #battle-shell.lobby-room > main { padding-bottom: calc(16px + 72px); }
+  #battle-shell.lobby-room > footer {
+    position: fixed; z-index: 55; left: 0; right: 0; bottom: var(--app-nav-h, 76px);
+    margin-inline: auto; padding: 8px 12px; border-top: 1px solid var(--mt-line); background: var(--mt-surface);
+  }
+  .lobby-room .lobby-footer-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .lobby-room .lobby-footer-actions > button { min-width: 0; min-height: 48px; gap: 6px; padding: 10px 8px; font-size: 14px; line-height: 1.25; }
+  .lobby-room .lobby-footer-actions > button svg { flex-shrink: 0; }
+}
+@media (max-width: 359px) {
+  .lobby-room .lobby-footer-actions > button { gap: 4px; padding-inline: 6px; font-size: 12px; }
+}
+
+.lobby-seats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.lobby-seat { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 8px; padding: 10px 12px; border: 2px solid var(--mt-line); border-radius: var(--mt-r-md); background: var(--mt-surface); }
+.lobby-seat.is-me { border-color: var(--mt-accent); }
+.lobby-pick { display: flex; align-items: center; gap: 8px; min-height: var(--mt-tap); margin: 0; padding: 6px 10px; border-radius: var(--mt-r-sm); background: var(--mt-accent-soft); font-size: var(--mt-fs-md); font-weight: 800; color: var(--mt-ink); }
+.lobby-pick.is-empty { background: var(--mt-todo-soft); font-size: var(--mt-fs-sm); font-weight: 700; color: var(--mt-todo); }
+.lobby-pick-title { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.35; overflow-wrap: anywhere; }
+.lobby-pick-count { flex-shrink: 0; font-size: var(--mt-fs-sm); color: var(--mt-accent-ink); }
+
+.lobby-last { margin: 8px 0 0; font-size: var(--mt-fs-xs); font-weight: 700; color: var(--mt-todo); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lobby-status { display: grid; gap: 8px; margin-top: auto; padding-top: 10px; }
+.lobby-status-text { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; font-size: var(--mt-fs-sm); font-weight: 800; color: var(--mt-ink); text-align: center; }
+
+/* 抽選の結果 */
+.lobby-reveal { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px 0; text-align: center; }
+.lobby-reveal-icon { color: var(--mt-accent-strong); }
+.lobby-reveal-kicker { margin: 0; font-size: var(--mt-fs-sm); font-weight: 800; color: var(--mt-todo); }
+.lobby-reveal-title { margin: 0; font: var(--mt-text-xl); color: var(--mt-ink); overflow-wrap: anywhere; }
+.lobby-reveal-meta { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--mt-fs-sm); font-weight: 700; color: var(--mt-ink); }
+
+@media (max-height: 600px) {
+  .lobby-room #battle-title { margin-bottom: 4px; }
+  .lobby-howto { margin-bottom: 6px; }
+  .lobby-seat { gap: 6px; padding: 8px 10px; }
+  .lobby-pick { padding: 4px 10px; }
+  .lobby-status { padding-top: 6px; }
+  /* 低い画面では「前回」の1行を省く（前回の単元は結果画面で見られる） */
+  .lobby-last { display: none; }
+}
