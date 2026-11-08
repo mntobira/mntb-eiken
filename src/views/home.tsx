@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
 import { SETS } from '../data/sets'
+import { GRADE_PAGES, gradeHref } from '../data/grades'
 
 export const Home: FC = () => (
   <div class="page book-home">
@@ -13,6 +14,10 @@ export const Home: FC = () => (
       <div class="pill-row"><a class="btn-primary" href="/exam/2026-2">演習をはじめる →</a><a class="btn-secondary" href="#practice-sets">問題を選ぶ</a></div>
     </header>
     <aside class="book-notice">本教材は学習用の演習です。日本英語検定協会の公式サイト・公式問題集ではありません。収録問題には過去問を参考に再構成したものが含まれます。</aside>
+    <section id="grade-selection" aria-labelledby="grade-selection-heading">
+      <div class="book-section-heading"><span>GRADE INDEX</span><h2 id="grade-selection-heading">級を選ぶ</h2></div>
+      <div class="grade-cards">{GRADE_PAGES.map(grade => <a class="grade-card" href={gradeHref(grade)}><strong>{grade.label}</strong><span>{grade.available ? '演習できます' : 'ページのみ / 教材準備中'}</span><span aria-hidden="true">→</span></a>)}</div>
+    </section>
     <section id="practice-sets" class="practice-sets">
       <div class="book-section-heading"><span>01 / PRACTICE</span><h2>問題を選ぶ</h2></div>
       {SETS.map((set, index) => (

@@ -1588,6 +1588,30 @@ button {
   width: 52px;
 }
 
+/* Grade pages share the existing monochrome booklet design. */
+.grade-navigation { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:14px 20px; border-bottom:1px solid #ccc; background:#fff; }
+.grade-navigation-link { min-width:90px; padding:7px 16px; border:1px solid #ccc; text-align:center; font-size:14px; }
+.grade-navigation-link small { display:block; font-size:9px; color:#666; }
+.grade-navigation-link.is-active { border-color:#111; background:#222; color:#fff; }
+.grade-navigation-link.is-active small { color:#eee; }
+.grade-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:22px 0 42px; }
+.grade-card { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; padding:18px; background:#fff; border:1px solid #ccc; }
+.grade-card strong { font-size:19px; }
+.grade-card > span { font-size:11px; color:#555; }
+.grade-card > span:last-child { margin-left:auto; }
+.grade-card:hover { border-color:#222; }
+.grade-topics { list-style:none; padding:0; margin:20px 0; }
+.grade-topics li { display:flex; gap:24px; align-items:center; padding:22px 0; border-bottom:1px solid #ccc; }
+.grade-topics li > span { font:26px Georgia,serif; color:#999; }
+.grade-page .book-notice h2 { font-size:18px; margin:0 0 10px; }
+.grade-page .book-notice p { margin:0; }
+@media(max-width:700px) {
+  .grade-navigation { gap:6px; padding:10px 14px; }
+  .grade-navigation-link { min-width:0; flex:1 1 21%; padding:7px 4px; font-size:12px; }
+  .grade-cards { grid-template-columns:1fr; }
+}
+@media print { .grade-navigation { display:none; } }
+
 /* Manatobi: Kobe mock-booklet grayscale brand and exam-paper layout. */
 body { padding-bottom: 0; background: #f7f7f5; }
 .manatobi-header { display:flex; align-items:center; gap:26px; padding:20px max(24px, calc((100vw - 1100px) / 2)); }

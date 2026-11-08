@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { renderer } from './renderer'
 import { Home } from './views/home'
+import { GradePage } from './views/grade'
+import { findGrade } from './data/grades'
 import { AnswerSheet, BlankSheet, Exam, Script } from './views/exam'
 import { getGeneratedSet, getSet, SETS } from './data/sets'
 
@@ -14,6 +16,12 @@ function resolveSet(id: string) {
 }
 
 app.get('/', (c) => c.render(<Home />))
+
+app.get('/grades/:grade', (c) => {
+  const grade = findGrade(c.req.param('grade'))
+  if (!grade) return c.notFound()
+  return c.render(grade.available ? <Home /> : <GradePage grade={grade} />)
+})
 
 app.get('/exam/:id', (c) => {
   const set = resolveSet(c.req.param('id'))

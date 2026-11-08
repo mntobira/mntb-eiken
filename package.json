@@ -6,6 +6,10 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "node smoke-test.mjs",
+    "test:media": "node --test scripts/media.test.mjs",
+    "media:manifest": "node scripts/export-media-manifest.mjs",
+    "media:images": "node scripts/generate-images.mjs",
+    "media:audio": "node scripts/generate-audio.mjs",
     "preview": "wrangler pages dev",
     "deploy": "npm run build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"

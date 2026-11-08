@@ -1,0 +1,1025 @@
+{
+  "version": 1,
+  "grade": "5",
+  "sets": [
+    "2026-2",
+    "2026-1",
+    "2025-3"
+  ],
+  "notes": "Generation plans only. No media has been generated. Review prompts, rights, pronunciation, and answer consistency before use.",
+  "jobs": [
+    {
+      "id": "audio-a9f9fe139b20f1fe3003",
+      "kind": "audio",
+      "output": "audio-a9f9fe139b20f1fe3003.mp3",
+      "text": "Which cap do you want?\n1. I like it.\n2. A blue one, please.\n3. Too many.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 1
+        }
+      ]
+    },
+    {
+      "id": "audio-20a1b4337f69e8c96efc",
+      "kind": "audio",
+      "output": "audio-20a1b4337f69e8c96efc.mp3",
+      "text": "What are you looking at, Amanda?\n1. That’s nice.\n2. A letter from my brother.\n3. I want cookies.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 2
+        }
+      ]
+    },
+    {
+      "id": "audio-34b1bb38c870e100a348",
+      "kind": "audio",
+      "output": "audio-34b1bb38c870e100a348.mp3",
+      "text": "Let’s play a video game.\n1. Ten dollars.\n2. All right.\n3. My brother.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": "audio-9e98839cee66effb1375",
+      "kind": "audio",
+      "output": "audio-9e98839cee66effb1375.mp3",
+      "text": "When do you go to the park?\n1. Every weekend.\n2. With Grandma.\n3. Of course.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 4
+        }
+      ]
+    },
+    {
+      "id": "audio-f60aefe33d55233a8f64",
+      "kind": "audio",
+      "output": "audio-f60aefe33d55233a8f64.mp3",
+      "text": "What are you making, Kevin?\n1. Fifteen dollars.\n2. It is an apple pie.\n3. In the kitchen.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 5
+        }
+      ]
+    },
+    {
+      "id": "audio-4afa3cf521139d8b5453",
+      "kind": "audio",
+      "output": "audio-4afa3cf521139d8b5453.mp3",
+      "text": "Do you come to school by bus?\n1. Yes, you can.\n2. I’m a student.\n3. No, by bicycle.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 6
+        }
+      ]
+    },
+    {
+      "id": "audio-a91d56a215b1191f3acb",
+      "kind": "audio",
+      "output": "audio-a91d56a215b1191f3acb.mp3",
+      "text": "Can Sara swim well?\n1. Wow, you’re great!\n2. Yes. They’re by the river.\n3. No. She can’t swim.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 7
+        }
+      ]
+    },
+    {
+      "id": "audio-91c94eb24ec19dc44f70",
+      "kind": "audio",
+      "output": "audio-91c94eb24ec19dc44f70.mp3",
+      "text": "Can I have this cake, Mom?\n1. Good job.\n2. Sure.\n3. I’m here.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "id": "audio-e5d41f3a5740c9315533",
+      "kind": "audio",
+      "output": "audio-e5d41f3a5740c9315533.mp3",
+      "text": "Excuse me. Where is the post office?\n1. I can’t run.\n2. No, I’m not.\n3. I don’t know.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": "audio-760f223e868256111ce0",
+      "kind": "audio",
+      "output": "audio-760f223e868256111ce0.mp3",
+      "text": "How is the weather there?\n1. I’m here.\n2. It’s snowy.\n3. It’s Thursday.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L1",
+          "number": 10
+        }
+      ]
+    },
+    {
+      "id": "audio-862c3fb5c0eec6a7c7a2",
+      "kind": "audio",
+      "output": "audio-862c3fb5c0eec6a7c7a2.mp3",
+      "text": "Do you eat bananas?\nNo, I don’t. I eat oranges.\nWhat fruit does the boy eat?",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L2",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": "audio-f9126c7d59dc6e9c4f43",
+      "kind": "audio",
+      "output": "audio-f9126c7d59dc6e9c4f43.mp3",
+      "text": "Do you work at the hospital?\nYes. I’m a doctor.\nWho is a doctor?",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L2",
+          "number": 12
+        }
+      ]
+    },
+    {
+      "id": "audio-ba85e07d8c3d9e0db86f",
+      "kind": "audio",
+      "output": "audio-ba85e07d8c3d9e0db86f.mp3",
+      "text": "My birthday is September 13th. When is yours, Olivia?\nIt’s October 30th.\nWhen is Olivia’s birthday?",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L2",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": "audio-8734d04e4902caf97706",
+      "kind": "audio",
+      "output": "audio-8734d04e4902caf97706.mp3",
+      "text": "Excuse me. How much are these shirts?\nThe blue one is 25 dollars, and the white one is 30 dollars.\nHow much is the white shirt?",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L2",
+          "number": 14
+        }
+      ]
+    },
+    {
+      "id": "audio-c0020e82790a0f4ff2d0",
+      "kind": "audio",
+      "output": "audio-c0020e82790a0f4ff2d0.mp3",
+      "text": "I usually study math on Sunday mornings.\nI play computer games.\nWhat does the boy usually do on Sunday mornings?",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L2",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": "audio-b69960649bf419739e1f",
+      "kind": "audio",
+      "output": "audio-b69960649bf419739e1f.mp3",
+      "text": "1. The knife is under the plate.\n2. The knife is on the plate.\n3. The knife is by the plate.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 16
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 18
+        }
+      ]
+    },
+    {
+      "id": "image-d8eea253d2ad2e6cb579",
+      "kind": "image",
+      "output": "image-d8eea253d2ad2e6cb579.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ナイフが皿の上に置かれている絵\nThe scene must depict this statement: The knife is on the plate.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 16
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 18
+        }
+      ]
+    },
+    {
+      "id": "audio-2a290a3f5dc794b373d4",
+      "kind": "audio",
+      "output": "audio-2a290a3f5dc794b373d4.mp3",
+      "text": "1. Bruce goes to school at 7:04.\n2. Bruce goes to school at 7:14.\n3. Bruce goes to school at 7:40.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 17
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 25
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": "image-6f0b11c59d827d9fd07d",
+      "kind": "image",
+      "output": "image-6f0b11c59d827d9fd07d.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ブルースが７時40分に学校へ行く絵\nThe scene must depict this statement: Bruce goes to school at 7:40.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 17
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 25
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": "audio-85a85452e43263cfab98",
+      "kind": "audio",
+      "output": "audio-85a85452e43263cfab98.mp3",
+      "text": "1. Tom is talking on the phone.\n2. Tom is making dinner.\n3. Tom is using chopsticks.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 18
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": "image-4aee1ded297ef2dcd618",
+      "kind": "image",
+      "output": "image-4aee1ded297ef2dcd618.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: トムが電話で話している絵\nThe scene must depict this statement: Tom is talking on the phone.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 18
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": "audio-7283e0a69f0b1d826a27",
+      "kind": "audio",
+      "output": "audio-7283e0a69f0b1d826a27.mp3",
+      "text": "1. Kate is holding a dog.\n2. Kate is holding a dictionary.\n3. Kate is holding a pineapple.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 19
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 21
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 24
+        }
+      ]
+    },
+    {
+      "id": "image-82d10f79142ab5c7b08e",
+      "kind": "image",
+      "output": "image-82d10f79142ab5c7b08e.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ケイトがパイナップルを持っている絵\nThe scene must depict this statement: Kate is holding a pineapple.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 19
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 21
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 24
+        }
+      ]
+    },
+    {
+      "id": "audio-22533e6c59f9a809cfeb",
+      "kind": "audio",
+      "output": "audio-22533e6c59f9a809cfeb.mp3",
+      "text": "1. Paul is seventy-nine years old.\n2. Paul is eighty-seven years old.\n3. Paul is twenty-seven years old.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 20
+        }
+      ]
+    },
+    {
+      "id": "image-991022ff86ef7ccaf242",
+      "kind": "image",
+      "output": "image-991022ff86ef7ccaf242.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ポールが87歳の絵\nThe scene must depict this statement: Paul is eighty-seven years old.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 20
+        }
+      ]
+    },
+    {
+      "id": "audio-7968c815e6e492d5abcf",
+      "kind": "audio",
+      "output": "audio-7968c815e6e492d5abcf.mp3",
+      "text": "1. The building is 13 meters tall.\n2. The building is 30 meters tall.\n3. The building is 300 meters tall.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 21
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 19
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 25
+        }
+      ]
+    },
+    {
+      "id": "image-aebd5d59d9ab68315541",
+      "kind": "image",
+      "output": "image-aebd5d59d9ab68315541.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 高さ30メートルの建物の絵\nThe scene must depict this statement: The building is 30 meters tall.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 21
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 19
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 25
+        }
+      ]
+    },
+    {
+      "id": "audio-e9687dbf50aa54e11859",
+      "kind": "audio",
+      "output": "audio-e9687dbf50aa54e11859.mp3",
+      "text": "1. Taku is in the drama club.\n2. Taku is in the cooking club.\n3. Taku is in the swimming club.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 22
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 24
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": "image-46c07e359861ff023f9b",
+      "kind": "image",
+      "output": "image-46c07e359861ff023f9b.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: タクが演劇部に入っている絵\nThe scene must depict this statement: Taku is in the drama club.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 22
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 24
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": "audio-17400816de1de0ae67ac",
+      "kind": "audio",
+      "output": "audio-17400816de1de0ae67ac.mp3",
+      "text": "1. Mr. Suzuki is teaching a music class.\n2. Mr. Suzuki is teaching an art class.\n3. Mr. Suzuki is teaching a math class.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 23
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 17
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 22
+        }
+      ]
+    },
+    {
+      "id": "image-e856dd9f69af66bd5fd2",
+      "kind": "image",
+      "output": "image-e856dd9f69af66bd5fd2.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 鈴木先生が数学の授業をしている絵\nThe scene must depict this statement: Mr. Suzuki is teaching a math class.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 23
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 17
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 22
+        }
+      ]
+    },
+    {
+      "id": "audio-f76efd9c6aeca7fea5b6",
+      "kind": "audio",
+      "output": "audio-f76efd9c6aeca7fea5b6.mp3",
+      "text": "1. Henry often reads by the river.\n2. Henry often reads at a restaurant.\n3. Henry often reads in the library.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 24
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 20
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 19
+        }
+      ]
+    },
+    {
+      "id": "image-ae75513d2808bce74210",
+      "kind": "image",
+      "output": "image-ae75513d2808bce74210.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ヘンリーが川のそばで読書をしている絵\nThe scene must depict this statement: Henry often reads by the river.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 24
+        },
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 20
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 19
+        }
+      ]
+    },
+    {
+      "id": "audio-36af0beaac8cf9f00c1f",
+      "kind": "audio",
+      "output": "audio-36af0beaac8cf9f00c1f.mp3",
+      "text": "1. Tim likes flowers.\n2. Tim likes trees.\n3. Tim likes birds.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 25
+        }
+      ]
+    },
+    {
+      "id": "image-aac8c5bd8fd4ef51b324",
+      "kind": "image",
+      "output": "image-aac8c5bd8fd4ef51b324.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: ティムが鳥をながめている絵\nThe scene must depict this statement: Tim likes birds.",
+      "sources": [
+        {
+          "set": "2026-2",
+          "section": "L3",
+          "number": 25
+        }
+      ]
+    },
+    {
+      "id": "audio-0afd6105d360de0f1a23",
+      "kind": "audio",
+      "output": "audio-0afd6105d360de0f1a23.mp3",
+      "text": "Whose umbrella is this?\n1. It’s raining.\n2. It’s my sister’s.\n3. In my bag.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 1
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": "audio-4c9627092fba3877a850",
+      "kind": "audio",
+      "output": "audio-4c9627092fba3877a850.mp3",
+      "text": "Do you know that girl?\n1. Yes, she’s my classmate.\n2. Yes, it is.\n3. No, I’m not.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 2
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 7
+        }
+      ]
+    },
+    {
+      "id": "audio-1c4c98b4f48dbafce4fc",
+      "kind": "audio",
+      "output": "audio-1c4c98b4f48dbafce4fc.mp3",
+      "text": "Let’s go to the beach on Sunday.\n1. I’m sorry, I can’t.\n2. It’s a beach.\n3. Yes, I am.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 3
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 10
+        }
+      ]
+    },
+    {
+      "id": "audio-4c541057a5a1fe887fae",
+      "kind": "audio",
+      "output": "audio-4c541057a5a1fe887fae.mp3",
+      "text": "Who is that man?\n1. He’s my uncle.\n2. He’s in the car.\n3. It’s nine.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 4
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 1
+        }
+      ]
+    },
+    {
+      "id": "audio-c34255d71a1963b25579",
+      "kind": "audio",
+      "output": "audio-c34255d71a1963b25579.mp3",
+      "text": "What time is it now?\n1. It’s seven thirty.\n2. It’s Tuesday.\n3. It’s near the door.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 5
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 6
+        }
+      ]
+    },
+    {
+      "id": "audio-e6ae7cd5dfcec216667f",
+      "kind": "audio",
+      "output": "audio-e6ae7cd5dfcec216667f.mp3",
+      "text": "Where are my glasses?\n1. They’re on the table.\n2. They’re blue.\n3. Yes, they are.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 6
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 5
+        }
+      ]
+    },
+    {
+      "id": "audio-0e223182287d715a3c6b",
+      "kind": "audio",
+      "output": "audio-0e223182287d715a3c6b.mp3",
+      "text": "What do you want for breakfast?\n1. At seven.\n2. Some bread, please.\n3. In the kitchen.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 7
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 4
+        }
+      ]
+    },
+    {
+      "id": "audio-1549e7d9c483c290c6e4",
+      "kind": "audio",
+      "output": "audio-1549e7d9c483c290c6e4.mp3",
+      "text": "Please close the door.\n1. You’re welcome.\n2. OK, I will.\n3. No, thank you.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 8
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "id": "audio-5531fb11b0e91247b1b8",
+      "kind": "audio",
+      "output": "audio-5531fb11b0e91247b1b8.mp3",
+      "text": "How old is your brother?\n1. He’s ten.\n2. He’s fine.\n3. He’s in the park.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 9
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 2
+        }
+      ]
+    },
+    {
+      "id": "audio-547d1345f1b265535b67",
+      "kind": "audio",
+      "output": "audio-547d1345f1b265535b67.mp3",
+      "text": "How do you go to the library?\n1. By bike.\n2. Every day.\n3. With my sister.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L1",
+          "number": 10
+        },
+        {
+          "set": "2025-3",
+          "section": "L1",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": "audio-16208952631f62125b57",
+      "kind": "audio",
+      "output": "audio-16208952631f62125b57.mp3",
+      "text": "How many students are in your class?\nThirty-two.\nHow many students are in the class?",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L2",
+          "number": 11
+        },
+        {
+          "set": "2025-3",
+          "section": "L2",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": "audio-c4abfe6a6e8cd875917b",
+      "kind": "audio",
+      "output": "audio-c4abfe6a6e8cd875917b.mp3",
+      "text": "It’s very hot today.\nYes. Let’s go swimming.\nWhat will they do?",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L2",
+          "number": 12
+        },
+        {
+          "set": "2025-3",
+          "section": "L2",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": "audio-fbfef1f7ec05c4b4687f",
+      "kind": "audio",
+      "output": "audio-fbfef1f7ec05c4b4687f.mp3",
+      "text": "Where is my bag, Mom?\nIt’s under the chair in your room.\nWhere is the bag?",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L2",
+          "number": 13
+        },
+        {
+          "set": "2025-3",
+          "section": "L2",
+          "number": 14
+        }
+      ]
+    },
+    {
+      "id": "audio-3fb9c3a8e49c886d92df",
+      "kind": "audio",
+      "output": "audio-3fb9c3a8e49c886d92df.mp3",
+      "text": "What time does the movie start?\nAt three fifteen.\nWhat time does the movie start?",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L2",
+          "number": 14
+        }
+      ]
+    },
+    {
+      "id": "audio-dc97908dde3eccde241f",
+      "kind": "audio",
+      "output": "audio-dc97908dde3eccde241f.mp3",
+      "text": "I’m hungry. Is there a restaurant near here?\nYes. It’s next to the post office.\nWhere is the restaurant?",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L2",
+          "number": 15
+        },
+        {
+          "set": "2025-3",
+          "section": "L2",
+          "number": 12
+        }
+      ]
+    },
+    {
+      "id": "audio-4e8700b54bc75fe4f1bd",
+      "kind": "audio",
+      "output": "audio-4e8700b54bc75fe4f1bd.mp3",
+      "text": "1. The woman is baking a cake.\n2. The woman is buying a cake.\n3. The woman is cutting a cake.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 16
+        }
+      ]
+    },
+    {
+      "id": "image-4a327dcae1965181869b",
+      "kind": "image",
+      "output": "image-4a327dcae1965181869b.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 女性がオーブンでケーキを焼いている絵\nThe scene must depict this statement: The woman is baking a cake.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 16
+        }
+      ]
+    },
+    {
+      "id": "audio-3261bfc3e375c0434058",
+      "kind": "audio",
+      "output": "audio-3261bfc3e375c0434058.mp3",
+      "text": "1. The man is opening a window.\n2. The man is using an umbrella.\n3. The man is riding a bicycle.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 18
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 16
+        }
+      ]
+    },
+    {
+      "id": "image-8a0910415843909d4647",
+      "kind": "image",
+      "output": "image-8a0910415843909d4647.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 男の人が傘をさしている絵\nThe scene must depict this statement: The man is using an umbrella.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 18
+        },
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 16
+        }
+      ]
+    },
+    {
+      "id": "audio-8c724c7d5ea8393473c9",
+      "kind": "audio",
+      "output": "audio-8c724c7d5ea8393473c9.mp3",
+      "text": "1. The woman works at a school.\n2. The woman works at a hospital.\n3. The woman works at a bank.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 22
+        }
+      ]
+    },
+    {
+      "id": "image-79476e6bae0a684f2a14",
+      "kind": "image",
+      "output": "image-79476e6bae0a684f2a14.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 女性が病院で働いている絵\nThe scene must depict this statement: The woman works at a hospital.",
+      "sources": [
+        {
+          "set": "2026-1",
+          "section": "L3",
+          "number": 22
+        }
+      ]
+    },
+    {
+      "id": "audio-44ad3e01bd3e7ca834a5",
+      "kind": "audio",
+      "output": "audio-44ad3e01bd3e7ca834a5.mp3",
+      "text": "Does your sister play the piano?\nNo. She plays the violin.\nWhat does the sister play?",
+      "sources": [
+        {
+          "set": "2025-3",
+          "section": "L2",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": "audio-0e32811f7609dc5db6df",
+      "kind": "audio",
+      "output": "audio-0e32811f7609dc5db6df.mp3",
+      "text": "1. The boys are playing soccer in the park.\n2. The boys are studying in the library.\n3. The boys are cooking in the kitchen.",
+      "sources": [
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": "image-b197d28fc4b1687b6f10",
+      "kind": "image",
+      "output": "image-b197d28fc4b1687b6f10.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 男の子たちが公園でサッカーをしている絵\nThe scene must depict this statement: The boys are playing soccer in the park.",
+      "sources": [
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": "audio-d7a499e896cc0e6b720a",
+      "kind": "audio",
+      "output": "audio-d7a499e896cc0e6b720a.mp3",
+      "text": "1. The children are getting on the bus.\n2. The children are playing soccer.\n3. The children are swimming.",
+      "sources": [
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 20
+        }
+      ]
+    },
+    {
+      "id": "image-f598ebb8d75d173ff1ca",
+      "kind": "image",
+      "output": "image-f598ebb8d75d173ff1ca.png",
+      "prompt": "Create an original black-and-white line illustration for an English listening practice question.\nWhite background, crisp simple outlines, clear action and objects, suitable for young learners and A4 printing.\nNo logos, watermark, answer labels, decorative symbols, or explanatory captions. Do not copy any existing exam illustration.\nPreserve all exam-relevant quantities, clock times and spatial relationships. Necessary numerals may appear on clocks or signs.\nScene description: 子どもたちがバスに乗りこむ絵\nThe scene must depict this statement: The children are getting on the bus.",
+      "sources": [
+        {
+          "set": "2025-3",
+          "section": "L3",
+          "number": 20
+        }
+      ]
+    }
+  ]
+}

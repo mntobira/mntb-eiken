@@ -47,6 +47,21 @@ try {
   }
   await page.goto(`${base}/sheet/2026-2`)
   assert.equal(await page.locator('.mark-sheet tbody tr').count(), 50)
+  for (const [id, label] of [['4', '4級'], ['3', '3級'], ['pre-2', '準2級'], ['pre-2-plus', '準2級プラス'], ['2', '2級'], ['pre-1', '準1級']]) {
+    const response = await page.goto(`${base}/grades/${id}`)
+    assert.equal(response.status(), 200)
+    assert.match(await page.title(), new RegExp(`英検${label}`))
+    assert.equal(await page.locator('.grade-navigation-link[aria-current="page"]').innerText(), `${label}\n準備中`)
+    assert.equal(await page.locator('#grade-status-heading').innerText(), 'この級の教材は準備中です')
+    assert.equal(await page.locator('#paper .q').count(), 0)
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: mobile overflow`)
+    assert.equal(await page.locator('.grade-navigation a').count(), 7)
+  }
+  await page.goto(`${base}/grades/5`)
+  assert.equal(await page.locator('.practice-set').count(), 3)
+  await page.locator('.grade-navigation-link', { hasText: '準1級' }).click()
+  assert.ok(page.url().endsWith('/grades/pre-1'))
+  assert.equal((await fetch(`${base}/grades/not-a-grade`)).status, 404)
   assert.deepEqual(errors, [])
   assert.equal((await fetch(`${base}/sheet/not-a-set`)).status, 404)
   console.log('PASS: exam counts/order, scoring, logo, print styles, mobile layout, blank answer sheet, invalid ID')

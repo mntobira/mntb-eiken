@@ -35,6 +35,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# locally generated, unreviewed media (never auto-publish)
+.media-output/
+*.part
+*.part.png
+
 # misc
 .DS_Store
 
