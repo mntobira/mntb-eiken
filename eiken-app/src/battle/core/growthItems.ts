@@ -1,0 +1,535 @@
+/** growth.ts から分割（growthItems）。外部からは従来どおり growth.ts 経由で import できる。 */
+import { GACHA_PRINTS } from '../../data/gachaPrints.generated';
+import type { GachaPrintDef } from '../../data/gachaPrints.generated';
+import { KYOTSU_MOCK_PRINTS } from '../../data/kyotsuMockPrints';
+import { NIJI_MOCK_PRINTS } from '../../data/nijiMockPrints';
+import { KOBE_MOCK_PRINTS } from '../../data/kobeMockPrints';
+import { OSAKA_MOCK_PRINTS } from '../../data/osakaMockPrints';
+import { RITSU_MOCK_PRINTS } from '../../data/ritsuMockPrints';
+import { HOKUDAI_MOCK_PRINTS } from '../../data/hokudaiMockPrints';
+import { TOHOKU_MOCK_PRINTS } from '../../data/tohokuMockPrints';
+import { HIROSAKI_MOCK_PRINTS } from '../../data/hirosakiMockPrints';
+import { IWATE_MOCK_PRINTS } from '../../data/iwateMockPrints';
+import { AKITA_MOCK_PRINTS } from '../../data/akitaMockPrints';
+import { YAMAGATA_MOCK_PRINTS } from '../../data/yamagataMockPrints';
+import { FUKUSHIMA_MOCK_PRINTS } from '../../data/fukushimaMockPrints';
+import { UTSUNOMIYA_MOCK_PRINTS } from '../../data/utsunomiyaMockPrints';
+import { GUNMA_MOCK_PRINTS } from '../../data/gunmaMockPrints';
+import { ACCESSORY_SLOTS, type AccessorySlot } from './tobiraParts';
+import type { GrowthProgress } from './growthTypes';
+import { badgeById } from './growthBadges';
+import { levelOf } from './growthLevel';
+
+export const DEFAULT_POSE = 'pose_basic';
+export const DEFAULT_FRAME = 'frame_paper';
+/** 2026-11-03 最初からいるお供（カギノスケ）。外したら ''（連れていない）のまま */
+export const DEFAULT_COMPANION = 'comp_key_gold';
+// ============================================================
+// 扉くんの装備（ポーズ・枠）
+// ============================================================
+
+/**
+ * pose / frame は扉くん本体、hat / glasses / cheek / aura は部位ごとのアクセサリ（重ねて描く）、
+ * wallpaper はアプリの壁紙。print は大当たりの学習プリント（PDF・装備はしない）。
+ */
+export type ItemKind = 'pose' | 'frame' | AccessorySlot | 'wallpaper' | 'stage' | 'companion' | 'print';
+/** 装備できる種類（equipped のキー） */
+export type EquipKind = Exclude<ItemKind, 'print'>;
+/** 外せる種類（アクセサリと壁紙。ポーズと枠は常に何か1つ） */
+export const REMOVABLE_KINDS: readonly EquipKind[] = [...ACCESSORY_SLOTS, 'wallpaper', 'stage', 'companion'];
+/** ガチャのレア度：N（ノーマル）/ R（レア）/ SR（スーパーレア・学習プリント）/ UR（大当たり＝完全版の本）/ LR（レジェンドレア＝共通テスト予想問題） */
+export type GachaRarity = 'N' | 'R' | 'SR' | 'UR' | 'LR';
+
+export interface ItemDef {
+  id: string;
+  kind: ItemKind;
+  label: string;
+  /** pose: 画像パス（public/mascots）／ frame: 色コード ／ アクセサリ: '形:色'（tobiraParts.ts）／ wallpaper: WALLPAPERS のキー ／ print: PDF のパス（public/prints） */
+  value: string;
+  gacha?: boolean;
+  pattern?: 'dashed' | 'double' | 'dots' | 'rays' | 'stars' | 'stripes' | 'checker' | 'wave' | 'grid' | 'sparkle' | 'rainbow' | 'aurora' | 'neon' | 'prism' | 'galaxy';
+  /** ガチャのレア度。省略時は gachaRarityOf() が入手条件から決める（N / R / SR）。UR は学習プリントだけ */
+  rarity?: GachaRarity;
+  /**
+   * 入手条件。どれか1つ。
+   *   level  … そのレベルで自動解放
+   *   badge  … そのバッジで自動解放
+   *   coins  … コインで交換
+   *   gacha  … ガチャ限定（自動解放・コイン交換なし）
+   */
+  unlock: { level: number } | { badge: string } | { coins: number } | { gacha: true };
+}
+
+/**
+ * 扉くんのポーズは public/mascots の画像。
+ * 基本9枚に、ガチャ限定の新ポーズ（リスニング・実験・トロフィー）を追加。
+ * 「ポーズを選べる」こと自体が装備で、レベルや実績・コイン・ガチャで順に解放する。
+ * gacha: true を付けたものはガチャの抽選対象にも入る（レベル解放と併用可）。
+ */
+/**
+ * レベル報酬の学習プリント（UR）。ガチャからは出ない。レベルに届いたら自動で手に入る。
+ * PDF は scripts/gacha-prints/build-level-ur.py で作る。
+ */
+export const LEVEL_PRINTS: readonly GachaPrintDef[] = [
+  { id: 'print_level_listening_howto', label: '共通テスト リスニングの聞き方（大問別の聞き方と毎日の練習法）', subject: 'english_listening', category: '出題傾向', file: '/prints/print_level_listening_howto.pdf', thumb: '/prints/thumbs/print_level_listening_howto.webp', pages: 2, kb: 82 },
+];
+
+/** 学習プリントのレア度：完全版の本は UR（大当たり）、それ以外の学習プリントは SR */
+export function printRarity(p: GachaPrintDef): GachaRarity {
+  return p.category === '完全版' ? 'UR' : 'SR';
+}
+
+/** レベルでだけ解放される装備（ガチャ・ショップには出さない） */
+export const LEVEL_REWARD_ITEMS: readonly ItemDef[] = [
+  { id: 'lv_cheek_star', kind: 'cheek', rarity: 'R', label: 'ほしのペイント（Lv.3）', value: 'star:#FFD43B', unlock: { level: 3 } },
+  { id: 'lv_glasses_round', kind: 'glasses', rarity: 'R', label: '学者のまるメガネ（Lv.7）', value: 'round:#8B5E34', unlock: { level: 7 } },
+  { id: 'lv_aura_notes', kind: 'aura', rarity: 'SR', label: 'リスニングのおんぷ（Lv.12）', value: 'notes:#2F9E8F', unlock: { level: 12 } },
+  { id: 'print_level_listening_howto', kind: 'print', rarity: 'UR', label: LEVEL_PRINTS[0].label, value: LEVEL_PRINTS[0].file, unlock: { level: 15 } },
+  { id: 'lv_wall_gold', kind: 'wallpaper', rarity: 'SR', label: '壁紙：黄金の書斎（Lv.25）', value: 'gold', unlock: { level: 25 } },
+  { id: 'lv_frame_aurora', kind: 'frame', rarity: 'UR', label: 'マスターのオーロラフレーム（Lv.30）', value: '#8657c5', pattern: 'aurora', unlock: { level: 30 } },
+];
+
+export const ITEMS: readonly ItemDef[] = [
+  { id: 'frame_league_aurora', kind: 'frame', rarity: 'UR', label: 'リーグ・オーロラフレーム', value: '#8657c5', pattern: 'aurora', unlock: { gacha: true } },
+  { id: 'pose_basic', kind: 'pose', label: '基本', value: '/mascots/basic.webp', unlock: { level: 1 } },
+  { id: 'pose_walking', kind: 'pose', gacha: true, label: 'おさんぽ', value: '/mascots/walking.webp', unlock: { level: 3 } },
+  { id: 'pose_studying', kind: 'pose', gacha: true, label: '勉強中', value: '/mascots/studying.webp', unlock: { level: 5 } },
+  { id: 'pose_thinking', kind: 'pose', gacha: true, label: '考え中', value: '/mascots/thinking.webp', unlock: { level: 8 } },
+  { id: 'pose_good', kind: 'pose', gacha: true, label: 'グッド！', value: '/mascots/good.webp', unlock: { badge: 'b_first_win' } },
+  { id: 'pose_cheering', kind: 'pose', label: '応援', value: '/mascots/cheering.webp', unlock: { coins: 120 } },
+  { id: 'pose_happy', kind: 'pose', gacha: true, label: 'よろこび', value: '/mascots/happy.webp', unlock: { badge: 'b_perfect' } },
+  { id: 'pose_bowing', kind: 'pose', gacha: true, label: 'おじぎ', value: '/mascots/bowing.webp', unlock: { badge: 'b_holes_10' } },
+  { id: 'pose_sleeping', kind: 'pose', label: 'おひるね', value: '/mascots/sleeping.webp', unlock: { coins: 200 } },
+  // ── ガチャ限定の新ポーズ（コイン交換不可・ガチャのみ）──
+  { id: 'pose_listening', kind: 'pose', gacha: true, label: 'リスニング中', value: '/mascots/listening.webp', unlock: { gacha: true } },
+  { id: 'pose_science', kind: 'pose', gacha: true, label: '実験中', value: '/mascots/science.webp', unlock: { gacha: true } },
+  { id: 'pose_trophy', kind: 'pose', gacha: true, label: '優勝トロフィー', value: '/mascots/trophy.webp', unlock: { gacha: true } },
+  // ── SR（スーパーレア）限定フレーム：ガチャからだけ出る ──
+  { id: 'frame_prism', kind: 'frame', gacha: true, rarity: 'SR', label: 'プリズム', value: '#C471ED', pattern: 'prism', unlock: { gacha: true } },
+  { id: 'frame_galaxy', kind: 'frame', gacha: true, rarity: 'SR', label: 'ギャラクシー', value: '#1E1B4B', pattern: 'galaxy', unlock: { gacha: true } },
+  { id: 'frame_paper', kind: 'frame', label: 'ノート', value: '#E5E7EB', unlock: { level: 1 } },
+  { id: 'frame_green', kind: 'frame', label: 'わかば', value: '#2ECC71', unlock: { level: 5 } },
+  { id: 'frame_blue', kind: 'frame', label: 'そら', value: '#3498DB', unlock: { level: 10 } },
+  { id: 'frame_purple', kind: 'frame', label: 'すみれ', value: '#9B59B6', unlock: { level: 20 } },
+  { id: 'frame_gold', kind: 'frame', label: 'ゴールド', value: '#F4D03F', unlock: { badge: 'b_wins_10' } },
+  { id: 'frame_pink', kind: 'frame', label: 'さくら', value: '#D9A0A0', unlock: { coins: 80 } },
+  { id: 'frame_mint', kind: 'frame', label: 'ミント', value: '#74B7A3', unlock: { coins: 60 } },
+  { id: 'frame_ocean', kind: 'frame', label: 'マリン', value: '#4D93AE', unlock: { coins: 100 } },
+  { id: 'frame_lavender', kind: 'frame', label: 'ラベンダー', value: '#B09BC7', unlock: { coins: 140 } },
+  { id: 'frame_coral', kind: 'frame', label: 'コーラル', value: '#DD8F79', unlock: { coins: 160 } },
+  { id: 'frame_midnight', kind: 'frame', label: '星空', value: '#3F527C', unlock: { coins: 200 } },
+  { id: 'frame_stitch', kind: 'frame', label: '手帳ステッチ', value: '#B58164', pattern: 'dashed', unlock: { coins: 120 } },
+  { id: 'frame_medal', kind: 'frame', label: '二重のメダル', value: '#BBA049', pattern: 'double', unlock: { coins: 180 } },
+  { id: 'frame_bubbles', kind: 'frame', label: 'ソーダバブル', value: '#62A8BB', pattern: 'dots', unlock: { coins: 150 } },
+  { id: 'frame_sunrise', kind: 'frame', label: '朝日のリング', value: '#DA9B65', pattern: 'rays', unlock: { coins: 180 } },
+  { id: 'frame_constellation', kind: 'frame', label: '星めぐり', value: '#7A76B0', pattern: 'stars', unlock: { coins: 220 } },
+  // ── 追加フレーム（ガチャ増量分）──
+  { id: 'frame_candy', kind: 'frame', label: 'キャンディ', value: '#E98BA5', pattern: 'stripes', unlock: { coins: 130 } },
+  { id: 'frame_checker', kind: 'frame', label: 'チェッカー', value: '#5B6B7F', pattern: 'checker', unlock: { coins: 140 } },
+  { id: 'frame_wave', kind: 'frame', label: 'さざなみ', value: '#4FA3C7', pattern: 'wave', unlock: { coins: 150 } },
+  { id: 'frame_graph', kind: 'frame', label: 'グラフ用紙', value: '#6FA88C', pattern: 'grid', unlock: { coins: 110 } },
+  { id: 'frame_sparkle', kind: 'frame', label: 'きらめき', value: '#C9A227', pattern: 'sparkle', unlock: { coins: 240 } },
+  { id: 'frame_rainbow', kind: 'frame', label: 'レインボー', value: '#E76F51', pattern: 'rainbow', unlock: { coins: 260 } },
+  { id: 'frame_aurora', kind: 'frame', label: 'オーロラ', value: '#3FA796', pattern: 'aurora', unlock: { coins: 280 } },
+  { id: 'frame_neon', kind: 'frame', label: 'ネオン', value: '#7C3AED', pattern: 'neon', unlock: { coins: 300 } },
+  { id: 'frame_lemon', kind: 'frame', label: 'レモン', value: '#F2D16B', unlock: { coins: 70 } },
+  { id: 'frame_grape', kind: 'frame', label: 'ぶどう', value: '#8E5EA2', unlock: { coins: 90 } },
+  { id: 'frame_chocolate', kind: 'frame', label: 'チョコ', value: '#7B4B2A', unlock: { coins: 100 } },
+  { id: 'frame_ice', kind: 'frame', label: 'アイス', value: '#A8DDE9', unlock: { coins: 90 } },
+  { id: 'frame_fire', kind: 'frame', label: 'ほのお', value: '#E67E22', unlock: { badge: 'b_streak_5' } },
+  // ── 演習・マナラッシュの実績で解放（ガチャ・交換なし）──
+  { id: 'frame_scholar', kind: 'frame', label: '努力の証', value: '#2F7D6D', pattern: 'double', unlock: { badge: 'b_study_50' } },
+  { id: 'frame_lightning', kind: 'frame', label: 'イナズマ', value: '#E0A800', pattern: 'rays', unlock: { badge: 'b_rush_2500' } },
+  { id: 'frame_comet', kind: 'frame', label: 'コメット', value: '#5A67D8', pattern: 'sparkle', unlock: { badge: 'b_rush_combo10' } },
+  // ── 部位ごとのアクセサリ（とびら君に重ねて描く・ガチャ限定）。value は '形:色'（tobiraParts.ts）──
+  // 頭（帽子）
+  { id: 'hat_beanie_red', kind: 'hat', gacha: true, rarity: 'N', label: 'ニット帽（あか）', value: 'beanie:#E76F51', unlock: { gacha: true } },
+  { id: 'hat_beanie_navy', kind: 'hat', gacha: true, rarity: 'N', label: 'ニット帽（こん）', value: 'beanie:#3D5A80', unlock: { gacha: true } },
+  { id: 'hat_cap_blue', kind: 'hat', gacha: true, rarity: 'N', label: 'キャップ（そら）', value: 'cap:#4D96FF', unlock: { gacha: true } },
+  { id: 'hat_cap_green', kind: 'hat', gacha: true, rarity: 'N', label: 'キャップ（みどり）', value: 'cap:#43AA8B', unlock: { gacha: true } },
+  { id: 'hat_ribbon_pink', kind: 'hat', gacha: true, rarity: 'N', label: 'リボン（ピンク）', value: 'ribbon:#F28AB2', unlock: { gacha: true } },
+  { id: 'hat_flower', kind: 'hat', gacha: true, rarity: 'N', label: 'お花のかみかざり', value: 'flower:#FF8FAB', unlock: { gacha: true } },
+  { id: 'hat_beret', kind: 'hat', gacha: true, rarity: 'R', label: 'ベレー帽', value: 'beret:#9B2226', unlock: { gacha: true } },
+  { id: 'hat_bunny', kind: 'hat', gacha: true, rarity: 'R', label: 'うさみみ', value: 'bunny:#F8F9FA', unlock: { gacha: true } },
+  { id: 'hat_chef', kind: 'hat', gacha: true, rarity: 'R', label: 'コック帽', value: 'chef:#E63946', unlock: { gacha: true } },
+  { id: 'hat_graduation', kind: 'hat', gacha: true, rarity: 'R', label: '卒業帽（角帽）', value: 'graduation:#F4D03F', unlock: { gacha: true } },
+  { id: 'hat_wizard', kind: 'hat', gacha: true, rarity: 'SR', label: '魔法使いの帽子', value: 'wizard:#5A4FCF', unlock: { gacha: true } },
+  { id: 'hat_crown', kind: 'hat', gacha: true, rarity: 'SR', label: '王冠', value: 'crown:#F6C744', unlock: { gacha: true } },
+  { id: 'hat_tiara', kind: 'hat', gacha: true, rarity: 'SR', label: 'ティアラ', value: 'tiara:#C0C8D6', unlock: { gacha: true } },
+  { id: 'hat_halo', kind: 'hat', gacha: true, rarity: 'SR', label: '天使のわっか', value: 'halo:#FFD43B', unlock: { gacha: true } },
+  // 顔（メガネ）
+  { id: 'glasses_round', kind: 'glasses', gacha: true, rarity: 'N', label: 'まるメガネ', value: 'round:#3B2F2F', unlock: { gacha: true } },
+  { id: 'glasses_square', kind: 'glasses', gacha: true, rarity: 'N', label: 'スクエアメガネ', value: 'square:#1D3557', unlock: { gacha: true } },
+  { id: 'glasses_red', kind: 'glasses', gacha: true, rarity: 'N', label: 'あかぶちメガネ', value: 'round:#D62828', unlock: { gacha: true } },
+  { id: 'glasses_science', kind: 'glasses', gacha: true, rarity: 'N', label: '実験用ゴーグル', value: 'science:#74C0FC', unlock: { gacha: true } },
+  { id: 'glasses_sun', kind: 'glasses', gacha: true, rarity: 'R', label: 'サングラス', value: 'sun:#222222', unlock: { gacha: true } },
+  { id: 'glasses_monocle', kind: 'glasses', gacha: true, rarity: 'R', label: '名探偵の片メガネ', value: 'monocle:#B8860B', unlock: { gacha: true } },
+  { id: 'glasses_goggle', kind: 'glasses', gacha: true, rarity: 'R', label: 'スイミングゴーグル', value: 'goggle:#2A9D8F', unlock: { gacha: true } },
+  { id: 'glasses_star', kind: 'glasses', gacha: true, rarity: 'SR', label: 'スターグラス', value: 'star:#F9C74F', unlock: { gacha: true } },
+  { id: 'glasses_heart', kind: 'glasses', gacha: true, rarity: 'SR', label: 'ハートグラス', value: 'heart:#FF4D8D', unlock: { gacha: true } },
+  // ほっぺ
+  { id: 'cheek_blush', kind: 'cheek', gacha: true, rarity: 'N', label: 'ぽっとほっぺ', value: 'blush:#FF8FA3', unlock: { gacha: true } },
+  { id: 'cheek_orange', kind: 'cheek', gacha: true, rarity: 'N', label: 'みかんほっぺ', value: 'blush:#FFA94D', unlock: { gacha: true } },
+  { id: 'cheek_whisker', kind: 'cheek', gacha: true, rarity: 'N', label: 'ねこのおひげ', value: 'whisker:#5C4033', unlock: { gacha: true } },
+  { id: 'cheek_sticker', kind: 'cheek', gacha: true, rarity: 'R', label: 'ばんそうこう', value: 'sticker:#F4C28F', unlock: { gacha: true } },
+  { id: 'cheek_star', kind: 'cheek', gacha: true, rarity: 'R', label: 'ほしのペイント', value: 'star:#FFD43B', unlock: { gacha: true } },
+  { id: 'cheek_heart', kind: 'cheek', gacha: true, rarity: 'R', label: 'ハートのペイント', value: 'heart:#FF6B9D', unlock: { gacha: true } },
+  // オーラ（まわりに浮かぶ）
+  { id: 'aura_bubbles', kind: 'aura', gacha: true, rarity: 'N', label: 'シャボン玉', value: 'bubbles:#74C0FC', unlock: { gacha: true } },
+  { id: 'aura_petals', kind: 'aura', gacha: true, rarity: 'N', label: '桜ふぶき', value: 'petals:#F9A8C9', unlock: { gacha: true } },
+  { id: 'aura_notes', kind: 'aura', gacha: true, rarity: 'R', label: 'おんぷ', value: 'notes:#9775FA', unlock: { gacha: true } },
+  { id: 'aura_formula', kind: 'aura', gacha: true, rarity: 'R', label: '数式と化学式', value: 'formula:#4C6EF5', unlock: { gacha: true } },
+  { id: 'aura_hearts', kind: 'aura', gacha: true, rarity: 'R', label: 'ハート', value: 'hearts:#FF6B9D', unlock: { gacha: true } },
+  { id: 'aura_sparkle', kind: 'aura', gacha: true, rarity: 'SR', label: 'きらきら', value: 'sparkle:#FFC300', unlock: { gacha: true } },
+  { id: 'aura_stars', kind: 'aura', gacha: true, rarity: 'SR', label: '流れ星', value: 'stars:#FFD166', unlock: { gacha: true } },
+  { id: 'aura_flame', kind: 'aura', gacha: true, rarity: 'SR', label: 'やる気の炎', value: 'flame:#FF7B00', unlock: { gacha: true } },
+  // ── アプリの壁紙（ホームなどの背景）──
+  { id: 'wall_grid', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：方眼ノート', value: 'grid', unlock: { gacha: true } },
+  { id: 'wall_lined', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：大学ノート', value: 'lined', unlock: { gacha: true } },
+  { id: 'wall_mint', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：ミントストライプ', value: 'mint', unlock: { gacha: true } },
+  { id: 'wall_sakura', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：桜', value: 'sakura', unlock: { gacha: true } },
+  { id: 'wall_forest', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：森の小道', value: 'forest', unlock: { gacha: true } },
+  { id: 'wall_ocean', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：海', value: 'ocean', unlock: { gacha: true } },
+  { id: 'wall_sunset', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：夕焼け', value: 'sunset', unlock: { gacha: true } },
+  { id: 'wall_chem', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：化学式柄', value: 'chem', unlock: { gacha: true } },
+  { id: 'wall_math', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：数式柄', value: 'math', unlock: { gacha: true } },
+  { id: 'wall_music', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：五線譜', value: 'music', unlock: { gacha: true } },
+  { id: 'wall_chalk', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：黒板', value: 'chalk', unlock: { gacha: true } },
+  { id: 'wall_night', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：夜空', value: 'night', unlock: { gacha: true } },
+  { id: 'wall_aurora', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：オーロラ', value: 'aurora', unlock: { gacha: true } },
+  { id: 'wall_galaxy', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：銀河', value: 'galaxy', unlock: { gacha: true } },
+  { id: 'wall_rainbow', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：レインボー', value: 'rainbow', unlock: { gacha: true } },
+  { id: 'wall_gold', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：黄金の書斎', value: 'gold', unlock: { gacha: true } },
+  // ── 2026-10-23 追加（ガチャ増量・セット収集の部品）──
+  { id: 'hat_headphones', kind: 'hat', gacha: true, rarity: 'R', label: 'ヘッドホン', value: 'headphones:#2F9E8F', unlock: { gacha: true } },
+  { id: 'hat_sprout', kind: 'hat', gacha: true, rarity: 'N', label: 'ふたば', value: 'sprout:#69DB7C', unlock: { gacha: true } },
+  { id: 'glasses_pixel', kind: 'glasses', gacha: true, rarity: 'SR', label: 'ドットのサングラス', value: 'pixel:#F59F00', unlock: { gacha: true } },
+  { id: 'cheek_sparkle', kind: 'cheek', gacha: true, rarity: 'N', label: 'きらりほっぺ', value: 'sparkle:#FFD43B', unlock: { gacha: true } },
+  { id: 'aura_snow', kind: 'aura', gacha: true, rarity: 'R', label: 'こなゆき', value: 'snow:#74C0FC', unlock: { gacha: true } },
+  { id: 'aura_abc', kind: 'aura', gacha: true, rarity: 'R', label: 'アルファベット', value: 'abc:#4C6EF5', unlock: { gacha: true } },
+  { id: 'aura_bolt', kind: 'aura', gacha: true, rarity: 'SR', label: 'イナズマ', value: 'bolt:#FCC419', unlock: { gacha: true } },
+  { id: 'wall_library', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：図書館', value: 'library', unlock: { gacha: true } },
+  { id: 'wall_english', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：ABC', value: 'english', unlock: { gacha: true } },
+  { id: 'wall_sky', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：青空', value: 'sky', unlock: { gacha: true } },
+  { id: 'wall_candy', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：キャンディ', value: 'candy', unlock: { gacha: true } },
+  // ── D7（2026-10-30）ホームの背景（とびら君のステージ）。ガチャで当てて、きせかえで選ぶ。何もつけなければ「宇宙」 ──
+  { id: 'stage_sunrise', kind: 'stage', gacha: true, rarity: 'N', label: 'ホーム背景：朝焼けの丘', value: 'sunrise', unlock: { gacha: true } },
+  { id: 'stage_forest', kind: 'stage', gacha: true, rarity: 'N', label: 'ホーム背景：森のこみち', value: 'forest', unlock: { gacha: true } },
+  { id: 'stage_ocean', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：深い海', value: 'ocean', unlock: { gacha: true } },
+  { id: 'stage_sakura', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：夜桜', value: 'sakura', unlock: { gacha: true } },
+  { id: 'stage_library', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：夜の図書館', value: 'library', unlock: { gacha: true } },
+  { id: 'stage_candy', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：おかしの国', value: 'candy', unlock: { gacha: true } },
+  { id: 'stage_aurora', kind: 'stage', gacha: true, rarity: 'SR', label: 'ホーム背景：オーロラ', value: 'aurora', unlock: { gacha: true } },
+  { id: 'stage_neon', kind: 'stage', gacha: true, rarity: 'SR', label: 'ホーム背景：ネオンの街', value: 'neon', unlock: { gacha: true } },
+  // ── 2026-11-03 お供（ホームでとびら君のとなりにいる子）。value は COMPANIONS のキー（tobiraParts.ts）──
+  //   金のカギ「カギノスケ」は Lv.1 でみんなに。色違いはガチャから出る（はずれ枠も増える）。
+  { id: 'comp_key_gold', kind: 'companion', rarity: 'N', label: 'お供：カギノスケ', value: 'key_gold', unlock: { level: 1 } },
+  { id: 'comp_key_silver', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（ぎん）', value: 'key_silver', unlock: { gacha: true } },
+  { id: 'comp_key_rose', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（さくら）', value: 'key_rose', unlock: { gacha: true } },
+  { id: 'comp_key_mint', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（ミント）', value: 'key_mint', unlock: { gacha: true } },
+  { id: 'comp_key_sky', kind: 'companion', gacha: true, rarity: 'R', label: 'お供：カギノスケ（そら）', value: 'key_sky', unlock: { gacha: true } },
+  { id: 'comp_key_night', kind: 'companion', gacha: true, rarity: 'R', label: 'お供：カギノスケ（よぞら）', value: 'key_night', unlock: { gacha: true } },
+  { id: 'comp_key_aurora', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（オーロラ）', value: 'key_aurora', unlock: { gacha: true } },
+  // ── 2026-11-03 はずれ（N）の増量。形は今ある物の色ちがい（新しい絵は増やさない）──
+  { id: 'hat_beanie_green', kind: 'hat', gacha: true, rarity: 'N', label: 'ニット帽（みどり）', value: 'beanie:#40916C', unlock: { gacha: true } },
+  { id: 'hat_beanie_cream', kind: 'hat', gacha: true, rarity: 'N', label: 'ニット帽（クリーム）', value: 'beanie:#E9C46A', unlock: { gacha: true } },
+  { id: 'hat_cap_red', kind: 'hat', gacha: true, rarity: 'N', label: 'キャップ（あか）', value: 'cap:#E63946', unlock: { gacha: true } },
+  { id: 'hat_cap_black', kind: 'hat', gacha: true, rarity: 'N', label: 'キャップ（くろ）', value: 'cap:#343A40', unlock: { gacha: true } },
+  { id: 'hat_ribbon_blue', kind: 'hat', gacha: true, rarity: 'N', label: 'リボン（そら）', value: 'ribbon:#4D96FF', unlock: { gacha: true } },
+  { id: 'hat_ribbon_yellow', kind: 'hat', gacha: true, rarity: 'N', label: 'リボン（きいろ）', value: 'ribbon:#F4C430', unlock: { gacha: true } },
+  { id: 'hat_flower_yellow', kind: 'hat', gacha: true, rarity: 'N', label: 'ひまわりのかみかざり', value: 'flower:#FFC300', unlock: { gacha: true } },
+  { id: 'hat_flower_blue', kind: 'hat', gacha: true, rarity: 'N', label: 'あじさいのかみかざり', value: 'flower:#7AA7FF', unlock: { gacha: true } },
+  { id: 'hat_sprout_autumn', kind: 'hat', gacha: true, rarity: 'N', label: 'もみじのふたば', value: 'sprout:#E76F51', unlock: { gacha: true } },
+  { id: 'glasses_round_blue', kind: 'glasses', gacha: true, rarity: 'N', label: 'まるメガネ（あお）', value: 'round:#1D4ED8', unlock: { gacha: true } },
+  { id: 'glasses_round_pink', kind: 'glasses', gacha: true, rarity: 'N', label: 'まるメガネ（ピンク）', value: 'round:#E64980', unlock: { gacha: true } },
+  { id: 'glasses_square_brown', kind: 'glasses', gacha: true, rarity: 'N', label: 'べっこうメガネ', value: 'square:#8B5E34', unlock: { gacha: true } },
+  { id: 'glasses_square_green', kind: 'glasses', gacha: true, rarity: 'N', label: 'スクエアメガネ（みどり）', value: 'square:#2B8A3E', unlock: { gacha: true } },
+  { id: 'cheek_blush_purple', kind: 'cheek', gacha: true, rarity: 'N', label: 'ぶどうほっぺ', value: 'blush:#B197FC', unlock: { gacha: true } },
+  { id: 'cheek_blush_red', kind: 'cheek', gacha: true, rarity: 'N', label: 'りんごほっぺ', value: 'blush:#FF6B6B', unlock: { gacha: true } },
+  { id: 'cheek_whisker_gray', kind: 'cheek', gacha: true, rarity: 'N', label: 'ねずみのおひげ', value: 'whisker:#868E96', unlock: { gacha: true } },
+  { id: 'cheek_sparkle_blue', kind: 'cheek', gacha: true, rarity: 'N', label: 'みずいろのきらりほっぺ', value: 'sparkle:#74C0FC', unlock: { gacha: true } },
+  { id: 'aura_bubbles_pink', kind: 'aura', gacha: true, rarity: 'N', label: 'ピンクのシャボン玉', value: 'bubbles:#F783AC', unlock: { gacha: true } },
+  { id: 'aura_bubbles_green', kind: 'aura', gacha: true, rarity: 'N', label: 'ソーダのシャボン玉', value: 'bubbles:#63E6BE', unlock: { gacha: true } },
+  { id: 'aura_petals_yellow', kind: 'aura', gacha: true, rarity: 'N', label: '菜の花ふぶき', value: 'petals:#FFD43B', unlock: { gacha: true } },
+  { id: 'aura_petals_red', kind: 'aura', gacha: true, rarity: 'N', label: 'もみじふぶき', value: 'petals:#F76707', unlock: { gacha: true } },
+  { id: 'frame_n_peach', kind: 'frame', gacha: true, rarity: 'N', label: 'ピーチ', value: '#F4A99A', unlock: { gacha: true } },
+  { id: 'frame_n_sand', kind: 'frame', gacha: true, rarity: 'N', label: 'すなはま', value: '#D8C3A5', unlock: { gacha: true } },
+  { id: 'frame_n_moss', kind: 'frame', gacha: true, rarity: 'N', label: 'こけ', value: '#8AA67A', unlock: { gacha: true } },
+  { id: 'frame_n_slate', kind: 'frame', gacha: true, rarity: 'N', label: 'スレート', value: '#7D8B9A', unlock: { gacha: true } },
+  // ── セット完成の報酬（ガチャ・ショップには出ない。セットの称号で解放）──
+  { id: 'frame_set_sprout', kind: 'frame', rarity: 'SR', label: '芽ぶきフレーム（セット報酬）', value: '#51CF66', pattern: 'dots', unlock: { badge: 'b_set_sprout' } },
+  { id: 'frame_set_listening', kind: 'frame', rarity: 'SR', label: '音の波フレーム（セット報酬）', value: '#2F9E8F', pattern: 'wave', unlock: { badge: 'b_set_listening' } },
+  { id: 'frame_set_english', kind: 'frame', rarity: 'SR', label: '辞書のフレーム（セット報酬）', value: '#364FC7', pattern: 'grid', unlock: { badge: 'b_set_english' } },
+  { id: 'frame_set_sweets', kind: 'frame', rarity: 'SR', label: 'マカロンフレーム（セット報酬）', value: '#F783AC', pattern: 'stripes', unlock: { badge: 'b_set_sweets' } },
+  { id: 'frame_set_winter', kind: 'frame', rarity: 'SR', label: '雪の結晶フレーム（セット報酬）', value: '#74C0FC', pattern: 'sparkle', unlock: { badge: 'b_set_winter' } },
+  { id: 'frame_set_hero', kind: 'frame', rarity: 'SR', label: 'ヒーローフレーム（セット報酬）', value: '#FAB005', pattern: 'rays', unlock: { badge: 'b_set_hero' } },
+  { id: 'frame_set_collector', kind: 'frame', rarity: 'UR', label: 'コレクターの虹フレーム（3セット完成）', value: '#E76F51', pattern: 'rainbow', unlock: { badge: 'b_set_collector' } },
+  // ── F7（2026-11-04）アイテムの大増量。ショップで「お供・帽子・壁紙…」を選ぶと0件（この条件のアイテムはありません）だったので、
+  //   どの種類にもマナコインで交換できる物を並べ、ガチャのお供も増やす。形は今ある物の色ちがい（絵のファイルは増やさない）。
+  // お供（ガチャ）
+  { id: 'comp_key_lemon', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（レモン）', value: 'key_lemon', unlock: { gacha: true } },
+  { id: 'comp_key_peach', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（ピーチ）', value: 'key_peach', unlock: { gacha: true } },
+  { id: 'comp_key_cocoa', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（ココア）', value: 'key_cocoa', unlock: { gacha: true } },
+  { id: 'comp_key_snow', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（ゆき）', value: 'key_snow', unlock: { gacha: true } },
+  { id: 'comp_key_forest', kind: 'companion', gacha: true, rarity: 'N', label: 'お供：カギノスケ（もり）', value: 'key_forest', unlock: { gacha: true } },
+  { id: 'comp_key_teal', kind: 'companion', gacha: true, rarity: 'R', label: 'お供：カギノスケ（うみ）', value: 'key_teal', unlock: { gacha: true } },
+  { id: 'comp_key_grape', kind: 'companion', gacha: true, rarity: 'R', label: 'お供：カギノスケ（ぶどう）', value: 'key_grape', unlock: { gacha: true } },
+  { id: 'comp_key_sunset', kind: 'companion', gacha: true, rarity: 'R', label: 'お供：カギノスケ（ゆうやけ）', value: 'key_sunset', unlock: { gacha: true } },
+  { id: 'comp_key_ruby', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（ルビー）', value: 'key_ruby', unlock: { gacha: true } },
+  { id: 'comp_key_emerald', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（エメラルド）', value: 'key_emerald', unlock: { gacha: true } },
+  { id: 'comp_key_galaxy', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（ぎんが）', value: 'key_galaxy', unlock: { gacha: true } },
+  { id: 'comp_key_rainbow', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（にじいろ）', value: 'key_rainbow', unlock: { gacha: true } },
+  // お供（ショップ）
+  { id: 'comp_shop_amber', kind: 'companion', rarity: 'N', label: 'お供：カギノスケ（こはく）', value: 'key_amber', unlock: { coins: 120 } },
+  { id: 'comp_shop_ice', kind: 'companion', rarity: 'N', label: 'お供：カギノスケ（こおり）', value: 'key_ice', unlock: { coins: 140 } },
+  { id: 'comp_shop_lilac', kind: 'companion', rarity: 'N', label: 'お供：カギノスケ（ライラック）', value: 'key_lilac', unlock: { coins: 160 } },
+  { id: 'comp_shop_ink', kind: 'companion', rarity: 'N', label: 'お供：カギノスケ（すみ）', value: 'key_ink', unlock: { coins: 180 } },
+  { id: 'comp_shop_lava', kind: 'companion', rarity: 'R', label: 'お供：カギノスケ（マグマ）', value: 'key_lava', unlock: { coins: 220 } },
+  { id: 'comp_shop_sapphire', kind: 'companion', rarity: 'R', label: 'お供：カギノスケ（サファイア）', value: 'key_sapphire', unlock: { coins: 260 } },
+  { id: 'comp_shop_platinum', kind: 'companion', rarity: 'SR', label: 'お供：カギノスケ（プラチナ）', value: 'key_platinum', unlock: { coins: 400 } },
+  // 帽子（ショップ）
+  { id: 'hat_shop_beret_navy', kind: 'hat', rarity: 'N', label: 'ベレー帽（こん）', value: 'beret:#264653', unlock: { coins: 120 } },
+  { id: 'hat_shop_cap_blue', kind: 'hat', rarity: 'N', label: 'キャップ（あお）', value: 'cap:#1C7ED6', unlock: { coins: 80 } },
+  { id: 'hat_shop_beanie_red', kind: 'hat', rarity: 'N', label: 'ニット帽（あか）', value: 'beanie:#C92A2A', unlock: { coins: 90 } },
+  { id: 'hat_shop_flower_pink', kind: 'hat', rarity: 'N', label: 'さくらのかみかざり', value: 'flower:#F783AC', unlock: { coins: 110 } },
+  { id: 'hat_shop_ribbon_mint', kind: 'hat', rarity: 'N', label: 'リボン（ミント）', value: 'ribbon:#38D9A9', unlock: { coins: 100 } },
+  { id: 'hat_shop_graduation_navy', kind: 'hat', rarity: 'R', label: '卒業帽（こん）', value: 'graduation:#22325C', unlock: { coins: 200 } },
+  { id: 'hat_shop_headphones_pink', kind: 'hat', rarity: 'R', label: 'ヘッドホン（ピンク）', value: 'headphones:#E64980', unlock: { coins: 220 } },
+  { id: 'hat_shop_crown_silver', kind: 'hat', rarity: 'R', label: '銀の王冠', value: 'crown:#ADB5BD', unlock: { coins: 300 } },
+  { id: 'hat_shop_bunny_brown', kind: 'hat', rarity: 'N', label: 'うさみみ（ちゃいろ）', value: 'bunny:#A47148', unlock: { coins: 150 } },
+  { id: 'hat_shop_chef_white', kind: 'hat', rarity: 'N', label: 'コック帽（しろ）', value: 'chef:#F1F3F5', unlock: { coins: 130 } },
+  // メガネ（ショップ）
+  { id: 'glasses_shop_round_gold', kind: 'glasses', rarity: 'N', label: 'まるメガネ（きん）', value: 'round:#C9A227', unlock: { coins: 100 } },
+  { id: 'glasses_shop_square_red', kind: 'glasses', rarity: 'N', label: 'スクエアメガネ（あか）', value: 'square:#C92A2A', unlock: { coins: 90 } },
+  { id: 'glasses_shop_sun_blue', kind: 'glasses', rarity: 'R', label: 'サングラス（あお）', value: 'sun:#1864AB', unlock: { coins: 200 } },
+  { id: 'glasses_shop_heart_red', kind: 'glasses', rarity: 'R', label: 'ハートグラス（あか）', value: 'heart:#E03131', unlock: { coins: 240 } },
+  { id: 'glasses_shop_star_blue', kind: 'glasses', rarity: 'R', label: 'スターグラス（あお）', value: 'star:#4DABF7', unlock: { coins: 260 } },
+  { id: 'glasses_shop_goggle_orange', kind: 'glasses', rarity: 'N', label: 'ゴーグル（オレンジ）', value: 'goggle:#FD7E14', unlock: { coins: 150 } },
+  // ほっぺ（ショップ）
+  { id: 'cheek_shop_blush_peach', kind: 'cheek', rarity: 'N', label: 'ももほっぺ', value: 'blush:#FFA8A8', unlock: { coins: 70 } },
+  { id: 'cheek_shop_star_blue', kind: 'cheek', rarity: 'N', label: 'あおいほしのペイント', value: 'star:#74C0FC', unlock: { coins: 120 } },
+  { id: 'cheek_shop_heart_purple', kind: 'cheek', rarity: 'N', label: 'むらさきのハート', value: 'heart:#9775FA', unlock: { coins: 130 } },
+  { id: 'cheek_shop_whisker_white', kind: 'cheek', rarity: 'N', label: 'しろいおひげ', value: 'whisker:#DEE2E6', unlock: { coins: 90 } },
+  { id: 'cheek_shop_sparkle_gold', kind: 'cheek', rarity: 'R', label: 'きんのきらりほっぺ', value: 'sparkle:#FAB005', unlock: { coins: 200 } },
+  // オーラ（ショップ）
+  { id: 'aura_shop_notes_pink', kind: 'aura', rarity: 'N', label: 'ピンクのおんぷ', value: 'notes:#F06595', unlock: { coins: 120 } },
+  { id: 'aura_shop_stars_blue', kind: 'aura', rarity: 'R', label: '青い流れ星', value: 'stars:#74C0FC', unlock: { coins: 220 } },
+  { id: 'aura_shop_snow_white', kind: 'aura', rarity: 'N', label: 'ぼたんゆき', value: 'snow:#F8F9FA', unlock: { coins: 140 } },
+  { id: 'aura_shop_hearts_red', kind: 'aura', rarity: 'N', label: 'あかいハート', value: 'hearts:#E03131', unlock: { coins: 130 } },
+  { id: 'aura_shop_abc_green', kind: 'aura', rarity: 'N', label: 'みどりのアルファベット', value: 'abc:#2F9E44', unlock: { coins: 110 } },
+  { id: 'aura_shop_flame_blue', kind: 'aura', rarity: 'R', label: 'あおい炎', value: 'flame:#339AF0', unlock: { coins: 300 } },
+  // 壁紙（ショップ・ガチャ）
+  { id: 'wall_shop_lemon', kind: 'wallpaper', rarity: 'N', label: '壁紙：レモン', value: 'lemon', unlock: { coins: 100 } },
+  { id: 'wall_shop_dots', kind: 'wallpaper', rarity: 'N', label: '壁紙：水玉', value: 'dots', unlock: { coins: 90 } },
+  { id: 'wall_shop_kraft', kind: 'wallpaper', rarity: 'N', label: '壁紙：クラフト紙', value: 'kraft', unlock: { coins: 80 } },
+  { id: 'wall_shop_matcha', kind: 'wallpaper', rarity: 'N', label: '壁紙：抹茶', value: 'matcha', unlock: { coins: 120 } },
+  { id: 'wall_shop_wood', kind: 'wallpaper', rarity: 'N', label: '壁紙：木目の机', value: 'wood', unlock: { coins: 150 } },
+  { id: 'wall_shop_denim', kind: 'wallpaper', rarity: 'R', label: '壁紙：デニム', value: 'denim', unlock: { coins: 200 } },
+  { id: 'wall_dreamstar', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：ゆめかわ星', value: 'dreamstar', unlock: { gacha: true } },
+  { id: 'wall_blueprint', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：設計図', value: 'blueprint', unlock: { gacha: true } },
+  { id: 'wall_confetti', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：紙ふぶき', value: 'confetti', unlock: { gacha: true } },
+  { id: 'wall_starlit', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：満天の星', value: 'starlit', unlock: { gacha: true } },
+  // ホーム背景（ショップ・ガチャ）
+  { id: 'stage_shop_meadow', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：花畑', value: 'meadow', unlock: { coins: 200 } },
+  { id: 'stage_shop_snowfield', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：雪の原っぱ', value: 'snowfield', unlock: { coins: 240 } },
+  { id: 'stage_shop_classroom', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：夕方の教室', value: 'classroom', unlock: { coins: 280 } },
+  { id: 'stage_desert', kind: 'stage', gacha: true, rarity: 'N', label: 'ホーム背景：砂漠の夜', value: 'desert', unlock: { gacha: true } },
+  { id: 'stage_rainbow', kind: 'stage', gacha: true, rarity: 'R', label: 'ホーム背景：虹の丘', value: 'rainbow', unlock: { gacha: true } },
+  { id: 'stage_starlit', kind: 'stage', gacha: true, rarity: 'SR', label: 'ホーム背景：満天の星空', value: 'starlit', unlock: { gacha: true } },
+  // ── 学習プリント PDF。ガチャからだけ出る（一覧は gachaPrints.generated.ts）──
+  //   ★2026-10-24★ UR（大当たり）は「完全版」（その一冊で完成する本）だけ。単元プリント・100語テストは SR。
+  ...GACHA_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: printRarity(p), label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── LR（レジェンドレア）：共通テスト 英語 予想問題（リーディング・リスニング 5回分）。UR より上（一覧は kyotsuMockPrints.ts）──
+  ...KYOTSU_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── 2026-10-29 2次試験ガチャ専用（共通テストガチャには出ない。gachaPools.ts の NIJI_NEW_ITEM_IDS）──
+  { id: 'hat_hachimaki_red', kind: 'hat', gacha: true, rarity: 'N', label: '必勝はちまき（あか）', value: 'hachimaki:#E03131', unlock: { gacha: true } },
+  { id: 'hat_hachimaki_navy', kind: 'hat', gacha: true, rarity: 'R', label: '必勝はちまき（こん）', value: 'hachimaki:#1D3557', unlock: { gacha: true } },
+  { id: 'hat_hachimaki_gold', kind: 'hat', gacha: true, rarity: 'SR', label: '合格祈願の金はちまき', value: 'hachimaki:#E0A800', unlock: { gacha: true } },
+  { id: 'aura_pencil', kind: 'aura', gacha: true, rarity: 'N', label: 'えんぴつ', value: 'pencil:#F4C542', unlock: { gacha: true } },
+  { id: 'aura_pencil_gold', kind: 'aura', gacha: true, rarity: 'SR', label: '金のえんぴつ', value: 'pencil:#D4A017', unlock: { gacha: true } },
+  { id: 'wall_campus', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：キャンパスの並木', value: 'campus', unlock: { gacha: true } },
+  { id: 'wall_sheet', kind: 'wallpaper', gacha: true, rarity: 'N', label: '壁紙：答案用紙', value: 'sheet', unlock: { gacha: true } },
+  { id: 'wall_nightdesk', kind: 'wallpaper', gacha: true, rarity: 'R', label: '壁紙：夜の自習机', value: 'nightdesk', unlock: { gacha: true } },
+  { id: 'wall_dawn', kind: 'wallpaper', gacha: true, rarity: 'SR', label: '壁紙：試験の朝', value: 'dawn', unlock: { gacha: true } },
+  { id: 'frame_niji_ink', kind: 'frame', gacha: true, rarity: 'N', label: '墨のフレーム', value: '#3A3A3A', unlock: { gacha: true } },
+  { id: 'frame_niji_sakura', kind: 'frame', gacha: true, rarity: 'R', label: 'サクラサクフレーム', value: '#F28AB2', pattern: 'sparkle', unlock: { gacha: true } },
+  { id: 'frame_niji_midnight', kind: 'frame', gacha: true, rarity: 'SR', label: '深夜の追い込みフレーム', value: '#2B2D55', pattern: 'stars', unlock: { gacha: true } },
+  // ── LR（2次試験ガチャ）：国公立2次 英語 予想問題（書き下ろし・過去問ではない。一覧は nijiMockPrints.ts）──
+  ...NIJI_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── LR（2次試験ガチャ）：大学別 英語 予想問題（北大・東北大・弘前大・岩手大・秋田大・山形大・福島大・宇都宮大・群馬大・神戸大・阪大・立命館。問題／解答・解説が別冊。一覧は hokudai/tohoku/hirosaki/iwate/akita/yamagata/fukushima/utsunomiya/gunma/kobe/osaka/ritsuMockPrints.ts）──
+  ...KOBE_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...OSAKA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...RITSU_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...HOKUDAI_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...TOHOKU_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...HIROSAKI_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...IWATE_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...AKITA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...YAMAGATA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...FUKUSHIMA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...UTSUNOMIYA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  ...GUNMA_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
+  // ── レベル報酬（2026-10-04 ご要望「レベルを上げる意味」）：このレベルでしか手に入らないもの ──
+  ...LEVEL_REWARD_ITEMS,
+];
+
+/** 学習プリント（UR）の詳細（サムネイル・ページ数など）。プリントでなければ undefined */
+export function printOf(id: string): GachaPrintDef | undefined {
+  return GACHA_PRINTS.find((p) => p.id === id) ?? KYOTSU_MOCK_PRINTS.find((p) => p.id === id) ?? NIJI_MOCK_PRINTS.find((p) => p.id === id) ?? KOBE_MOCK_PRINTS.find((p) => p.id === id) ?? OSAKA_MOCK_PRINTS.find((p) => p.id === id) ?? RITSU_MOCK_PRINTS.find((p) => p.id === id) ?? HOKUDAI_MOCK_PRINTS.find((p) => p.id === id) ?? TOHOKU_MOCK_PRINTS.find((p) => p.id === id) ?? HIROSAKI_MOCK_PRINTS.find((p) => p.id === id) ?? IWATE_MOCK_PRINTS.find((p) => p.id === id) ?? AKITA_MOCK_PRINTS.find((p) => p.id === id) ?? YAMAGATA_MOCK_PRINTS.find((p) => p.id === id) ?? FUKUSHIMA_MOCK_PRINTS.find((p) => p.id === id) ?? UTSUNOMIYA_MOCK_PRINTS.find((p) => p.id === id) ?? GUNMA_MOCK_PRINTS.find((p) => p.id === id) ?? LEVEL_PRINTS.find((p) => p.id === id);
+}
+
+/**
+ * ガチャのレア度。
+ *   LR … レジェンドレア：共通テスト予想問題（rarity:'LR' 指定のみ）
+ *   UR … 大当たり＝完全版の本（printRarity）・rarity:'UR' 指定
+ *   SR … ガチャ限定のもの（学習プリント・rarity:'SR' 指定・または unlock:{gacha:true}）
+ *   R  … 模様つきフレーム・200枚以上の交換品・称号で解放されるポーズ
+ *   N  … それ以外
+ */
+export function gachaRarityOf(item: ItemDef): GachaRarity {
+  if (item.rarity) return item.rarity;
+  if ('gacha' in item.unlock) return 'SR';
+  if (item.pattern || ('coins' in item.unlock && item.unlock.coins >= 200) || ('badge' in item.unlock)) return 'R';
+  return 'N';
+}
+
+/**
+ * ★E5（2026-11-03）PDF もショップでマナコインと交換できる★
+ *   ガチャから出る学習プリント・予想問題（kind:'print' かつ gacha:true）に、レア度ごとの値段を付ける。
+ *   高めにしてあるのは、ガチャで当てる楽しみを残すため（ガチャからも今までどおり出る）。
+ *   レベル報酬の PDF（Lv.15）はレベルでだけ手に入るので、ショップには出さない。
+ */
+export const PRINT_SHOP_PRICES: Readonly<Partial<Record<GachaRarity, number>>> = { LR: 5000, UR: 3000, SR: 2000 };
+
+/** ショップでの値段（マナコイン）。ショップで交換できなければ null */
+export function shopPriceOf(item: ItemDef): number | null {
+  if ('coins' in item.unlock) return item.unlock.coins;
+  if (item.kind === 'print' && item.gacha) return PRINT_SHOP_PRICES[gachaRarityOf(item)] ?? null;
+  return null;
+}
+
+export function itemById(id: string): ItemDef | undefined {
+  return ITEMS.find((i) => i.id === id);
+}
+
+/** 自動解放（レベル・バッジ条件）で新しく手に入る装備 */
+export function evaluateUnlocks(progress: GrowthProgress): string[] {
+  const level = levelOf(progress.xp).level;
+  const out: string[] = [];
+  for (const item of ITEMS) {
+    if (progress.owned.includes(item.id)) continue;
+    if ('level' in item.unlock && level >= item.unlock.level) out.push(item.id);
+    else if ('badge' in item.unlock && item.unlock.badge in progress.badges) out.push(item.id);
+  }
+  return out;
+}
+
+/** コインで装備を交換する */
+export function purchaseItem(
+  progress: GrowthProgress,
+  id: string,
+): { next: GrowthProgress; ok: boolean; reason?: string } {
+  const item = itemById(id);
+  if (!item) return { next: progress, ok: false, reason: 'その装備はありません。' };
+  if (progress.owned.includes(id)) return { next: progress, ok: false, reason: 'すでに持っています。' };
+  const price = shopPriceOf(item);
+  if (price == null) return { next: progress, ok: false, reason: 'コインでは交換できません。' };
+  if (progress.coins < price) {
+    return {
+      next: progress,
+      ok: false,
+      reason: `コインが ${price - progress.coins} 足りません。`,
+    };
+  }
+  return {
+    next: { ...progress, coins: progress.coins - price, owned: [...progress.owned, id] },
+    ok: true,
+  };
+}
+
+/** 装備を身につける（持っていないものは拒否） */
+export function equipItem(progress: GrowthProgress, id: string): GrowthProgress {
+  const item = itemById(id);
+  // 学習プリントは装備ではない（equipped に入れると扉くんの表示が壊れる）
+  if (!item || item.kind === 'print' || !progress.owned.includes(id)) return progress;
+  return { ...progress, equipped: { ...progress.equipped, [item.kind]: id } };
+}
+
+/**
+ * 装備を外す（2026-10-06：一度付けた装備を外せるように）。
+ *   ・帽子・メガネ・ほっぺ・オーラ・壁紙 → 何も付けない（''）
+ *   ・ポーズ・フレーム → 「なし」は無いので最初の基本（基本ポーズ・紙のフレーム）に戻す
+ *   ・称号は equipTitle('') で外す（ここでは扱わない）
+ */
+export function unequipKind(progress: GrowthProgress, kind: EquipKind): GrowthProgress {
+  const fallback = kind === 'pose' ? DEFAULT_POSE : kind === 'frame' ? DEFAULT_FRAME : '';
+  if (!REMOVABLE_KINDS.includes(kind) && kind !== 'pose' && kind !== 'frame') return progress;
+  if ((progress.equipped[kind] || '') === fallback) return progress;
+  return { ...progress, equipped: { ...progress.equipped, [kind]: fallback } };
+}
+
+/** その装備を外せるか（いま付けていて、外すと見た目が変わるもの） */
+export function canUnequip(progress: GrowthProgress, item: { id: string; kind: string }): boolean {
+  if (progress.equipped[item.kind as EquipKind] !== item.id) return false;
+  if (item.kind === 'pose') return item.id !== DEFAULT_POSE;
+  if (item.kind === 'frame') return item.id !== DEFAULT_FRAME;
+  return REMOVABLE_KINDS.includes(item.kind as EquipKind);
+}
+
+/** 装備中のアクセサリの見た目（'形:色'）。持っていない・種類が違うものは無視 */
+export function equippedAccessory(progress: GrowthProgress, slot: AccessorySlot): string | undefined {
+  const id = progress.equipped[slot];
+  const item = id ? itemById(id) : undefined;
+  return item && item.kind === slot && progress.owned.includes(id) ? item.value : undefined;
+}
+
+/** 装備中の壁紙のキー（WALLPAPERS）。無ければ '' */
+export function equippedWallpaper(progress: GrowthProgress): string {
+  const id = progress.equipped.wallpaper;
+  const item = id ? itemById(id) : undefined;
+  return item && item.kind === 'wallpaper' && progress.owned.includes(id) ? item.value : '';
+}
+
+/** 2026-11-03 装備中のお供のキー（COMPANIONS）。持っていない・連れていなければ '' */
+export function equippedCompanion(progress: GrowthProgress): string {
+  const id = progress.equipped.companion;
+  const item = id ? itemById(id) : undefined;
+  return item && item.kind === 'companion' && progress.owned.includes(id) ? item.value : '';
+}
+
+/** D7：装備中のホームの背景のキー（STAGES）。無ければ ''（いつもの宇宙） */
+export function equippedStage(progress: GrowthProgress): string {
+  const id = progress.equipped.stage;
+  const item = id ? itemById(id) : undefined;
+  return item && item.kind === 'stage' && progress.owned.includes(id) ? item.value : '';
+}
+
+/** 称号を身につける（'' でレート称号に戻す。持っていないバッジは拒否） */
+export function equipTitle(progress: GrowthProgress, badgeId: string): GrowthProgress {
+  if (badgeId !== '' && !(badgeId in progress.badges)) return progress;
+  return { ...progress, equipped: { ...progress.equipped, title: badgeId } };
+}
+
+/** 身につけているポーズの画像パス（壊れていれば基本） */
+export function equippedPoseSrc(progress: GrowthProgress): string {
+  const item = itemById(progress.equipped.pose);
+  return item && item.kind === 'pose' ? item.value : '/mascots/basic.webp';
+}
+
+/** 身につけている枠の色 */
+export function equippedFramePattern(progress: GrowthProgress): string {
+  return itemById(progress.equipped.frame)?.pattern || 'plain';
+}
+
+export function equippedFrameColor(progress: GrowthProgress): string {
+  const item = itemById(progress.equipped.frame);
+  return item && item.kind === 'frame' ? item.value : '#E5E7EB';
+}
+
+/** 表示する称号（バッジ称号を選んでいればそれ、無ければ null＝レート称号を使う） */
+export function equippedTitleLabel(progress: GrowthProgress): string | null {
+  if (!progress.equipped.title) return null;
+  const b = badgeById(progress.equipped.title);
+  if (!b || !(b.id in progress.badges)) return null;
+  return b.label;
+}
