@@ -1,5 +1,38 @@
 # マナトビ 英検版
 
+## 2026-11-09 シェル統一（後続PR用・ローカル実装）
+
+- `eiken-app/index.html` の起動先を `/src/main.tsx` に切り替え、既存の `App.tsx`・共通ホーム・下部ナビ・設定・成長画面を有効化。
+- ホーム「演習する」→ 英検の級選択 → 単元 → 共通の演習／解説UI。下部「学習」には公開中7級と共通補助単語帳を表示。1級は準備中で選択不可。
+- `handleStart` と foundation の遷移は選択中の英検級へ接続。旧 EikenApp の `selected_grade` は `eiken:v1:` 内からのみ引き継ぐ。
+- 全 `src/**/*` を既存の型検査設定で検査する。`npm --prefix eiken-app run typecheck` は Node のヒープ上限4096MBを明示。型検査の厳格さを下げたり、検査対象をエントリだけに戻したりしていない。
+- `tanjou.mp3`・`bgm/`・`cinematics/`・英検用 manifest/SW・共通語彙／発音表を移植。SWの読取／削除対象は英検のキャッシュに限定。
+- **混入防止のため移植しないもの**：大学入試問題の `read_along/`、和訳データ、単語の旧問題例文・音声リンク。語彙JSONから旧問題参照を除去し、和訳エンドポイントは空データ。英検音声は従来どおりブラウザ読み上げで、録音に対応する追従データは未作成。
+- 大学入試用 ReadingQuiz の配信依存を切断。ビルドガードは既存の大学入試／TOEICに加えて英文解釈問題バンクも拒否。英検問題14問・ガチャ景品・試験日設定・Firebase接続先は変更しない。
+
+### 検証と実行方法
+
+```sh
+npm ci --prefix eiken-app
+npm --prefix eiken-app run typecheck
+npm --prefix eiken-app test
+npm --prefix eiken-app run build
+# 構築済みSPAのローカルプレビューをポート3000で起動後（Playwright Chromiumが必要）
+npm --prefix eiken-app run test:browser
+```
+
+全srcの型検査、ユニット10件、ビルドガード付きビルド、PC／スマホ各7級の計14経路（選択→演習→解説→結果）、再読込復元・単語帳・端末保存／外部通信分離・SWキャッシュ分離を確認。
+
+### 配信パス・保存先・残作業
+
+- SPA入口：`/`（`?screenshot=1` は既存の画面検証起動）。級・画面はURLではなくアプリ状態として保持。
+- 静的パス：`/assets/`、`/brand/`、`/icons/`、`/mascots/`、`/sfx/`、`/bgm/`、`/cinematics/`、`/data/`、`/audio/vocab/index.json`、`/tanjou.mp3`、`/manifest.json`、`/sw.js`。Vercelの静的パス除外も更新。
+- 進捗・級・解答・範囲は既存の英検名前空間 `eiken:v1:`、クラウド有効時は既存の英検専用Firebaseを使用。新しいDB・秘密情報・接続先は追加していない。
+- **未実施**：今回のFirestoreルールテストはEmulator未起動のため実行前ガードで停止。本番Auth・クラウド同期・オンライン対戦の動作保証は今回のローカルテストには含まない。
+- GitHub認証が未接続のため、このセッションでは最新remoteの確認・push・PR作成は未実施。手元の前回ブランチ `8528b62` を基点に作業。接続後に最新mainと差分確認して後続PRを作成する。
+- 本番デプロイ、Firebaseルール配備、既存公開サイトの変更はしていない。公開URLは今回新規発行していない。
+
+
 ## 現在の公開対象（React/Vite版）
 
 大学入試版のアップロードされたUIを元にした英検専用アプリは `eiken-app/` です。大学版の本番・Firebase・Storageには接続／配備していません。元ZIPと `.reference/university/` は変更せず保存しています。GitHubは `https://github.com/mntobira/mntb-eiken` のみ使用します。

@@ -10,7 +10,8 @@
     "build:vercel": "node scripts/check-target.mjs --production && vite build --mode eiken.production",
     "typecheck": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
     "test": "vitest run tests/eiken.test.ts --maxWorkers=1",
-    "test:rules": "node --test tests/firestore-rules.test.mjs"
+    "test:rules": "node --test tests/firestore-rules.test.mjs",
+    "test:browser": "node tests/shell.browser.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.2.0",

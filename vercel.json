@@ -6,7 +6,8 @@
   "outputDirectory": "eiken-app/dist",
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(assets|brand|mascots|icons|sfx|eiken_audio)/.*", "status": 404 },
+    { "src": "/(assets|brand|mascots|icons|sfx|eiken_audio|audio|bgm|cinematics|data|read_along)/.*", "status": 404 },
+    { "src": "/(sw\\.js|manifest\\.json|tanjou\\.mp3)", "status": 404 },
     { "src": "/.*", "dest": "/index.html" }
   ]
 }

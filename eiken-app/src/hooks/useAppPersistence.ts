@@ -78,6 +78,9 @@ export function restoreQuizRange(): QuizRange | null {
 export function restoreSelectedSubject(): SubjectId {
   const saved = safeGetItem(STORAGE_KEYS.selectedSubject);
   if (isSubjectId(saved) && isSubjectEnabled(saved)) return saved;
+  // 旧EikenAppの選択級だけを英検名前空間内から引き継ぐ。大学入試版は読まない。
+  const previousGrade = safeGetItem('selected_grade');
+  if (isSubjectId(previousGrade) && isSubjectEnabled(previousGrade)) return previousGrade;
   const fallback = fallbackSubjectId(SUBJECT_IDS);
   return (fallback as SubjectId) ?? DEFAULT_SUBJECT;
 }
