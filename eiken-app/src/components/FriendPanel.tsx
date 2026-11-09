@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy, RefreshCw, Send, Share2, UserPlus, X } from 'lucide-react';
 import {
   acceptFriendRequest,

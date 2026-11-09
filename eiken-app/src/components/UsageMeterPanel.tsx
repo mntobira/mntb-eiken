@@ -5,7 +5,7 @@
  * - プロジェクト全体の正確な合計は Firebase コンソールの「使用量」ページで確認する（リンクあり）。
  * - 通信は一切増やさない（localStorage の記録を読むだけ）。
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Activity, ExternalLink, Trash2 } from 'lucide-react';
 import { readUsage, flushUsageNow, clearUsage, FREE_DAILY_LIMITS, type UsageDay } from '../utils/firestoreMetered';
 import { confirmAction } from '../utils/dialog';

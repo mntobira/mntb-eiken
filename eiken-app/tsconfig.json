@@ -35,7 +35,7 @@
     "useUnknownInCatchVariables": true
   },
   "include": [
-    "src/eiken/main.tsx",
+    "src/**/*",
     "vite.config.ts"
   ],
   "exclude": [
