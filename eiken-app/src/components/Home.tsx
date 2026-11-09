@@ -365,7 +365,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo-gray.png" width={480} height={152} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
           {/* リスニング版と同じヘッダー配置。英検版では教材名と級を表示する。 */}
-          <div className="game-home-countdown" aria-label="現在の教材"><strong>英検リスニング</strong><span>{subjectLabel}</span></div>
+          <div className="game-home-countdown" aria-label="英検リスニングの現在の教材"><strong>英検リスニング</strong><span>{subjectLabel}</span></div>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>
             <button type="button" onClick={() => setShowNotices(true)} aria-label="お知らせを開く"><Bell size={19} />{unreadCount > 0 && <i />}</button>
