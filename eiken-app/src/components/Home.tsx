@@ -73,6 +73,13 @@ import { SpinMascot } from './SpinMascot';
 import './home-mascot-idle.css';
 import { streakDoors } from '../data/tobiraMood';
 import { CountUp } from './ui/CountUp';
+// 本番までの残り日数（日付だけ英検の日程。UIはリスニング版と同一）
+import {
+  getDaysUntilExam,
+  getDaysUntilSecondExam,
+  EXAM_DATE_LABEL,
+  SECOND_EXAM_DATE_LABEL,
+} from '../utils/examCountdown';
 import { FeedbackButton } from './FeedbackButton';
 import { FeedbackReplyInbox } from './FeedbackReplyInbox';
 import { GoogleLinkBanner } from './GoogleLinkBanner';
@@ -352,6 +359,10 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
 
   const greetingName = profile?.name || 'ゲスト';
 
+  // リスニング版と同じく、残り日数はマウント時に一度だけ計算する
+  const daysUntilExam = useMemo(() => getDaysUntilExam(), []);
+  const daysUntilSecond = useMemo(() => getDaysUntilSecondExam(), []);
+
   const progressPercent = totalQuestions > 0 ? Math.round(solvedQuestions / totalQuestions * 100) : 0;
   const bgmPlaying = !!isBgmEnabled && !isBgmFadedOut;
   const bgmLabel = !isBgmEnabled ? 'BGMを鳴らす' : isBgmFadedOut ? 'BGMをもう一度鳴らす' : 'BGMを止める';
@@ -364,8 +375,11 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       <div className="game-home-viewport">
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo-gray.png" width={480} height={152} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
-          {/* リスニング版と同じヘッダー配置。英検版では教材名と級を表示する。 */}
-          <div className="game-home-countdown" aria-label="英検リスニングの現在の教材"><strong>英検リスニング</strong><span>{subjectLabel}</span></div>
+          {/* カウントダウンはリスニング版と同一のUI（2枠・CountUp）。日付と見出しだけ英検の日程。 */}
+          <dl className="game-home-countdown" aria-label="本番までの日数" data-home-countdown>
+            <div title={`英検 一次試験 ${EXAM_DATE_LABEL}`}><dt>一次</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>
+            <div title={`英検 二次試験 ${SECOND_EXAM_DATE_LABEL}`}><dt>二次</dt><dd><b><CountUp value={daysUntilSecond} fromZero duration={1100} delay={420} /></b>日</dd></div>
+          </dl>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>
             <button type="button" onClick={() => setShowNotices(true)} aria-label="お知らせを開く"><Bell size={19} />{unreadCount > 0 && <i />}</button>
@@ -434,7 +448,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       </div>
       <dialog ref={progressDialog} className="game-details-dialog" aria-labelledby="home-progress-title">
         <header><h2 id="home-progress-title">学習状況・その他</h2><button type="button" onClick={() => progressDialog.current?.close()} autoFocus>閉じる</button></header>
-        <div className="game-details-body arena-home-more"><p>連続学習 {streak}日 ／ {todayFormatted}</p>{schoolBrand && <p>{schoolBrand.schoolName}</p>}
+        <div className="game-details-body arena-home-more"><p>連続学習 {streak}日 ／ {todayFormatted}</p><p>{EXAM_DATE_LABEL}まで {daysUntilExam}日</p>{schoolBrand && <p>{schoolBrand.schoolName}</p>}
           <div className="game-study-progress"><span>{subjectLabel} {solvedQuestions}/{totalQuestions}問</span><div role="progressbar" aria-label="学習進捗" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div></div>
           <details className="home-all-progress"><summary>リスニングの進捗を見る</summary>{subjectProgressDefs.map(def => <p key={def.id}>{def.label} {subjectProgress[def.id]?.solved ?? 0}/{subjectProgress[def.id]?.total ?? 0}問</p>)}</details>
           <FeedbackButton screen="title" variant="text" label="ご意見・ご要望" /><FeedbackReplyInbox />
