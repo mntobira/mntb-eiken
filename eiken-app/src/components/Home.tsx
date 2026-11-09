@@ -343,9 +343,6 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
   const todayStr = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' });
   const todayFormatted = todayStr.replace(/\//g, '.');
 
-  // 共通テストまでの残り日数
-
-
   // 「次の章」を算出（学習進捗カードの状況別コピー用）
   // 問をすべて解き終えた章は飛ばし、まだ残っている最初の章を提示する。
   // （completed_ は「ミニテストを通した」履歴でしかなく、
@@ -367,7 +364,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       <div className="game-home-viewport">
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo-gray.png" width={480} height={152} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
-          {/* ★ロゴの横に本番までの日数（2026-10-11 ご要望）★ 共通テストと2次（前期）の2つ */}
+          {/* リスニング版と同じヘッダー配置。英検版では教材名と級を表示する。 */}
           <div className="game-home-countdown" aria-label="現在の教材"><strong>英検リスニング</strong><span>{subjectLabel}</span></div>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>
@@ -425,7 +422,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           <button type="button" className="home-philosophy-entry" onClick={() => setShowPhilosophy(true)} aria-label="学びの扉（開発者の想い）を読む" data-open-philosophy><BookHeart size={17} />学びの扉</button>
         </div>
         <section className="desktop-study-summary" aria-label="今日の学習状況">
-          <p>学習記録</p><h2><KineticText text="今日の積み重ね" delay={200} /></h2>
+          <p>STUDY DESK</p><h2><KineticText text="今日の積み重ね" delay={200} /></h2>
           <div><span>連続学習<strong><CountUp value={streak} fromZero duration={900} delay={400} /><small>日</small></strong></span><span>復習待ち<strong><CountUp value={reviewDueCount} fromZero duration={900} delay={500} /><small>問</small></strong></span></div>
           {/* ★連続日数は炎ではなく「開いた扉」で★ 1日＝扉1枚。7枚より先は数字で */}
           <p className="study-doors" aria-label={`連続学習 ${streak}日`}>{Array.from({ length: 7 }, (_, i) => <i key={i} data-open={i < streakDoors(streak).doors || undefined} />)}{streakDoors(streak).extra > 0 && <b>+{streakDoors(streak).extra}</b>}</p>
