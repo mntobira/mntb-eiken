@@ -64,7 +64,7 @@ export const FEATURES = {
   // （2026-10-28 どこからも使われていなかった "my_words" を削除）
   "bgm": true,
   "ranking": false,
-  "battle": false
+  "battle": true
 } as const;
 
 export type FeatureKey = keyof typeof FEATURES;
