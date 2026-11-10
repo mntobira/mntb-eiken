@@ -22,12 +22,15 @@ try {
     });
     await page.goto(`${origin}/?screenshot=1`);
     await page.locator('[data-home-practice]').waitFor();
+    assert.equal(await page.locator('.game-home-logo').getAttribute('src'), '/brand/manatobi-logo.webp');
+    await page.evaluate(() => document.fonts.ready);
+    assert.equal(await page.evaluate(() => document.fonts.check('16px "Inter"')), true);
     for (const grade of grades) {
       await page.locator('[data-home-practice]').click();
-      await page.locator('[data-eiken-grades]').waitFor();
-      assert.equal(await page.locator('[data-eiken-grade]').count(), 8);
-      assert.equal(await page.locator('[data-eiken-grade="eiken_1"]').isDisabled(), true);
-      await page.locator(`[data-eiken-grade="${grade}"]`).click();
+      await page.locator('[data-study-card="eiken_3"]').waitFor();
+      assert.equal(await page.locator('[data-study-card^="eiken_"]').count(), 7);
+      assert.equal(await page.locator('[data-study-card="eiken_1"]').count(), 0);
+      await page.locator(`[data-study-card="${grade}"]`).click();
       await page.getByRole('button', { name: /第1回演習/ }).first().waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('eiken:v1:savedSelectedSubject')), grade);
       await page.getByRole('button', { name: /第1回演習/ }).first().click();
@@ -59,6 +62,34 @@ try {
     await page.locator('[data-study-card="english_vocabulary"]').click();
     await page.locator('[data-fd-range]').waitFor();
     assert.equal(await page.getByRole('alert').count(), 0);
+    // A menu alone is not parity: play the shared AI battle through both real questions.
+    await page.getByRole('button', { name: 'ホーム画面へ移動', exact: true }).click();
+    await page.locator('[data-home-battle]').click();
+    await page.getByRole('button', { name: /AIと対戦/ }).click();
+    await page.getByRole('button', { name: /^英検5級/ }).click();
+    await page.getByRole('button', { name: /リスニング練習/ }).click();
+    await page.getByRole('button', { name: /マナボ（見習い）/ }).click();
+    await page.getByRole('button', { name: 'はじめる', exact: true }).click();
+    for (let question = 0; question < 2; question += 1) {
+      const prompt = page.locator('#battle-question .arena-question-prompt');
+      await prompt.waitFor();
+      const before = await prompt.innerText();
+      assert.equal(await page.locator('#battle-question .bqa-play').count(), 1);
+      const choices = page.locator('#battle-question button').filter({ hasText: /^[A-Za-z]/ });
+      assert.equal(await choices.count(), 4);
+      await choices.first().click();
+      if (question === 0) await page.waitForFunction(previous => {
+        const prompt = document.querySelector('#battle-question .arena-question-prompt');
+        return prompt && prompt.innerText !== previous;
+      }, before);
+    }
+    await page.getByRole('button', { name: /詳しい結果を確認する/ }).waitFor();
+    assert.match(await page.locator('body').innerText(), /AI対戦ではレートは動きません/);
+    await page.evaluate(() => window.__SET_APP_STATE__('home'));
+    await page.getByRole('button', { name: 'ガチャ画面へ移動', exact: true }).click();
+    await page.waitForFunction(() => localStorage.getItem('eiken:v1:savedAppState') === 'growth');
+    await page.getByRole('button', { name: '設定画面へ移動', exact: true }).click();
+    await page.waitForFunction(() => localStorage.getItem('eiken:v1:savedAppState') === 'settings');
     assert.equal(await page.evaluate(() => localStorage.getItem('university_sentinel')), 'unchanged');
     assert.deepEqual(errors, []);
     assert.deepEqual(externalRequests, [], 'Local-only mode must not contact cloud services');
@@ -81,7 +112,7 @@ try {
   const keys = await page.evaluate(() => caches.keys());
   assert.ok(keys.includes('manatobi-shell-v7'));
   assert.ok(keys.some(key => key.startsWith('manatobi-eiken-shell-')));
-  for (const path of ['/tanjou.mp3', '/cinematics/title.mp4', '/manifest.json', '/data/vocabPron.json']) {
+  for (const path of ['/tanjou.mp3', '/cinematics/title.mp4', '/manifest.json', '/data/vocabPron.json', '/fonts/shared.css', '/prints/print_level_eiken_howto.pdf']) {
     const response = await page.request.get(origin + path);
     assert.equal(response.status(), 200, path);
     assert.ok(!response.headers()['content-type'].includes('text/html'), path);

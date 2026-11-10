@@ -78,6 +78,7 @@
  */
 
 import type { BattleAnswerFormat, BattleRule } from './types';
+import { EIKEN_GRADES } from '../../eiken/config';
 
 /**
  * すべての教科に共通の土台。
@@ -139,55 +140,13 @@ const BASE: Omit<BattleRule, 'subject'> = {
  *   3. このファイルに1件足して enabled: true にする
  * の3手順で対戦に出せるようになる。
  */
-export const BATTLE_RULES: Readonly<Record<string, BattleRule>> = {
-  "english_listening": {
-    "enabled": true,
-    "questionCount": 8,
-    "timeLimitOverride": 55,
-    "pointsCorrect": 100,
-    "pointsSpeedMax": 20,
-    "pointsStreak": 15,
-    "tiebreak": "time",
-    "formats": [
-      "choice4"
-    ],
-    "kanaShare": 0,
-    "note": "イヤホン推奨・聞き終えてから解答",
-    "subject": "english_listening"
-  },
-  "english_grammar": {
-    "enabled": true,
-    "questionCount": 10,
-    "timeLimitOverride": null,
-    "pointsCorrect": 100,
-    "pointsSpeedMax": 50,
-    "pointsStreak": 15,
-    "tiebreak": "time",
-    "formats": [
-      "choice4"
-    ],
-    "kanaShare": 0,
-    "note": "",
-    "subject": "english_grammar"
-  },
-  "english_vocab": {
-    "enabled": true,
-    "questionCount": 10,
-    "timeLimitOverride": null,
-    "pointsCorrect": 100,
-    "pointsSpeedMax": 50,
-    "pointsStreak": 15,
-    "tiebreak": "time",
-    "formats": [
-      "choice4",
-      "choice",
-      "kana"
-    ],
-    "kanaShare": 0,
-    "note": "",
-    "subject": "english_vocab"
-  }
-};
+export const BATTLE_RULES: Readonly<Record<string, BattleRule>> = Object.fromEntries(
+  EIKEN_GRADES.filter(grade => grade.available).map(grade => [grade.id, {
+    ...BASE, subject: grade.id, questionCount: 8, timeLimitOverride: 55,
+    pointsSpeedMax: 20, formats: ['choice4'], kanaShare: 0,
+    note: 'イヤホン推奨・聞き終えてから解答。現在は各級2問の重点練習です。',
+  }]),
+);
 
 /**
  * 教科IDから既定ルールを引く。
@@ -224,7 +183,7 @@ export function defaultEnabledSubjects(): string[] {
  */
 export function normalizeRule(subject: string, raw: unknown): BattleRule {
   const base = defaultRuleOf(subject);
-  if (!["english_listening","english_grammar","english_vocab"].includes(subject)) return base;
+  if (!Object.hasOwn(BATTLE_RULES, subject)) return base;
   if (!raw || typeof raw !== 'object') return base;
   const r = raw as Record<string, unknown>;
 

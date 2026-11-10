@@ -36,6 +36,9 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BattleText } from './BattleText';
+import { isEikenGrade } from '../../eiken/config';
+import { loadBattleSpeech } from '../data/battlePool';
+import { speak, stopSpeech } from '../../utils/listeningSpeech';
 import { CircleCheck, CircleX, Hourglass, RotateCcw, Play, Pause, Info } from 'lucide-react';
 import { PICTURE_GRID_SPLITS } from '../data/pictureGrid.generated';
 import './battle-question.css';
@@ -133,7 +136,7 @@ export function BattleQuestionView({
   // 2×2 の絵で答える問題か（区切り位置が分かっている絵だけ）
   const pictureGrid = question.imageUrl && question.options.length === 4 && question.format !== 'kana' && question.format !== 'panel'
     ? PICTURE_GRID_SPLITS[question.imageUrl] : undefined;
-  const isListening = question.subject === 'english_listening';
+  const isListening = question.subject === 'english_listening' || isEikenGrade(question.subject);
   /** 問題文の上の欄が「英文」そのもの（英文法・英単語）。一人で学ぶと同じ太字で見せる */
   const isEnglishSentence = question.subject === 'english_grammar' || question.subject === 'english_vocab';
   // 「（話者：女性（管理人））」のように、問題文の中身がすでに設問（label）に含まれているときは出さない（重複をなくす）
@@ -170,6 +173,7 @@ export function BattleQuestionView({
         <TimeBar remainMs={remainMs} limitSec={effectiveLimitSec} />
       </div>
 
+      {isEikenGrade(question.subject) && <BattleSpeechAudio key={question.id} id={question.id} stopped={answered || reveal} />}
       {question.subject === 'english_listening' && <BattleListeningAudio
         key={question.id} src={question.audioUrl} stopped={answered || reveal} />}
 
@@ -377,6 +381,43 @@ function BattleListeningAudio({ src, stopped }: { key?: string; src?: string; st
       onEnded={() => { setPlaying(false); setProgress(100); setStatus('再生終了'); }}
       onTimeUpdate={(e) => { const el = e.currentTarget; if (el.duration > 0) setProgress(Math.min(100, el.currentTime / el.duration * 100)); }}
       onError={() => { setFailed(true); setPlaying(false); setStatus('読み込み失敗・↻で再試行'); }} />
+  </section>;
+}
+
+/** Same audio controls as the listening edition; the Eiken corpus currently uses TTS. */
+function BattleSpeechAudio({ id, stopped }: { id: string; stopped: boolean }) {
+  const [text, setText] = useState('');
+  const [status, setStatus] = useState('読み込み中');
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [info, setInfo] = useState(false);
+  const playText = (body: string) => {
+    setProgress(0);
+    setPlaying(true);
+    setStatus('再生中');
+    const started = speak(id, body, 1, { onEnd: () => { setPlaying(false); setProgress(100); setStatus('再生終了'); } });
+    if (!started) { setPlaying(false); setStatus('端末の英語読み上げを確認'); }
+  };
+  useEffect(() => {
+    let disposed = false;
+    if (stopped) { stopSpeech(); setPlaying(false); return; }
+    void loadBattleSpeech(id).then(body => {
+      if (disposed) return;
+      if (!body) { setStatus('読み込み失敗'); return; }
+      setText(body); playText(body);
+    }).catch(() => { if (!disposed) setStatus('読み込み失敗'); });
+    return () => { disposed = true; stopSpeech(); };
+  }, [id, stopped]);
+  return <section className="battle-listening-audio bqa" aria-label="対戦の音源">
+    <button type="button" className="bqa-play" disabled={stopped || !text}
+      aria-label={playing ? '音源を一時停止' : '音源を再生'}
+      onClick={() => { if (playing) { stopSpeech(); setPlaying(false); setStatus('一時停止'); } else playText(text); }}>
+      {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+    </button>
+    <span className="bqa-track" aria-hidden="true"><i style={{ width: `${progress}%` }} /></span>
+    <span className="bqa-status" role="status">{stopped ? '解答終了' : status}</span>
+    <button type="button" className="bqa-info" onClick={() => setInfo(value => !value)} aria-expanded={info} aria-label="音源の注意を表示"><Info size={16} aria-hidden="true" /></button>
+    {info && <p className="bqa-note">端末の英語読み上げを使います。再生中・停止中も制限時間は進みます。再生ボタンで最初から聞き直せます。</p>}
   </section>;
 }
 

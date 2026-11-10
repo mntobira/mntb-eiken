@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
     transformIndexHtml(html) {
       const cloud = env.VITE_EIKEN_ENABLE_CLOUD === 'true';
       const project = env.VITE_EIKEN_FIREBASE_PROJECT_ID || '';
-      const connect = cloud ? "'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com" : "'self'";
+      const connect = cloud ? `'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://asia-northeast1-${project}.cloudfunctions.net` : "'self'";
       const csp = `default-src 'self'; script-src 'self'${cloud ? ' https://apis.google.com https://www.gstatic.com' : ''}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googleusercontent.com; font-src 'self' data:; media-src 'self' blob: data:; connect-src ${connect}; frame-src 'self'${cloud ? ` https://${project}.firebaseapp.com https://accounts.google.com` : ''}; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'`;
       return html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="${csp}">`);
     },

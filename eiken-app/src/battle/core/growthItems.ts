@@ -68,10 +68,10 @@ export interface ItemDef {
  */
 /**
  * レベル報酬の学習プリント（UR）。ガチャからは出ない。レベルに届いたら自動で手に入る。
- * PDF は scripts/gacha-prints/build-level-ur.py で作る。
+ * 英検版PDFは scripts/build-level-guide.py で作る。共通の解放レベル・報酬IDは保つ。
  */
 export const LEVEL_PRINTS: readonly GachaPrintDef[] = [
-  { id: 'print_level_listening_howto', label: '共通テスト リスニングの聞き方（大問別の聞き方と毎日の練習法）', subject: 'english_listening', category: '出題傾向', file: '/prints/print_level_listening_howto.pdf', thumb: '/prints/thumbs/print_level_listening_howto.webp', pages: 2, kb: 82 },
+  { id: 'print_level_listening_howto', label: '英検リスニングの練習法（聞き取りと毎日の復習）', subject: 'eiken_5', category: '出題傾向', file: '/prints/print_level_eiken_howto.pdf', thumb: '/prints/thumbs/print_level_eiken_howto.webp', pages: 2, kb: 82 },
 ];
 
 /** 学習プリントのレア度：完全版の本は UR（大当たり）、それ以外の学習プリントは SR */

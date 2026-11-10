@@ -1,0 +1,114 @@
+{
+  "indexes": [
+    {
+      "//": "全国マッチ: 同じ教科で待っている人を古い順に探す（src/battle/data/battle.ts findOrEnqueue）。等式(subject)と並べ替え(createdAt)を組み合わせるので複合索引が必須。無いと『The query requires an index.』で全国対戦が始められない。",
+      "collectionGroup": "eiken_battle_queue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "subject",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "//": "全国マッチ: 相手が自分を拾って作った部屋を待ち受ける（src/battle/data/battle.ts watchMatched）。array-contains + 等式 + 並べ替えなので複合索引が必須。こちらは onSnapshot のエラーを捨てているため画面にエラーが出ず、代わりに『いつまでもマッチしない』という形で壊れる。",
+      "collectionGroup": "eiken_battle_rooms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "players",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "全国マッチ: 待機中の自分の部屋だけを購読する（watchMatched）。array-contains + 等式なので複合索引が必要。無いときは全件購読に自動で切り替わる。",
+      "collectionGroup": "eiken_battle_rooms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "players",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "//": "章ランキング: 章ごとに点数の高い順で上位だけ読む（src/utils/leaderboard.ts fetchChapterRanking）。無いときは上限つきの全件読みに切り替わる。",
+      "collectionGroup": "eiken_leaderboard_chapter",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "chapterId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "bestScore",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "放置部屋の掃除（functions sweepStaleBattleData）：waiting のまま古い部屋を探す",
+      "collectionGroup": "eiken_battle_rooms",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "//": "学習時間ランキング：公開した人を学習時間の長い順に（src/utils/publicStudyProfile.ts fetchStudyTimeRanking）。無いときは上限つきで読んで端末で並べる。",
+      "collectionGroup": "eiken_public_study_profiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "public",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "studySeconds",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "学習フィード：フレンドの共有した記録を新しい順に（src/features/studylog/studyFeed.ts fetchFeed / fetchUserPosts）。uid の in/== と createdAt の並べ替えなので複合索引が必要。",
+      "collectionGroup": "eiken_study_posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

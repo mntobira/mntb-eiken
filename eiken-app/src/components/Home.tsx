@@ -374,7 +374,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
       <SakuraPetals count={14} className="home-sakura" />
       <div className="game-home-viewport">
         <header className="game-home-header">
-          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo-gray.png" width={480} height={152} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
+          <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
           {/* カウントダウンはリスニング版と同一のUI（2枠・CountUp）。日付と見出しだけ英検の日程。 */}
           <dl className="game-home-countdown" aria-label="本番までの日数" data-home-countdown>
             <div title={`英検 一次試験 ${EXAM_DATE_LABEL}`}><dt>一次</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>

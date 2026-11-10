@@ -1,5 +1,11 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { loadPool, poolCountOf, loadBattleAnswers, loadBattleSpeech, POOL_COUNTS } from '../src/battle/data/battlePool';
+import { defaultRuleOf, normalizeRule } from '../src/battle/core/battleRules';
+import { arenaRule } from '../src/battle/core/arenaRules';
+import { BattleQuestionView } from '../src/battle/ui/BattleQuestionView';
+import { LEVEL_PRINTS, LEVEL_REWARD_ITEMS } from '../src/battle/core/growthItems';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { STUDY_CATALOG } from '../src/data/studyCatalog';
@@ -27,6 +33,73 @@ class MemoryStorage implements Storage {
   clear() { this.values.clear(); }
 }
 afterEach(() => vi.unstubAllGlobals());
+
+describe('Listening parity', () => {
+  it('keeps more than 600 inherited source files byte-identical to listening main', () => {
+    const baseline = JSON.parse(readFileSync('tests/listening-baseline.json', 'utf8'));
+    expect(baseline.commit).toBe('ee648b2a961096724afbdc455d7da36a81284f44');
+    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(600);
+    for (const [path, hash] of Object.entries(baseline.unchangedFiles)) {
+      const content = readFileSync(path);
+      expect(createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex'), path).toBe(hash);
+    }
+  });
+  it('keeps the shared logo and typography instead of a different visual theme', () => {
+    expect(readFileSync('src/components/Home.tsx', 'utf8')).toContain('src="/brand/manatobi-logo.webp" width={1008} height={321}');
+    expect(readFileSync('src/index.css', 'utf8')).toContain('@source "./data/subjects.ts";');
+    expect(readFileSync('src/index.css', 'utf8')).toContain('@source "./App.tsx";');
+    const css = readFileSync('public/fonts/shared.css', 'utf8');
+    for (const family of ['Inter', 'Yomogi', 'Klee One', 'Kaisei Decol', 'M PLUS Rounded 1c']) expect(css).toContain(`font-family: '${family}'`);
+    for (const match of css.matchAll(/url\(\/([^)]*)\)/g)) expect(existsSync(`public/${match[1]}`)).toBe(true);
+  });
+  it('keeps level reward mechanics but replaces the unavailable university PDF with Eiken content', () => {
+    expect(LEVEL_REWARD_ITEMS.find(item => item.kind === 'print')?.unlock.level).toBe(15);
+    for (const print of LEVEL_PRINTS) {
+      expect(print.label).toContain('英検');
+      expect(existsSync(`public${print.file}`)).toBe(true);
+      expect(existsSync(`public${print.thumb}`)).toBe(true);
+      expect(readFileSync(`public${print.file}`).subarray(0, 4).toString()).toBe('%PDF');
+    }
+  });
+});
+
+describe('Eiken battle corpus', () => {
+  it('provides real grade-specific pools with the same listening scoring and timing', async () => {
+    expect(Object.keys(POOL_COUNTS)).toEqual(EIKEN_GRADES.filter(grade => grade.available).map(grade => grade.id));
+    for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
+      const rule = arenaRule(normalizeRule(grade.id, {}));
+      const pool = await loadPool(grade.id);
+      expect(pool).toHaveLength(poolCountOf(grade.id, rule.formats));
+      expect(pool).toHaveLength(2);
+      expect(rule.pointsSpeedMax).toBe(20);
+      expect(rule.timeLimitOverride).toBe(55);
+      const answers = await loadBattleAnswers(grade.id);
+      for (const question of pool) {
+        expect(question.subject).toBe(grade.id);
+        expect(question.id.startsWith(grade.id + '_')).toBe(true);
+        expect(question.options[question.answerIndex]).toBeTruthy();
+        expect(answers.get(question.id)).toContain(question.options[question.answerIndex]);
+        expect(await loadBattleSpeech(question.id)).toContain('Question.');
+        expect(question).not.toHaveProperty('transcript');
+        expect(question).not.toHaveProperty('translation');
+      }
+    }
+    expect(await loadPool('english_listening')).toEqual([]);
+    expect(defaultRuleOf('eiken_1').enabled).toBe(false);
+  });
+  it('renders the same audio controls without exposing the Eiken script or explanations while answering', async () => {
+    const question = (await loadPool('eiken_3'))[0];
+    const html = renderToStaticMarkup(createElement(BattleQuestionView, {
+      question, index: 0, total: 2, remainMs: 55000, answered: false, myChoice: -1, myPanel: [], reveal: false,
+      onChoose: () => {}, onPushPanel: () => {}, onPopPanel: () => {}, onCyclePanel: () => {}, onCommitKana: () => {},
+    }));
+    expect(html).toContain('aria-label="対戦の音源"');
+    expect(html).toContain('bqa-play');
+    const source = EIKEN_QUESTIONS.find(item => `${item.id}_answer` === question.id)!;
+    expect(html).not.toContain(source.transcript);
+    expect(html).not.toContain(source.explanation);
+  });
+});
 
 describe('Shared Eiken shell', () => {
   it('boots App via the shared entry and checks the entire source tree', () => {
