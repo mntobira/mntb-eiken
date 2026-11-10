@@ -81,7 +81,7 @@ export interface SubjectDefinition {
 const EIKEN_SUBJECTS = EIKEN_GRADES.map(grade => ({
   id: grade.id, label: grade.label, shortLabel: grade.shortLabel, enabled: grade.available,
   chapterIdPattern: new RegExp('^' + grade.id + '_'), entry: 'chapters' as const,
-  practiceDescription: '会話と説明を聞き、内容に合う答えを選びます。', classroom: false,
+  practiceDescription: '会話と説明を聞き、内容に合う答えを選びます。', classroom: true,
   theme: { label: grade.label, accent: '#3E9C93', accentSoft: '#A9E0D8', surface: '#F5FCFA', bubbleBorderClass: 'border-[#A9E0D8]/80', bubbleBgClass: 'bg-[#F8FEFC]/95', bubbleShadow: '0 10px 24px -14px rgba(62,156,147,0.55)', chipTextClass: 'text-[#2F7C74]', chipBgClass: 'bg-[#A9E0D8]/35', progressBarClass: 'bg-[#5BC0BE]' },
   reviewStyle: { textClass: 'text-[#2F7C74]', bgClass: 'bg-[#A9E0D8]/25', borderClass: 'border-[#A9E0D8]', activeClass: 'bg-[#3E9C93] text-white border-[#3E9C93]', stripeClass: 'bg-[#3E9C93]' },
 }));

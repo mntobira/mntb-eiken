@@ -14,14 +14,14 @@ export default defineConfig(({ mode }) => {
     },
     generateBundle(_, bundle) {
       const modules = Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []);
-      const forbidden = /\/src\/(?:data\/(?:englishListening(?:Data|Q)|englishGrammar(?:Data|Problems)|toeic)|battle\/data\/(?:pool\.|answer\.))/;
+      const forbidden = /\/src\/(?:data\/(?:englishListening(?:Data|Q)|englishGrammar(?:Data|Problems)|toeic|reading)|battle\/data\/(?:pool\.|answer\.))/;
       if (modules.some(id => forbidden.test(id))) this.error('大学入試・TOEIC問題バンクが英検版の配信対象に入りました。ビルドを停止します。');
       this.emitFile({ type: 'asset', fileName: 'build-modules.json', source: JSON.stringify(modules.filter(id => id.includes('/src/')).map(id => id.split('/src/')[1]), null, 2) });
     },
     transformIndexHtml(html) {
       const cloud = env.VITE_EIKEN_ENABLE_CLOUD === 'true';
       const project = env.VITE_EIKEN_FIREBASE_PROJECT_ID || '';
-      const connect = cloud ? "'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com" : "'self'";
+      const connect = cloud ? `'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://asia-northeast1-${project}.cloudfunctions.net` : "'self'";
       const csp = `default-src 'self'; script-src 'self'${cloud ? ' https://apis.google.com https://www.gstatic.com' : ''}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googleusercontent.com; font-src 'self' data:; media-src 'self' blob: data:; connect-src ${connect}; frame-src 'self'${cloud ? ` https://${project}.firebaseapp.com https://accounts.google.com` : ''}; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'`;
       return html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="${csp}">`);
     },

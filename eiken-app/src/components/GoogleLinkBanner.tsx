@@ -100,7 +100,7 @@ export function GoogleLinkBanner({
               leading-snug の1〜2行のまま。 */}
           <p className="flex-1 min-w-0 text-xs font-modern leading-snug text-[#5D6D7E]">
             <b className="text-[#1B2631]">ゲストで利用中です。</b>
-            連携すると英検版の解答済み記録・復習リストをクラウドに保存できます。
+            連携すると<b className="text-[#2E86C1]">オンライン対戦</b>ができ、記録も端末を変えても残ります。
           </p>
           <button
             type="button"
@@ -172,7 +172,7 @@ export function GoogleLinkBanner({
               下の利点リスト（GOOGLE_LINK_BENEFITS）の1行目も対戦なので、
               説明文と利点で話がつながる。 */}
           <p className="mb-2.5 text-xs font-modern leading-relaxed text-[#5D6D7E]">
-            いまは<b className="text-[#D9466E]">この端末で学習中</b>です。
+            いまは<b className="text-[#D9466E]">ゲスト利用</b>のため、<b className="text-[#1B2631]">オンライン対戦が使えません</b>。
             学習記録もこの端末の中だけに保存され、ブラウザのデータを消すと消えてしまいます。
           </p>
           <ul className="space-y-1">

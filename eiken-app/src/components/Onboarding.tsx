@@ -26,7 +26,7 @@
  *   リダイレクトから戻ったときの結果もここで受け取る。
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Loader2, AlertTriangle, Check, ArrowRight } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';

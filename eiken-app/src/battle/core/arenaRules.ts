@@ -1,7 +1,7 @@
 import type { BattleRule, BattleQuestion } from './types';
 /** Only newly created rooms opt in. Old rooms retain their snapshotted scoring. */
 export function arenaRule(rule: BattleRule): BattleRule {
-  const listening = rule.subject === 'english_listening';
+  const listening = rule.subject === 'english_listening' || rule.subject.startsWith('eiken_');
   return { ...rule, scoringVersion: 2, pointsCorrect: 60,
     pointsSpeedMax: listening ? 20 : 240, pointsStreak: 5,
     // Longest shipped recording is 42.27s. New rooms allow listening + answer time;

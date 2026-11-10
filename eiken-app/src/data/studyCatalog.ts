@@ -7,9 +7,10 @@
  * 新しい科目を足すときは、ここに1件足す（＋そのコンテンツの action を App に1つ用意する）だけでよい。
  * 中身（問題データ・進捗・回答履歴）は既存のものをそのまま使い、ここでは「どの画面を開くか」だけを持つ。
  */
-import { getChapterIndexOfSubject, getSubjectStats } from './chapterIndex.generated';
+import { getSubjectStats } from './chapterIndex.generated';
+import { EIKEN_GRADES } from '../eiken/config';
+import { isSubjectEnabled } from '../config/features';
 import { VOCABULARY_COUNT } from './listeningVocabularyMeta.generated';
-import { READING_PASSAGE_COUNT } from './reading/meta';
 
 /** コンテンツを押したときに開く既存の画面。App 側で1か所にまとめて解釈する */
 export type StudyAction =
@@ -54,67 +55,26 @@ export interface StudySubject {
   contents: StudyContent[];
 }
 
-const listening = getSubjectStats('english_listening');
-const grammar = getSubjectStats('english_grammar');
-const toeic = getSubjectStats('toeic_part5');
-const toeicP6 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp6_1')?.problemCount ?? 0;
-const toeicP7 = getChapterIndexOfSubject('toeic_part5').find((c) => c.id === 'tp7_1')?.problemCount ?? 0;
-
-export const STUDY_CATALOG: readonly StudySubject[] = [
-  {
-    id: 'english',
-    label: '英語',
-    description: 'リスニング・英文法・英単語・英文解釈',
-    icon: 'headphones',
-    contents: [
-      {
-        id: 'english_listening', title: '英語リスニング', primary: true, icon: 'headphones',
-        description: '共通テスト 第1問A〜第6問B。1回ずつ完結',
-        meta: `全${listening.units ?? 0}単元・マーク${listening.marks ?? 0}個`,
-        progressSubject: 'english_listening',
-        action: { kind: 'units', subject: 'english_listening' },
-      },
-      {
-        id: 'english_grammar', title: '英文法', icon: 'pen',
-        description: '時制・関係詞・語法など。4択で演習',
-        meta: `全${grammar.chapters ?? 0}単元・4択${grammar.marks ?? 0}問`,
-        progressSubject: 'english_grammar',
-        action: { kind: 'units', subject: 'english_grammar' },
-      },
-      {
-        // 2026-10-01 D：英単語も英文法・リスニングと同じように「4択の問題」として解ける
-        // 2026-10-01 夜：問題の方を単元の列に並べる（暗記帳は下の別枠）
-        id: 'english_vocab_quiz', title: '英単語・英熟語', icon: 'pen',
-        description: '4択の問題を10問ずつ。間違いは復習ノートへ',
-        meta: 'レベル別・英→日／日→英',
-        action: { kind: 'vocabQuiz' },
-      },
-      {
-        // 2026-10-21：英文解釈。1画面に収まる英文を読んで、内容一致の4択（Lv1基礎〜Lv5東大・京大）
-        id: 'english_reading', title: '英文解釈', icon: 'book', badge: 'NEW',
-        description: '段落ごとに読んで4択。解説に出題傾向つき',
-        meta: `${READING_PASSAGE_COUNT}題・Lv1〜5（共通テスト〜東大・京大）`,
-        action: { kind: 'reading' },
-      },
-      {
-        // ★暗記帳は「単語」の中のタブではなく、最初から別の枠（覚える）に置く（2026-10-01 夜）★
-        id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
-        description: '100語ずつめくって覚える。意味・英語を隠せる',
-        meta: `${VOCABULARY_COUNT.toLocaleString()}語・レベル別`,
-        action: { kind: 'foundation', tab: 'words' },
-      },
-      {
-        // 2026-10-28：TOEIC L&RをまずはPart 5から試験導入。とびら君の吹き出しの右に置く（カードの列は動かさない）
-        id: 'english_toeic', title: 'TOEIC', icon: 'briefcase', badge: 'NEW', section: 'spotlight',
-        // 2026-11-02 Part 7 を足した
-        description: 'Part 5・6・7',
-        meta: `Part 5 全${(toeic.questions ?? 0) - toeicP6 - toeicP7}回・Part 6 全${toeicP6}回・Part 7 全${toeicP7}回`,
-        progressSubject: 'toeic_part5',
-        action: { kind: 'units', subject: 'toeic_part5' },
-      },
-    ],
-  },
-];
+/** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
+export const STUDY_CATALOG: readonly StudySubject[] = [{
+  id: 'eiken', label: '英検', description: '級別のリスニング重点練習', icon: 'headphones',
+  contents: [
+    ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
+      const stats = getSubjectStats(grade.id);
+      return {
+        id: grade.id, title: grade.label, primary: true, icon: 'headphones',
+        description: '会話・説明文の重点練習。本試験1回分ではありません',
+        meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
+        action: { kind: 'units', subject: grade.id },
+      };
+    }),
+    {
+      id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
+      description: '共通の補助単語帳（英検の級別教材ではありません）',
+      meta: `${VOCABULARY_COUNT.toLocaleString()}語`, action: { kind: 'foundation', tab: 'words' },
+    },
+  ],
+}];
 
 export function findStudySubject(id: string | null | undefined): StudySubject | undefined {
   return STUDY_CATALOG.find(s => s.id === id);

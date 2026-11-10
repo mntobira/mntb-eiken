@@ -18,7 +18,7 @@
  *   読み取りを拒否するため一覧は表示されない（権限エラー案内を出す）。
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   RefreshCw,
@@ -210,7 +210,7 @@ export function FeedbackAdminPanel({ onBack }: FeedbackAdminPanelProps) {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm">
-            {filter === 'all' ? 'フィードバックはまだありません' : `「${filter === 'all' ? '' : FEEDBACK_STATUS_LABELS[filter as FeedbackStatus]}」の投稿はありません`}
+            {filter === 'all' ? 'フィードバックはまだありません' : `「${FEEDBACK_STATUS_LABELS[filter]}」の投稿はありません`}
           </div>
         ) : (
           <div className="space-y-3">

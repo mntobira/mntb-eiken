@@ -348,6 +348,7 @@ export default function App() {
     }
     setSelectedSubject(subject);
     setAppMode('practice');
+    setChaptersBackTo('home');
     setAppState(subjectPickerOrigin === 'start' ? entry : 'home');
   };
 
@@ -393,8 +394,7 @@ export default function App() {
   // 表示中の科目で開始する。科目の変更は本人が希望したときだけ行う。
   const handleStart = () => {
     setSubjectPickerOrigin('start');
-    setAppMode('practice');
-    setAppState(studyEntry(selectedSubject));
+    openSubjectUnits(selectedSubject, 'home');
   };
   const handleChangeStudySubject = () => {
     setSubjectPickerReturnTo(appState);
@@ -457,18 +457,18 @@ export default function App() {
       enterForAutomation();
       handleSelectChapter(c, idx, false, { startIndex: idx, endIndex: idx }, 'practice');
     },
-    navigateQuiz: (chapterId = 'el1_A') => {
+    navigateQuiz: (chapterId = `${selectedSubject}_listening_01`) => {
       enterForAutomation();
       setSelectedChapterId(chapterId);
       setAppMode('practice');
       setQuizRange({ startIndex: 0, endIndex: 0 });
       setAppState('quiz');
     },
-    navigateExplanation: (chapterId = 'el1_A') => {
+    navigateExplanation: (chapterId = `${selectedSubject}_listening_01`) => {
       enterForAutomation();
       setSelectedChapterId(chapterId);
       setAppMode('practice');
-      setQuizAnswers({ el1_A_q1: '1' });
+      setQuizAnswers({ [`${chapterId}_1_answer`]: '1' });
       setAppState('explanation');
     },
   });
@@ -662,8 +662,8 @@ export default function App() {
                   mode={appMode as 'mini_test' | 'practice'}
                   onChangeSubject={handleChangeStudySubject}
                   onSelectChapter={handleSelectChapter}
-                  onBack={() => setAppState(chaptersBackTo === 'study' ? 'study' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
-                  backLabel={chaptersBackTo === 'study' ? '演習' : chaptersBackTo === 'foundation' && selectedSubject === 'english_grammar' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
+                  onBack={() => setAppState(chaptersBackTo === 'study' ? 'study' : chaptersBackTo === 'foundation' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
+                  backLabel={chaptersBackTo === 'study' ? '演習' : chaptersBackTo === 'foundation' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
                   rememberedGroup={chapterGroups[selectedSubject]}
                   onGroupChange={(group) => setChapterGroups(prev => ({ ...prev, [selectedSubject]: group }))}
                   subject={selectedSubject}
@@ -734,11 +734,11 @@ export default function App() {
                 uid={auth.currentUser?.uid || 'guest'}
                 onBack={() => setAppState(foundationBackTo)}
                 backLabel={foundationBackTo === 'study' ? '演習' : undefined}
-                onGrammarUnits={() => openSubjectUnits('english_grammar', 'foundation')}
-                onPractice={(chapter, index) => { setSelectedSubject('english_listening'); setAppMode('practice'); handleSelectChapter(chapter, index, false, { startIndex: index, endIndex: index }, 'practice'); }}
+                onGrammarUnits={() => openSubjectUnits(selectedSubject, 'foundation')}
+                onPractice={() => openSubjectUnits(selectedSubject, 'foundation')}
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
                 onReview={() => setAppState('study_hub')}
-                onListening={() => openSubjectUnits('english_listening', 'home')}
+                onListening={() => openSubjectUnits(selectedSubject, 'foundation')}
               />
             </React.Suspense>}
             {appState === 'note_detail' && (selectedNote

@@ -290,7 +290,8 @@ export function useAiBattle(
      */
     const fireAt = startMs + move.delayMs;
     const mine = mySheet[answerKeyOf(currentIndex)];
-    const revealAt = mine ? mine.answeredAt + aiRevealLagMs(seedRef.current, currentIndex) : Infinity;
+    const revealAt = typeof mine?.answeredAt === 'number' && Number.isFinite(mine.answeredAt)
+      ? mine.answeredAt + aiRevealLagMs(seedRef.current, currentIndex) : Infinity;
     const wait = Math.max(0, Math.min(fireAt, revealAt) - Date.now());
     const timer = window.setTimeout(() => {
       const rec = aiAnswerRecord(currentIndex, move, startMs);

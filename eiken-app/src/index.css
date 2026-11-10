@@ -5,11 +5,21 @@
  * CDN 依存もオフライン時の崩れも無い。 */
 @import "katex/dist/katex.min.css";
 @import "tailwindcss" source(none);
+@source "./App.tsx";
 @source "./components";
 @source "./styles";
 @source "./eiken";
 @source "./battle/ui";
+@source "./battle/core";
 @source "./features";
+@source "./motion";
+@source "./ads";
+@source "./contexts";
+@source "./hooks";
+@source "./utils";
+@source "./native";
+@source "./data/subjects.ts";
+@source "./data/externalSubjects.ts";
 @import "./styles/tokens.css";
 @import "./styles/nav.css";
 @import "./styles/system.css";

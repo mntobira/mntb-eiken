@@ -1,0 +1,91 @@
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuI6fMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuDyYMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Kaisei Decol';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/bMrwmSqP45sidWf3QmfFW6iyWw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Kaisei Decol';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/bMrvmSqP45sidWf3QmfFW6iKr3gr0w.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Kaisei Decol';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/bMrvmSqP45sidWf3QmfFW6iK534r0w.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Klee One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/LDIxapCLNRc6A8oT4q4A.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Klee One';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/LDI2apCLNRc6A8oT4pbYF8Os.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/VdGBAYIAV6gnpUpoWwNkYvrugw9RuM064ZsK.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/fonts/VdGBAYIAV6gnpUpoWwNkYvrugw9RuM0m4psK.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Yomogi';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/VuJwdNrS2ZL7rpoPWA.ttf) format('truetype');
+}

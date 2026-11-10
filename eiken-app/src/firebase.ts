@@ -22,6 +22,8 @@ export function authDependencies(_native: boolean): Dependencies {
   return { persistence: [indexedDBLocalPersistence, browserLocalPersistence], popupRedirectResolver: browserPopupRedirectResolver };
 }
 function initAuth() {
+  // Node-based validation has no browser persistence/resolver classes.
+  if (typeof window === 'undefined') return getAuth(app);
   try { return initializeAuth(app, authDependencies(false)); } catch { return getAuth(app); }
 }
 export const auth = initAuth();

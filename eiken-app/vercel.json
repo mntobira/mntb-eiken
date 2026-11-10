@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/|brand/|mascots/|icons/|sfx/|eiken_audio/).*)",
+      "source": "/((?!assets/|brand/|mascots/|icons/|sfx/|eiken_audio/|audio/|bgm/|cinematics/|data/|fonts/|read_along/|sw[.]js$|manifest[.]json$|tanjou[.]mp3$).*)",
       "destination": "/index.html"
     }
   ],

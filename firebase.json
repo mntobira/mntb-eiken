@@ -1,8 +1,16 @@
 {
-  "firestore": { "rules": "eiken-app/firestore.rules" },
-  "storage": { "rules": "eiken-app/storage.rules" },
+  "firestore": {
+    "rules": "eiken-app/firestore.rules",
+    "indexes": "eiken-app/firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "eiken-app/storage.rules"
+  },
   "emulators": {
-    "firestore": { "host": "127.0.0.1", "port": 8080 },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
     "singleProjectMode": true
   }
 }
