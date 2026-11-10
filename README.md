@@ -129,7 +129,7 @@ JAVA_TOOL_OPTIONS=-Xmx320m npm exec --yes --package=firebase-tools@14.27.0 -- \
 - `VITE_EIKEN_ENABLE_CLOUD` / `VITE_EIKEN_FIREBASE_*`。旧版ID・旧環境変数はbuild guardで拒否。ローカルpreviewはcloud無効。
 - 原本：`src/eiken/materials/original-*.ts`、`translations.ts`、`wordbook.tsv`。`npm run generate:materials` でJSON・件数・索引を生成。
 - `scripts/build-eiken-rewards.py` はPDF・thumb・previewをオフライン生成。ReportLab／PyMuPDF／Pillow／既存Klee Oneを使用。Vercelでは生成しません。
-- 共通ソース580ファイルの同一性を維持。英検固有修正は `tests/listening-baseline.json` に理由を記録。
+- 共通ソース579ファイルの同一性を維持。英検固有修正は `tests/listening-baseline.json` に理由を記録。
 - Vercel既存設定：Rootリポジトリ直下、Install `npm ci --prefix eiken-app`、Build `npm --prefix eiken-app run build:vercel`、Output `eiken-app/dist`、Production Branch main、Node22.18以上。別のRoot設定と混在させません。
 
 ## 公開前に残る確認

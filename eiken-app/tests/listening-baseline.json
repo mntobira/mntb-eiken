@@ -194,7 +194,6 @@
     "src/components/foundation.css": "6d2288bed6173067535b2e6ca3a4e347e9116e84",
     "src/components/fx/CorrectBurst.tsx": "741a8e84e4cabf967cdb558385ba65515e1973ed",
     "src/components/fx/correct-burst.css": "fa112d884e002a143e857b3007802bebc47ff435",
-    "src/components/gacha.css": "59419eaafd9a56714b05a53f7c3b79f9faeecc43",
     "src/components/gacha/GachaPoolCarousel.tsx": "fcd3abcf92f7ae3b8e190f21f8829c521a355271",
     "src/components/gacha/GachaResultStage.tsx": "4514bb72ee2b620b4a4851e589b180b7cfc33c40",
     "src/components/gacha/GachaSetsPanel.tsx": "6132f7f9f33d1fdd4d287de717248592e0de5527",
@@ -615,6 +614,7 @@
     "src/components/ProfileModal.tsx": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
     "src/components/ManaClan.tsx": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
     "src/utils/manaClan.ts": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
-    "src/components/listening-home.css": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions."
+    "src/components/listening-home.css": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
+    "src/components/gacha.css": "Eiken mobile UI: contain the gacha banner, hero and carousel within narrow viewports; wrap pool tabs and date label at 420px; regression-tested in gacha-mobile-overflow.test.ts."
   }
 }
