@@ -113,6 +113,14 @@ EIKEN_ENGINE=webkit npm run test:integration:browser
 - `tests/sync-controller.test.ts` は通信モックで遅延・失敗・切替を検査。実端末2台の同期全体の検証と混同しません。
 - WebKitの連続10回reloadは985MB sandboxでOOMしたため、英作文は全課題保存後1回reloadで10記録と再開を確認。Chromiumは各課題reload。
 
+## PR作成
+
+英検リポジトリのルートで、コミット済みの作業ブランチから実行します。PR本文には「リスニング納品の判断」欄を必ず含めてください。コマンドは未コミット変更を拒否し、現在のブランチを `origin` へpushして、既存PRがあれば更新、なければ作成します。
+
+```sh
+npm run pr:create -- --title "変更のタイトル" --body-file /path/to/pr-body.md
+```
+
 ```sh
 cd /home/user/webapp
 JAVA_TOOL_OPTIONS=-Xmx320m npm exec --yes --package=firebase-tools@14.27.0 -- \
