@@ -1,3 +1,4 @@
+import { EIKEN_GRADES } from './eiken/config';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -735,7 +736,12 @@ export default function App() {
                 onBack={() => setAppState(foundationBackTo)}
                 backLabel={foundationBackTo === 'study' ? '演習' : undefined}
                 onGrammarUnits={() => openSubjectUnits(selectedSubject, 'foundation')}
-                onPractice={() => openSubjectUnits(selectedSubject, 'foundation')}
+                onPractice={(chapterId, index) => {
+                  const grade = EIKEN_GRADES.find(grade => chapterId.startsWith(grade.id + '_'));
+                  if (!grade || !isSubjectEnabled(grade.id)) return;
+                  setSelectedSubject(grade.id); setAppMode('practice');
+                  handleSelectChapter(chapterId, index, false, { startIndex: index, endIndex: index }, 'practice');
+                }}
                 onBattle={FEATURES.battle ? () => navigateMain('battle') : undefined}
                 onReview={() => setAppState('study_hub')}
                 onListening={() => openSubjectUnits(selectedSubject, 'foundation')}

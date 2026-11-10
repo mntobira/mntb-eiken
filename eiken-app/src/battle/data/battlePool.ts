@@ -1,11 +1,10 @@
 import type { BattleAnswerFormat, BattleQuestion } from '../core/types';
 import { EIKEN_GRADES } from '../../eiken/config';
-import { getSubjectStats } from '../../data/chapterIndex.generated';
 
 // Same match/scoring/UI as listening; only the corpus and subject identifiers differ.
 // Keep the full Eiken question bank out of the initial bundle.
 export const POOL_COUNTS: Readonly<Record<string, number>> = Object.fromEntries(
-  EIKEN_GRADES.filter(grade => grade.available).map(grade => [grade.id, getSubjectStats(grade.id).questions ?? 0]),
+  EIKEN_GRADES.filter(grade => grade.available).map(grade => [grade.id, 2]),
 );
 export const POOL_FORMAT_COUNTS: Readonly<Record<string, Readonly<Partial<Record<BattleAnswerFormat, number>>>>> =
   Object.fromEntries(Object.entries(POOL_COUNTS).map(([grade, count]) => [grade, { choice4: count }]));

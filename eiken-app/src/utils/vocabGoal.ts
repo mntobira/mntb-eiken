@@ -6,14 +6,13 @@
  */
 import { safeLocalStorage, safeParseJson } from './safeLocalStorage';
 
-export const VOCAB_PREF_KEY = 'foundation_prefs_v1';
+export const VOCAB_PREF_KEY = 'eiken_wordbook_prefs_v2';
 
 /** 単語帳の目標（ラベルは FoundationWords の PRESETS と同じ） */
 export const GOAL_OPTIONS = [
-  { id: 'common', label: '共通6〜8割' },
-  { id: 'national', label: '2次試験レベル' },
-  { id: 'private', label: '2次＋追加語彙' },
-  { id: 'custom', label: '自分で選ぶ' },
+  { id: 'eiken_5', label: '5級' }, { id: 'eiken_4', label: '4級' }, { id: 'eiken_3', label: '3級' },
+  { id: 'eiken_pre2', label: '準2級' }, { id: 'eiken_pre2plus', label: '準2級プラス' },
+  { id: 'eiken_2', label: '2級' }, { id: 'eiken_pre1', label: '準1級' }, { id: 'custom', label: '全級から選ぶ' },
 ] as const;
 export type GoalId = typeof GOAL_OPTIONS[number]['id'];
 
@@ -26,7 +25,7 @@ function readRaw(): Record<string, unknown> {
 
 export function readGoal(): GoalId {
   const p = readRaw().preset;
-  return GOAL_OPTIONS.some(o => o.id === p) ? (p as GoalId) : 'common';
+  return GOAL_OPTIONS.some(o => o.id === p) ? (p as GoalId) : 'eiken_5';
 }
 
 /** 目標を変える（単語帳で選んだ「志望校別」のレベルなど、ほかの設定は残す） */
