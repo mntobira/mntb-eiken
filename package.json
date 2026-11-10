@@ -3,6 +3,7 @@
   "type": "module",
   "engines": { "node": "22.x" },
   "scripts": {
+    "pr:create": "node scripts/pr-create.mjs",
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",

@@ -113,6 +113,14 @@ EIKEN_ENGINE=webkit npm run test:integration:browser
 - `tests/sync-controller.test.ts` は通信モックで遅延・失敗・切替を検査。実端末2台の同期全体の検証と混同しません。
 - WebKitの連続10回reloadは985MB sandboxでOOMしたため、英作文は全課題保存後1回reloadで10記録と再開を確認。Chromiumは各課題reload。
 
+## PR作成
+
+英検リポジトリのルートで、コミット済みの作業ブランチから実行します。PR本文には「リスニング納品の判断」欄を必ず含めてください。コマンドは未コミット変更を拒否し、現在のブランチを `origin` へpushして、既存PRがあれば更新、なければ作成します。
+
+```sh
+npm run pr:create -- --title "変更のタイトル" --body-file /path/to/pr-body.md
+```
+
 ```sh
 cd /home/user/webapp
 JAVA_TOOL_OPTIONS=-Xmx320m npm exec --yes --package=firebase-tools@14.27.0 -- \
@@ -129,7 +137,7 @@ JAVA_TOOL_OPTIONS=-Xmx320m npm exec --yes --package=firebase-tools@14.27.0 -- \
 - `VITE_EIKEN_ENABLE_CLOUD` / `VITE_EIKEN_FIREBASE_*`。旧版ID・旧環境変数はbuild guardで拒否。ローカルpreviewはcloud無効。
 - 原本：`src/eiken/materials/original-*.ts`、`translations.ts`、`wordbook.tsv`。`npm run generate:materials` でJSON・件数・索引を生成。
 - `scripts/build-eiken-rewards.py` はPDF・thumb・previewをオフライン生成。ReportLab／PyMuPDF／Pillow／既存Klee Oneを使用。Vercelでは生成しません。
-- 共通ソース580ファイルの同一性を維持。英検固有修正は `tests/listening-baseline.json` に理由を記録。
+- 共通ソース579ファイルの同一性を維持。英検固有修正は `tests/listening-baseline.json` に理由を記録。
 - Vercel既存設定：Rootリポジトリ直下、Install `npm ci --prefix eiken-app`、Build `npm --prefix eiken-app run build:vercel`、Output `eiken-app/dist`、Production Branch main、Node22.18以上。別のRoot設定と混在させません。
 
 ## 公開前に残る確認
