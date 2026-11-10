@@ -114,3 +114,23 @@
 @media (max-width: 360px) { .sc-spot-body small { display: none; } .sc-spot { max-width: 40%; } }
 @media (max-height: 600px) { .sc-buddy-row .sc-buddy { display: none; } .sc-buddy-row { justify-content: flex-end; } }
 @media (prefers-reduced-motion: reduce) { .sc-spot { transition: none; } }
+
+/* 英検：級の入口は一画面で見渡す。200%文字拡大・極小画面では縦スクロールを許す。 */
+.sc-eiken-list { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:9px; }
+.sc-eiken-list > [role=listitem] { min-width:0; }
+.sc-eiken-list .sc-card { height:100%;min-height:66px;padding:9px 10px;gap:7px;border-radius:15px; }
+.sc-eiken-list .sc-icon { width:30px;height:30px;border-radius:10px; }
+.sc-eiken-list .sc-icon svg { width:19px;height:19px; }
+.sc-eiken-list .sc-title { flex-wrap:wrap;gap:3px; }
+.sc-eiken-list .sc-title strong { font-size:14px;white-space:normal;overflow:visible; }
+.sc-eiken-list .sc-title em { font-size:11px;padding:0 5px; }
+.sc-eiken-list .sc-desc,.sc-eiken-list .sc-arrow,.sc-eiken-list .sc-track { display:none; }
+.sc-eiken-list .sc-meta { flex-wrap:wrap;gap:2px; }
+.sc-eiken-list .sc-meta small { font-size:11px; }
+.sc-eiken-list .sc-progress { min-width:0;flex:0 0 auto;margin-left:5px; }
+.sc-eiken-list .sc-progress b { min-width:0;font-size:11px; }
+.sc-eiken-list .sc-section { grid-column:1/-1;margin:2px 0 0; }
+.sc-page:has(.sc-eiken-list) .sc-buddy-row { display:none; }
+@media (min-width:700px) { .sc-eiken-list { grid-template-columns:repeat(3,minmax(0,1fr));gap:12px; } .sc-eiken-list .sc-card { min-height:92px; } .sc-eiken-list .sc-title strong { font-size:17px; } }
+@media (max-height:700px) { .sc-eiken-list { gap:7px; } .sc-eiken-list .sc-card { min-height:57px;padding:7px; } .sc-page:has(.sc-eiken-list) .sc-head { min-height:45px; } }
+@media (max-width:370px) { .sc-eiken-list .sc-icon { display:none; } .sc-eiken-list .sc-title strong { font-size:13px; } }

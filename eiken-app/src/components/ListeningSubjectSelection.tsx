@@ -28,7 +28,7 @@ export function ListeningSubjectSelection({ onSelectSubject, currentSubject, onB
         <h1><KineticText text="英検の級を選択" step={55} variant="wave" /></h1>
         <p>目標の級を選び、読む・聞く・語彙文法を練習しよう。</p>
       </section>
-      <section aria-label="英検の級">
+      <section className="ls-grade-grid" aria-label="英検の級">
         {EIKEN_GRADES.map(grade => {
           const enabled = isSubjectEnabled(grade.id);
           const stats = getSubjectStats(grade.id);

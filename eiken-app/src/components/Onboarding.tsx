@@ -36,7 +36,6 @@ import { syncRankingNickname } from '../utils/leaderboard';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
 import { GoogleMark } from './GoogleLinkBanner';
-import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 import { logRejection } from '../utils/reportError';
 import { asErrorLike } from '../utils/errorLike';
 import type { User } from 'firebase/auth';
@@ -113,7 +112,7 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
     }
   };
 
-  /** Google / Apple 共通：ログイン結果を受け取って次へ進む */
+  /** Googleログイン結果を受け取って次へ進む。英検Web版はGoogleのみ。 */
   const handleOutcome = (outcome: GoogleSignInOutcome) => {
     if (outcome.redirecting) return; // ページ遷移するのでそのまま待つ
     if (outcome.ok && outcome.user) {
@@ -229,11 +228,6 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
                 ? <><Loader2 size={19} className="animate-spin" aria-hidden="true" />連携中…</>
                 : <><GoogleMark size={20} />Google アカウントで続ける</>}
             </button>
-            <AppleSignInButton
-              className="mt-2.5 !rounded-2xl !min-h-[50px] !text-[14px]"
-              label="Appleで続ける"
-              onResult={handleOutcome}
-            />
             <p className="mt-2 text-center text-[12px] font-modern leading-snug text-[#8895A0]">
               メールアドレスとお名前のみを利用します。パスワードは受け取りません。
             </p>

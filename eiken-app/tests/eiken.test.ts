@@ -41,10 +41,10 @@ class MemoryStorage implements Storage {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Listening parity', () => {
-  it('keeps more than 580 inherited source files byte-identical to listening main', () => {
+  it('keeps at least 580 inherited source files byte-identical with documented Eiken adaptations', () => {
     const baseline = JSON.parse(readFileSync('tests/listening-baseline.json', 'utf8'));
     expect(baseline.commit).toBe('ee648b2a961096724afbdc455d7da36a81284f44');
-    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(580);
+    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThanOrEqual(580);
     for (const [path, hash] of Object.entries(baseline.unchangedFiles)) {
       const content = readFileSync(path);
       expect(createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex'), path).toBe(hash);

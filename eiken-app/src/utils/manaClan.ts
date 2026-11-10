@@ -16,7 +16,7 @@ export async function clanCall<T>(action: string, input: Record<string, unknown>
       || /^(internal|INTERNAL|unknown)$/i.test(String(e.message || '').trim())) {
       throw new Error('マナクランの集計サーバーが未反映、または接続できません。運営者のサーバー設定後に利用できます。');
     }
-    if (e.code === 'functions/unauthenticated') throw new Error('マナクランには Google / Apple でのログインが必要です。');
+    if (e.code === 'functions/unauthenticated') throw new Error('マナクランには Googleでのログインが必要です。');
     if (e.code === 'functions/resource-exhausted' && !e.message) throw new Error('操作が多すぎます。1分ほど待ってからもう一度お試しください。');
     throw new Error(e.message || '接続できませんでした。');
   }

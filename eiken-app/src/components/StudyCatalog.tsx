@@ -101,7 +101,7 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
         })}
       </div>}
 
-      <div className="sc-list" role="list">
+      <div className={`sc-list${subject?.id === 'eiken' ? ' sc-eiken-list' : ''}`} role="list">
         {showSubjects
           ? STUDY_CATALOG.map(s => <div role="listitem" key={s.id}>
               <StudyCard dataId={s.id} icon={s.icon} title={s.label} description={s.description}
@@ -109,7 +109,7 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
             </div>)
           : <>
               {/* 問題を解くもの（リスニング・英文法・英単語の4択）は同じ列に並べる */}
-              {subject.contents.filter(c => c.section !== 'memorize' && c.section !== 'spotlight').map(c => <div role="listitem" key={c.id}>
+              {subject.contents.filter(c => c.section !== 'memorize' && c.section !== 'spotlight').map(c => <div role="listitem" key={c.id} data-content-kind={c.action.kind}>
                 <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
                   primary={c.primary} badge={lastContentId === c.id ? '前回' : c.badge}
                   progress={c.progressSubject ? progressOf?.(c.progressSubject) : undefined}
@@ -118,7 +118,7 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
               {/* ★暗記帳は問題とは別の枠に置く（2026-10-01 夜）★ */}
               {subject.contents.some(c => c.section === 'memorize') && <>
                 <h2 className="sc-section" role="presentation" data-study-section="memorize">覚える</h2>
-                {subject.contents.filter(c => c.section === 'memorize').map(c => <div role="listitem" key={c.id}>
+                {subject.contents.filter(c => c.section === 'memorize').map(c => <div role="listitem" key={c.id} data-content-kind={c.action.kind}>
                   <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
                     badge={lastContentId === c.id ? '前回' : c.badge} onClick={() => onContent(c)} />
                 </div>)}

@@ -11,7 +11,6 @@ import { isClassroomEnabledFor } from '../config/features';
 import type { SubjectKey } from '../data/allChapters';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
-import { AppleSignInButton } from '../features/auth/AppleSignInButton';
 import { signInWithGoogle, signOutGoogle, switchGoogleAccount, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
 import { useSignInGuard } from '../hooks/useSignInGuard';
 import { isFeedbackAdmin } from '../utils/feedbackReply';
@@ -190,7 +189,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                         {signing ? <Loader2 size={15} className="animate-spin" /> : <GoogleMark size={17} />}
                         {signing ? '連携中…' : 'Google アカウントで連携'}
                       </button>
-                      <AppleSignInButton onResult={(o) => { if (!o.ok && !o.cancelled) setAuthError(o.message || 'ログインに失敗しました。'); }} />
                       <p className="text-xs text-gray-500 text-center leading-snug">
                         連携は無料です。いまの学習記録はそのまま引き継がれます。
                       </p>
