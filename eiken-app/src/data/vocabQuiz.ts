@@ -135,7 +135,7 @@ export function buildRangeQuiz(list: readonly ListeningWord[], set: Pick<RangeSe
   return { items: picked.map(pickQ).filter((x): x is QuizItem => !!x), allLearned };
 }
 
-const PREF_KEY = (uid: string) => perUserKey('vocab_quiz_prefs_v1_', uid);
+const PREF_KEY = (uid: string) => perUserKey('eiken_vocab_quiz_prefs_v2_', uid);
 /** レベルごとの範囲と、全体の問題数・順番・出す語の好み */
 export interface QuizPrefs { count: QuizCount; order: QuizOrder; only: QuizOnly; ranges: Record<string, [number, number]> }
 export const DEFAULT_PREFS: QuizPrefs = { count: 10, order: 'number', only: 'unlearned', ranges: {} };
@@ -164,7 +164,7 @@ export const rangeKey = (level: string, from: number, to: number) => `${level}:$
  * mastered … 4択で正解した語（✓）。間違えると外れる。2026-10-17 に追加（古い記録には無いので空として読む）
  */
 export interface VocabQuizRecord { version: 1; missed: string[]; best: Record<string, number>; mastered?: string[] }
-const key = (uid: string) => perUserKey('vocab_quiz_v1_', uid);
+const key = (uid: string) => perUserKey('eiken_vocab_quiz_v2_', uid);
 export const blockKey = (level: string, block: number) => `${level}:${block}`;
 
 export function readQuizRecord(uid: string): VocabQuizRecord {

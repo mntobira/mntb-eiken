@@ -37,23 +37,12 @@ export interface GachaPoolDef {
   preferSubjects: readonly string[];
 }
 
+/** 保存済みプールIDは維持し、英検の学習を応援する装飾だけを案内する。 */
 export const GACHA_POOLS: readonly GachaPoolDef[] = [
-  {
-    id: 'kyotsu',
-    title: '共通テストガチャ',
-    short: '共通テスト',
-    lrName: '共通テスト英語 予想問題',
-    lrNote: 'リーディング・リスニング 各5回分。本番と同じ形式・分量のオリジナル問題。',
-    preferSubjects: ['english_listening', 'english_vocab', 'english_grammar'],
-  },
-  {
-    id: 'niji',
-    title: '2次試験ガチャ',
-    short: '2次試験',
-    lrName: '大学別 英語 予想問題（2次・個別試験）',
-    lrNote: '北海道大学・東北大学・弘前大学・岩手大学・秋田大学・山形大学・福島大学・宇都宮大学・茨城大学・群馬大学・東京学芸大学・東京外国語大学・金沢大学・富山大学・福井大学・福井県立大学・名古屋大学・名古屋工業大学・名古屋市立大学・愛知県立大学・愛知教育大学・岐阜大学・三重大学・静岡大学・大阪公立大学・大阪大学・神戸大学・和歌山大学・鳥取大学・島根大学・公立鳥取環境大学・和歌山県立医科大学・岡山大学・広島大学・山口大学・尾道市立大学・香川大学・徳島大学・愛媛大学・高知大学・長崎大学・九州大学・福岡女子大学・佐賀大学・熊本大学・大分大学・宮崎大学・鹿児島大学・琉球大学（前期）、立命館大学（全学統一・文系）の出題形式に沿った書き下ろしの予想問題（解答解説つき）各3回分（大阪公立大学は第3問の系統別にA・B、富山大学・福井大学・愛知県立大学・島根大学・愛媛大学・高知大学・長崎大学・大分大学・宮崎大学・鹿児島大学は学部・コースの問題別に各3回）。大学の過去問・公式問題ではありません。',
-    preferSubjects: ['english_vocab', 'english_grammar', 'english_reading'],
-  },
+  { id: 'kyotsu', title: '英検 とびらコレクション', short: 'とびらコレクション',
+    lrName: '英検学習の着せ替えアイテム', lrNote: '5級〜準2級の重点語ノートPDFと着せ替えを収録。PDFと同じ語・例文はアプリの単語帳で無料で学べます。', preferSubjects: [] },
+  { id: 'niji', title: '英検 がんばる自習室', short: 'がんばる自習室',
+    lrName: '自習室の着せ替えアイテム', lrNote: '準2級プラス〜準1級の重点語ノートPDFと学びの装飾を収録。PDFと同じ語・例文はアプリの単語帳で無料で学べます。', preferSubjects: [] },
 ];
 
 export const DEFAULT_GACHA_POOL: GachaPoolId = 'kyotsu';
@@ -94,6 +83,10 @@ export const NIJI_SHARED_IDS: readonly string[] = [
 
 /** そのアイテムがガチャの種類 pool に入るか（ガチャで出る物かどうかの判定は呼び出し側） */
 export function inGachaPool(id: string, pool: GachaPoolId): boolean {
+  if (id.startsWith('print_eiken_wordbook_')) {
+    const grade = id.slice('print_eiken_wordbook_'.length);
+    return (pool === 'niji' ? ['pre2plus', '2', 'pre1'] : ['5', '4', '3', 'pre2']).includes(grade);
+  }
   if (pool === 'niji') return NIJI_ONLY_IDS.has(id) || NIJI_SHARED_IDS.includes(id);
   return !NIJI_ONLY_IDS.has(id);
 }

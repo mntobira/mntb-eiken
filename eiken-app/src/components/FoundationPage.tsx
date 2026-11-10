@@ -57,26 +57,30 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
     <header className="fd-head">
       <button type="button" className="fd-back" onClick={onBack} aria-label={`${backLabel}へ戻る`}><ChevronLeft size={18} aria-hidden="true" /><span>{backLabel}</span></button>
       <div className="fd-head-title">{tab === 'quiz'
-        ? <><h1>英単語・英熟語</h1><p>4択の問題で確かめる。</p></>
-        : <><h1>英単語帳（暗記帳）</h1><p>100語ずつめくって覚える。</p></>}</div>
+        ? <><h1>英検 単語・熟語の4択</h1><p>4択の問題で確かめる。</p></>
+        : <><h1>英検 単語帳</h1><p>級別の重点語を例文と覚える。</p></>}</div>
       <div className="fd-info">
         <button type="button" className="fd-info-btn" aria-expanded={infoOpen} aria-controls="fd-info-pop" aria-label="保存と収録についての説明" onClick={() => setInfoOpen(v => !v)}><Info size={18} aria-hidden="true" /></button>
         {infoOpen && <div id="fd-info-pop" role="dialog" aria-label="保存と収録について" className="fd-info-pop">
           <button type="button" aria-label="説明を閉じる" onClick={() => setInfoOpen(false)}><X size={16} aria-hidden="true" /></button>
           <p>覚えた印はこの端末・アカウントに保存します（クラウド同期・コイン加算なし）。</p>
-          <p>単語・熟語は全{VOCABULARY_COUNT.toLocaleString()}語。複数の公開語彙リストを合算し、重要度で再編したマナトビ独自の編成です。</p>
-          <p>共通の補助単語帳です。英検の級別教材ではなく、大学入試版の問題・音声・例文リンクは含みません。</p>
-          <p>「志望校別」は、志望校の出題レベルに合わせて範囲を自分で選びます。</p>
+          <p>5級〜準1級の重点語・熟語、全{VOCABULARY_COUNT.toLocaleString()}語。各語に独自例文・和訳・英日と日英の4択があります。</p>
+          <p>英検用の独自編成です。問題に登場する語からは、その級のリーディング・リスニングへ進めます。</p>
+          <p>級別の重点学習用です。公式の語彙一覧や全出題範囲を網羅する単語集ではありません。</p>
           <p>読み上げの声・対応状況は端末によって異なります。</p>
         </div>}
       </div>
     </header>
 
+    <nav className="fd-goal-seg" aria-label="単語の学び方">
+      <button type="button" aria-pressed={tab === 'words'} onClick={() => onTab('words')}>単語帳で覚える</button>
+      <button type="button" aria-pressed={tab === 'quiz'} onClick={() => onTab('quiz')}>4択・間違えた語の復習</button>
+    </nav>
     {error && <p role="alert" className="fd-error">{error}</p>}
 
     {tab === 'words' && <FoundationWords known={known} onMark={(id, done) => mark('words', id, done)} onPractice={onPractice} />}
 
-    {tab === 'quiz' && <VocabQuiz uid={uid} known={known} onMark={(id) => mark('words', id, true)} onWordbook={() => onTab('words')} />}
+    {tab === 'quiz' && <VocabQuiz uid={uid} known={known} onMark={(id, done) => mark('words', id, done)} onWordbook={() => onTab('words')} />}
 
   </main>;
 }

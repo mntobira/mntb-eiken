@@ -1,7 +1,9 @@
+import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
+import { readGoal } from '../utils/vocabGoal';
 import { useEffect, useMemo, useState } from 'react';
 import { CorrectBurst } from './fx/CorrectBurst';
 import { BookOpen, Check, ChevronRight, Play, RotateCcw, Volume2, X } from 'lucide-react';
-import { VOCAB_LEVELS, type VocabularyData } from '../data/listeningSupport';
+import { VOCABULARY_URL, VOCAB_LEVELS, type VocabularyData } from '../data/listeningSupport';
 import { applyQuizResult, buildQuiz, buildRangeQuiz, clampRange, COUNT_OPTIONS, QUIZ_SIZE, quizComment, rangeKey, rangeWords, readQuizPrefs, readQuizRecord, wordNumbers, writeQuizPrefs, writeQuizRecord, type QuizCount, type QuizDirection, type QuizItem, type QuizPrefs } from '../data/vocabQuiz';
 import { play, primeAudio } from '../battle/ui/feedback';
 import { recordVocabActivity } from '../battle/data/growthStore';
@@ -31,10 +33,10 @@ const RANGE_STEP = 100;
 
 let cache: VocabularyData | null = null;
 
-export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; known: ReadonlySet<string>; onMark: (id: string) => void; onWordbook: () => void }) {
+export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; known: ReadonlySet<string>; onMark: (id: string, done: boolean) => void; onWordbook: () => void }) {
   const [data, setData] = useState<VocabularyData | null>(cache);
   const [err, setErr] = useState('');
-  const [level, setLevel] = useState('lv1');
+  const [level, setLevel] = useState<string>(() => readGoal() === 'custom' ? 'eiken_5' : readGoal());
   const [dir, setDir] = useState<QuizDirection>('mix');
   const [rec, setRec] = useState(() => readQuizRecord(uid));
   const [prefs, setPrefs] = useState<QuizPrefs>(() => readQuizPrefs(uid));
@@ -45,13 +47,18 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
   useEffect(() => {
     if (data) return;
     const c = new AbortController();
-    fetch('/data/listeningVocabulary.json', { signal: c.signal }).then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    fetch(VOCABULARY_URL, { signal: c.signal }).then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(v => { cache = v; setData(v); }).catch(() => setErr('単語を読み込めませんでした。接続を確認してください。'));
     return () => c.abort();
   }, [data]);
   useEffect(() => { prefetchVocabAudioIndex(); return () => { stopSpeech(); stopVocabAudio(); }; }, []);
   useEffect(() => { writeQuizPrefs(uid, prefs); }, [uid, prefs]);
 
+  useEffect(() => {
+    const refresh = () => { setRec(readQuizRecord(uid)); };
+    window.addEventListener(USER_DATA_SYNCED_EVENT, refresh); window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener(USER_DATA_SYNCED_EVENT, refresh); window.removeEventListener('storage', refresh); };
+  }, [uid]);
   const levels = useMemo(() => Object.keys(VOCAB_LEVELS).filter(l => data?.words.some(w => w.level === l)), [data]);
   const missedSet = useMemo(() => new Set(rec.missed), [rec.missed]);
   const mastered = useMemo(() => new Set(rec.mastered ?? []), [rec.mastered]);
@@ -68,8 +75,10 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
   const pool = prefs.only === 'unlearned' ? list.length - learnedInRange : list.length;
 
   const save = (results: { wordId: string; correct: boolean }[], scope: Scope) => {
-    const nextRec = applyQuizResult(rec, results, scopeKey(scope));
+    const nextRec = applyQuizResult(readQuizRecord(uid), results, scopeKey(scope));
     writeQuizRecord(uid, nextRec); setRec(nextRec);
+    // 4択の習得状態と単語帳の印を同期。誤答した語は覚えた印も外す。
+    results.forEach(result => onMark(result.wordId, result.correct));
   };
   const begin = (items: QuizItem[], scope: Scope) => {
     if (!items.length) return;
@@ -197,7 +206,7 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
         <button type="button" className="fd-secondary" onClick={onWordbook}><BookOpen size={16} aria-hidden="true" />単語帳で見直す</button>
         <button type="button" className="fd-secondary" onClick={() => setPhase({ kind: 'pick' })}>出題の設定へ</button>
       </div>
-      {score === phase.items.length && phase.items.every(x => known.has(x.wordId)) === false && <button type="button" className="fd-chip vq-markall" onClick={() => phase.items.forEach(x => onMark(x.wordId))}><Check size={15} aria-hidden="true" />この{phase.items.length}語を単語帳でも「覚えた」にする</button>}
+      {score === phase.items.length && phase.items.every(x => known.has(x.wordId)) === false && <button type="button" className="fd-chip vq-markall" onClick={() => phase.items.forEach(x => onMark(x.wordId, true))}><Check size={15} aria-hidden="true" />この{phase.items.length}語を単語帳でも「覚えた」にする</button>}
     </section>;
   }
 

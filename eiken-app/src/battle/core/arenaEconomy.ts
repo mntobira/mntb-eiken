@@ -26,7 +26,7 @@ export const gachaItems = (pool?: GachaPoolId) => ITEMS.filter(item => ('coins' 
  */
 export const GACHA_RARITY_RATES: Record<GachaRarity, number> = { LR: 0.01, UR: 0.03, SR: 0.06, R: 0.16, N: 0.74 };
 export const GACHA_RARITY_ORDER: readonly GachaRarity[] = ['LR', 'UR', 'SR', 'R', 'N'];
-export const GACHA_RARITY_LABELS: Record<GachaRarity, string> = { LR: 'レジェンドレア（予想問題）', UR: '大当たり（完全版の本）', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
+export const GACHA_RARITY_LABELS: Record<GachaRarity, string> = { LR: 'レジェンドレア', UR: 'ウルトラレア', SR: 'スーパーレア', R: 'レア', N: 'ノーマル' };
 
 export function gachaItemsByRarity(pool: GachaPoolId = DEFAULT_GACHA_POOL): Record<GachaRarity, ItemDef[]> {
   const out: Record<GachaRarity, ItemDef[]> = { LR: [], UR: [], SR: [], R: [], N: [] };
@@ -45,7 +45,7 @@ export function gachaItemRate(item: ItemDef, minRarity: GachaRarity = 'N', pool:
 }
 
 /** minRarity 以上だけで割合を振り直した表（5連の「R以上確定」枠で使う） */
-function rarityTable(minRarity: GachaRarity, pool: GachaPoolId = DEFAULT_GACHA_POOL) {
+export function rarityTable(minRarity: GachaRarity, pool: GachaPoolId = DEFAULT_GACHA_POOL) {
   const groups = gachaItemsByRarity(pool);
   const allowed = GACHA_RARITY_ORDER.slice(0, GACHA_RARITY_ORDER.indexOf(minRarity) + 1).filter(r => groups[r].length > 0);
   const sum = allowed.reduce((n, r) => n + GACHA_RARITY_RATES[r], 0);

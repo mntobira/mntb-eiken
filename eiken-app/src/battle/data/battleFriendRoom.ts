@@ -5,6 +5,7 @@
  * 呼び出し側は従来どおり './battle'（再公開）から import してよい。
  */
 import { auth, db } from '../../firebase';
+import { isEikenGrade } from '../../eiken/config';
 import { collection, deleteDoc, doc, getDoc, runTransaction, serverTimestamp } from '../../utils/firestoreMetered';
 import { arenaRule } from '../core/arenaRules';
 import { normalizeRule } from '../core/battleRules';
@@ -57,8 +58,8 @@ export interface CreatedRoom {
  * ので「今すぐ一緒にやる」用途に向かない。
  * 目の前にいる友達・通話中の友達と遊ぶには、
  * 4文字を口で伝えるのが一番速い。
- * フレンド登録済みかどうかも問わないので、
- * 「クラスの子と今すぐ1戦」ができる。
+ * 英検版では相互フレンド登録済みの相手だけが入室できる。
+ * 合言葉の共有だけでは第三者は入室できない。
  */
 /**
  * ★同じ相手との再戦・部屋での設定変更に使う「次の部屋の合言葉」★
@@ -125,7 +126,7 @@ export async function createFriendRoom(
   const arena = arenaRule(normalizeRule(subject, { ...loadRuleSync(subject), ...ruleOverride }));
   const rules: BattleRule = modeRules
     ? { ...arena, ...(modeRules.pointsSpeedMax != null ? { pointsSpeedMax: modeRules.pointsSpeedMax } : {}),
-        ...(modeRules.timeLimitOverride != null && subject !== 'english_listening' ? { timeLimitOverride: modeRules.timeLimitOverride } : {}) }
+        ...(modeRules.timeLimitOverride != null && subject !== 'english_listening' && !isEikenGrade(subject) ? { timeLimitOverride: modeRules.timeLimitOverride } : {}) }
     : arena;
   const rating = await fetchMyRating();
 

@@ -61,10 +61,10 @@ interface ChapterSelectionProps {
 
 export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'english_listening', rememberedGroup, onGroupChange, backLabel = '戻る' }: ChapterSelectionProps) {
   // 科目ごとに画面の作りが変わる箇所だけフラグにしている。
-  const isListening = subject.startsWith('eiken_');
+  const isEiken = subject.startsWith('eiken_');
   // 2026-10-28 TOEIC Part 5 も「第N回」のカードで並べる（英語リスニングと同じ回一覧）
   const isToeic = subject === 'toeic_part5';
-  const isRounds = isListening || isToeic;
+  // 英検は分野タブごとに音源カード／通常問題カードを切り替える。
   // 2026-10-31 TOEIC に Part 6 を足したので、TOEIC は Part が2つ以上あるときだけタブ（Part 5／Part 6）を出す
   //   （英語リスニング・英文法の見た目は変えない）
   const isGrammar = subject === 'english_grammar';
@@ -139,6 +139,8 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
   }, [activeGroupTitle]);
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
+  const isListening = isEiken && activeGroup?.chapters.some(chapter => chapter.id.includes('_listening_')) === true;
+  const isRounds = isListening || isToeic;
   const toeicTabs = isToeic && groups.length > 1;
   const toeicSub = activeGroup?.title === 'Part 7' ? 'Part 7 読解・1回7セット24問・4択'
     : activeGroup?.title === 'Part 6' ? 'Part 6 長文穴埋め・1回16問・4択' : 'Part 5 短文穴埋め・1回30問・4択';
@@ -176,7 +178,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <ArrowLeft size={18} aria-hidden="true" /><span>{backLabel}</span>
         </button>
         <div className="unit-head-title">
-          <h2 style={{ color: theme.accent }}>{isListening ? `${theme.label} リスニング` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
+          <h2 style={{ color: theme.accent }}>{isEiken ? `${theme.label} 級別練習` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
           <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />

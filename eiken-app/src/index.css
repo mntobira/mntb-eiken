@@ -179,6 +179,8 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 .game-home .game-home-utility button { justify-content:center; padding-inline:2px; font-size:12px; color:#51594b; }
 .game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-stage { transform:none !important; will-change:auto; transform-style:flat; }
 .game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-back { display:none; }
+/* 静止時は2Dとして描く。WebKitのflat親＋裏面非表示による透明化を避ける。 */
+.game-home .spin-mascot:not([data-spinning]):not([data-settling]) .spin-mascot-front { backface-visibility:visible; -webkit-backface-visibility:visible; }
 .game-home .spin-mascot-front img { filter:none; transform:none !important; }
 .game-home .game-stage-floor .game-equipped-ring { border-width:3px; box-shadow:inset 0 0 0 2px #fffaf0,0 0 0 1px #b6a789; filter:none; }
 .game-home .game-stage-caption, .game-home .game-mascot-button > span { font-size:12px; color:#655434; }

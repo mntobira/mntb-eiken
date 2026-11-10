@@ -28,7 +28,11 @@ export function weeklyHero(items: readonly ItemDef[], week: number, urHero: Item
     const lr = rotate(Object.keys(GACHA_PREVIEWS).map((id) => items.find((i) => i.id === id)).filter((i): i is ItemDef => !!i && gachaRarityOf(i) === 'LR'), week / 2);
     if (lr[0]) return lr[0];
   }
-  return urHero;
+  // 英検版は装飾が中心。教材URが無くても実際に排出される景品を表示する。
+  const studyRewards = rotate(items.filter(item => item.kind === 'print' && GACHA_PREVIEWS[item.id]?.length), week);
+  return urHero ?? studyRewards[0] ?? (['UR', 'SR', 'R', 'N'] as const).flatMap(rarity =>
+    rotate(items.filter(item => gachaRarityOf(item) === rarity), week)
+  )[0] ?? null;
 }
 
 /**
@@ -40,7 +44,11 @@ export function weeklyPickup(items: readonly ItemDef[], week: number, heroId?: s
   const pinned = KYOTSU_FREE_FULL_IDS.map((id) => pool.find((i) => i.id === id)).filter((i): i is ItemDef => !!i);
   const lr = [...pinned, ...rotate(pool.filter((i) => gachaRarityOf(i) === 'LR' && !pinned.includes(i)), week)].slice(0, lrCount);
   const ur = rotate(pool.filter((i) => gachaRarityOf(i) === 'UR'), week + 3).slice(0, urCount);
-  return [...lr, ...ur];
+  const study = rotate(pool.filter(item => !lr.includes(item) && !ur.includes(item)), week).slice(0, Math.max(0, lrCount - lr.length));
+  const previews = [...lr, ...ur, ...study];
+  const remaining = rotate(items.filter(item => item.id !== heroId && !previews.includes(item)), week + 7)
+    .sort((a, b) => ['LR', 'UR', 'SR', 'R', 'N'].indexOf(gachaRarityOf(a)) - ['LR', 'UR', 'SR', 'R', 'N'].indexOf(gachaRarityOf(b)));
+  return [...previews, ...remaining].slice(0, lrCount + urCount);
 }
 
 /** 今週の終わり（日曜）の「10/31（日）まで」 */

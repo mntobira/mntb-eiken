@@ -17,7 +17,8 @@ export type StudyAction =
   | { kind: 'units'; subject: string }           // 既存の単元一覧（ChapterSelection）
   | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' } // 既存の固めるページの各タブ
   | { kind: 'vocabQuiz' }                         // 英単語の4択演習（2026-10-01）
-  | { kind: 'reading' };                         // 英文解釈（内容一致の4択）2026-10-21
+  | { kind: 'reading' }
+  | { kind: 'writing' };                         // 英文解釈（内容一致の4択）2026-10-21
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe' | 'briefcase';
 
@@ -57,20 +58,21 @@ export interface StudySubject {
 
 /** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
 export const STUDY_CATALOG: readonly StudySubject[] = [{
-  id: 'eiken', label: '英検', description: '級別のリスニング重点練習', icon: 'headphones',
+  id: 'eiken', label: '英検', description: '級別の読む・聞く・語彙文法', icon: 'headphones',
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'headphones',
-        description: '会話・説明文の重点練習。本試験1回分ではありません',
+        description: 'リーディング・リスニング・語彙文法を練習',
         meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
     }),
+    { id: 'eiken_writing', title: '英検ライティング', icon: 'pen', description: '3級〜準1級の返信・意見・要約。下書き保存と自己点検', meta: '5級別・10課題', action: { kind: 'writing' } },
     {
       id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
-      description: '共通の補助単語帳（英検の級別教材ではありません）',
+      description: '5級〜準1級の重点語・例文・意味を級別に学ぶ',
       meta: `${VOCABULARY_COUNT.toLocaleString()}語`, action: { kind: 'foundation', tab: 'words' },
     },
   ],

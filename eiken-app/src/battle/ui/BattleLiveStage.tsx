@@ -117,7 +117,7 @@ export function BattleLiveStage(p: BattleLiveStageProps) {
     p.finished ? 'finished' : counting ? 'countdown' : 'playing',
     phase,
   );
-  const listening = p.question.subject === 'english_listening';
+  const listening = p.question.subject === 'english_listening' || p.question.subject.startsWith('eiken_');
   const quiet = listening && !counting && !p.reveal;
   // ★音源の対戦BGMがあるときは、カウントダウンの頭から対戦曲を鳴らす★
   //   曲頭から dropSec（=7秒）で本編に入るように作ってあるので、START! と同時にドロップする。

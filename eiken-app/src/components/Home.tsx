@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 const PhilosophyPage = React.lazy(() => import('./PhilosophyPage').then(m => ({ default: m.PhilosophyPage })));
 import { auth } from '../firebase';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { equippedCompanion, equippedPoseSrc, equippedFrameColor, equippedFramePattern, equippedStage, levelOf } from '../battle/core/growth';
+import { emptyProgress, equippedCompanion, equippedPoseSrc, equippedFrameColor, equippedFramePattern, equippedStage, levelOf } from '../battle/core/growth';
 import '../styles/home-stage.css';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
 import type { GrowthPage } from './GrowthHub';
@@ -140,7 +140,10 @@ interface HomeProps {
 }
 
 export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
-  const { progress: growth } = useGrowthProgress();
+  const { progress: savedGrowth, uid: growthUid } = useGrowthProgress();
+  // 保存破損・アカウント切替中でも住人は表示する。表示用の初期値は保存しない。
+  const fallbackGrowth = useMemo(() => emptyProgress(growthUid), [growthUid]);
+  const growth = savedGrowth ?? fallbackGrowth;
   const reviewDueCount = useMemo(() => {
     const uid = auth.currentUser?.uid || (isGuest ? 'guest' : null);
     return getDueCount(uid);
@@ -399,7 +402,10 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
           {growth && <div className="game-mascot-button" data-home-mascot>
             <SpinMascot className="home-mascot-wrap" label="とびら君（左右にドラッグで回す・押すと着せ替え）" onTap={onGrowth ? () => onGrowth('outfit') : undefined}>
               <TobiraMotion name={daysAway >= 3 ? 'wakeup' : 'greet'} play={greetPlay}>
-                <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} /><TobiraAccessories progress={growth} />
+                <img className="home-mascot-art" src={equippedPoseSrc(growth)} alt="あなたのとびら君" draggable={false} loading="eager" decoding="sync" onError={event => {
+                  const image = event.currentTarget;
+                  if (image.getAttribute('src') !== '/mascots/basic.webp') image.src = '/mascots/basic.webp';
+                }} /><TobiraAccessories progress={growth} />
               </TobiraMotion>
             </SpinMascot>
             {/* 「マイとびら」の札（2026-10-20）：名前とレベルを別の色にし、レベルは金のメダル風に */}

@@ -11,6 +11,7 @@ import { auth } from '../firebase';
 import { confirmAction } from '../utils/dialog';
 import { useFitPager } from '../hooks/useFitPager';
 import { FitPagerBar } from './ui/FitPagerBar';
+import { openPdf } from '../utils/pdfViewer';
 import { savePdf } from '../utils/pdfShare';
 import { KyotsuAudioPlayer } from './gacha/KyotsuAudioPlayer';
 import { GachaSetsPanel } from './gacha/GachaSetsPanel';
@@ -94,7 +95,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
   /** 詳細の窓の中の操作（保存・装備・外す・購入）。タイルはコンパクトにして、操作はそこに集めた */
   const actions = (item: ItemDef) => {
     const owned = progress.owned.includes(item.id); const print = printOf(item.id); const equipped = progress.equipped[item.kind] === item.id; const price = shopPriceOf(item);
-    return print && owned ? <><p>{print.category} · {print.pages}ページ</p><a href={print.file} download onClick={e => { e.preventDefault(); void savePdf(print.file, `${print.label.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`, print.label).catch(() => setMessage('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')); }}><Download size={16}/>保存する</a><KyotsuAudioPlayer printId={item.id}/></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : price != null ? <><p>{price.toLocaleString()} マナコイン</p><button type="button" disabled={busy || progress.coins < price} onClick={() => void perform(item)}>{progress.coins < price ? `あと${(price-progress.coins).toLocaleString()}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>;
+    return print && owned ? <><p>{print.category} · {print.pages}ページ</p><button type="button" disabled={busy} onClick={() => { setDetail(null); openPdf(print.file, print.label); }}>中身を開く</button><a href={print.file} download onClick={e => { e.preventDefault(); if (busy) return; setBusy(true); void savePdf(print.file, `${print.label.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`, print.label).catch(() => setMessage('PDFを保存できませんでした。接続を確認して、もう一度お試しください。')).finally(() => setBusy(false)); }}><Download size={16}/>保存する</a><KyotsuAudioPlayer printId={item.id}/></> : owned ? (equipped ? (canUnequip(progress, item) ? <button type="button" className="collection-unequip" data-unequip={item.id} disabled={busy} onClick={() => void takeOff(item)}>外す</button> : <button type="button" disabled>装備中</button>) : <button type="button" disabled={busy} onClick={() => void perform(item)}>装備する</button>) : price != null ? <><p>{price.toLocaleString()} マナコイン</p><button type="button" disabled={busy || progress.coins < price} onClick={() => void perform(item)}>{progress.coins < price ? `あと${(price-progress.coins).toLocaleString()}枚` : '購入する'}</button></> : <p>{item.id === 'frame_league_aurora' ? '隔週リーグ限定UR' : 'level' in item.unlock ? `Lv.${item.unlock.level}で解放` : 'badge' in item.unlock ? '称号で解放' : 'ガチャで獲得'}</p>;
   };
   const art = (item: ItemDef, size: number) => { const print = printOf(item.id); if (item.kind === 'companion') return <span className="collection-companion-art"><CompanionArt value={item.value} size={Math.round(size * 0.96)} /></span>; if (item.kind === 'stage') return <svg className="collection-stage-swatch" data-stage-swatch={stageOf(item.value) ? item.value : 'cosmos'} width={size} height={size} viewBox="0 0 10 10" role="img" aria-label={stageOf(item.value)?.label ?? 'ホームの背景'}><rect className="stage-swatch-fill" width="10" height="10" rx="1.4" /><image href="/mascots/basic.webp" x="2.2" y="3" width="5.6" height="5.6" /></svg>; return print ? <img src={print.thumb} alt="PDFの表紙" loading="lazy"/> : <GrowthAvatar progress={{...progress,equipped:{...progress.equipped,[item.kind]:item.id}}} size={size} showLevel={false}/>; };
   return <section className="my-collection" data-my-collection={view}>
@@ -118,7 +119,7 @@ export function MyCollection({ view = 'owned', onGacha, initialKind = 'all', gac
           <span className="collection-tile-tag">{equipped ? <><Check size={12} aria-hidden/>装備中</> : owned ? rarity : <><Lock size={11} aria-hidden/>{shopPriceOf(item) != null ? `${shopPriceOf(item)!.toLocaleString()}枚` : rarity}</>}</span>
           {owned && item.id === LEAGUE_GIFT_ITEM && <span className="collection-gift-tag" data-gift-item><Gift size={12} aria-hidden/>プレゼント</span>}
         </button>
-      </li>; })}</ul>{!list.length && <p className="collection-empty">{view === 'prints' ? '獲得したPDFはここに並びます。ガチャのSRで学習プリント、URで完全版の本が出ます。' : 'この条件のアイテムはありません。絞り込みを変えてみてください。'}</p>}</>}
+      </li>; })}</ul>{!list.length && <p className="collection-empty">{view === 'prints' ? '獲得した英検の学習ノートはここに並びます。単語・例文は学習画面の単語帳でも使えます。' : 'この条件のアイテムはありません。絞り込みを変えてみてください。'}</p>}</>}
     </div>
     <FitPagerBar pager={pager} label="一覧" />
     {/* C1/C2（2026-10-29）：詳細の窓＝大きな絵＋説明＋操作。PDF は表紙のページ・中身の説明・「保存する」 */}

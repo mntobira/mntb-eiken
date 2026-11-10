@@ -19,7 +19,7 @@ export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
   { id: 'chugoku_shikoku', label: '2次 中国・四国' },
   { id: 'kyushu_okinawa', label: '2次 九州・沖縄' },
   { id: 'book', label: '完全版の本' },
-  { id: 'english', label: '英語' },
+  { id: 'english', label: '英検' },
   { id: 'chemistry', label: '化学' },
   { id: 'math', label: '数学' },
   { id: 'joho', label: '情報' },
@@ -56,6 +56,7 @@ export function univOfPrint(id: string): string | null {
 }
 
 export function printShelfOf(p: GachaPrintDef): PrintShelfId {
+  if (p.subject.startsWith('eiken_')) return 'english';
   if (p.id.startsWith('print_lr_kyotsu')) return 'kyotsu';
   const univ = univOfPrint(p.id);
   if (univ) return UNIV_REGION[univ] ?? 'other';

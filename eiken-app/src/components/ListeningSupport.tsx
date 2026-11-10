@@ -1,3 +1,4 @@
+import { VOCABULARY_URL } from '../data/listeningSupport';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, Headphones, Search, Volume2, X } from 'lucide-react';
 import { LISTENING_GRAMMAR, VOCAB_LEVELS, filterVocabulary, parseSupportProgress, supportStorageKey, type ListeningWord, type VocabularyData, type SupportProgress } from '../data/listeningSupport';
@@ -52,7 +53,7 @@ export function ListeningSupport({initialTab,uid,onClose,onPractice}:{initialTab
   useEffect(()=>{
     if(tab!=='words'||data)return;let alive=true;setLoadError('');
     const controller=new AbortController();
-    fetch('/data/listeningVocabulary.json',{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('Vocabulary unavailable');return r.json();}).then(value=>{if(!Array.isArray(value.words)||!Array.isArray(value.chapters)||typeof value.wordCount!=='number')throw new Error('Invalid vocabulary data');if(alive)setData(value as VocabularyData);}).catch(()=>{if(alive)setLoadError('単語を読み込めませんでした。接続を確認して再読み込みしてください。');});
+    fetch(VOCABULARY_URL,{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('Vocabulary unavailable');return r.json();}).then(value=>{if(!Array.isArray(value.words)||!Array.isArray(value.chapters)||typeof value.wordCount!=='number')throw new Error('Invalid vocabulary data');if(alive)setData(value as VocabularyData);}).catch(()=>{if(alive)setLoadError('単語を読み込めませんでした。接続を確認して再読み込みしてください。');});
     return()=>{alive=false;controller.abort();};
   },[tab,data,retry]);
   const stop=()=>{pauseAllAudio(null,dialog.current);stopSpeech();};

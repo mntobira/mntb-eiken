@@ -13,7 +13,7 @@
 import { useState, type RefObject } from 'react';
 import {
   GACHA_DUPLICATE_REFUND_BY_RARITY,
-  GACHA_RARITY_RATES,
+  rarityTable,
   gachaItemRate,
 } from '../../battle/core/arenaEconomy';
 import { gachaRarityOf, printOf, type GachaRarity, type GrowthProgress, type ItemDef } from '../../battle/core/growth';
@@ -30,6 +30,8 @@ export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool 
   pool?: GachaPoolId;
 }) {
   const def = gachaPoolOf(pool);
+  const rates = rarityTable('N', pool);
+  const bonusRates = rarityTable('R', pool);
   const [collectionFilter, setCollectionFilter] = useState<'all' | 'owned' | 'missing'>('all');
   const [collectionKind, setCollectionKind] = useState<CollectionKind>('body');
   const [tab, setTab] = useState<'odds' | 'collection'>('odds');
@@ -63,24 +65,17 @@ export function GachaCollectionModal({ oddsDialog, items, tiers, progress, pool 
         </section>
         <section className="gacha-odds-section" aria-labelledby="gacha-rates-heading">
           <h3 id="gacha-rates-heading">抽選の割合</h3>
-          <p>{def.title}は全{items.length}種類。まずレア度を抽選し、同じレア度の中から等確率で1つ出ます。割合は共通テストガチャと2次試験ガチャで同じです（中身が違います）。</p>
+          <p>{def.title}は全{items.length}種類。実在するレア度だけで重みを再計算し、そのレア度の中から等確率で1つ出ます。注目表示による確率の上昇はありません。</p>
           <ul className="gacha-odds-rate-list" aria-label="レア度ごとの提供割合">
-            <li><RarityTag rarity="LR" /><b>{pct(GACHA_RARITY_RATES.LR)}%</b></li>
-            <li><RarityTag rarity="UR" /><b>{pct(GACHA_RARITY_RATES.UR)}%</b></li>
-            <li><RarityTag rarity="SR" /><b>{pct(GACHA_RARITY_RATES.SR)}%</b></li>
-            <li><RarityTag rarity="R" /><b>{pct(GACHA_RARITY_RATES.R)}%</b></li>
-            <li><RarityTag rarity="N" /><b>{pct(GACHA_RARITY_RATES.N)}%</b></li>
+            {rates.map(({ rarity, rate }) => <li key={rarity}><RarityTag rarity={rarity} /><b>{pct(rate)}%</b><small>{tiers[rarity].length}種・1種あたり{pct(rate / tiers[rarity].length)}%</small></li>)}
           </ul>
-          <p>LRは{def.lrName}{tiers.LR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.LR / Math.max(1, tiers.LR.length))}%）、URは「その一冊で完成する本」（完全版）{tiers.UR.length}種（1種あたり約{pct(GACHA_RARITY_RATES.UR / Math.max(1, tiers.UR.length))}%）です。単元ごとの学習プリントはSRで出ます。</p>
+          <p>収録のないレア度は抽選されません。装飾は獲得後に着せ替えで使えます。英検教材の利用に抽選は不要です。</p>
         </section>
         <section className="gacha-odds-section" aria-labelledby="gacha-multi-heading">
           <h3 id="gacha-multi-heading">10＋1連</h3>
           <p>最後の1回はR以上確定。それまでにR以上が出ていない場合の割合：</p>
           <ul className="gacha-odds-bonus-rates">
-            <li>LR <b>{pct(GACHA_RARITY_RATES.LR / (1 - GACHA_RARITY_RATES.N))}%</b></li>
-            <li>UR <b>{pct(GACHA_RARITY_RATES.UR / (1 - GACHA_RARITY_RATES.N))}%</b></li>
-            <li>SR <b>{pct(GACHA_RARITY_RATES.SR / (1 - GACHA_RARITY_RATES.N))}%</b></li>
-            <li>R <b>{pct(GACHA_RARITY_RATES.R / (1 - GACHA_RARITY_RATES.N))}%</b></li>
+            {bonusRates.map(({ rarity, rate }) => <li key={rarity}>{rarity} <b>{pct(rate)}%</b></li>)}
           </ul>
         </section>
         <details className="gacha-odds-section gacha-odds-rules">

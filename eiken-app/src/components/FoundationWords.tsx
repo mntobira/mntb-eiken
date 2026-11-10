@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, EyeOff, Headphones, Map as MapIcon, Play, Search, SlidersHorizontal, Volume2 } from 'lucide-react';
 import { chapterState, groupBlocks, nextChapter, splitChapters } from '../data/vocabChapters';
 import { Dialog } from './ui';
-import { VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
+import { VOCABULARY_URL, VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
-import { sayWord, prefetchVocabAudioIndex } from './foundationShared';
+import { ReadAloud, sayWord, prefetchVocabAudioIndex } from './foundationShared';
 import { hasVocabAudio, stopVocabAudio } from '../utils/vocabAudio';
-import { VOCAB_PREF_KEY } from '../utils/vocabGoal';
+import { GOAL_OPTIONS, VOCAB_PREF_KEY } from '../utils/vocabGoal';
 import { wordNumbers } from '../data/vocabQuiz';
 import { pauseAllAudio } from '../utils/audioElements';
 import { loadVocabPron, pronOf, type VocabPron } from '../utils/vocabPron';
@@ -25,18 +25,16 @@ import { loadVocabPron, pronOf, type VocabPron } from '../utils/vocabPron';
  *   2次＋追加        … 全レベル
  *   志望校別         … 志望校の出題に合わせてレベルを自分で選ぶ
  */
-export const PRESETS = [
-  { id: 'common', label: '共通6〜8割', full: '共通テスト6〜8割を目標に', levels: ['lv1', 'lv2', 'ilv1'] },
-  { id: 'national', label: '2次試験', full: '2次試験レベル', levels: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'] },
-  { id: 'private', label: '2次＋追加', full: '2次試験の追加語彙まで', levels: Object.keys(VOCAB_LEVELS) },
-  { id: 'custom', label: '志望校別', full: '志望校別（レベルを選ぶ）', levels: null },
-] as const;
+export const PRESETS = GOAL_OPTIONS.map(goal => ({ ...goal,
+  full: goal.id === 'custom' ? '全級の重点語から選ぶ' : `英検${goal.label}の重点語`,
+  levels: goal.id === 'custom' ? null : [goal.id],
+}));
 export type PresetId = typeof PRESETS[number]['id'];
 const PREF_KEY = VOCAB_PREF_KEY;
 /** 単語帳の1ページ＝100語（2026-10-01 D：100語ずつめくる） */
 export const WORDBOOK_PAGE = 100;
 const PAGE = WORDBOOK_PAGE;
-const POS_KEY = 'foundation_word_pos_v1';
+const POS_KEY = 'eiken_wordbook_pos_v2';
 /** レベルごとに最後に開いた章（次に開いたとき同じ場所から） */
 function readPos(): Record<string, number> {
   try { const v = JSON.parse(safeLocalStorage()?.getItem(POS_KEY) || '{}'); return v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).filter(([k, n]) => k in VOCAB_LEVELS && Number.isInteger(n) && (n as number) >= 0)) as Record<string, number> : {}; } catch { return {}; }
@@ -45,10 +43,10 @@ function readPos(): Record<string, number> {
 export function readPrefs(): { preset: PresetId; custom: string[] } {
   try {
     const p = JSON.parse(safeLocalStorage()?.getItem(PREF_KEY) || '{}');
-    const preset: PresetId = PRESETS.some(x => x.id === p.preset) ? p.preset : 'common';
+    const preset: PresetId = PRESETS.some(x => x.id === p.preset) ? p.preset : 'eiken_5';
     const custom: string[] = Array.isArray(p.custom) ? p.custom.filter((l: unknown) => typeof l === 'string' && l in VOCAB_LEVELS) : [];
-    return { preset, custom: custom.length ? custom : ['lv1'] };
-  } catch { return { preset: 'common', custom: ['lv1'] }; }
+    return { preset, custom: custom.length ? custom : ['eiken_5'] };
+  } catch { return { preset: 'eiken_5', custom: ['eiken_5'] }; }
 }
 
 /**
@@ -75,14 +73,18 @@ function WordDetail({ word, pron, onPractice }: { word: ListeningWord; pron: Voc
   return <div className="fd-word-detail">
     {pron && <PronLine pron={pron} />}
     <p className="fd-definition">{word.fullMeaning}</p>
+    {word.exampleSentence && <section className="fd-example-sentence" aria-label="独自例文">
+      <p lang="en">{word.exampleSentence}</p><p>{word.exampleTranslation}</p>
+      <ReadAloud text={word.exampleSentence} label="例文を聞く" />
+    </section>}
     {word.examples.length > 0 && <details className="fd-examples">
-      <summary><Headphones size={15} aria-hidden="true" />リスニングでの使われ方（{word.examples.length}大問）<ChevronDown size={15} aria-hidden="true" /></summary>
+      <summary><Headphones size={15} aria-hidden="true" />英検問題での使われ方（{word.examples.length}問）<ChevronDown size={15} aria-hidden="true" /></summary>
       {word.examples.map(ex => <section key={ex.chapterId}>
         <h4>{ex.chapterTitle}・第{ex.problemIndex + 1}回</h4>
         <p lang="en">{ex.script.length > 220 ? ex.script.slice(0, 220) + '…' : ex.script}</p>
         <div className="fd-example-actions">
-          <audio controls preload="none" src={ex.audioUrl} aria-label={`${ex.chapterTitle} 第${ex.problemIndex + 1}回の音源`}
-            onPlay={e => { stopSpeech(); pauseAllAudio(e.currentTarget); }} />
+          {ex.audioUrl && <audio controls preload="none" src={ex.audioUrl} aria-label={`${ex.chapterTitle} 第${ex.problemIndex + 1}回の音源`}
+            onPlay={e => { stopSpeech(); pauseAllAudio(e.currentTarget); }} />}
           <button type="button" onClick={() => onPractice(ex.chapterId, ex.problemIndex)}><Headphones size={15} aria-hidden="true" />この回を解く</button>
         </div>
       </section>)}
@@ -130,7 +132,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
     if (data) return;
     let alive = true; setLoadError('');
     const controller = new AbortController();
-    fetch('/data/listeningVocabulary.json', { signal: controller.signal })
+    fetch(VOCABULARY_URL, { signal: controller.signal })
       .then(r => { if (!r.ok) throw new Error('Vocabulary unavailable'); return r.json(); })
       .then(v => { if (!Array.isArray(v.words) || !Array.isArray(v.chapters) || typeof v.wordCount !== 'number') throw new Error('Invalid vocabulary data'); if (alive) setData(v as VocabularyData); })
       .catch(() => { if (alive) setLoadError('単語を読み込めませんでした。接続を確認してください。'); });
@@ -224,12 +226,12 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
           <summary><SlidersHorizontal size={16} aria-hidden="true" />条件をつける・さがす{condCount + (searching ? 1 : 0) > 0 && <b>{condCount + (searching ? 1 : 0)}</b>}<ChevronDown size={16} aria-hidden="true" /></summary>
           <div className="fd-range-conds">
             <label className="fd-search"><Search size={17} aria-hidden="true" /><input type="search" aria-label="英語・日本語で検索" placeholder="単語をさがす（英語・日本語）" value={query} onChange={e => { setQuery(e.target.value); resetList(); }} /></label>
-            <label className="fd-check"><input type="checkbox" checked={listenOnly} onChange={e => { setListenOnly(e.target.checked); resetList(); }} /><Headphones size={15} aria-hidden="true" />リスニングに出る語だけ</label>
+            <label className="fd-check"><input type="checkbox" checked={listenOnly} onChange={e => { setListenOnly(e.target.checked); resetList(); }} /><Headphones size={15} aria-hidden="true" />英検問題に出る語だけ</label>
             <label className="fd-check"><input type="checkbox" checked={unlearned} onChange={e => { setUnlearned(e.target.checked); resetList(); }} />まだ覚えていない語だけ</label>
-            <label className="fd-select">大問で探す<span><select aria-label="対応するリスニング大問" value={chapter} onChange={e => { setChapter(e.target.value); resetList(); }}>
+            <label className="fd-select">大問で探す<span><select aria-label="対応する英検問題" value={chapter} onChange={e => { setChapter(e.target.value); resetList(); }}>
               <option value="">すべての大問</option>{data.chapters.map(c => <option key={c.id} value={c.id}>{c.title}に登場</option>)}
             </select><ChevronDown size={16} aria-hidden="true" /></span></label>
-            <p className="fd-goal-guide">目標は目安です。得点や志望校の出題範囲を保証するものではありません。</p>
+            <p className="fd-goal-guide">級別の重点語を学習できます。独自例文と、対応する英検練習問題で使い方を確認できます。</p>
           </div>
         </details>
       </div>
@@ -273,7 +275,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
                 <span className="fd-word-no" aria-label={`No.${numbers.get(w.id)}`}>{numbers.get(w.id)}</span>
                 <span className="fd-word-en" lang="en" data-hidden={(hide === 'en' && !open && !peek.has(w.id)) || undefined} aria-label={pron && pron.stress >= 0 ? w.word : undefined}><HeadWord word={w.word} pron={pron} /></span>
                 <span className="fd-word-ja" data-hidden={(hide === 'ja' && !open && !peek.has(w.id)) || undefined}>{w.meaning}</span>
-                {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">リスニング</i>}</span>}
+                {(searching || w.examples.length > 0) && <span className="fd-word-tags">{searching && <i>{VOCAB_LEVELS[w.level]}</i>}{w.examples.length > 0 && <i className="fd-tag-listen">問題に登場</i>}</span>}
               </button>
               <button type="button" className="fd-icon" aria-label={`${w.word} を読み上げる`} disabled={!isSpeechSupported() && !hasVocabAudio(w.id)} onClick={() => sayWord(w.id, w.word)}><Volume2 size={18} aria-hidden="true" /></button>
               <button type="button" className="fd-icon fd-mark" aria-pressed={isKnown} aria-label={isKnown ? `${w.word} の覚えた印を外す` : `${w.word} を覚えた語にする`} onClick={() => onMark(w.id, !isKnown)}><Check size={18} aria-hidden="true" /></button>

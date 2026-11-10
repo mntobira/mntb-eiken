@@ -7,10 +7,15 @@
     "dev": "vite --host 0.0.0.0 --port 3000 --mode eiken",
     "build": "node scripts/check-target.mjs && vite build --mode eiken",
     "build:demo": "vite build --mode eiken",
-    "build:vercel": "node scripts/check-target.mjs --production && vite build --mode eiken.production",
+    "build:vercel": "tsx scripts/build-eiken-wordbook.ts && node scripts/check-target.mjs --production && vite build --mode eiken.production",
+    "generate:materials": "tsx scripts/build-eiken-wordbook.ts",
+    "test:release": "node tests/release.browser.mjs",
+    "test:audio": "node tests/audio.browser.mjs",
     "typecheck": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
-    "test": "vitest run tests/eiken.test.ts --maxWorkers=1",
+    "test": "vitest run tests/*.test.ts --maxWorkers=1",
     "test:rules": "node --test tests/firestore-rules.test.mjs",
+    "test:sdk": "tsx tests/firebase-sdk.emulator.ts",
+    "test:integration:browser": "node tests/integration.browser.mjs",
     "test:browser": "node tests/shell.browser.mjs"
   },
   "dependencies": {

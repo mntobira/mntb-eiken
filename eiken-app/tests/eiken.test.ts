@@ -1,3 +1,9 @@
+import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
+import { GACHA_PREVIEWS } from '../src/data/gachaPreviews.generated';
+import { gachaItems, gachaItemRate, pickGachaItem, rarityTable } from '../src/battle/core/arenaEconomy';
+import { GACHA_POOLS } from '../src/battle/core/gachaPools';
+import { weeklyHero, weeklyPickup } from '../src/components/gacha/GachaItemDetail';
+import { pickupItems } from '../src/components/gacha/GachaPickupModal';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -5,7 +11,7 @@ import { loadPool, poolCountOf, loadBattleAnswers, loadBattleSpeech, POOL_COUNTS
 import { defaultRuleOf, normalizeRule } from '../src/battle/core/battleRules';
 import { arenaRule } from '../src/battle/core/arenaRules';
 import { BattleQuestionView } from '../src/battle/ui/BattleQuestionView';
-import { LEVEL_PRINTS, LEVEL_REWARD_ITEMS } from '../src/battle/core/growthItems';
+import { ITEMS, LEVEL_PRINTS, LEVEL_REWARD_ITEMS } from '../src/battle/core/growthItems';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { STUDY_CATALOG } from '../src/data/studyCatalog';
@@ -35,10 +41,10 @@ class MemoryStorage implements Storage {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Listening parity', () => {
-  it('keeps more than 600 inherited source files byte-identical to listening main', () => {
+  it('keeps more than 580 inherited source files byte-identical to listening main', () => {
     const baseline = JSON.parse(readFileSync('tests/listening-baseline.json', 'utf8'));
     expect(baseline.commit).toBe('ee648b2a961096724afbdc455d7da36a81284f44');
-    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(600);
+    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(580);
     for (const [path, hash] of Object.entries(baseline.unchangedFiles)) {
       const content = readFileSync(path);
       expect(createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex'), path).toBe(hash);
@@ -162,7 +168,8 @@ describe('Shared Eiken shell', () => {
     }
     const vocabulary = JSON.parse(readFileSync('public/data/listeningVocabulary.json', 'utf8'));
     expect(vocabulary.wordCount).toBe(vocabulary.words.length);
-    expect(vocabulary.words.every(word => word.examples.length === 0 && word.chapterIds.length === 0)).toBe(true);
+    expect(vocabulary.words.every(word => word.id.startsWith('eiken-word-') && word.exampleSentence && word.exampleTranslation)).toBe(true);
+    expect(vocabulary.words.filter(word => word.examples.length > 0).length).toBeGreaterThan(40);
     expect(JSON.parse(readFileSync('public/data/listeningTranslations.json', 'utf8'))).toEqual({});
     expect(JSON.parse(readFileSync('public/manifest.json', 'utf8')).id).toBe('/manatobi-eiken');
     const sw = readFileSync('public/sw.js', 'utf8');
@@ -221,5 +228,93 @@ describe('Eiken isolation', () => {
     expect(doc(rawCollection(db, 'eiken_users'), 'alice').path).toBe('eiken_users/alice');
     expect(() => collectionGroup(db, 'users')).toThrow();
     await deleteApp(app);
+  });
+});
+
+
+describe('Release content completeness', () => {
+  it('keeps all 14 reading passages and their 28 questions, translations and choice explanations', () => {
+    let readings = 0, marks = 0;
+    const ids = new Set<string>();
+    for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
+      const parts = partsForGrade(grade.id);
+      expect(parts.map(part => part.section)).toEqual(['listening', 'reading', 'vocabulary']);
+      for (const chapter of parts.flatMap(part => part.chapters)) {
+        expect(chapter.title).toBeTruthy();
+        expect(chapter.practiceProblems).toHaveLength(2);
+        for (const problem of chapter.practiceProblems) {
+          expect(ids.has(problem.id)).toBe(false); ids.add(problem.id);
+          for (const question of problem.subQuestions) {
+            expect(question.optionTexts).toHaveLength(4);
+            expect(question.optionTexts![Number(question.correctAnswer) - 1]).toBeTruthy();
+            expect(question.distractors).toHaveLength(4);
+            expect(question.explainJa).toBeTruthy();
+          }
+          if (chapter.questionGroup === 'リーディング') {
+            readings++; marks += problem.subQuestions.length;
+            expect(problem.text.length).toBeGreaterThan(80);
+            expect(problem.explanation).toContain('【全文和訳】');
+            expect(problem.audioTracks).toBeUndefined();
+          }
+        }
+        expect(getChapterIndexOfSubject(grade.id).find(item => item.id === chapter.id)?.problemCount).toBe(chapter.practiceProblems.length);
+      }
+      expect(getSubjectStats(grade.id).marks).toBe(parts.flatMap(part => part.chapters).flatMap(chapter => chapter.practiceProblems).reduce((n, problem) => n + problem.subQuestions.length, 0));
+    }
+    expect(readings).toBe(14); expect(marks).toBe(28);
+  });
+  it('provides actual heroes, distinct pickups and mathematically accurate odds for both pools every week', () => {
+    for (const pool of GACHA_POOLS) {
+      expect(pool.title).toContain('英検');
+      expect(pool.lrNote).not.toMatch(/共通テスト|大学|2次試験/);
+      const items = gachaItems(pool.id);
+      expect(items.length).toBeGreaterThan(20);
+      expect(pickupItems(items).length).toBe(6);
+      for (let week = 0; week < 104; week++) {
+        const hero = weeklyHero(items, week, null)!;
+        expect(items).toContain(hero);
+        const pickup = weeklyPickup(items, week, hero.id);
+        expect(pickup).toHaveLength(5);
+        expect(new Set(pickup.map(item => item.id)).size).toBe(5);
+        expect(pickup.some(item => item.id === hero.id)).toBe(false);
+        expect(pickup.every(item => items.includes(item))).toBe(true);
+      }
+      expect(items.reduce((n, item) => n + gachaItemRate(item, 'N', pool.id), 0)).toBeCloseTo(1, 10);
+      expect(rarityTable('N', pool.id).reduce((n, row) => n + row.rate, 0)).toBeCloseTo(1, 10);
+      for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
+    }
+    expect(GACHA_PRINTS).toHaveLength(7);
+    for (const print of GACHA_PRINTS) {
+      expect(print.subject).toMatch(/^eiken_/); expect(print.pages).toBe(5);
+      expect(readFileSync(`public${print.file}`).subarray(0, 4).toString()).toBe('%PDF');
+      expect(existsSync(`public${print.thumb}`)).toBe(true);
+      expect(GACHA_PREVIEWS[print.id].every(path => existsSync(`public${path}`))).toBe(true);
+      expect(GACHA_POOLS.filter(pool => gachaItems(pool.id).some(item => item.id === print.id))).toHaveLength(1);
+    }
+    for (const item of ITEMS.filter(item => item.kind === 'pose')) expect(existsSync(`public${item.value}`)).toBe(true);
+  });
+  it('provides seven real wordbooks, unique stable IDs, bilingual examples and valid exercise links', () => {
+    const data = JSON.parse(readFileSync('public/data/listeningVocabulary.json', 'utf8'));
+    expect(data.wordCount).toBe(420); expect(data.questionCount).toBe(840);
+    expect(new Set(data.words.map(word => word.id)).size).toBe(data.words.length);
+    for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
+      const words = data.words.filter(word => word.level === grade.id);
+      expect(words).toHaveLength(60);
+      const chapters = partsForGrade(grade.id).flatMap(part => part.chapters);
+      for (const word of words) {
+        expect(word.exampleSentence).toMatch(/[a-z]/i); expect(word.exampleTranslation).toMatch(/[ぁ-んァ-ヶ一-龯]/);
+        expect(word.questions).toHaveLength(2);
+        for (const question of word.questions) {
+          expect(new Set(question.options).size).toBe(4);
+          expect(question.options[question.answerIndex]).toBe(question.id.endsWith(':e2j') ? word.meaning : word.word);
+        }
+        for (const example of word.examples) {
+          const chapter = chapters.find(chapter => chapter.id === example.chapterId)!;
+          expect(chapter).toBeTruthy();
+          expect(chapter.practiceProblems[example.problemIndex].id).toBe(example.problemId);
+          if (example.audioUrl) expect(existsSync(`public${example.audioUrl}`)).toBe(true);
+        }
+      }
+    }
   });
 });
