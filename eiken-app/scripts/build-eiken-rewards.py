@@ -39,7 +39,7 @@ for directory in ['prints', 'prints/thumbs', 'prints/previews']:
  (PUBLIC / directory).mkdir(parents=True, exist_ok=True)
 items, previews = [], {}
 for grade, label in labels.items():
- selected = [word for word in words if word['level'] == grade]
+ selected = [word for word in words if word['level'] == grade][:30] # 基礎30語ノート。追加語はアプリで学ぶ。
  item_id = f'print_eiken_wordbook_{grade.removeprefix("eiken_")}'
  output = PUBLIC / f'prints/{item_id}.pdf'
  story = []

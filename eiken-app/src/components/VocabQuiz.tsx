@@ -1,3 +1,4 @@
+import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
 import { readGoal } from '../utils/vocabGoal';
 import { useEffect, useMemo, useState } from 'react';
 import { CorrectBurst } from './fx/CorrectBurst';
@@ -53,6 +54,11 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
   useEffect(() => { prefetchVocabAudioIndex(); return () => { stopSpeech(); stopVocabAudio(); }; }, []);
   useEffect(() => { writeQuizPrefs(uid, prefs); }, [uid, prefs]);
 
+  useEffect(() => {
+    const refresh = () => { setRec(readQuizRecord(uid)); };
+    window.addEventListener(USER_DATA_SYNCED_EVENT, refresh); window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener(USER_DATA_SYNCED_EVENT, refresh); window.removeEventListener('storage', refresh); };
+  }, [uid]);
   const levels = useMemo(() => Object.keys(VOCAB_LEVELS).filter(l => data?.words.some(w => w.level === l)), [data]);
   const missedSet = useMemo(() => new Set(rec.missed), [rec.missed]);
   const mastered = useMemo(() => new Set(rec.mastered ?? []), [rec.mastered]);
@@ -69,7 +75,7 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
   const pool = prefs.only === 'unlearned' ? list.length - learnedInRange : list.length;
 
   const save = (results: { wordId: string; correct: boolean }[], scope: Scope) => {
-    const nextRec = applyQuizResult(rec, results, scopeKey(scope));
+    const nextRec = applyQuizResult(readQuizRecord(uid), results, scopeKey(scope));
     writeQuizRecord(uid, nextRec); setRec(nextRec);
     // 4択の習得状態と単語帳の印を同期。誤答した語は覚えた印も外す。
     results.forEach(result => onMark(result.wordId, result.correct));

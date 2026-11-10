@@ -10,7 +10,7 @@ let writtenFlows = 0;
 for (const engine of engines) {
   const browser = await engine.launch({ args: engine === chromium ? ['--no-sandbox'] : [] });
   try {
-    for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }].filter(viewport => !process.env.EIKEN_WIDTH || viewport.width === Number(process.env.EIKEN_WIDTH))) {
       console.log(`Checking ${engine.name()} ${viewport.width}px`);
       const context = await browser.newContext({ viewport, serviceWorkers: 'block', reducedMotion: 'reduce' });
       const page = await context.newPage();
@@ -61,10 +61,17 @@ for (const engine of engines) {
           if (viewport.width < 768) {
             const chip = page.getByRole('button', { name: /^問1 .*の解答・解説を(?:見る|閉じる)$/ });
             await chip.waitFor();
+            // Allow the screen's first-incorrect auto-selection effect to commit
+            // before toggling; otherwise WebKit may select between read and click.
+            await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
             if (await chip.getAttribute('aria-pressed') !== 'true') await chip.click();
           }
           const disclosure = page.getByRole('button', { name: '解説', exact: true }).first();
-          await disclosure.waitFor();
+          await disclosure.waitFor().catch(async error => {
+            console.error('Explanation state:', grade, section, await page.locator('body').innerText());
+            await page.screenshot({ path: 'qa-release-explanation-failure.png' });
+            throw error;
+          });
           if (await disclosure.getAttribute('aria-expanded') === 'false') await disclosure.click();
           await page.waitForFunction(() => document.body.innerText.includes('根拠'));
           const explanation = await page.locator('body').innerText();
@@ -90,7 +97,7 @@ for (const engine of engines) {
       for (const grade of grades) {
         await page.locator(`[data-fd-range-pick="${grade}"]`).click();
         await page.locator(`[data-fd-start="${grade}"]`).click();
-        assert.equal(await page.locator('.fd-word').count(), 30);
+        assert.equal(await page.locator('.fd-word').count(), 60);
         await page.locator('.fd-word-main').first().click();
         assert.ok((await page.locator('[aria-label="独自例文"]').innerText()).length > 10);
         await page.locator('[data-fd-range-back]').click();

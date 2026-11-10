@@ -18,9 +18,9 @@ export interface EikenQuestion {
   playback: { readCount: 1 | 2; replayAllowed: boolean; source: 'browser-speech' | 'recorded' };
   origin: 'manatobi-original';
 }
-const units = [...FOUNDATION_UNITS, ...INTERMEDIATE_UNITS, BRIDGE_UNIT, UPPER_UNIT, ADVANCED_UNIT];
+export const EIKEN_UNITS = [...FOUNDATION_UNITS, ...INTERMEDIATE_UNITS, BRIDGE_UNIT, UPPER_UNIT, ADVANCED_UNIT];
 const gradeMap: Record<string, EikenGrade> = { '5': 'eiken_5', '4': 'eiken_4', '3': 'eiken_3', 'pre-2': 'eiken_pre2', 'pre-2-plus': 'eiken_pre2plus', '2': 'eiken_2', 'pre-1': 'eiken_pre1' };
-export const EIKEN_QUESTIONS: EikenQuestion[] = units.flatMap((unit, difficulty) => unit.listenings.map((block, index) => ({
+export const EIKEN_QUESTIONS: EikenQuestion[] = EIKEN_UNITS.flatMap((unit, difficulty) => unit.listenings.map((block, index) => ({
   id: `${gradeMap[unit.grade]}_listening_01_${index + 1}`, examType: 'eiken' as const, grade: gradeMap[unit.grade],
   section: block.script.length > 1 ? 'dialogue' as const : 'narration' as const,
   questionNumber: index + 1, title: block.title, instruction: block.question.prompt,
@@ -64,7 +64,7 @@ function writtenSubQuestion(question: OriginalQuestion, id: string) {
   };
 }
 export function partsForGrade(grade: EikenGrade): Part[] {
-  const unit = units.find(unit => gradeMap[unit.grade] === grade);
+  const unit = EIKEN_UNITS.find(unit => gradeMap[unit.grade] === grade);
   if (!unit) return [];
   const questions = EIKEN_QUESTIONS.filter(q => q.grade === grade && q.published);
   const label = EIKEN_GRADES.find(item => item.id === grade)!.label;

@@ -5,13 +5,12 @@ import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
-import { auth } from '../firebase';
+import { auth, FIREBASE_CONFIGURED } from '../firebase';
 import './launch-screen.css';
-import { getDaysUntilExam, EXAM_DATE_LABEL } from '../utils/examCountdown';
 import { fadeOutLaunchSfx, launchCueSchedule, playLaunchSfx, preloadLaunchSfx, type LaunchSfx } from '../battle/audio/launchSfx';
 import { resumeSharedAudio } from '../battle/audio/sharedAudioContext';
 import { readAudioPreferences } from '../battle/audio/audioPreferences';
-import { TOEIC_DISCLAIMER } from '../utils/toeicDisclaimer';
+const EIKEN_DISCLAIMER = '英検®は公益財団法人 日本英語検定協会の登録商標です。本アプリは同協会の承認・推奨を受けたものではありません。問題は独自制作です。';
 
 /**
  * タイトル画面（2026-09-30 作り直し）。保存された画面やアカウントには一切触れない（見た目だけ）。
@@ -140,7 +139,7 @@ export function LaunchScreen({ onStart }: {
     return () => window.removeEventListener('keydown', onKey);
   });
   const enter = () => onStart();
-  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${TOEIC_DISCLAIMER}`} role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{TOEIC_DISCLAIMER}</p></main>;
+  if (gate === 'emblem') return <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${EIKEN_DISCLAIMER}`} role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{EIKEN_DISCLAIMER}</p></main>;
   if (gate === 'philosophy') return <PhilosophyPage onBack={() => setGate('title')} />;
   // C13（2026-10-29）：「学ぶ入口を、もっと快適に。」のお知らせ画面は削除。共通テストまでの日数はホームにあるので、はじめる → そのままホームへ入る。
   return <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen>
@@ -167,17 +166,17 @@ export function LaunchScreen({ onStart }: {
       </div>
       <p className="launch-copy">聞いて、解いて、<br className="launch-copy-break" />競って、<em>これ1本</em>で。</p>
       {/* PC だけ：コピーの下に一言の説明（スマホは1画面に収めるため出さない） */}
-      <p className="launch-lead">共通テスト英語リスニングの第1問〜第6問を、本番と同じ音源で。<br />解いたその場でスクリプト・読み方・解説まで確かめられます。</p>
+      <p className="launch-lead">英検5級〜準1級のリスニング・読解・語彙を級別に練習。<br />単語帳・復習・3級以上の英作文も、ひとつのアプリで。</p>
       {/* できること。スマホは小さなチップ、PC は説明つきのカードにする（同じ要素を CSS で出し分け） */}
       <ul className="launch-chips" aria-label="できること">
-        <li><PenLine size={16} aria-hidden="true" /><span><b>演習</b><small>第1問〜第6問を本番どおりに</small></span></li>
-        <li><Repeat2 size={16} aria-hidden="true" /><span><b>復習</b><small>読んでいる単語が光る</small></span></li>
+        <li><PenLine size={16} aria-hidden="true" /><span><b>演習</b><small>級別の独自問題で重点練習</small></span></li>
+        <li><Repeat2 size={16} aria-hidden="true" /><span><b>復習</b><small>解説・和訳と間違えた語を確認</small></span></li>
         <li><Swords size={16} aria-hidden="true" /><span><b>オンライン対戦</b><small>友だち・全国・AI と</small></span></li>
       </ul>
       <div className="launch-actions">
-        <p className="launch-countdown-mini" aria-label={`共通テストまで${getDaysUntilExam()}日`}><Headphones size={16} aria-hidden="true" />共通テストまで <strong>{getDaysUntilExam()}</strong>日<small>{EXAM_DATE_LABEL}</small></p>
+        <p className="launch-countdown-mini"><Headphones size={16} aria-hidden="true" />英検 <strong>5級〜準1級</strong><small>1級は準備中</small></p>
         <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
-        <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : 'Google か Apple でログインして始めます'}</p>
+        <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : FIREBASE_CONFIGURED ? 'ログインして記録を同期、または端末で練習できます' : 'この端末に記録を保存して練習できます'}</p>
         <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>
         <p className="launch-kbd" aria-hidden="true"><kbd>Enter</kbd> ではじめる</p>
       </div>

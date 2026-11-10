@@ -1,3 +1,4 @@
+import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
 import React, { useEffect, useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { parseSupportProgress, supportStorageKey, type SupportProgress } from '../data/listeningSupport';
@@ -51,6 +52,17 @@ export function useSupportProgress(uid: string) {
     } catch (e) { return { progress: { version: 1, words: [], grammar: [] }, error: e instanceof Error ? e.message : '保存記録を読み込めません。' }; }
   });
   const [saveError, setSaveError] = useState('');
+  useEffect(() => {
+    const refresh = () => {
+      try {
+        const store = safeLocalStorage(); if (!store) return;
+        setSaved({ progress: parseSupportProgress(store.getItem(supportStorageKey(uid))), error: '' });
+      } catch (error) { setSaved(previous => ({ ...previous, error: error instanceof Error ? error.message : '保存記録を読み込めません。' })); }
+    };
+    refresh();
+    window.addEventListener(USER_DATA_SYNCED_EVENT, refresh); window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener(USER_DATA_SYNCED_EVENT, refresh); window.removeEventListener('storage', refresh); };
+  }, [uid]);
   const mark = (kind: 'words' | 'grammar', id: string, done: boolean) => {
     if (saved.error) return;
     try {

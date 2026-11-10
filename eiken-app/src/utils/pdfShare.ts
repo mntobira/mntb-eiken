@@ -18,7 +18,10 @@ export const isNativeApp = () => Capacitor.isNativePlatform();
 async function fetchPdf(url: string): Promise<Blob> {
   const r = await fetch(url, { cache: 'force-cache' });
   if (!r.ok) throw new Error(`pdf ${r.status}`);
-  return r.blob();
+  const blob = await r.blob();
+  const header = new TextDecoder().decode(await blob.slice(0, 5).arrayBuffer());
+  if (header !== '%PDF-') throw new Error('PDFの代わりに別のデータが返されました。接続と配信ファイルを確認してください。');
+  return blob;
 }
 
 function toBase64(blob: Blob): Promise<string> {

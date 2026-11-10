@@ -2050,7 +2050,12 @@ service cloud.firestore {
         return (
           resource.data.status == 'waiting'
             ? (request.resource.data.status == 'waiting'
-               || request.resource.data.status == 'playing'
+               || (request.resource.data.status == 'playing'
+                   && resource.data.players.size() == 2
+                   // 全国対戦の代行開始は維持。合言葉の友達部屋は部屋主のみ。
+                   && (resource.data.mode != 'friend' || request.auth.uid == resource.data.hostUid)
+                   && request.resource.data.currentIndex == 0
+                   && request.resource.data.startedAt == request.time)
                || request.resource.data.status == 'aborted')
             : resource.data.status == 'playing'
               ? (request.resource.data.status == 'playing'

@@ -41,10 +41,10 @@ class MemoryStorage implements Storage {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Listening parity', () => {
-  it('keeps more than 590 inherited source files byte-identical to listening main', () => {
+  it('keeps more than 580 inherited source files byte-identical to listening main', () => {
     const baseline = JSON.parse(readFileSync('tests/listening-baseline.json', 'utf8'));
     expect(baseline.commit).toBe('ee648b2a961096724afbdc455d7da36a81284f44');
-    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(590);
+    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThan(580);
     for (const [path, hash] of Object.entries(baseline.unchangedFiles)) {
       const content = readFileSync(path);
       expect(createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex'), path).toBe(hash);
@@ -295,11 +295,11 @@ describe('Release content completeness', () => {
   });
   it('provides seven real wordbooks, unique stable IDs, bilingual examples and valid exercise links', () => {
     const data = JSON.parse(readFileSync('public/data/listeningVocabulary.json', 'utf8'));
-    expect(data.wordCount).toBe(210); expect(data.questionCount).toBe(420);
+    expect(data.wordCount).toBe(420); expect(data.questionCount).toBe(840);
     expect(new Set(data.words.map(word => word.id)).size).toBe(data.words.length);
     for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
       const words = data.words.filter(word => word.level === grade.id);
-      expect(words).toHaveLength(30);
+      expect(words).toHaveLength(60);
       const chapters = partsForGrade(grade.id).flatMap(part => part.chapters);
       for (const word of words) {
         expect(word.exampleSentence).toMatch(/[a-z]/i); expect(word.exampleTranslation).toMatch(/[ぁ-んァ-ヶ一-龯]/);

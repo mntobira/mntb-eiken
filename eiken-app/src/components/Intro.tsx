@@ -13,16 +13,16 @@ import { KineticText } from '../motion';
  *   ④ クレジット（BGM の配布元・URL は利用規約で記載が必須）
  */
 const STEPS = [
-  { icon: Headphones, tone: 'blue', title: 'リスニングを解く', body: '第1問A〜第6問B。音声を聞いて答え、解説でスクリプト・和訳・決め手を確認。' },
-  { icon: BookOpen, tone: 'gold', title: '単語を覚える', body: '単語帳で100語ずつめくる。意味や英語を隠して確かめ、4択でも解ける。' },
-  { icon: Repeat2, tone: 'lilac', title: '間違いを復習', body: '間違えた問題は復習ノートへ。日をあけて出し直すので、苦手が残らない。' },
-  { icon: Swords, tone: 'night', title: '対戦で力試し', body: 'AIはゲストでもすぐ。フレンド・全国対戦はログインで。正解＋速さで勝負。' },
+  { icon: Headphones, tone: 'blue', title: '級別の問題を解く', body: '5級〜準1級の聞き取り・読解・語彙を重点練習。3級以上は英作文の下書きと自己点検もできます。' },
+  { icon: BookOpen, tone: 'gold', title: '単語を覚える', body: '級別の単語帳で意味と独自例文を確認。4択で間違えた語は復習し、覚えた印で進み具合が分かります。' },
+  { icon: Repeat2, tone: 'lilac', title: '間違いを復習', body: '間違えた問題は復習ノートへ。解説・和訳を確認し、日をあけてもう一度解き直しましょう。' },
+  { icon: Swords, tone: 'night', title: '対戦で力試し', body: 'AIはゲストでも練習できます。オンライン対戦は連携設定とログインが必要で、フレンド対戦は相互登録した相手と行います。' },
 ] as const;
 
 const FAQ = [
   { q: '音が出ない', a: '端末の消音（マナー）を切り、音量を上げてください。イヤホンをつなぎ直すと直ることもあります。ホーム右上のスピーカーで BGM のオン・オフを切り替えられます。' },
   { q: '対戦がつながらない', a: '対戦メニューの「つながらないとき」から通信チェックができます。学校の Wi‑Fi では自動で通信方式を切り替えます。' },
-  { q: '記録はどこに保存される？', a: 'ゲストはこの端末に保存します。Google でログインすると、ほかの端末でも同じ記録を使えます。' },
+  { q: '記録はどこに保存される？', a: 'ゲストはこの端末に保存します。クラウド連携が有効な環境では、ログインして他の端末と同期できます。端末保存と同期完了は異なります。同期に失敗しても端末の記録は残ります。' },
   { q: 'マナコインは何に使う？', a: 'ガチャ・ショップで、とびら君のきせかえや学習プリントと交換できます。課金はありません。' },
 ];
 
@@ -35,7 +35,7 @@ export function Intro({ onBack }: { onBack: () => void }) {
     </header>
 
     <section className="intro-hero" aria-label="マナトビとは">
-      <TobiraBuddy size="md" input={{ screen: 'home' }} pose="/mascots/bowing.webp" line="ようこそ！ 4ステップで、聞ける耳をつくろう" />
+      <TobiraBuddy size="md" input={{ screen: 'home' }} pose="/mascots/bowing.webp" line="ようこそ！ 級別の練習で、英語の力を育てよう" />
     </section>
 
     <ol className="intro-steps" aria-label="4つのステップ">

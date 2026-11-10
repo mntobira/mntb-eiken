@@ -231,7 +231,7 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
             <label className="fd-select">大問で探す<span><select aria-label="対応する英検問題" value={chapter} onChange={e => { setChapter(e.target.value); resetList(); }}>
               <option value="">すべての大問</option>{data.chapters.map(c => <option key={c.id} value={c.id}>{c.title}に登場</option>)}
             </select><ChevronDown size={16} aria-hidden="true" /></span></label>
-            <p className="fd-goal-guide">各級30語の重点学習です。独自例文と、対応する英検練習問題で使い方を確認できます。</p>
+            <p className="fd-goal-guide">級別の重点語を学習できます。独自例文と、対応する英検練習問題で使い方を確認できます。</p>
           </div>
         </details>
       </div>

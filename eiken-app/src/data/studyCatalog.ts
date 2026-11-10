@@ -17,7 +17,8 @@ export type StudyAction =
   | { kind: 'units'; subject: string }           // 既存の単元一覧（ChapterSelection）
   | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' } // 既存の固めるページの各タブ
   | { kind: 'vocabQuiz' }                         // 英単語の4択演習（2026-10-01）
-  | { kind: 'reading' };                         // 英文解釈（内容一致の4択）2026-10-21
+  | { kind: 'reading' }
+  | { kind: 'writing' };                         // 英文解釈（内容一致の4択）2026-10-21
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe' | 'briefcase';
 
@@ -68,6 +69,7 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
         action: { kind: 'units', subject: grade.id },
       };
     }),
+    { id: 'eiken_writing', title: '英検ライティング', icon: 'pen', description: '3級〜準1級の返信・意見・要約。下書き保存と自己点検', meta: '5級別・10課題', action: { kind: 'writing' } },
     {
       id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
       description: '5級〜準1級の重点語・例文・意味を級別に学ぶ',

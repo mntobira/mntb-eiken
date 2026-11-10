@@ -21,7 +21,7 @@
  * 合わせ方の中身は userDataSyncCore.ts（Firebase なしでテストしている）。
  */
 import { doc, getDoc, setDoc, serverTimestamp } from './firestoreMetered';
-import { auth, db } from '../firebase';
+import { auth, db, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 import { safeLocalStorage } from './safeLocalStorage';
 import { applyLocalWrites, localFingerprint, migrateGuestData, parseSyncState, reconcile, resolvePendingBase, serializeSyncState,
   stateBeforeUpload, SYNC_SECTIONS, USER_DATA_SYNCED_EVENT, type KV, type SyncState } from './userDataSyncCore';
@@ -43,6 +43,7 @@ let lastSyncAt = 0;
 
 let lastFingerprint: string | null = null;
 let syncing: Promise<void> | null = null;
+let syncingUid: string | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let activeUid: string | null = null;
 
@@ -67,15 +68,16 @@ function readState(store: KV, uid: string): SyncState {
  *   ④と⑤の間でアプリが閉じられても、次の②で正しく決め直せる（userDataSyncCore.ts の説明）。
  */
 export function syncUserData(reason = 'auto'): Promise<void> {
-  if (syncing) return syncing;
   const uid = auth.currentUser?.uid;
   const store = kv();
-  if (!uid || !store) return Promise.resolve();
+  if (!uid || !store || (!FIREBASE_CONFIGURED && !USE_EMULATORS)) return reason === 'manual' ? Promise.reject(new Error('同期にはログインとオンライン接続の設定が必要です。端末の記録は残っています。')) : Promise.resolve();
+  if (syncing) return syncingUid === uid && reason !== 'manual' ? syncing : syncing.then(() => syncUserData(reason));
+  syncingUid = uid;
   const run = async () => {
     const ref = doc(db, USER_DATA_COLLECTION, uid);
     const snap = await getDoc(ref);
-    if (auth.currentUser?.uid !== uid) return; // 途中でアカウントが変わった
-    if (snap.metadata?.fromCache) return; // 通信できず古い値しか無い：合わせると増減を取り違えるので次の機会に
+    if (auth.currentUser?.uid !== uid) { if (reason === 'manual') throw new Error('同期中にアカウントが変わりました。'); return; }
+    if (snap.metadata?.fromCache) { if (reason === 'manual') throw new Error('サーバーから確認できませんでした。通信を確認してください。'); return; } // 通信できず古い値しか無い：合わせると増減を取り違えるので次の機会に
     const remote = snap.exists() ? (snap.data() as Record<string, unknown>) : null;
     const state = readState(store, uid);
     const base = resolvePendingBase(state, remote);
@@ -84,16 +86,22 @@ export function syncUserData(reason = 'auto'): Promise<void> {
     // ④ 状態 → 端末。状態を保存できなければ（容量不足など）端末もクラウドも触らずにやめる
     try {
       store.setItem(BASE_KEY(uid), serializeSyncState(hasUpload ? stateBeforeUpload(base, r) : { base: r.base, pending: null }));
-    } catch { return; }
+    } catch { if (reason === 'manual') throw new Error('同期準備を保存できません。端末の空き容量を確認してください。'); return; }
     try { applyLocalWrites(store, uid, r.localWrites); } catch (error) {
       try { store.setItem(BASE_KEY(uid), serializeSyncState(state)); } catch { /* 元に戻せなくても次回の②が決め直す */ }
       throw error;
     }
+    // Capture only the local state included in this reconciliation. If the user
+    // types while setDoc is pending, the new input must remain dirty for next time.
+    const syncedFingerprint = localFingerprint(store, uid);
     if (hasUpload) {
       await setDoc(ref, { uid, ...r.upload, updatedAt: serverTimestamp() }, { merge: true });
       try { store.setItem(BASE_KEY(uid), serializeSyncState({ base: r.base, pending: null })); } catch { /* 次回の②が決め直す */ }
     }
-    lastFingerprint = localFingerprint(store, uid);
+    if (auth.currentUser?.uid !== uid) { if (reason === 'manual') throw new Error('同期中にアカウントが変わりました。'); return; }
+    if (reason === 'manual' && r.invalidRemote.length) throw new Error('形式の異なるクラウド記録を保護しました。運営者に確認してください。');
+    if (reason === 'manual' && r.tooLarge.length) throw new Error('保存容量を超える記録があります。端末の内容を保管してください。');
+    lastFingerprint = syncedFingerprint;
     lastSyncAt = Date.now();
     if (r.tooLarge.length) console.warn('[userDataSync] 大きすぎてクラウドに置けないデータ:', r.tooLarge.join(', '));
     if (r.changedLocal.length && typeof window !== 'undefined') {
@@ -106,8 +114,9 @@ export function syncUserData(reason = 'auto'): Promise<void> {
       if (locks) await locks.request(`user-data-sync-${uid}`, run); else await run();
     } catch (error) {
       console.warn('[userDataSync] 同期できませんでした（学習は続けられます。次の機会に送り直します）:', error);
+      if (reason === 'manual') throw new Error('クラウド同期を完了できませんでした。ログイン・通信・Firebaseの権限を確認してください。端末の記録は残っています。');
     } finally {
-      syncing = null;
+      syncing = null; syncingUid = null;
     }
   })();
   return syncing;

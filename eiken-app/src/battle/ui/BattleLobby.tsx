@@ -28,6 +28,7 @@
  */
 
 import { Check, Copy, Settings2, Share2, X } from 'lucide-react';
+import { isEikenGrade } from '../../eiken/config';
 import { FRIEND_MODES, friendModeOfRules, type FriendModeId } from '../core/friendModes';
 import { POOL_FORMAT_COUNTS, poolCountOf } from '../data/battlePool';
 import { effectiveRule } from '../data/battle';
@@ -186,7 +187,7 @@ export function BattleLobby({
                 onClick={() => setDraft((d) => ({ ...d, mode: m.id }))}
                 className="rounded-2xl border-2 px-3 py-2 text-left" style={{ borderColor: draft.mode === m.id ? AMBER : LINE, background: draft.mode === m.id ? `${GOLD}22` : '#FFFFFF' }}>
                 <span className="block text-sm font-black" style={{ color: INK }}>{m.label}</span>
-                <span className="block text-xs font-bold" style={{ color: INK_SUB }}>{m.desc}{draft.subject === 'english_listening' && m.rules.timeLimitOverride ? '（リスニングは音源のため時間は55秒のまま）' : ''}</span>
+                <span className="block text-xs font-bold" style={{ color: INK_SUB }}>{m.desc}{(draft.subject === 'english_listening' || isEikenGrade(draft.subject)) && m.rules.timeLimitOverride ? '（リスニングは読み上げ時間を確保するため制限時間を短縮しません）' : ''}</span>
               </button>)}
             </div>
             <div className="grid gap-1" role="radiogroup" aria-label="問題数">

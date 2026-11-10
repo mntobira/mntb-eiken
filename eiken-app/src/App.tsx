@@ -33,6 +33,7 @@ import { ModeSelection } from './components/ModeSelection';
  * それ自体が見た目の変化になるため、あえて足していない。
  */
 const StudyCatalog = React.lazy(() => import('./components/StudyCatalog').then(m => ({ default: m.StudyCatalog })));
+const EikenWriting = React.lazy(() => import('./components/EikenWriting').then(module => ({ default: module.EikenWriting })));
 const FoundationPage = React.lazy(() =>
   import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
 );
@@ -309,6 +310,7 @@ export default function App() {
   const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
     setStudyLastContent(content.id);
     safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
+    if (content.action.kind === 'writing') { setAppState('writing'); return; }
     if (content.action.kind === 'units') {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
@@ -362,11 +364,7 @@ export default function App() {
     setHasInteracted, isBgmFadedOut, handleAudioError, handleToggleBgm,
   } = useTitleBgmController({ appState, hasEntered });
 
-  // 起動画面ではBGMを必ずONにする（切替ボタンは表示しない）。
-  // useTitleBgmController がこの値を保存し、設定画面から次回以降の変更もできる。
-  useEffect(() => {
-    if (!hasEntered && !isBgmEnabled) setIsBgmEnabled(true);
-  }, [hasEntered, isBgmEnabled, setIsBgmEnabled]);
+  // 通常起動でも利用者が保存したBGMのOFFを尊重する。
 
   /**
    * -----------------------------------------------------------------
@@ -728,8 +726,9 @@ export default function App() {
                 progressOf={(subject) => studyProgressOf(subject)}
               />
             </React.Suspense>}
+            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} /></React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
-              <FoundationPage
+              <FoundationPage key={auth.currentUser?.uid || 'guest'}
                 tab={foundationTab}
                 onTab={setFoundationTab}
                 uid={auth.currentUser?.uid || 'guest'}

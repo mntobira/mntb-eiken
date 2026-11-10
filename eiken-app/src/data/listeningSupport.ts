@@ -1,4 +1,4 @@
-export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261110';
+export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261110b';
 import { perUserKey } from '../utils/userStorageKeys';
 export interface WordQuestion { id:string; prompt:string; label:string; options:string[]; answerIndex:number }
 export interface ListeningExample { chapterId:string; chapterTitle:string; problemId:string; problemIndex:number; script:string; audioUrl:string; translation:string }

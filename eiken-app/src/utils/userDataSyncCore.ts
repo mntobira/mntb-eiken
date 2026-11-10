@@ -1,3 +1,4 @@
+import { mergeWriting, parseWriting, writingKey, type WritingProgress } from '../eiken/writingProgress';
 /**
  * ===================================================================
  * 端末だけにあった記録を、アカウントへ保存するための「純粋ロジック」層
@@ -211,22 +212,6 @@ function mergeVocabQuiz(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | nul
   return { version: 1, missed, best: mergeMaxMap(l.best, r.best), mastered };
 }
 
-/** 英文解釈：最高点は文章ごとに高い方（同点なら新しい方）、間違えた設問は集合の 3-way */
-function mergeReading(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | null {
-  if (!l) return r; if (!r) return l;
-  const lb = isObj(l.best) ? l.best : {}; const rb = isObj(r.best) ? r.best : {};
-  const best: Obj = {};
-  for (const k of new Set([...Object.keys(lb), ...Object.keys(rb)])) {
-    if (!SAFE_KEY(k)) continue;
-    const a = lb[k]; const c = rb[k];
-    if (!isObj(a)) { if (isObj(c)) best[k] = c; continue; }
-    if (!isObj(c)) { best[k] = a; continue; }
-    const sa = n0(a.score); const sc = n0(c.score);
-    best[k] = sa !== sc ? (sa > sc ? a : c) : (n0(a.at) >= n0(c.at) ? a : c);
-  }
-  return { version: 1, best, missed: mergeSet(strs(l.missed), strs(r.missed), b ? strs(b.missed) : null) };
-}
-
 function mergeSupport(l: Obj | null, r: Obj | null, b?: Obj | null): Obj | null {
   if (!l) return r; if (!r) return l;
   return { version: 1,
@@ -291,6 +276,7 @@ function mergeNotes(l: unknown, r: unknown, b?: unknown): Obj[] | null {
 export interface SyncSection {
   /** Firestore のフィールド名（s_<id>） */
   id: string;
+  valid?: (value: Json) => boolean;
   /** localStorage のキー（uid ごと） */
   keys: (uid: string) => string[];
   /** localStorage → 値（無ければ null。壊れていれば undefined＝触らない） */
@@ -311,7 +297,7 @@ function writeJson(kv: KV, key: string, value: Json) { kv.setItem(key, JSON.stri
 /** 1つのキーに JSON がそのまま入っているデータ */
 function jsonSection(id: string, key: (uid: string) => string, merge: SyncSection['merge'], valid: (v: Json) => boolean): SyncSection {
   return {
-    id, keys: (uid) => [key(uid)],
+    id, valid, keys: (uid) => [key(uid)],
     read: (kv, uid) => { const v = readJson(kv, key(uid)); return v === null || v === undefined ? v : valid(v) ? v : undefined; },
     write: (kv, uid, value) => writeJson(kv, key(uid), value),
     merge,
@@ -323,9 +309,9 @@ export const GROWTH_KEY = (uid: string) => 'battle_growth_local_v1_' + enc(uid);
 export const SYNC_SECTIONS: readonly SyncSection[] = [
   jsonSection('growth', GROWTH_KEY, (l, r, b) => mergeGrowthEnvelope(l as Obj | null, r as Obj | null, b as Obj | null),
     v => isObj(v) && v.version === 1 && isObj(v.progress) && Array.isArray(v.receipts)),
-  jsonSection('vocabQuiz', uid => 'vocab_quiz_v1_' + enc(uid), (l, r, b) => mergeVocabQuiz(l as Obj | null, r as Obj | null, b as Obj | null),
+  jsonSection('vocabQuiz', uid => 'eiken_vocab_quiz_v2_' + enc(uid), (l, r, b) => mergeVocabQuiz(l as Obj | null, r as Obj | null, b as Obj | null),
     v => isObj(v) && v.version === 1 && Array.isArray(v.missed)),
-  jsonSection('vocabPrefs', uid => 'vocab_quiz_prefs_v1_' + enc(uid), mergeWhole, isObj),
+  jsonSection('vocabPrefs', uid => 'eiken_vocab_quiz_prefs_v2_' + enc(uid), mergeWhole, isObj),
   jsonSection('support', uid => 'listening_support_v1_' + enc(uid), (l, r, b) => mergeSupport(l as Obj | null, r as Obj | null, b as Obj | null),
     v => isObj(v) && v.version === 1 && Array.isArray(v.words) && Array.isArray(v.grammar)),
   jsonSection('studyTime', uid => 'study_time_v1_' + enc(uid), (l, r, b) => mergeStudyTime(l as Obj | null, r as Obj | null, b as Obj | null), isObj),
@@ -340,8 +326,10 @@ export const SYNC_SECTIONS: readonly SyncSection[] = [
   jsonSection('completed', uid => `completed_${uid}`,
     (l, r, b) => (l == null ? r : r == null ? l : mergeSet(strs(l), strs(r), b ? strs(b) : null)), Array.isArray),
   jsonSection('notes', uid => `notes_${uid}`, mergeNotes, Array.isArray),
-  jsonSection('reading', uid => 'reading_quiz_v1_' + enc(uid), (l, r, b) => mergeReading(l as Obj | null, r as Obj | null, b as Obj | null),
-    v => isObj(v) && v.version === 1 && isObj(v.best) && Array.isArray(v.missed)),
+  // 英検版では大学用英文解釈を配信しない。既存の許可済みs_reading枠を英作文専用に使う。
+  // 旧 reading_quiz_v1_* は消さず、新しい英作文キーからだけ読み書きする。
+  jsonSection('reading', writingKey, (l, r, b) => mergeWriting(l as WritingProgress | null, r as WritingProgress | null, b as WritingProgress | null),
+    v => { try { parseWriting(JSON.stringify(v)); return true; } catch { return false; } }),
   jsonSection('manualLog', uid => 'manual_log_v1_' + enc(uid),
     (l, r) => (l == null ? r : r == null ? l : mergeManualLog(l, r)),
     v => isObj(v) && v.version === 1 && Array.isArray(v.records) && Array.isArray(v.materials)),
@@ -461,6 +449,7 @@ export interface ReconcileResult {
   localWrites: Record<string, string>;
   /** 合わせるときに読んだクラウドの値（id → JSON 文字列 / 無ければ null） */
   remoteSeen: Record<string, string | null>;
+  invalidRemote: string[];
 }
 
 /**
@@ -476,17 +465,21 @@ export interface ReconcileResult {
  */
 export function reconcile(kv: KV, uid: string, remote: Record<string, unknown> | null, base: Record<string, string>, opts: { apply?: boolean } = {}): ReconcileResult {
   const apply = opts.apply !== false;
-  const result: ReconcileResult = { changedLocal: [], upload: {}, base: { ...base }, tooLarge: [], localWrites: {}, remoteSeen: {} };
+  const result: ReconcileResult = { changedLocal: [], upload: {}, base: { ...base }, tooLarge: [], localWrites: {}, remoteSeen: {}, invalidRemote: [] };
   for (const s of SYNC_SECTIONS) {
     const local = s.read(kv, uid);
     if (local === undefined) continue; // 壊れている端末の記録は触らない（上書きして消さない）
     const rawRemote = remote ? remote[sectionField(s.id)] : undefined;
     result.remoteSeen[s.id] = typeof rawRemote === 'string' ? rawRemote : null;
     let remoteValue: Json | null = null;
-    if (typeof rawRemote === 'string') { try { remoteValue = JSON.parse(rawRemote); } catch { remoteValue = null; } }
+    if (typeof rawRemote === 'string') {
+      try { remoteValue = JSON.parse(rawRemote); } catch { result.invalidRemote.push(s.id); continue; }
+      if (s.valid && !s.valid(remoteValue)) { result.invalidRemote.push(s.id); continue; }
+    }
     const baseRaw = base[s.id];
     let baseValue: Json | null = null;
     if (typeof baseRaw === 'string') { try { baseValue = JSON.parse(baseRaw); } catch { baseValue = null; } }
+    if (baseValue !== null && s.valid && !s.valid(baseValue)) baseValue = null;
     const merged = local !== null && remoteValue !== null && same(local, remoteValue) ? local : s.merge(local, remoteValue, baseValue);
     if (merged === null || merged === undefined) continue;
     let mergedStr = JSON.stringify(merged);
