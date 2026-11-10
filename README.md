@@ -1,142 +1,139 @@
 # マナトビ 英検版
 
-## 対象・配備状態（2026-11-10）
+## 対象と反映状態（2026-11-10）
 
-公開対象は **`eiken-app/` のReact 19 / TypeScript / Vite SPA**。ルートのHonoテンプレートは対象外で、既存Vercel構成を維持しています。
+公開対象は `eiken-app/` のReact 19 / TypeScript / Vite SPAです。既存Vercel構成を維持し、ルートのHonoテンプレートは公開対象にしません。
 
 - リポジトリ：<https://github.com/mntobira/mntb-eiken>
-- 作業ブランチ：`fix/eiken-release-completeness`
-- ベース：PR #3のマージ `4f48e62161ac87f25d56b6f96079f0fda6d37e9d`。PR #3だけで公開品質が完成したとは扱いません。
-- 最新コードはローカル検証段階。本番配備・mainへのマージは行っていません。
-- GitHubの再接続は成功しましたが、現在の認証ユーザー `2525Azarashi` の対象リポジトリ権限は **READ**（`gh repo view --json viewerPermission`）。push／修正PR作成は書込権限の再接続待ちです。別リポジトリ・forkへ勝手に送信しません。
-- ユーザーからFirebaseルール本番反映済みとの報告を受領。ただし**本作業で見つかった対戦開始の追加修正はローカルのみ**です。後述のルール差分のレビュー・再反映が必要です。
-- 本番URL／Vercelの新コミットpreviewは未確認。アシスタントからFirebaseルール・索引・Functions・Vercel本番を配備していません。
+- 先行品質修正：<https://github.com/mntobira/mntb-eiken/pull/4> をmainへマージ済み。
+- PR #4：コミット `39dbd4e` / `801c7af`、マージ `0bb9fefdf213041fb3cfbcbc06c5f7352863dfa1`。3つのVercelチェックとPreview Commentsが成功してからマージ。
+- 認証は `mntobira`、対象リポジトリADMIN権限へ復旧。書込権限待ちは解消。
+- 追加作業ブランチ：`fix/eiken-grade-entry-google`。A3〜A5と関連案内を修正。新規依頼A1〜A7の全完了を意味しません。
+- PRマージで既存Vercel連携の自動ビルドは発生します。本番URL・本番Google認証の成功は別途確認が必要です。
+- Firebaseルール・索引・Functionsの本番配備は行っていません。ユーザーが先に反映したルールに、PR #4の追加差分が含まれるとは見なしません。
+- 大学受験版・リスニング本体のリポジトリ／Firebaseへ書込・配備していません。
 
-## 実装済みの機能・修正
+## 今回の追加依頼 A1〜A7
 
-### ホーム・ガチャ・報酬
+### A3：級の入口を一画面へ
 
-- growth保存が破損していても表示専用初期値でとびらくんを表示。破損した記録は上書きしません。装備画像が404なら基本画像へ戻します。
-- WebKit静止時の裏面描画対策。ブランド・キャラクター・既存演出は保全。
-- 実在アイテムから目玉1件・重複しないピックアップ5件を表示。空レア度を除いた実抽選の正規化割合と一致させます。
-- 既存プール保存ID `kyotsu` / `niji` を維持し、表示・景品を英検用に変更。
-- 英検5級〜準1級の重点語・例文PDF **7冊×5ページ＝35ページ**。各冊は基礎30語・例文・和訳・確認テスト・解答。アプリ単語帳全60語／級とは収録数が異なります。
-- マイPDF→詳細→中身を開く→保存／戻るを接続。PDFを開く際は元のmodal dialogを閉じ、操作を遮らないよう修正。
-- 保存前に `%PDF-` ヘッダーを確認し、SPAのHTML fallbackをPDFとして保存しません。
+- 学習カタログはスマホ2列、広い画面3列。7級と英作文、単語帳への入口をコンパクト化。
+- 別の級選択コンポーネントも2列／4列のグリッドへ変更。
+- 学習カタログは320×568、375×667、390×844、1280×900のChromium／WebKitで、7級すべてが44px以上の操作領域を持ち、ナビの背後に隠れず、一覧をスクロールしないことを検証。
+- 教材本文・文字拡大・キーボード表示時まで無理に一画面へ押し込まず、必要なスクロールは残します。
 
-### 級別教材・単語帳
+### A4：英検カウントダウン
 
-- 公開7級：5級、4級、3級、準2級、準2級プラス、2級、準1級。1級は準備中。
-- リーディング **14本文・28設問**、語彙文法 **14設問**、聞き取り **14設問**。共通の問題・解説・採点・復習へ接続。計56設問・42大問・21単元。
-- 級内の聞き取り／読解／語彙文法タブ。読解に音声開始画面は出さず、全文和訳・根拠を表示。
-- 単語帳は独自編成の **各級60語・計420語**、独自例文・和訳つき。英日／日英 **840問**。95語を実在する英検問題へリンク。
-- 級別選択、検索、意味隠し、覚えた印、単語／例文の端末読み上げ、誤答だけの復習。
-- 4択結果と単語帳の覚えた印を連携。同期イベント・storageイベントで、開いている画面の記録も再読込。
-- 新教材の記録／設定は `eiken_vocab_quiz_v2_<uid>` / `eiken_vocab_quiz_prefs_v2_<uid>`。同期対象も同じキーに修正。旧記録は消しません。
+- 表示を「英検一次」「英検二次A」に変更。二次の日程区分が分かるようにしています。
+- 現在は2026年度第3回・本会場一次2027/1/24、二次A日程2027/2/28の目安。B日程は2027/3/7です。準会場・S-CBTとは異なり、5級・4級に二次試験はありません。
+- 公式確認元：<https://www.eiken.or.jp/eiken/schedule/2026-examinee.html>
+- 個人の受験日選択や自動日程更新は未実装です。
 
-### ライティング
+### A5：Googleのみの認証入口
 
-- 共通学習カタログから3級〜準1級、5級別の**独自10課題**へ遷移。
-- 課題文、返信／意見／要約、練習語数、英文入力、語数、即時端末保存・再開、4項目の自己点検、参考解答・解説。
-- 自動採点・合否判定はありません。5級・4級の筆記ライティング課題は設けていません。
-- 保存キー：`eiken_writing_v1_<uid>`。課題ごとにマージし、同時編集は別コピー最大2件を保存。下書きは4000文字上限。
-- クラウドは既存ルールで許可済みの `s_reading` を使用。旧読解形式や壊れたクラウド値は形式検証で保護し、黙って上書きしません。
-- 端末保存とクラウド送信完了を表示で区別。設定有効・ログイン時には手動同期ボタン。
-- CSSリセットでチェックボックスが0pxになる問題を修正し、標準チェックと44px以上のラベル操作領域を確保。
+- 初回ログイン・設定画面のAppleボタンとimportを削除。クランのログイン案内もGoogleに統一。
+- Firebase ConsoleのApple provider自体の有効／無効は変更していません。UIを消すことと、サーバーでproviderを拒否することは別です。
+- 既存のAppleログイン実装ファイルは参照元の保全のため残っていますが、公開の認証入口からは呼びません。
+- iOSネイティブ版をストアへ出す場合は、その時点でAppleの審査要件を別途確認します。
 
-### 音・起動・同期
+### A1：元語彙の級別再編（未完了）
 
-- 通常起動でBGMを強制ONにする処理を削除し、保存したOFF／音量を尊重。
-- 単語学習・英作文・英検聞き取り対戦中はBGMを停止。ホーム・対戦待機では設定に従って再生。
-- 英検のフレンド対戦でも短時間モードで聞き取り時間を短縮しない。待機画面の説明も一致。
-- 通常起動に残っていたTOEIC商標案内、共通テストの教材説明／日数を英検用へ訂正。使い方案内も実際の級別機能へ変更。既存音源クレジットは保全。
-- 手動同期は未認証・キャッシュだけの読込・書込拒否・アカウント切替を成功扱いにしません。
-- 同期通信中の追加入力を「送信済み」と誤認しないよう、送信対象のfingerprintを通信前に保持。
-- 保存・Firestore・PWAは英検専用名前空間。大学受験版・リスニング版への書込や配備は行いません。
+- 指定のリスニング参照commit：`ee648b2a961096724afbdc455d7da36a81284f44`。
+- 実読込した原本：参照repositoryの `public/data/listeningVocabulary.json`。5,713語・熟語、重複見出し語なし。
+- 旧 `lv1` 1,185 / `lv2` 962 / `lv3` 653 / `lv4` 1,028 / `ilv1` 1,524 / `ilv2` 301 / `ilv3` 60。これらは英検級ではありません。
+- `will` の名詞「遺書」と助動詞のように同一綴りでも必要級が異なり、`well-being` と基本語が同じ旧レベルに同居しています。旧区分の一括置換はしません。
+- 元データの出典は「複数の公開語彙リストを合算」とあり、項目ごとの権利確認は未完了。元の訳・例文・問題選択肢・配列を丸ごと転用しません。
+- 見出し語を候補として語義・用法・抽象度・文構造から独自判定し、独自の訳・例文を再作成する方針。5,713項目の再判定が済んだとは宣言しません。
+- 現在アプリに入っているのは従来の独自420語、各級60語です。A1完了版と混同しません。
 
-## Firebaseルールの追加差分（要レビュー・本番未反映）
+### A2・A7：15回分教材と冊子・景品（範囲確認待ち）
 
-`eiken-app/firestore.rules` の `battleStatusStep()`：フレンド部屋の `waiting → playing` に、部屋主・参加者2名・問題番号0・サーバ開始時刻を要求します。
+ユーザーへ、「全ての大問15回分」が語彙・文法分野15セットなのか、読解・ライティングまで含む一次筆記全体15回分なのか確認中です。勝手に少量の穴埋め問題へ縮小しません。
 
-Auth／Firestore EmulatorのSDKテストで、旧ルールでは入室済みゲストが開始できることを再現してから修正しました。全国対戦の代行開始仕様は維持します。入室の相互フレンド要件や本人限定同期を緩めていません。
+- 形式・設問数・文長・語彙難度を公式で調査し、その後、本文・状況・設問・選択肢・解説を独自作成します。
+- 過去問や市販教材の本文・選択肢の改変量産はしません。「同程度の難度」の実測保証には専門校閲・試行も必要です。
+- 準2級プラス公式確認元：<https://www.eiken.or.jp/eiken/exam/grade_p2plus/>。
+- アプリ教材を唯一の原本とし、冊子の問題番号・正答・解説を同じデータから生成する計画。冊子は公式発行物と誤認させない独自デザインにします。
+- 新たな15回分冊子PDFと大当たり枠はまだ作成・登録していません。既存の7冊の語彙ノートを新冊子と称しません。
 
-**先に本番反映済みのルールにこの変更が含まれるとは見なしません。本ファイルのレビュー後、英検専用Firebaseへのルール再反映が必要です。** エージェントから本番配備はしていません。
+### A6：塾限定利用の提案（未実装）
 
-## 検証結果
+推奨は **Google認証＋個別・期限付き招待コード＋サーバー管理の在籍資格** です。共通の短い合言葉だけで永久解放する方式は避けます。
 
-- TypeScript：全src、0エラー。
-- Vitest：**32件**成功。教材／実資産／割合／隔離18件、下書き・マージ・ゲスト移行・PDF等10件、同期通信中入力／手動エラー／切替4件（通信をモック）。
-- Firebase Emulator：既存ルール8件成功。加えて実Auth Emulatorトークン＋Firestore SDKで、同一ユーザー2クライアントの保存往復、サインアウト、別ユーザー拒否を確認。実アプリのマージ関数を使用しますが、ブラウザの `syncUserData()` 全体を2台実機で実行したものではありません。
-- SDK対戦：部屋・合言葉のtransaction作成、相互フレンド入室、部屋主のみ開始、双方の解答、解答差替え／相手欄書換え／第三者の読込・更新拒否。フレンド関係だけテスト管理者で事前投入。Functionsのフレンド承認処理自体の検証ではありません。
-- Chromium PC1280／スマホ390：7級×読解／語彙文法の28経路、全級60語、4択→誤答復習→覚えた印、ガチャ両プール、とびらくん表示と破損時保護。
-- WebKit：PC／スマホの同じ教材・ガチャ・単語帳経路。スマホ解説の自動選択effectとテスト操作の競合を避け、描画commit後に正誤チップを操作。
-- Chromium／WebKit PC／スマホ：通常起動からBGM OFF保持、英作文10課題の入力・自己点検・参考解答、保存・再開、同期イベントで開いた下書きを更新、所有PDF fixtureから閲覧・PDFバイトの保存・画面ボタンと履歴で戻る。
-- WebKitは1GB sandboxで連続10回の再起動時にOSがWebProcessをOOM killしたため、全課題保存後に1回再読込して全10下書きと最終課題の再開を確認。Chromiumは各課題ごとに再読込。
-- 音声：実デコードPCM、BGM OFF／再開／音量、単語学習中停止、待機曲、英検聞き取り中停止。
-- 既存聞き取り14経路、reload、AI対戦完走、PWAキャッシュ、保存・外部通信隔離も成功。
-- ブラウザ自動テストは物理iPhone／Android、ネイティブ共有シート、Google本番認証の確認と同一ではありません。
+1. 運営が塾を登録し、担当者だけが招待を発行。生徒ごとの高エントロピー・原則一回限りのコードを使い、有効期限・利用人数・対象塾をサーバー側に保持。
+2. 生徒がGoogleログイン後にコードを入力。サーバーでIDトークンを検証し、Firestore transactionでコード消費とuidへの在籍付与を一体処理。コードはHMAC等で保存し、生値や秘密鍵をfrontendへ含めません。
+3. 在籍は `tenantId / uid / role / status / expiresAt`。生徒は自分の所属・期限・権限を書換不可。複数塾の相互読取を拒否。
+4. 脱退・退塾・契約終了時は在籍を失効。IDトークンの古いcustom claimだけに頼らず、APIとFirestoreルールで現在の在籍・期限を確認。
+5. コード試行はApp Check、uid／IP等のレート制限、一般化したエラー、監査記録で保護。管理者にはより強い認証を用意。
+6. **教材保護には静的配信の変更が必要**です。今のJS bundle、公開JSON、`/prints/`、SWキャッシュはURLを知れば取得でき、ログイン画面だけでは制限できません。限定教材を保護API／短時間URLで配信し、private cache方針とオフライン許可範囲を決めます。正規利用者による保存・スクリーンショットの完全防止は保証しません。
+7. 一般公開版と塾版を分けるか、アプリ全体を塾限定にするか、端末数・オフライン・退塾後保存を認めるかを先に決定します。既存ゲスト記録は勝手に削除しません。
 
-## 開発・再検証
+Genspark Hostedアクセス機能は確認時に `membership_required: plus_or_higher` でした。設定は変更しておらず、JavaScriptの疑似ゲートで代用しません。上のFirebase／Vercel案は別構成の設計提案であり、既存アプリにアクセス制限を実装済みという意味ではありません。
+
+## 先行修正で実装済みの内容
+
+- ホームのとびらくんはgrowth破損でも基本画像を表示し、保存記録は保護。装備404・WebKit静止時の描画も対策。
+- ガチャの実在する目玉1件・ピックアップ5件・詳細・実抽選に一致する割合。プールID `kyotsu` / `niji` は保存互換のため維持。
+- 独自語彙PDF7冊×5ページ＝35ページ。各冊30語・例文・和訳・確認テスト・解答。アプリの60語／級とは異なります。
+- 獲得PDFの閲覧・保存・戻る。modalの操作遮断を修正し、保存前に `%PDF-` を確認。
+- 公開7級、読解14本文28問、語彙文法14問、聞き取り14問。計56問、42大問、21単元。1級は準備中。
+- 独自単語帳420語、英日／日英840問、95語の問題リンク。誤答復習と覚えた印の連携。
+- ライティング10課題：入力・語数・端末保存・再開・自己点検・参考解答。自動採点や合否判定なし。
+- 同期キー不一致、同期後の画面更新、アカウント切替、手動同期失敗の成功表示、通信中入力の送信漏れを修正。
+- BGM OFF／音量保持、実音声再生、学習・英作文・英検聞き取り中の停止。既存素材・クレジットは保全。
+
+## Firebase追加ルール：本番再反映が必要
+
+PR #4の `eiken-app/firestore.rules`、`battleStatusStep()` で、フレンド部屋の開始を部屋主・2名・問題番号0・サーバ開始時刻に限定。旧ルールでゲストが開始できることをEmulatorで再現して修正しました。全国対戦の代行開始は維持しています。
+
+**この差分はGitマージだけではFirebaseへ反映されません。** 英検専用プロジェクトでのレビュー・再反映が必要です。相互フレンド条件や本人限定保存を緩めていません。
+
+## テスト・再現方法
 
 ```sh
 cd /home/user/webapp/eiken-app
-npm run generate:materials
 npm test
 npm run typecheck
-# 1GB環境ではpreviewとブラウザを停止してから実行
+# 1GB環境ではpreviewとブラウザを止めてからbuild
 GOMAXPROCS=1 GOMEMLIMIT=64MiB GOGC=50 NODE_OPTIONS='--max-old-space-size=560 --max-semi-space-size=4' npm run build:vercel
-# build済みSPAをPM2でポート3000にpreviewしてから
-npm run test:integration:browser
-EIKEN_ENGINE=webkit npm run test:integration:browser
+# PM2でbuild済みSPAをポート3000にpreviewしてから
+node tests/entry.browser.mjs
+EIKEN_ENGINE=webkit node tests/entry.browser.mjs
 npm run test:release
-EIKEN_ENGINE=webkit EIKEN_WIDTH=1280 npm run test:release
-EIKEN_ENGINE=webkit EIKEN_WIDTH=390 npm run test:release
+EIKEN_ENGINE=webkit npm run test:release
 npm run test:audio
 npm run test:browser
+npm run test:integration:browser
+EIKEN_ENGINE=webkit npm run test:integration:browser
 ```
 
-ルール／Auth SDKテストはdemoプロジェクトのEmulatorだけを使用し、未設定時は停止します。本番接続しません。
+- 最新追加UI：32 Vitest件・型検査0エラー・production-mode build成功。入口テストは2エンジン×4画面で成功。Chromiumの教材28経路、音声、聞き取り14経路・AI・PWA、英作文・PDFも回帰成功。
+- 先行PR：上記のChromium／WebKit PC・スマホの教材・英作文・PDF・音声回帰済み。
+- Auth／Firestore Emulator：8ルールケースと実Authトークンによる同一uid2クライアント同期、別ユーザー／未認証拒否、対戦transaction・入室・開始・解答・不正更新拒否。
+- `tests/sync-controller.test.ts` は通信モックで遅延・失敗・切替を検査。実端末2台の同期全体の検証と混同しません。
+- WebKitの連続10回reloadは985MB sandboxでOOMしたため、英作文は全課題保存後1回reloadで10記録と再開を確認。Chromiumは各課題reload。
 
 ```sh
 cd /home/user/webapp
 JAVA_TOOL_OPTIONS=-Xmx320m npm exec --yes --package=firebase-tools@14.27.0 -- \
-  firebase emulators:exec --config firebase.json --project demo-manatobi-eiken --only auth,firestore \
-  'npm --prefix eiken-app run test:rules && npm --prefix eiken-app run test:sdk'
+ firebase emulators:exec --config firebase.json --project demo-manatobi-eiken --only auth,firestore \
+ 'npm --prefix eiken-app run test:rules && npm --prefix eiken-app run test:sdk'
 ```
 
-## 利用ガイド・配信パス
+## 保存・教材生成・配信パス
 
-1. ホーム→演習→級→聞き取り／読解／語彙文法→問題→解説・復習。
-2. 学習→英単語帳→級を選択。例文・意味・4択・間違えた語の復習を利用。
-3. 学習→英検ライティング→級・課題→英文→自己点検。入力は端末のアカウント別に保存。
-4. ガチャ景品・ショップ・きせかえは既存の成長機能。獲得PDFはマイページ→マイPDF。
-5. BGMはホームの音ボタン、音量は設定。
-
-- `/`：SPA入口。画面・選択級はアプリ状態で保存（URLルーターではありません）。
-- `/?screenshot=1`：画面テスト用起動。通常起動テストとは分けています。
-- `/data/listeningVocabulary.json?v=eiken-wordbook-20261110b`：420語の級別JSON。
-- `/prints/print_eiken_wordbook_<grade>.pdf`：基礎30語ノート（`5,4,3,pre2,pre2plus,2,pre1`）。
-- `/tanjou.mp3`、`/bgm/battle/`、`/sfx/`、`/cinematics/`、`/fonts/`、`/brand/`、`/mascots/`：既存素材。
-- `/manifest.json`、`/sw.js`：英検PWA。SW世代 `eiken-integration-20261110b`。
-
-## データ・再生成・構成
-
-- 端末キーはすべて `eiken:v1:` wrapper。uid別の成長envelope、単語帳／4択、下書き、問題記録、復習、設定。
-- 同期は名前付きFirebase App `manatobi-eiken`、`eiken_user_data/{uid}` の許可済み `s_*` JSON文字列。本人限定。3-wayマージ・pending baseで再送を扱います。
-- `VITE_EIKEN_ENABLE_CLOUD` / `VITE_EIKEN_FIREBASE_*` を使用。大学受験版のIDや旧環境変数をbuild guardで拒否。
-- ローカルpreviewはクラウド無効。本番Auth・許可ドメイン・Functionsは別途実環境確認が必要。
-- 原本：`src/eiken/materials/original-*.ts`、`translations.ts`、`wordbook.tsv`。
-- `npm run generate:materials`：単語JSON・件数・章索引を生成。既存単語IDを保全。
-- `python3 scripts/build-eiken-rewards.py`：基礎30語PDF7冊とthumb／previewをオフライン生成。ReportLab・PyMuPDF・Pillow・既存Klee Oneを使用。Vercelでは生成しません。
-- `tests/listening-baseline.json`：参照リスニングcommitと同一ファイルの記録。英検固有修正は理由つき例外へ記録。
-- Vercel：Rootはリポジトリ直下、Install `npm ci --prefix eiken-app`、Build `npm --prefix eiken-app run build:vercel`、Output `eiken-app/dist`、Production Branch `main`、Node22.18以上。Rootを`eiken-app`にする設定と混在させません。
+- SPA入口 `/`。URLルーターでなく画面状態で遷移。`/?screenshot=1` は検証起動で、通常起動と別検証。
+- `/data/listeningVocabulary.json?v=eiken-wordbook-20261110b`、`/prints/print_eiken_wordbook_<grade>.pdf`、既存 `/brand/`・`/mascots/`・`/fonts/`・`/cinematics/`・BGM、`/manifest.json`・`/sw.js`。
+- localStorageは `eiken:v1:` wrapper。新語彙v2、下書き `eiken_writing_v1_<uid>`、成長envelope等をuid別に保存。
+- クラウドは名前付きApp `manatobi-eiken`、`eiken_user_data/{uid}` の許可済み `s_*` JSON。下書きは `s_reading`、異形式値は保護。3-way merge・pending baseを使用。
+- `VITE_EIKEN_ENABLE_CLOUD` / `VITE_EIKEN_FIREBASE_*`。旧版ID・旧環境変数はbuild guardで拒否。ローカルpreviewはcloud無効。
+- 原本：`src/eiken/materials/original-*.ts`、`translations.ts`、`wordbook.tsv`。`npm run generate:materials` でJSON・件数・索引を生成。
+- `scripts/build-eiken-rewards.py` はPDF・thumb・previewをオフライン生成。ReportLab／PyMuPDF／Pillow／既存Klee Oneを使用。Vercelでは生成しません。
+- 共通ソース580ファイルの同一性を維持。英検固有修正は `tests/listening-baseline.json` に理由を記録。
+- Vercel既存設定：Rootリポジトリ直下、Install `npm ci --prefix eiken-app`、Build `npm --prefix eiken-app run build:vercel`、Output `eiken-app/dist`、Production Branch main、Node22.18以上。別のRoot設定と混在させません。
 
 ## 公開前に残る確認
 
-- GitHub対象リポジトリへの書込権限を持つ認証への再接続、push・修正PR・レビュー。本番配備はまだです。
-- 上記の追加Firestoreルール差分をレビューし、英検専用本番へ再反映。
-- 本番Google／Apple Auth、許可ドメイン、実アカウント2台の同期・切替・ゲスト移行、Functions・フレンド承認・オンラインマッチング全体。
-- iPhone／Android実機の端末TTS・消音設定・バックグラウンド復帰・PDF共有／印刷・旧PWA更新。
-- 全出題形式や本試験1回分を網羅する模試ではありません。420語も網羅語彙集とは扱いません。1級教材・録音音源・外部専門家の校閲と級別難度確認は未完了。
+A1の全語義再編、A2の範囲確定・独自作問・専門校閲、A7の新冊子／大当たり、A6の運用方針承認とサーバー実装は未完了です。ほかに本番Google Auth・許可ドメイン・実端末2台同期・Functions・フレンド承認・本番対戦、iPhone／Android音声・共有／印刷・旧PWA更新を確認します。
 
-ビルド成功や機械テストだけで公開品質が完成したとは判断せず、確認前にmainへマージしません。
+現教材は重点練習であり、全範囲の模試や網羅単語集とは扱いません。PRマージ・ビルド・機械テストだけで公開品質の完成とは判断しません。

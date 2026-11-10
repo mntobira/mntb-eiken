@@ -379,9 +379,9 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         <header className="game-home-header">
           <div><h1><img className="game-home-logo" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" /></h1><p title={`${greetingName}さんのホーム`}><KineticText text={`${greetingName}さんのホーム`} delay={350} step={30} /></p></div>
           {/* カウントダウンはリスニング版と同一のUI（2枠・CountUp）。日付と見出しだけ英検の日程。 */}
-          <dl className="game-home-countdown" aria-label="本番までの日数" data-home-countdown>
-            <div title={`英検 一次試験 ${EXAM_DATE_LABEL}`}><dt>一次</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>
-            <div title={`英検 二次試験 ${SECOND_EXAM_DATE_LABEL}`}><dt>二次</dt><dd><b><CountUp value={daysUntilSecond} fromZero duration={1100} delay={420} /></b>日</dd></div>
+          <dl className="game-home-countdown" aria-label="英検2026年度第3回・本会場一次試験と二次試験A日程までの日数" data-home-countdown>
+            <div title={`英検 一次試験 ${EXAM_DATE_LABEL}`}><dt>英検一次</dt><dd><b><CountUp value={daysUntilExam} fromZero duration={1100} delay={300} /></b>日</dd></div>
+            <div title={`英検 二次試験 ${SECOND_EXAM_DATE_LABEL}`}><dt>英検二次A</dt><dd><b><CountUp value={daysUntilSecond} fromZero duration={1100} delay={420} /></b>日</dd></div>
           </dl>
           <div className="game-home-tools">
             <button type="button" onClick={() => onToggleBgm?.(!isBgmEnabled || !!isBgmFadedOut)} aria-label={bgmLabel}>{bgmPlaying ? <Volume2 size={19} /> : <VolumeX size={19} />}</button>

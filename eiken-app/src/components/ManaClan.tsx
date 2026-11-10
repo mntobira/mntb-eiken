@@ -88,7 +88,7 @@ export function ManaClan({ onRequireLogin }: { onRequireLogin?: () => void; key?
     {notice && <p role="status" className="clan-notice">{notice}</p>}
 
     {!signedIn ? <section className="league-info">
-      <p>クランの作成・参加には Google / Apple でのログインが必要です（ゲストは順位表の閲覧のみ）。</p>
+      <p>クランの作成・参加には Googleでのログインが必要です（ゲストは順位表の閲覧のみ）。</p>
       {onRequireLogin && <div className="league-actions"><button type="button" onClick={onRequireLogin}><LogIn size={18} aria-hidden="true"/>ログインする</button></div>}
     </section> : mine && <section className="league-info">
       {clan ? <>
