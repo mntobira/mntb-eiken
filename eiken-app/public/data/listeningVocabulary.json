@@ -36,8 +36,24 @@
       "title": "英検4級 リーディング練習"
     },
     {
+      "id": "eiken_4_written_01_reading",
+      "title": "英検4級 リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_4_vocabulary_01",
       "title": "英検4級 語彙・文法練習"
+    },
+    {
+      "id": "eiken_4_written_01_short",
+      "title": "英検4級 リーディング 第1回｜短文の語句空所補充"
+    },
+    {
+      "id": "eiken_4_written_01_conversation",
+      "title": "英検4級 リーディング 第1回｜会話文の空所補充"
+    },
+    {
+      "id": "eiken_4_written_01_reorder",
+      "title": "英検4級 リーディング 第1回｜語句整序"
     },
     {
       "id": "eiken_3_listening_01",
@@ -48,8 +64,20 @@
       "title": "英検3級 リーディング練習"
     },
     {
+      "id": "eiken_3_written_01_reading",
+      "title": "英検3級 リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_3_vocabulary_01",
       "title": "英検3級 語彙・文法練習"
+    },
+    {
+      "id": "eiken_3_written_01_short",
+      "title": "英検3級 リーディング 第1回｜短文の語句空所補充"
+    },
+    {
+      "id": "eiken_3_written_01_conversation",
+      "title": "英検3級 リーディング 第1回｜会話文の空所補充"
     },
     {
       "id": "eiken_pre2_listening_01",
@@ -60,8 +88,24 @@
       "title": "英検準2級 リーディング練習"
     },
     {
+      "id": "eiken_pre2_written_01_cloze",
+      "title": "英検準2級 リーディング 第1回｜長文の語句空所補充"
+    },
+    {
+      "id": "eiken_pre2_written_01_reading",
+      "title": "英検準2級 リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_pre2_vocabulary_01",
       "title": "英検準2級 語彙・文法練習"
+    },
+    {
+      "id": "eiken_pre2_written_01_short",
+      "title": "英検準2級 リーディング 第1回｜短文の語句空所補充"
+    },
+    {
+      "id": "eiken_pre2_written_01_conversation",
+      "title": "英検準2級 リーディング 第1回｜会話文の空所補充"
     },
     {
       "id": "eiken_pre2plus_listening_01",
@@ -72,8 +116,20 @@
       "title": "英検準2級プラス リーディング練習"
     },
     {
+      "id": "eiken_pre2plus_written_01_cloze",
+      "title": "英検準2級プラス リーディング 第1回｜長文の語句空所補充"
+    },
+    {
+      "id": "eiken_pre2plus_written_01_reading",
+      "title": "英検準2級プラス リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_pre2plus_vocabulary_01",
       "title": "英検準2級プラス 語彙・文法練習"
+    },
+    {
+      "id": "eiken_pre2plus_written_01_short",
+      "title": "英検準2級プラス リーディング 第1回｜短文の語句空所補充"
     },
     {
       "id": "eiken_2_listening_01",
@@ -84,8 +140,20 @@
       "title": "英検2級 リーディング練習"
     },
     {
+      "id": "eiken_2_written_01_cloze",
+      "title": "英検2級 リーディング 第1回｜長文の語句空所補充"
+    },
+    {
+      "id": "eiken_2_written_01_reading",
+      "title": "英検2級 リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_2_vocabulary_01",
       "title": "英検2級 語彙・文法練習"
+    },
+    {
+      "id": "eiken_2_written_01_short",
+      "title": "英検2級 リーディング 第1回｜短文の語句空所補充"
     },
     {
       "id": "eiken_pre1_listening_01",
@@ -96,8 +164,20 @@
       "title": "英検準1級 リーディング練習"
     },
     {
+      "id": "eiken_pre1_written_01_cloze",
+      "title": "英検準1級 リーディング 第1回｜長文の語句空所補充"
+    },
+    {
+      "id": "eiken_pre1_written_01_reading",
+      "title": "英検準1級 リーディング 第1回｜読解"
+    },
+    {
       "id": "eiken_pre1_vocabulary_01",
       "title": "英検準1級 語彙・文法練習"
+    },
+    {
+      "id": "eiken_pre1_written_01_short",
+      "title": "英検準1級 リーディング 第1回｜短文の語句空所補充"
     }
   ],
   "words": [
@@ -1645,7 +1725,8 @@
       "exampleSentence": "This is a good place to rest.",
       "exampleTranslation": "ここは休むのによい場所です。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_reading"
       ],
       "examples": [
         {
@@ -1654,6 +1735,15 @@
           "problemId": "eiken_4_reading_01_1",
           "problemIndex": 0,
           "script": "A changed meeting place\n\nTo the Garden Helpers\nWe planned to meet outside the station this Sunday. However, the road there will be closed. Please come to the library entrance instead. We will leave at 9:40 and walk to the garden together. Do not bring tools; Ms. Lane has enough for everyone. Bring a drink because the garden shop is closed in the morning.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-notice",
+          "problemIndex": 0,
+          "script": "Saturday Book Sale\n\nOur school library will sell old books this Saturday. The sale is from 10 a.m. to noon in Room 2. Each book is 100 yen. Bring your own bag. The money will help us buy new books for young children. You do not need to book a place.",
           "audioUrl": "",
           "translation": ""
         }
@@ -1743,7 +1833,8 @@
       "exampleSentence": "She drew a map of the town.",
       "exampleTranslation": "彼女は町の地図を描きました。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_reading"
       ],
       "examples": [
         {
@@ -1752,6 +1843,15 @@
           "problemId": "eiken_4_reading_01_2",
           "problemIndex": 1,
           "script": "A sound map\n\nNora wanted to make a map of quiet places near her house. On Monday, she listened in the park, but a machine was cutting the grass. The next day, she visited a small bridge. She could hear only the water there. On Wednesday, she returned to the park. It was quiet, too. She put both places on her map and showed it to her grandfather.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-story",
+          "problemIndex": 2,
+          "script": "A Useful Map\n\nLast summer, Ren moved to a small town with his family. He did not know anyone there. He liked riding his bicycle, so he often went out to find new places. One afternoon, he found a beautiful pond behind the station. He wanted to tell his grandmother about it, but she did not know how to get there.\n\nRen decided to draw a map of the town. First, he visited the library to find an old map. It showed the streets, but it did not show the new park or the pond. Ren rode around town again and took notes. He also talked to people at the shops. They told him about a quiet garden and a small bakery.\n\nRen put these places on his map. He drew pictures and used large letters because his grandmother could not read small writing easily. When the map was finished, he took her to the pond. She found the way by looking at his map.\n\nLater, a librarian saw Ren's map. She asked him to make copies for the library. Ren was surprised, but he was happy to help. Now new people in town can take a free map from the library. Ren has also made friends with some children who used his map.",
           "audioUrl": "",
           "translation": ""
         }
@@ -1791,8 +1891,20 @@
       "level": "eiken_4",
       "exampleSentence": "We arrived at the park early.",
       "exampleTranslation": "私たちは公園に早く着きました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_reorder"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_reorder",
+          "chapterTitle": "英検4級 リーディング 第1回｜語句整序",
+          "problemId": "eiken_4_written_01_q23",
+          "problemIndex": 2,
+          "script": "あなたは何時に駅に着きましたか。\nWhat time ( ____ / ____ / ____ / ____ )?\n1番目・3番目の語句番号の組を選んでください。\n\n1. at ／ 2. you arrive ／ 3. did ／ 4. the station",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-arrive:e2j",
@@ -1829,7 +1941,8 @@
       "exampleSentence": "The bus leaves at nine.",
       "exampleTranslation": "バスは9時に出発します。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_short"
       ],
       "examples": [
         {
@@ -1838,6 +1951,15 @@
           "problemId": "eiken_4_reading_01_1",
           "problemIndex": 0,
           "script": "A changed meeting place\n\nTo the Garden Helpers\nWe planned to meet outside the station this Sunday. However, the road there will be closed. Please come to the library entrance instead. We will leave at 9:40 and walk to the garden together. Do not bring tools; Ms. Lane has enough for everyone. Bring a drink because the garden shop is closed in the morning.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q14",
+          "problemIndex": 13,
+          "script": "We should (     ) the lights before we leave the room.",
           "audioUrl": "",
           "translation": ""
         }
@@ -1914,8 +2036,20 @@
       "level": "eiken_4",
       "exampleSentence": "He carried the box upstairs.",
       "exampleTranslation": "彼は箱を上の階に運びました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_conversation"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_conversation",
+          "chapterTitle": "英検4級 リーディング 第1回｜会話文の空所補充",
+          "problemId": "eiken_4_written_01_q17",
+          "problemIndex": 1,
+          "script": "A: Shall I carry that bag for you?\nB: (     ) It is quite heavy.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-carry:e2j",
@@ -2223,7 +2357,9 @@
       "exampleSentence": "I stayed home because it rained.",
       "exampleTranslation": "雨が降ったので家にいました。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_reading",
+        "eiken_4_written_01_short"
       ],
       "examples": [
         {
@@ -2232,6 +2368,24 @@
           "problemId": "eiken_4_reading_01_1",
           "problemIndex": 0,
           "script": "A changed meeting place\n\nTo the Garden Helpers\nWe planned to meet outside the station this Sunday. However, the road there will be closed. Please come to the library entrance instead. We will leave at 9:40 and walk to the garden together. Do not bring tools; Ms. Lane has enough for everyone. Bring a drink because the garden shop is closed in the morning.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-story",
+          "problemIndex": 2,
+          "script": "A Useful Map\n\nLast summer, Ren moved to a small town with his family. He did not know anyone there. He liked riding his bicycle, so he often went out to find new places. One afternoon, he found a beautiful pond behind the station. He wanted to tell his grandmother about it, but she did not know how to get there.\n\nRen decided to draw a map of the town. First, he visited the library to find an old map. It showed the streets, but it did not show the new park or the pond. Ren rode around town again and took notes. He also talked to people at the shops. They told him about a quiet garden and a small bakery.\n\nRen put these places on his map. He drew pictures and used large letters because his grandmother could not read small writing easily. When the map was finished, he took her to the pond. She found the way by looking at his map.\n\nLater, a librarian saw Ren's map. She asked him to make copies for the library. Ren was surprised, but he was happy to help. Now new people in town can take a free map from the library. Ren has also made friends with some children who used his map.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q05",
+          "problemIndex": 4,
+          "script": "My bag is (     ) than yours because I have five books in it.",
           "audioUrl": "",
           "translation": ""
         }
@@ -2345,8 +2499,20 @@
       "level": "eiken_4",
       "exampleSentence": "This map is useful.",
       "exampleTranslation": "この地図は役に立ちます。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-story",
+          "problemIndex": 2,
+          "script": "A Useful Map\n\nLast summer, Ren moved to a small town with his family. He did not know anyone there. He liked riding his bicycle, so he often went out to find new places. One afternoon, he found a beautiful pond behind the station. He wanted to tell his grandmother about it, but she did not know how to get there.\n\nRen decided to draw a map of the town. First, he visited the library to find an old map. It showed the streets, but it did not show the new park or the pond. Ren rode around town again and took notes. He also talked to people at the shops. They told him about a quiet garden and a small bakery.\n\nRen put these places on his map. He drew pictures and used large letters because his grandmother could not read small writing easily. When the map was finished, he took her to the pond. She found the way by looking at his map.\n\nLater, a librarian saw Ren's map. She asked him to make copies for the library. Ren was surprised, but he was happy to help. Now new people in town can take a free map from the library. Ren has also made friends with some children who used his map.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-useful:e2j",
@@ -2542,8 +2708,20 @@
       "level": "eiken_4",
       "exampleSentence": "The weather was fine yesterday.",
       "exampleTranslation": "昨日はよい天気でした。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q06",
+          "problemIndex": 5,
+          "script": "We are going to (     ) a picnic if the weather is fine.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-weather:e2j",
@@ -2727,8 +2905,20 @@
       "level": "eiken_4",
       "exampleSentence": "There are a lot of flowers.",
       "exampleTranslation": "たくさんの花があります。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q08",
+          "problemIndex": 7,
+          "script": "There (     ) a lot of people in the park yesterday.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-a-lot-of:e2j",
@@ -2824,7 +3014,9 @@
       "exampleSentence": "A volunteer showed us the way.",
       "exampleTranslation": "ボランティアが道を教えてくれました。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading",
+        "eiken_3_written_01_conversation"
       ],
       "examples": [
         {
@@ -2833,6 +3025,24 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_conversation",
+          "chapterTitle": "英検3級 リーディング 第1回｜会話文の空所補充",
+          "problemId": "eiken_3_written_01_q20",
+          "problemIndex": 4,
+          "script": "A: I heard you are joining the volunteer team.\nB: (     ) I want to do something useful for our town.",
           "audioUrl": "",
           "translation": ""
         }
@@ -2873,7 +3083,8 @@
       "exampleSentence": "You do not need any experience.",
       "exampleTranslation": "経験は必要ありません。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading"
       ],
       "examples": [
         {
@@ -2882,6 +3093,15 @@
           "problemId": "eiken_3_reading_01_1",
           "problemIndex": 0,
           "script": "Notes for the notice team\n\nOur neighbourhood centre is changing its notice board. People often miss important dates because the notices use very small letters. On Friday, volunteers will rewrite them with larger letters and shorter sentences. We need two people to check the dates before the new notices are printed. If you can help, please email Mina by Thursday evening. You do not need design experience. The team will meet at the centre at four on Friday, but you can check the dates from home.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-notice",
+          "problemIndex": 0,
+          "script": "Make a Weather Station\n\nScience Club Open Day\nSaturday, May 18, 1:00–3:00 p.m.\nCommunity Hall, Room B\n\nLearn to build a simple weather station from things you can find at home. This event is for children aged ten to fifteen. Members of the science club will help you, so you do not need any experience. Please bring an empty plastic bottle with its cap. All other materials will be provided.\n\nOnly twenty children can join. Send your name and age to the club by May 12. Parents may watch, but they cannot take part in the activity. The event will be held indoors even if it rains.",
           "audioUrl": "",
           "translation": ""
         }
@@ -2922,7 +3142,8 @@
       "exampleSentence": "Can you explain the rule?",
       "exampleTranslation": "規則を説明できますか。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading"
       ],
       "examples": [
         {
@@ -2931,6 +3152,15 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
           "audioUrl": "",
           "translation": ""
         }
@@ -3020,7 +3250,8 @@
       "exampleSentence": "It was raining, so we stayed inside instead.",
       "exampleTranslation": "雨が降っていたので、その代わりに屋内にいました。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading"
       ],
       "examples": [
         {
@@ -3029,6 +3260,15 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-email",
+          "problemIndex": 1,
+          "script": "Help with the Garden Exhibition\n\nFrom: Nora\nTo: Daniel\nSubject: Garden exhibition\n\nHi Daniel,\nOur class is preparing an exhibition about the school garden. You said you wanted to help, and I have a special job for you. We took photographs of the garden every week, but we do not have anyone to arrange them on the display boards. You are good at choosing pictures, so could you do that?\n\nThe exhibition was going to open on Thursday, but the hall will be used for a teachers' meeting that day. It will open on Friday instead. We must finish our work by Wednesday afternoon because the boards need to be checked.\n\nCould you come to Room 5 after school on Tuesday? I will bring the photographs and some large sheets of paper. You only need to bring scissors. We can use the school's glue. If you cannot come, please email me before Monday evening so I can ask someone else.\n\nThanks,\nNora",
           "audioUrl": "",
           "translation": ""
         }
@@ -3118,7 +3358,8 @@
       "exampleSentence": "I joined a local sports club.",
       "exampleTranslation": "地元のスポーツクラブに入りました。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_short"
       ],
       "examples": [
         {
@@ -3127,6 +3368,15 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_short",
+          "chapterTitle": "英検3級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_3_written_01_q03",
+          "problemIndex": 2,
+          "script": "The bridge (     ) by local workers about fifty years ago.",
           "audioUrl": "",
           "translation": ""
         }
@@ -3167,7 +3417,8 @@
       "exampleSentence": "This tool is easy to use.",
       "exampleTranslation": "この道具は使いやすいです。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading"
       ],
       "examples": [
         {
@@ -3176,6 +3427,15 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
           "audioUrl": "",
           "translation": ""
         }
@@ -3510,8 +3770,20 @@
       "level": "eiken_3",
       "exampleSentence": "I prepared lunch for my family.",
       "exampleTranslation": "家族のために昼食を準備しました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-prepare:e2j",
@@ -3744,8 +4016,20 @@
       "level": "eiken_3",
       "exampleSentence": "Have you finished yet?",
       "exampleTranslation": "もう終わりましたか。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_short",
+          "chapterTitle": "英検3級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_3_written_01_q15",
+          "problemIndex": 14,
+          "script": "My brother is not old (     ) to drive a car yet.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-yet:e2j",
@@ -3830,8 +4114,20 @@
       "level": "eiken_3",
       "exampleSentence": "He left without his bag.",
       "exampleTranslation": "彼はかばんを持たずに出かけました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_short",
+          "chapterTitle": "英検3級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_3_written_01_q14",
+          "problemIndex": 13,
+          "script": "The instructions were clear, so I built the shelf without any (     ).",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-without:e2j",
@@ -4494,8 +4790,20 @@
       "level": "eiken_pre2",
       "exampleSentence": "We replaced the old computer.",
       "exampleTranslation": "古いコンピューターを取り替えました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-article",
+          "problemIndex": 1,
+          "script": "A Museum You Can Hear\n\nAt the Riverside Museum, most visitors once followed signs from one glass case to another. They read short descriptions of old tools, clothes, and furniture, then moved on. The objects were interesting, but the museum staff noticed that many visitors did not stay long. Few people understood how the objects had been used in daily life.\n\nTo change this, the museum invited local residents to record stories about familiar objects. One woman described the sound of the sewing machine her mother used at home. A retired baker explained why a wooden tray had a particular shape. These recordings were added to a small audio player that visitors could borrow at the entrance. The aim was not to replace the written descriptions but to provide another way to explore the collection.\n\nThe first recordings were long and difficult to follow. Staff had assumed that visitors would listen to complete interviews. In practice, people wanted to move at their own speed. The museum therefore divided the interviews into short sections. Each section focused on one object and lasted less than two minutes. Visitors could choose only the stories that interested them.\n\nThe new system also changed the relationship between the museum and the town. Residents who had rarely visited came to hear their relatives' recordings. Some brought photographs or offered to share their own memories. The museum checked these stories against old records before using them, because personal memories are not always exact.\n\nA visitor survey later showed that people were spending more time in the museum. However, the director did not regard longer visits as the only sign of success. She was more pleased that visitors were asking new questions about everyday life in the past. The museum now plans to add stories from younger residents as well. The staff believe that objects which seem ordinary today may help future visitors understand the present.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-replace:e2j",
@@ -4532,7 +4840,8 @@
       "exampleSentence": "It was an ordinary working day.",
       "exampleTranslation": "普通の平日でした。",
       "chapterIds": [
-        "eiken_pre2_reading_01"
+        "eiken_pre2_reading_01",
+        "eiken_pre2_written_01_reading"
       ],
       "examples": [
         {
@@ -4541,6 +4850,15 @@
           "problemId": "eiken_pre2_reading_01_2",
           "problemIndex": 1,
           "script": "The quiet label\n\nA small theatre once put a \"quiet performance\" label on certain shows. Staff expected it to welcome people who disliked sudden noise. However, a visitor explained that the label was unclear: did it mean the audience had to remain completely silent, or that the sound from the stage would be softer? The theatre asked several visitors to review its website. It then replaced the short label with a description of what would be different. These performances now use lower sound levels and leave a few lights on. Visitors may step outside and return. The theatre still offers ordinary performances, but it no longer expects a single label to explain every change.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-article",
+          "problemIndex": 1,
+          "script": "A Museum You Can Hear\n\nAt the Riverside Museum, most visitors once followed signs from one glass case to another. They read short descriptions of old tools, clothes, and furniture, then moved on. The objects were interesting, but the museum staff noticed that many visitors did not stay long. Few people understood how the objects had been used in daily life.\n\nTo change this, the museum invited local residents to record stories about familiar objects. One woman described the sound of the sewing machine her mother used at home. A retired baker explained why a wooden tray had a particular shape. These recordings were added to a small audio player that visitors could borrow at the entrance. The aim was not to replace the written descriptions but to provide another way to explore the collection.\n\nThe first recordings were long and difficult to follow. Staff had assumed that visitors would listen to complete interviews. In practice, people wanted to move at their own speed. The museum therefore divided the interviews into short sections. Each section focused on one object and lasted less than two minutes. Visitors could choose only the stories that interested them.\n\nThe new system also changed the relationship between the museum and the town. Residents who had rarely visited came to hear their relatives' recordings. Some brought photographs or offered to share their own memories. The museum checked these stories against old records before using them, because personal memories are not always exact.\n\nA visitor survey later showed that people were spending more time in the museum. However, the director did not regard longer visits as the only sign of success. She was more pleased that visitors were asking new questions about everyday life in the past. The museum now plans to add stories from younger residents as well. The staff believe that objects which seem ordinary today may help future visitors understand the present.",
           "audioUrl": "",
           "translation": ""
         }
@@ -4715,8 +5033,20 @@
       "level": "eiken_pre2",
       "exampleSentence": "Check the equipment before use.",
       "exampleTranslation": "使用前に用具を確認してください。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-equipment:e2j",
@@ -4863,8 +5193,29 @@
       "level": "eiken_pre2",
       "exampleSentence": "The centre provides free meals.",
       "exampleTranslation": "その施設は無料の食事を提供しています。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-article",
+          "problemIndex": 1,
+          "script": "A Museum You Can Hear\n\nAt the Riverside Museum, most visitors once followed signs from one glass case to another. They read short descriptions of old tools, clothes, and furniture, then moved on. The objects were interesting, but the museum staff noticed that many visitors did not stay long. Few people understood how the objects had been used in daily life.\n\nTo change this, the museum invited local residents to record stories about familiar objects. One woman described the sound of the sewing machine her mother used at home. A retired baker explained why a wooden tray had a particular shape. These recordings were added to a small audio player that visitors could borrow at the entrance. The aim was not to replace the written descriptions but to provide another way to explore the collection.\n\nThe first recordings were long and difficult to follow. Staff had assumed that visitors would listen to complete interviews. In practice, people wanted to move at their own speed. The museum therefore divided the interviews into short sections. Each section focused on one object and lasted less than two minutes. Visitors could choose only the stories that interested them.\n\nThe new system also changed the relationship between the museum and the town. Residents who had rarely visited came to hear their relatives' recordings. Some brought photographs or offered to share their own memories. The museum checked these stories against old records before using them, because personal memories are not always exact.\n\nA visitor survey later showed that people were spending more time in the museum. However, the director did not regard longer visits as the only sign of success. She was more pleased that visitors were asking new questions about everyday life in the past. The museum now plans to add stories from younger residents as well. The staff believe that objects which seem ordinary today may help future visitors understand the present.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-provide:e2j",
@@ -5159,8 +5510,20 @@
       "level": "eiken_pre2",
       "exampleSentence": "I chose to walk rather than wait.",
       "exampleTranslation": "待つより歩くことを選びました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-rather-than:e2j",
@@ -5308,9 +5671,19 @@
       "exampleSentence": "The fee includes participation in the workshop.",
       "exampleTranslation": "料金には講習会への参加が含まれています。",
       "chapterIds": [
+        "eiken_pre2plus_written_01_reading",
         "eiken_pre2plus_vocabulary_01"
       ],
       "examples": [
+        {
+          "chapterId": "eiken_pre2plus_written_01_reading",
+          "chapterTitle": "英検準2級プラス リーディング 第1回｜読解",
+          "problemId": "eiken_pre2plus_written_01_rplus-article",
+          "problemIndex": 1,
+          "script": "Keeping Track of City Trees\n\nOn a summer afternoon, a tree-lined street can feel quite different from a nearby road without shade. Trees also provide places for birds and insects to live. Yet city officials often have incomplete information about the trees they are responsible for. Paper records may be old, and different departments may keep separate lists. This can make it difficult to decide where care is most urgently needed.\n\nIn one city, a group of residents offered to help create a shared tree record. Volunteers walked along public streets and entered basic information into a mobile form. They recorded each tree's location, took a photograph, and noted visible signs of damage. They were not asked to judge whether a tree was safe. That decision remained the responsibility of trained specialists.\n\nThe first month produced thousands of entries, but some were unreliable. A tree near a street corner might be recorded by two teams, while a photograph taken from far away might show the wrong tree. Rather than simply count the entries, the project leader introduced a checking stage. Teams compared neighboring records, and specialists reviewed reports of possible disease. Each confirmed tree received a single identification number.\n\nThe resulting map changed how the city planned its work. Officials had previously responded mainly to requests from residents. However, some neighborhoods made many requests while others made few, even when their trees were in poor condition. The new record allowed officials to compare areas more fairly. It also revealed streets where there were very few trees at all.\n\nThe project did not mean that every neighborhood could immediately receive new trees. Planting requires money, and there must be enough space underground for roots as well as above ground for branches. In some streets, water pipes and cables limited the available space. Officials had to explain why a request could not always be accepted.\n\nFor volunteers, the main lesson was that collecting information was only the beginning. The value of the record depended on checking it, keeping it current, and using it to answer practical questions. The group now revisits a different area each month. Its members hope that a record built through public participation will remain useful because people understand both its purpose and its limits.",
+          "audioUrl": "",
+          "translation": ""
+        },
         {
           "chapterId": "eiken_pre2plus_vocabulary_01",
           "chapterTitle": "英検準2級プラス 語彙・文法練習",
@@ -5479,8 +5852,20 @@
       "level": "eiken_pre2plus",
       "exampleSentence": "We changed the seating arrangements.",
       "exampleTranslation": "座席の配置を変えました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2plus_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2plus_written_01_reading",
+          "chapterTitle": "英検準2級プラス リーディング 第1回｜読解",
+          "problemId": "eiken_pre2plus_written_01_rplus-email",
+          "problemIndex": 0,
+          "script": "A New Plan for the Exhibition\n\nFrom: Elena Brooks, Project Leader\nTo: Student Exhibition Team\nSubject: Final arrangements\n\nDear team,\nThank you for preparing the exhibition on the history of our neighborhood. After looking through your work, the community center has agreed to lend us its main hall. This will allow us to display larger photographs than we could in the school corridor. However, the hall is available for only one weekend, so we must finish setting up by Friday evening and remove everything on Sunday after closing.\n\nWe originally planned to borrow display boards from the town office. Unfortunately, they are needed for another event. The center has offered lightweight stands instead. These cannot hold heavy objects, so please do not bring the old tools you collected. Use photographs of them, with short explanations of what they were used for. Your interviews with residents can still be played through the small speakers.\n\nPlease send your final captions to me by Monday. I will check them for unclear dates and names, not change your choice of topics. If a resident has asked not to be named, use a description such as \"a former shop owner.\" We have permission to show the donated photographs during the exhibition, but not to post them on social media.\n\nI also need two volunteers to welcome visitors on Saturday morning. You do not have to know every part of local history. Your main task will be to explain the arrangement of the exhibition and direct visitors to the appropriate section. Please reply by tomorrow if you can help.\n\nElena",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-plus-arrangement:e2j",
@@ -5907,8 +6292,20 @@
       "level": "eiken_pre2plus",
       "exampleSentence": "Safety is our main concern.",
       "exampleTranslation": "安全が私たちの主な懸念です。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2plus_written_01_cloze"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2plus_written_01_cloze",
+          "chapterTitle": "英検準2級プラス リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_pre2plus_written_01_rplus-cloze-a",
+          "problemIndex": 0,
+          "script": "Borrowing More Than Books\n\nA small library wanted to attract residents who rarely borrowed books. Instead of expanding its shelves, it began lending useful household objects, including a sewing machine and a set of gardening tools. The staff hoped that residents could try an object before deciding whether to buy one. People could also borrow items they needed only occasionally.\n\nAt first, the library accepted almost every donated object. This created an unexpected problem. Some items were missing parts, while others required repairs that the staff could not perform. The service soon became difficult to manage. The library therefore introduced a rule: every object had to be inspected before it was accepted. (18), donations became easier to handle, even though the library received fewer of them.\n\nAnother concern was that borrowers might return objects late. The library considered charging large fines, but staff worried this would discourage people from trying the service. Instead, borrowers received a reminder a day before an item was due. If they needed more time, they could request an extension unless someone else was waiting. The library found that clear communication was (19).\n\nThe service is still small. Staff have not claimed that it will replace shopping or solve all the town's waste problems. However, residents have started discussing which objects could usefully be shared. For the library, one important result has been (20). People who had never met now exchange advice about using and repairing the objects they borrow.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-plus-concern:e2j",
@@ -6672,7 +7069,8 @@
       "exampleSentence": "This problem needs urgent attention.",
       "exampleTranslation": "この問題には緊急の対応が必要です。",
       "chapterIds": [
-        "eiken_2_reading_01"
+        "eiken_2_reading_01",
+        "eiken_2_written_01_reading"
       ],
       "examples": [
         {
@@ -6681,6 +7079,15 @@
           "problemId": "eiken_2_reading_01_1",
           "problemIndex": 0,
           "script": "When fewer messages are not better\n\nA housing association introduced an online repair form to reduce the time staff spent answering telephone calls. After three months, calls had fallen sharply, and managers initially described the change as a success. A maintenance worker, however, noticed that some serious problems were reaching the repair team later than before. Interviews suggested that residents sometimes abandoned the form because it required them to identify the technical category of a fault. They could describe a leaking ceiling but did not know which category to choose. The association simplified the form and restored a clearly advertised telephone option. Calls increased again, but fewer urgent repairs were reported late. The form had still saved staff time on routine requests. What changed was the measure of success: managers began examining how quickly problems reached the appropriate team, rather than treating every avoided call as a benefit.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_reading",
+          "chapterTitle": "英検2級 リーディング 第1回｜読解",
+          "problemId": "eiken_2_written_01_r2-email",
+          "problemIndex": 0,
+          "script": "Trial of the Flexible Workspace\n\nFrom: Priya Shah, Facilities Manager\nTo: Staff in the West Building\nSubject: Four-week workspace trial\n\nDear colleagues,\nFrom next Monday, the third-floor meeting room will be used as a quiet workspace during the morning. This is a four-week trial, not a permanent change. Staff feedback has shown that some tasks require longer periods without interruption than our open office currently allows. The room will remain available for meetings after 1 p.m.\n\nYou may reserve a desk through the internal booking page up to two working days ahead. To give more people a chance to participate, please book no more than two mornings per week. If you no longer need a booking, cancel it promptly. Desks cannot be reserved by leaving personal belongings overnight.\n\nDuring the trial, the room is intended for individual work. Please take telephone and video calls elsewhere, even if you use headphones. There will be no charge to your department for using the room. However, this does not include printing costs, which will continue to be charged in the usual way.\n\nWe will record how often desks are used, but the number of bookings will not be our only measure of success. At the end of the trial, participants and their team leaders will be asked whether the arrangement helped them complete suitable tasks and whether it created difficulties for their teams. We also want to hear from staff who wanted to participate but could not find a suitable time.\n\nPlease do not assume that the booking rules will remain unchanged after the trial. They will be reviewed along with the room's future use. Send any urgent concerns directly to me rather than waiting for the final survey.\n\nPriya",
           "audioUrl": "",
           "translation": ""
         }
@@ -6721,7 +7128,8 @@
       "exampleSentence": "How do you measure success?",
       "exampleTranslation": "成功をどのように評価しますか。",
       "chapterIds": [
-        "eiken_2_reading_01"
+        "eiken_2_reading_01",
+        "eiken_2_written_01_reading"
       ],
       "examples": [
         {
@@ -6730,6 +7138,15 @@
           "problemId": "eiken_2_reading_01_1",
           "problemIndex": 0,
           "script": "When fewer messages are not better\n\nA housing association introduced an online repair form to reduce the time staff spent answering telephone calls. After three months, calls had fallen sharply, and managers initially described the change as a success. A maintenance worker, however, noticed that some serious problems were reaching the repair team later than before. Interviews suggested that residents sometimes abandoned the form because it required them to identify the technical category of a fault. They could describe a leaking ceiling but did not know which category to choose. The association simplified the form and restored a clearly advertised telephone option. Calls increased again, but fewer urgent repairs were reported late. The form had still saved staff time on routine requests. What changed was the measure of success: managers began examining how quickly problems reached the appropriate team, rather than treating every avoided call as a benefit.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_reading",
+          "chapterTitle": "英検2級 リーディング 第1回｜読解",
+          "problemId": "eiken_2_written_01_r2-email",
+          "problemIndex": 0,
+          "script": "Trial of the Flexible Workspace\n\nFrom: Priya Shah, Facilities Manager\nTo: Staff in the West Building\nSubject: Four-week workspace trial\n\nDear colleagues,\nFrom next Monday, the third-floor meeting room will be used as a quiet workspace during the morning. This is a four-week trial, not a permanent change. Staff feedback has shown that some tasks require longer periods without interruption than our open office currently allows. The room will remain available for meetings after 1 p.m.\n\nYou may reserve a desk through the internal booking page up to two working days ahead. To give more people a chance to participate, please book no more than two mornings per week. If you no longer need a booking, cancel it promptly. Desks cannot be reserved by leaving personal belongings overnight.\n\nDuring the trial, the room is intended for individual work. Please take telephone and video calls elsewhere, even if you use headphones. There will be no charge to your department for using the room. However, this does not include printing costs, which will continue to be charged in the usual way.\n\nWe will record how often desks are used, but the number of bookings will not be our only measure of success. At the end of the trial, participants and their team leaders will be asked whether the arrangement helped them complete suitable tasks and whether it created difficulties for their teams. We also want to hear from staff who wanted to participate but could not find a suitable time.\n\nPlease do not assume that the booking rules will remain unchanged after the trial. They will be reviewed along with the room's future use. Send any urgent concerns directly to me rather than waiting for the final survey.\n\nPriya",
           "audioUrl": "",
           "translation": ""
         }
@@ -6770,7 +7187,8 @@
       "exampleSentence": "There is no evidence to support the claim.",
       "exampleTranslation": "その主張を裏付ける証拠はありません。",
       "chapterIds": [
-        "eiken_2_listening_01"
+        "eiken_2_listening_01",
+        "eiken_2_written_01_cloze"
       ],
       "examples": [
         {
@@ -6781,6 +7199,15 @@
           "script": "Our centre used less electricity this summer than last summer. This may sound like evidence that the new lights saved a great deal of energy. However, the centre was also closed for two weeks, and the weather was cooler. We will compare electricity use during similar opening hours before estimating the contribution of the lights. This does not mean the lights were ineffective; it means the total reduction cannot all be attributed to them yet.\nQuestion. Why is the speaker delaying a conclusion about the lights?",
           "audioUrl": "",
           "translation": "センターの今年の夏の電力使用量は昨夏より減りました。新しい照明が大きく節電した証拠に思えるかもしれません。しかし、2週間の休館もあり、気温も低めでした。照明の効果を見積もる前に、開館時間が似た条件での使用量を比べます。照明が無効だったという意味ではなく、減少分の全てをまだ照明に帰することはできないという意味です。"
+        },
+        {
+          "chapterId": "eiken_2_written_01_cloze",
+          "chapterTitle": "英検2級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_2_written_01_r2-cloze-b",
+          "problemIndex": 1,
+          "script": "The Value of an Unfinished List\n\nA coastal town began recording the wildlife found in its public gardens. Volunteers were asked to photograph insects and upload their observations to a shared website. The project attracted many enthusiastic participants, and its first map appeared to show that the central park had far more kinds of insects than any other garden. Some officials suggested concentrating future planting there.\n\nA coordinator examined the observation records more carefully. The central park was close to a bus stop and had a popular cafe, so volunteers visited it frequently. Several smaller gardens had been visited only once. The map therefore reflected not only where insects lived but also (21). Treating every blank area on the map as an absence of wildlife would have been misleading.\n\nThe coordinator arranged visits to the less popular gardens and asked participants to spend a similar amount of time at each location. Specialists helped check photographs of insects that were difficult to identify. The revised map still had gaps, but the team marked these openly rather than filling them with guesses. (22), users could distinguish between an area where few insects had been seen and an area that had not yet been studied adequately.\n\nThe town eventually used the record to plan a wider network of flowering plants across its gardens. It did not wait until the list contained every possible species. Nevertheless, officials learned to treat the map as a developing source of evidence, not a complete picture. The project's usefulness depended on (23). A visually impressive map was valuable only if its limits were understood.",
+          "audioUrl": "",
+          "translation": ""
         }
       ],
       "questions": [
@@ -7114,8 +7541,20 @@
       "level": "eiken_2",
       "exampleSentence": "It is important to distinguish fact from opinion.",
       "exampleTranslation": "事実と意見を区別することが重要です。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_2_written_01_cloze"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_2_written_01_cloze",
+          "chapterTitle": "英検2級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_2_written_01_r2-cloze-b",
+          "problemIndex": 1,
+          "script": "The Value of an Unfinished List\n\nA coastal town began recording the wildlife found in its public gardens. Volunteers were asked to photograph insects and upload their observations to a shared website. The project attracted many enthusiastic participants, and its first map appeared to show that the central park had far more kinds of insects than any other garden. Some officials suggested concentrating future planting there.\n\nA coordinator examined the observation records more carefully. The central park was close to a bus stop and had a popular cafe, so volunteers visited it frequently. Several smaller gardens had been visited only once. The map therefore reflected not only where insects lived but also (21). Treating every blank area on the map as an absence of wildlife would have been misleading.\n\nThe coordinator arranged visits to the less popular gardens and asked participants to spend a similar amount of time at each location. Specialists helped check photographs of insects that were difficult to identify. The revised map still had gaps, but the team marked these openly rather than filling them with guesses. (22), users could distinguish between an area where few insects had been seen and an area that had not yet been studied adequately.\n\nThe town eventually used the record to plan a wider network of flowering plants across its gardens. It did not wait until the list contained every possible species. Nevertheless, officials learned to treat the map as a developing source of evidence, not a complete picture. The project's usefulness depended on (23). A visually impressive map was valuable only if its limits were understood.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-2-distinguish:e2j",
@@ -7669,8 +8108,20 @@
       "level": "eiken_pre1",
       "exampleSentence": "The summary may obscure important differences.",
       "exampleTranslation": "その要約は重要な違いを見えにくくするかもしれません。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_reading",
+          "chapterTitle": "英検準1級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre1_written_01_rp1-reading-a",
+          "problemIndex": 0,
+          "script": "Who Benefits from a Quieter Street?\n\nReducing traffic on a residential street may seem an uncomplicated improvement. Fewer vehicles can mean less noise, cleaner air, and more space for people walking or cycling. Yet the evaluation of a traffic scheme depends on where its boundaries are drawn. A street that becomes quieter may sit beside another that receives the diverted vehicles. An assessment limited to the first street can therefore tell a convincing but incomplete story.\n\nSuppose a district introduces barriers that prevent through-traffic from using several residential roads. Initial monitoring shows a sharp decline in vehicles inside the area. Residents living near the barriers report that children can cross more easily and that conversations are no longer interrupted by engine noise. These are genuine benefits, not merely perceptions to be dismissed. However, residents along the main roads outside the area report longer queues. They question why their experience is absent from the first evaluation.\n\nOne response is to enlarge the monitoring area. This is necessary, but a larger average alone may still obscure important differences. If a substantial improvement for several thousand people outweighs a smaller deterioration for a few hundred, the overall figure may look favorable. That calculation does not by itself establish whether the distribution of costs is acceptable, especially if those facing deterioration already experience the greatest pollution. Choosing a measurement boundary is therefore not a neutral substitute for considering fairness.\n\nTiming introduces another complication. Drivers may initially follow familiar routes and later change their journey, travel at another hour, or choose another means of transport. The first week may consequently exaggerate permanent disruption. Conversely, waiting for people to adapt cannot justify disregarding persistent problems indefinitely. An evaluation should state in advance when it will be repeated and which findings would trigger a change. Otherwise, every unfavorable result can be described as temporary and every favorable result as final.\n\nA credible process combines measurements with ways for affected people to challenge the interpretation. Residents may identify a school entrance that monitors have missed or explain why a supposedly convenient alternative route is unusable for someone with limited mobility. Their accounts do not replace traffic counts, but they can reveal what the counts fail to capture.\n\nThe choice is not simply between accepting every scheme and rejecting any scheme with uneven effects. It is between treating evaluation as a defense of a completed decision and using it to revise that decision. A project can retain its original aims while adding protection for neighboring roads, adjusting delivery access, or removing a barrier that causes disproportionate harm. A quieter street is worth pursuing, but the claim of success becomes stronger when it accounts for people beyond that street.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-obscure:e2j",
@@ -7780,8 +8231,20 @@
       "level": "eiken_pre1",
       "exampleSentence": "The training encourages compliance with safety rules.",
       "exampleTranslation": "その研修は安全規則の順守を促します。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_reading",
+          "chapterTitle": "英検準1級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre1_written_01_rp1-reading-b",
+          "problemIndex": 1,
+          "script": "Learning from a Pilot Without Copying It\n\nA successful pilot project is often presented as a miniature version of a future policy. If a service works for a small group, expanding it appears to be a matter of securing enough money and reproducing the same arrangement elsewhere. This picture is appealing to decision-makers because it turns uncertainty into an apparently manageable problem of scale. Unfortunately, the conditions that make a pilot succeed may be precisely those that cannot be reproduced simply by increasing its budget.\n\nConsider a pilot designed to help residents navigate complicated housing applications. A small team operates from a familiar community center, and its coordinator has long-standing relationships with both local families and officials. Staff can telephone a particular official to clarify an unusual case, and residents who distrust formal agencies may approach the coordinator because a neighbor recommends her. None of these features is captured by a description that says only \"advice provided at a local center.\"\n\nWhen the service is expanded, new offices may be established quickly, but relationships take time. The original coordinator may also have exercised considerable judgment about which rules could be interpreted flexibly and which required strict compliance. A standardized handbook can preserve some of this knowledge, but not necessarily the ability to recognize a new situation. If policymakers copy only the visible procedure, they may reproduce its appearance while losing the mechanisms that made it effective.\n\nThis does not render pilots useless. Rather, it changes what should be learned from them. Evaluation needs to identify not only whether an outcome improved but also how the improvement occurred. Were staff reducing delays because they simplified paperwork, because they knew whom to contact, or because the pilot received exceptional attention from senior officials? These explanations imply different prospects for expansion. A process that depends on an unusual level of senior attention may be harder to sustain than one based on a broadly applicable change in application forms.\n\nThere is also a danger in selecting only the most enthusiastic communities for a pilot and then treating their results as representative. Such communities may contribute unpaid labor, adapt buildings, or solve problems informally. These contributions can be legitimate strengths of the pilot, but they should not disappear from the account of its costs. Expansion to areas without the same resources may require additional funding or a different design.\n\nA useful next step may therefore be a deliberately varied second trial, rather than immediate nationwide adoption. This trial can test the service in places with different staffing, relationships, and levels of local support. Some adaptations should be permitted, provided the essential mechanism and the reason for each change are documented. Uniformity of every visible detail is not the same as fidelity to the project's purpose.\n\nUltimately, the most responsible claim for a pilot is rarely that it has eliminated uncertainty. It has made certain assumptions more testable and exposed conditions that deserve attention. Policymakers can then decide which elements should be preserved, which require investment, and which must change. Scaling a project intelligently is a process of learning across settings, not transporting a finished object from one place to another.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-compliance:e2j",
@@ -7817,8 +8280,20 @@
       "level": "eiken_pre1",
       "exampleSentence": "The council reviewed its procurement policy.",
       "exampleTranslation": "市議会は調達方針を見直しました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_cloze"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_cloze",
+          "chapterTitle": "英検準1級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_pre1_written_01_rp1-cloze-b",
+          "problemIndex": 1,
+          "script": "A Standard Is Not a Setting\n\nWhen a public agency purchases a digital service, adopting a technical standard can appear to resolve the question of accessibility. A supplier certifies that its product complies, the certificate is filed, and the agency proceeds with installation. Standards are indispensable because they establish common expectations that would otherwise have to be negotiated separately for every purchase. However, a certificate describes a product under specified conditions, not every future interaction between that product and its users.\n\nImagine a booking system that works correctly when tested in isolation. During installation, an agency adds a short time limit, requires documents available only as scanned images, and places essential instructions on another website. Each decision may seem administratively convenient. Taken together, they can create obstacles that were absent from the original test. A compliant product has not necessarily produced (22).\n\nUser testing after installation is therefore essential, but it must be organized carefully. Inviting only experienced staff to complete familiar tasks is unlikely to reveal the difficulties faced by someone using assistive technology or encountering the process for the first time. Agencies need feedback from people whose circumstances differ, and a procedure for acting on that feedback. (23), collecting complaints without assigning responsibility for resolving them merely documents exclusion rather than reducing it.\n\nThis does not mean that technical standards should be discarded. They provide a necessary baseline and make suppliers accountable for features within their control. The problem arises when meeting a baseline is treated as the end of the agency's responsibility. Accessibility is sustained through procurement, configuration, testing, and maintenance. An effective approach consequently requires agencies to (24), rather than regard accessibility as a property that can be purchased once and then forgotten.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-procurement:e2j",
@@ -8310,8 +8785,30 @@
       "level": "eiken_pre1",
       "exampleSentence": "The benefits do not justify the cost.",
       "exampleTranslation": "その利益では費用を正当化できません。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_reading",
+        "eiken_pre1_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_reading",
+          "chapterTitle": "英検準1級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre1_written_01_rp1-reading-a",
+          "problemIndex": 0,
+          "script": "Who Benefits from a Quieter Street?\n\nReducing traffic on a residential street may seem an uncomplicated improvement. Fewer vehicles can mean less noise, cleaner air, and more space for people walking or cycling. Yet the evaluation of a traffic scheme depends on where its boundaries are drawn. A street that becomes quieter may sit beside another that receives the diverted vehicles. An assessment limited to the first street can therefore tell a convincing but incomplete story.\n\nSuppose a district introduces barriers that prevent through-traffic from using several residential roads. Initial monitoring shows a sharp decline in vehicles inside the area. Residents living near the barriers report that children can cross more easily and that conversations are no longer interrupted by engine noise. These are genuine benefits, not merely perceptions to be dismissed. However, residents along the main roads outside the area report longer queues. They question why their experience is absent from the first evaluation.\n\nOne response is to enlarge the monitoring area. This is necessary, but a larger average alone may still obscure important differences. If a substantial improvement for several thousand people outweighs a smaller deterioration for a few hundred, the overall figure may look favorable. That calculation does not by itself establish whether the distribution of costs is acceptable, especially if those facing deterioration already experience the greatest pollution. Choosing a measurement boundary is therefore not a neutral substitute for considering fairness.\n\nTiming introduces another complication. Drivers may initially follow familiar routes and later change their journey, travel at another hour, or choose another means of transport. The first week may consequently exaggerate permanent disruption. Conversely, waiting for people to adapt cannot justify disregarding persistent problems indefinitely. An evaluation should state in advance when it will be repeated and which findings would trigger a change. Otherwise, every unfavorable result can be described as temporary and every favorable result as final.\n\nA credible process combines measurements with ways for affected people to challenge the interpretation. Residents may identify a school entrance that monitors have missed or explain why a supposedly convenient alternative route is unusable for someone with limited mobility. Their accounts do not replace traffic counts, but they can reveal what the counts fail to capture.\n\nThe choice is not simply between accepting every scheme and rejecting any scheme with uneven effects. It is between treating evaluation as a defense of a completed decision and using it to revise that decision. A project can retain its original aims while adding protection for neighboring roads, adjusting delivery access, or removing a barrier that causes disproportionate harm. A quieter street is worth pursuing, but the claim of success becomes stronger when it accounts for people beyond that street.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre1_written_01_short",
+          "chapterTitle": "英検準1級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_pre1_written_01_q05",
+          "problemIndex": 4,
+          "script": "The evidence remains (     ); it is too weak to justify a definite conclusion.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-justify:e2j",
@@ -10146,7 +10643,9 @@
       "exampleSentence": "The station is next to the bank.",
       "exampleTranslation": "駅は銀行の隣にあります。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_reading",
+        "eiken_4_written_01_reorder"
       ],
       "examples": [
         {
@@ -10155,6 +10654,33 @@
           "problemId": "eiken_4_reading_01_1",
           "problemIndex": 0,
           "script": "A changed meeting place\n\nTo the Garden Helpers\nWe planned to meet outside the station this Sunday. However, the road there will be closed. Please come to the library entrance instead. We will leave at 9:40 and walk to the garden together. Do not bring tools; Ms. Lane has enough for everyone. Bring a drink because the garden shop is closed in the morning.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-email",
+          "problemIndex": 1,
+          "script": "A Visit to the Sports Center\n\nFrom: Emi\nTo: Jack\nSubject: Saturday\n\nHi Jack,\nThanks for inviting me to the new sports center. I asked my father to drive us there, but he has to work on Saturday. Let us take the train instead. We can meet at West Station at 9:15. The train leaves at 9:30.\nI want to try badminton first. I have two rackets, so you do not have to bring one. There is a swimming pool too, but I cannot swim well. I would like to watch you swim after lunch.\nThe cafe at the center is closed this month. We should each bring something to eat and a drink. Please tell me if your sister wants to join us. My mother can pick us up at four.\nSee you,\nEmi",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-story",
+          "problemIndex": 2,
+          "script": "A Useful Map\n\nLast summer, Ren moved to a small town with his family. He did not know anyone there. He liked riding his bicycle, so he often went out to find new places. One afternoon, he found a beautiful pond behind the station. He wanted to tell his grandmother about it, but she did not know how to get there.\n\nRen decided to draw a map of the town. First, he visited the library to find an old map. It showed the streets, but it did not show the new park or the pond. Ren rode around town again and took notes. He also talked to people at the shops. They told him about a quiet garden and a small bakery.\n\nRen put these places on his map. He drew pictures and used large letters because his grandmother could not read small writing easily. When the map was finished, he took her to the pond. She found the way by looking at his map.\n\nLater, a librarian saw Ren's map. She asked him to make copies for the library. Ren was surprised, but he was happy to help. Now new people in town can take a free map from the library. Ren has also made friends with some children who used his map.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reorder",
+          "chapterTitle": "英検4級 リーディング 第1回｜語句整序",
+          "problemId": "eiken_4_written_01_q23",
+          "problemIndex": 2,
+          "script": "あなたは何時に駅に着きましたか。\nWhat time ( ____ / ____ / ____ / ____ )?\n1番目・3番目の語句番号の組を選んでください。\n\n1. at ／ 2. you arrive ／ 3. did ／ 4. the station",
           "audioUrl": "",
           "translation": ""
         }
@@ -10268,8 +10794,20 @@
       "level": "eiken_4",
       "exampleSentence": "The museum opens at ten.",
       "exampleTranslation": "その博物館は10時に開きます。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_4_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q07",
+          "problemIndex": 6,
+          "script": "A: How did you get to the museum?\nB: (     ) train.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-4-museum:e2j",
@@ -10306,7 +10844,8 @@
       "exampleSentence": "I studied at the library.",
       "exampleTranslation": "図書館で勉強しました。",
       "chapterIds": [
-        "eiken_4_reading_01"
+        "eiken_4_reading_01",
+        "eiken_4_written_01_reading"
       ],
       "examples": [
         {
@@ -10315,6 +10854,24 @@
           "problemId": "eiken_4_reading_01_1",
           "problemIndex": 0,
           "script": "A changed meeting place\n\nTo the Garden Helpers\nWe planned to meet outside the station this Sunday. However, the road there will be closed. Please come to the library entrance instead. We will leave at 9:40 and walk to the garden together. Do not bring tools; Ms. Lane has enough for everyone. Bring a drink because the garden shop is closed in the morning.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-notice",
+          "problemIndex": 0,
+          "script": "Saturday Book Sale\n\nOur school library will sell old books this Saturday. The sale is from 10 a.m. to noon in Room 2. Each book is 100 yen. Bring your own bag. The money will help us buy new books for young children. You do not need to book a place.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_reading",
+          "chapterTitle": "英検4級 リーディング 第1回｜読解",
+          "problemId": "eiken_4_written_01_r4-story",
+          "problemIndex": 2,
+          "script": "A Useful Map\n\nLast summer, Ren moved to a small town with his family. He did not know anyone there. He liked riding his bicycle, so he often went out to find new places. One afternoon, he found a beautiful pond behind the station. He wanted to tell his grandmother about it, but she did not know how to get there.\n\nRen decided to draw a map of the town. First, he visited the library to find an old map. It showed the streets, but it did not show the new park or the pond. Ren rode around town again and took notes. He also talked to people at the shops. They told him about a quiet garden and a small bakery.\n\nRen put these places on his map. He drew pictures and used large letters because his grandmother could not read small writing easily. When the map was finished, he took her to the pond. She found the way by looking at his map.\n\nLater, a librarian saw Ren's map. She asked him to make copies for the library. Ren was surprised, but he was happy to help. Now new people in town can take a free map from the library. Ren has also made friends with some children who used his map.",
           "audioUrl": "",
           "translation": ""
         }
@@ -10614,7 +11171,8 @@
       "exampleSentence": "I saw him yesterday.",
       "exampleTranslation": "昨日彼に会いました。",
       "chapterIds": [
-        "eiken_4_vocabulary_01"
+        "eiken_4_vocabulary_01",
+        "eiken_4_written_01_short"
       ],
       "examples": [
         {
@@ -10623,6 +11181,15 @@
           "problemId": "eiken_4_vocabulary_01_1",
           "problemIndex": 0,
           "script": "Yesterday our team ( ___ ) a wooden sign for the school garden. It is beside the gate now.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_4_written_01_short",
+          "chapterTitle": "英検4級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_4_written_01_q08",
+          "problemIndex": 7,
+          "script": "There (     ) a lot of people in the park yesterday.",
           "audioUrl": "",
           "translation": ""
         }
@@ -11255,9 +11822,19 @@
       "exampleSentence": "The centre serves the local community.",
       "exampleTranslation": "その施設は地域社会に役立っています。",
       "chapterIds": [
+        "eiken_3_written_01_reading",
         "eiken_3_vocabulary_01"
       ],
       "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-notice",
+          "problemIndex": 0,
+          "script": "Make a Weather Station\n\nScience Club Open Day\nSaturday, May 18, 1:00–3:00 p.m.\nCommunity Hall, Room B\n\nLearn to build a simple weather station from things you can find at home. This event is for children aged ten to fifteen. Members of the science club will help you, so you do not need any experience. Please bring an empty plastic bottle with its cap. All other materials will be provided.\n\nOnly twenty children can join. Send your name and age to the club by May 12. Parents may watch, but they cannot take part in the activity. The event will be held indoors even if it rains.",
+          "audioUrl": "",
+          "translation": ""
+        },
         {
           "chapterId": "eiken_3_vocabulary_01",
           "chapterTitle": "英検3級 語彙・文法練習",
@@ -11389,8 +11966,20 @@
       "level": "eiken_3",
       "exampleSentence": "I expect the bus to arrive soon.",
       "exampleTranslation": "バスはもうすぐ着くと思います。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-expect:e2j",
@@ -11525,7 +12114,8 @@
       "exampleSentence": "I asked several questions.",
       "exampleTranslation": "いくつか質問しました。",
       "chapterIds": [
-        "eiken_3_reading_01"
+        "eiken_3_reading_01",
+        "eiken_3_written_01_reading"
       ],
       "examples": [
         {
@@ -11534,6 +12124,15 @@
           "problemId": "eiken_3_reading_01_2",
           "problemIndex": 1,
           "script": "A visitor’s question\n\nWhen Owen began helping at a small local museum, he learned the names of many old tools. He expected visitors to ask about them. Instead, several children asked how people used the tools in daily life. Owen could name each tool but could not explain its use clearly. The next week, he asked an older volunteer to show him. Together they made short demonstration videos. Now Owen plays these videos during his tours. He still introduces the names, but he spends more time showing what the tools actually did.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
           "audioUrl": "",
           "translation": ""
         }
@@ -11610,8 +12209,20 @@
       "level": "eiken_3",
       "exampleSentence": "We discovered a small shop.",
       "exampleTranslation": "小さな店を見つけました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-discover:e2j",
@@ -11721,8 +12332,20 @@
       "level": "eiken_3",
       "exampleSentence": "Please send me the photo.",
       "exampleTranslation": "その写真を私に送ってください。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-notice",
+          "problemIndex": 0,
+          "script": "Make a Weather Station\n\nScience Club Open Day\nSaturday, May 18, 1:00–3:00 p.m.\nCommunity Hall, Room B\n\nLearn to build a simple weather station from things you can find at home. This event is for children aged ten to fifteen. Members of the science club will help you, so you do not need any experience. Please bring an empty plastic bottle with its cap. All other materials will be provided.\n\nOnly twenty children can join. Send your name and age to the club by May 12. Parents may watch, but they cannot take part in the activity. The event will be held indoors even if it rains.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-send:e2j",
@@ -11832,8 +12455,20 @@
       "level": "eiken_3",
       "exampleSentence": "We can save water at home.",
       "exampleTranslation": "家庭で節水できます。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_3_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_3_written_01_reading",
+          "chapterTitle": "英検3級 リーディング 第1回｜読解",
+          "problemId": "eiken_3_written_01_r3-story",
+          "problemIndex": 2,
+          "script": "The Second Repair\n\nWhen Oliver's headphones stopped working, he put them in a drawer and planned to buy new ones. Then he saw a poster for a repair workshop at the library. Anyone could bring a broken object and learn how to repair it with help from a volunteer. Oliver thought he could save some money, so he decided to go.\n\nAt the workshop, a volunteer named Grace checked his headphones. The problem was a small wire inside them. Oliver expected Grace to do all the work, but she gave him a tool and explained how to use it safely. He was nervous at first. After several tries, however, he connected the wire. The headphones worked again.\n\nGrace explained that repairing things could reduce the amount of rubbish people threw away. Oliver had never thought about this before. He began looking around his house for other broken things. He found a desk lamp that his sister had stopped using. It was not the same kind of problem as the headphones, so he could not fix it immediately.\n\nThe next month, Oliver returned to the workshop with the lamp. This time he asked Grace to show him how to discover the problem, rather than repair it for him. They found that a switch needed cleaning. Oliver cleaned it, and the lamp came on.\n\nNow Oliver helps prepare the room before each workshop. He does not know enough to repair every object, but he can welcome visitors and explain what to expect. He tells them that learning is more important than finishing quickly. His sister uses the lamp again, and Oliver has kept the poster that first brought him to the library.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-3-save:e2j",
@@ -12486,7 +13121,9 @@
       "exampleSentence": "Delivery takes two days.",
       "exampleTranslation": "配達には2日かかります。",
       "chapterIds": [
-        "eiken_pre2_reading_01"
+        "eiken_pre2_reading_01",
+        "eiken_pre2_written_01_reading",
+        "eiken_pre2_written_01_conversation"
       ],
       "examples": [
         {
@@ -12495,6 +13132,24 @@
           "problemId": "eiken_pre2_reading_01_1",
           "problemIndex": 0,
           "script": "Borrowing tools, not buying them\n\nAt the Willow Tool Room, residents can borrow things such as drills and long ladders. At first, people chose an item online and collected it whenever the room was open. Volunteers soon noticed a problem: some people arrived without knowing how to carry a large item safely. The room now asks borrowers to describe their transport plans before a booking is confirmed. A volunteer may suggest a smaller item or a different collection time. The room has not introduced a delivery service. Its aim is to keep borrowing practical without asking volunteers to travel around town. The new question adds a step to booking, but fewer borrowers now have to return home empty-handed.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre2_written_01_conversation",
+          "chapterTitle": "英検準2級 リーディング 第1回｜会話文の空所補充",
+          "problemId": "eiken_pre2_written_01_q17",
+          "problemIndex": 1,
+          "script": "A: Is there any way to change my delivery date?\nB: (     ) Your package has not left our warehouse yet.\nA: Could you send it on Monday instead?",
           "audioUrl": "",
           "translation": ""
         }
@@ -12777,9 +13432,19 @@
       "exampleSentence": "Please complete the form.",
       "exampleTranslation": "用紙の記入を完了してください。",
       "chapterIds": [
+        "eiken_pre2_written_01_reading",
         "eiken_pre2_vocabulary_01"
       ],
       "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-article",
+          "problemIndex": 1,
+          "script": "A Museum You Can Hear\n\nAt the Riverside Museum, most visitors once followed signs from one glass case to another. They read short descriptions of old tools, clothes, and furniture, then moved on. The objects were interesting, but the museum staff noticed that many visitors did not stay long. Few people understood how the objects had been used in daily life.\n\nTo change this, the museum invited local residents to record stories about familiar objects. One woman described the sound of the sewing machine her mother used at home. A retired baker explained why a wooden tray had a particular shape. These recordings were added to a small audio player that visitors could borrow at the entrance. The aim was not to replace the written descriptions but to provide another way to explore the collection.\n\nThe first recordings were long and difficult to follow. Staff had assumed that visitors would listen to complete interviews. In practice, people wanted to move at their own speed. The museum therefore divided the interviews into short sections. Each section focused on one object and lasted less than two minutes. Visitors could choose only the stories that interested them.\n\nThe new system also changed the relationship between the museum and the town. Residents who had rarely visited came to hear their relatives' recordings. Some brought photographs or offered to share their own memories. The museum checked these stories against old records before using them, because personal memories are not always exact.\n\nA visitor survey later showed that people were spending more time in the museum. However, the director did not regard longer visits as the only sign of success. She was more pleased that visitors were asking new questions about everyday life in the past. The museum now plans to add stories from younger residents as well. The staff believe that objects which seem ordinary today may help future visitors understand the present.",
+          "audioUrl": "",
+          "translation": ""
+        },
         {
           "chapterId": "eiken_pre2_vocabulary_01",
           "chapterTitle": "英検準2級 語彙・文法練習",
@@ -12862,8 +13527,20 @@
       "level": "eiken_pre2",
       "exampleSentence": "They allow visitors to take photos.",
       "exampleTranslation": "彼らは来訪者の写真撮影を認めています。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_short",
+          "chapterTitle": "英検準2級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_pre2_written_01_q03",
+          "problemIndex": 2,
+          "script": "The museum does not allow visitors (     ) photographs in this room.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-allow:e2j",
@@ -12899,8 +13576,30 @@
       "level": "eiken_pre2",
       "exampleSentence": "We left early to avoid traffic.",
       "exampleTranslation": "渋滞を避けるため早く出発しました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading",
+        "eiken_pre2_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre2_written_01_short",
+          "chapterTitle": "英検準2級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_pre2_written_01_q15",
+          "problemIndex": 14,
+          "script": "Before you sign the agreement, read it (     ) to avoid misunderstandings.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-avoid:e2j",
@@ -13550,8 +14249,20 @@
       "level": "eiken_pre2",
       "exampleSentence": "We walked instead of taking a bus.",
       "exampleTranslation": "バスに乗る代わりに歩きました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2_written_01_reading",
+          "chapterTitle": "英検準2級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre2_written_01_rp2-email",
+          "problemIndex": 0,
+          "script": "Changes to the Food Festival\n\nFrom: Luis, Festival Coordinator\nTo: Volunteers\nSubject: Please read before Saturday\n\nDear volunteers,\nThank you for helping at our international food festival. There have been two important changes. First, heavy rain is expected, so the festival will take place inside the community center rather than in the park. The center has enough space for all the food tables, but the entrance is narrow. Please arrive at the back door to help move supplies.\n\nSecond, the local bus company cannot provide the extra morning service we requested. Some visitors may arrive later than planned. We will therefore begin serving food at 11:30 instead of 11:00. Volunteers should still arrive at 9:00, as originally arranged. We need that time to set up the tables and check the kitchen equipment.\n\nIf you are helping at a food table, please bring a clean apron. We will provide gloves and name tags. Volunteers at the information desk do not need aprons. Those who have not yet chosen a job should contact me by Thursday evening.\n\nFinally, please avoid bringing your own cars because parking spaces must be kept for delivery vehicles. The number 6 bus stops directly outside the center. I will send a map with the entrance marked tomorrow.\n\nBest wishes,\nLuis",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-instead-of:e2j",
@@ -14791,8 +15502,20 @@
       "level": "eiken_pre2plus",
       "exampleSentence": "You may join as long as you register first.",
       "exampleTranslation": "先に登録すれば参加できます。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2plus_written_01_short"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2plus_written_01_short",
+          "chapterTitle": "英検準2級プラス リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_pre2plus_written_01_q07",
+          "problemIndex": 6,
+          "script": "The printer works well as long as it is (     ) regularly.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-plus-as-long-as:e2j",
@@ -14828,8 +15551,20 @@
       "level": "eiken_pre2plus",
       "exampleSentence": "She came even though she was busy.",
       "exampleTranslation": "忙しかったにもかかわらず彼女は来ました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre2plus_written_01_cloze"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre2plus_written_01_cloze",
+          "chapterTitle": "英検準2級プラス リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_pre2plus_written_01_rplus-cloze-a",
+          "problemIndex": 0,
+          "script": "Borrowing More Than Books\n\nA small library wanted to attract residents who rarely borrowed books. Instead of expanding its shelves, it began lending useful household objects, including a sewing machine and a set of gardening tools. The staff hoped that residents could try an object before deciding whether to buy one. People could also borrow items they needed only occasionally.\n\nAt first, the library accepted almost every donated object. This created an unexpected problem. Some items were missing parts, while others required repairs that the staff could not perform. The service soon became difficult to manage. The library therefore introduced a rule: every object had to be inspected before it was accepted. (18), donations became easier to handle, even though the library received fewer of them.\n\nAnother concern was that borrowers might return objects late. The library considered charging large fines, but staff worried this would discourage people from trying the service. Instead, borrowers received a reminder a day before an item was due. If they needed more time, they could request an extension unless someone else was waiting. The library found that clear communication was (19).\n\nThe service is still small. Staff have not claimed that it will replace shopping or solve all the town's waste problems. However, residents have started discussing which objects could usefully be shared. For the library, one important result has been (20). People who had never met now exchange advice about using and repairing the objects they borrow.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-2-plus-even-though:e2j",
@@ -14866,7 +15601,8 @@
       "exampleSentence": "The building needs regular maintenance.",
       "exampleTranslation": "その建物には定期的な保守が必要です。",
       "chapterIds": [
-        "eiken_2_reading_01"
+        "eiken_2_reading_01",
+        "eiken_2_written_01_reading"
       ],
       "examples": [
         {
@@ -14875,6 +15611,15 @@
           "problemId": "eiken_2_reading_01_1",
           "problemIndex": 0,
           "script": "When fewer messages are not better\n\nA housing association introduced an online repair form to reduce the time staff spent answering telephone calls. After three months, calls had fallen sharply, and managers initially described the change as a success. A maintenance worker, however, noticed that some serious problems were reaching the repair team later than before. Interviews suggested that residents sometimes abandoned the form because it required them to identify the technical category of a fault. They could describe a leaking ceiling but did not know which category to choose. The association simplified the form and restored a clearly advertised telephone option. Calls increased again, but fewer urgent repairs were reported late. The form had still saved staff time on routine requests. What changed was the measure of success: managers began examining how quickly problems reached the appropriate team, rather than treating every avoided call as a benefit.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_reading",
+          "chapterTitle": "英検2級 リーディング 第1回｜読解",
+          "problemId": "eiken_2_written_01_r2-article",
+          "problemIndex": 1,
+          "script": "A Space for the River\n\nFor many years, the people of Bellford regarded their river mainly as a threat. High walls separated it from nearby streets, and a narrow channel carried water quickly through the center of town. The design had protected buildings during many ordinary storms. However, as the town expanded, more roofs and paved surfaces prevented rain from soaking into the ground. Water reached the river faster, and maintaining safety became increasingly difficult.\n\nOne response would have been to make the walls higher. Instead, planners proposed allowing the river more room at a former industrial site upstream. Old warehouses there had been removed, leaving land that could temporarily hold water during heavy rain. In dry weather, most of the area could be used as a public park. The proposal did not eliminate the need for walls elsewhere; it was intended to complement existing defenses.\n\nSome residents objected that a park designed to flood was a waste of money. They feared that equipment would be damaged and the area would be closed too often. The design team responded by placing expensive electrical equipment above expected water levels and choosing surfaces that could be cleaned after flooding. Path signs explained that lower routes might close, while a higher route would remain available under most conditions.\n\nA more difficult question concerned who would benefit. The park was near a neighborhood with few green spaces, but many people living there had not attended the early planning meetings. The meetings had been held during working hours and relied on technical presentations. The town changed the schedule and used a temporary model that residents could walk around. This led to requests for better lighting, places to sit, and a safer crossing to the park.\n\nAfter the park opened, a severe storm tested the design. Water spread across the lower ground as intended, and some paths were closed for cleaning afterward. Officials resisted describing this as a failure of the park: temporary flooding was part of its protective function. At the same time, they acknowledged that the cleanup had taken longer than expected and revised the maintenance plan.\n\nBellford's experience illustrates why adapting to floods involves more than building a single structure. The physical design, the ability to maintain it, and the ways people understand and use it all matter. A project can serve several purposes, but those purposes need to be explained honestly. Calling a floodable park permanently dry would create false expectations; treating it only as empty storage would overlook its everyday value to residents.",
           "audioUrl": "",
           "translation": ""
         }
@@ -14915,7 +15660,9 @@
       "exampleSentence": "We need help with a technical problem.",
       "exampleTranslation": "技術的な問題について助けが必要です。",
       "chapterIds": [
-        "eiken_2_reading_01"
+        "eiken_2_reading_01",
+        "eiken_2_written_01_cloze",
+        "eiken_2_written_01_reading"
       ],
       "examples": [
         {
@@ -14924,6 +15671,24 @@
           "problemId": "eiken_2_reading_01_1",
           "problemIndex": 0,
           "script": "When fewer messages are not better\n\nA housing association introduced an online repair form to reduce the time staff spent answering telephone calls. After three months, calls had fallen sharply, and managers initially described the change as a success. A maintenance worker, however, noticed that some serious problems were reaching the repair team later than before. Interviews suggested that residents sometimes abandoned the form because it required them to identify the technical category of a fault. They could describe a leaking ceiling but did not know which category to choose. The association simplified the form and restored a clearly advertised telephone option. Calls increased again, but fewer urgent repairs were reported late. The form had still saved staff time on routine requests. What changed was the measure of success: managers began examining how quickly problems reached the appropriate team, rather than treating every avoided call as a benefit.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_cloze",
+          "chapterTitle": "英検2級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_2_written_01_r2-cloze-a",
+          "problemIndex": 0,
+          "script": "When Saving Water Changes Habits\n\nA housing cooperative fitted low-flow shower heads in its apartments. The equipment was designed to use less water each minute while still providing a comfortable shower. Based on the devices' technical specifications, the cooperative expected a substantial reduction in total water use. However, the first three months produced a smaller reduction than expected.\n\nInterviews with residents helped explain the difference. Some people said the new shower felt pleasant and therefore stayed in it longer. Others believed the equipment made water use so small that there was little reason to worry about time. In both cases, a technical improvement had been partly offset by (18). The equipment was working as designed, but this alone did not determine the final result.\n\nThe cooperative did not remove the shower heads or blame residents for behaving badly. Instead, it shared simple information about the difference between water used per minute and water used during an entire shower. Residents were also given a way to see their own household's weekly use, rather than compare themselves with a single average household. (19), a family with several children would naturally use more water than someone living alone.\n\nLater results suggested that combining efficient equipment with understandable feedback was more useful than relying on equipment alone. The lesson was not that efficient technology has no value. Rather, organizations should (20) when estimating its benefits. A device can make conservation easier, but the choices people make around it remain important.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_reading",
+          "chapterTitle": "英検2級 リーディング 第1回｜読解",
+          "problemId": "eiken_2_written_01_r2-article",
+          "problemIndex": 1,
+          "script": "A Space for the River\n\nFor many years, the people of Bellford regarded their river mainly as a threat. High walls separated it from nearby streets, and a narrow channel carried water quickly through the center of town. The design had protected buildings during many ordinary storms. However, as the town expanded, more roofs and paved surfaces prevented rain from soaking into the ground. Water reached the river faster, and maintaining safety became increasingly difficult.\n\nOne response would have been to make the walls higher. Instead, planners proposed allowing the river more room at a former industrial site upstream. Old warehouses there had been removed, leaving land that could temporarily hold water during heavy rain. In dry weather, most of the area could be used as a public park. The proposal did not eliminate the need for walls elsewhere; it was intended to complement existing defenses.\n\nSome residents objected that a park designed to flood was a waste of money. They feared that equipment would be damaged and the area would be closed too often. The design team responded by placing expensive electrical equipment above expected water levels and choosing surfaces that could be cleaned after flooding. Path signs explained that lower routes might close, while a higher route would remain available under most conditions.\n\nA more difficult question concerned who would benefit. The park was near a neighborhood with few green spaces, but many people living there had not attended the early planning meetings. The meetings had been held during working hours and relied on technical presentations. The town changed the schedule and used a temporary model that residents could walk around. This led to requests for better lighting, places to sit, and a safer crossing to the park.\n\nAfter the park opened, a severe storm tested the design. Water spread across the lower ground as intended, and some paths were closed for cleaning afterward. Officials resisted describing this as a failure of the park: temporary flooding was part of its protective function. At the same time, they acknowledged that the cleanup had taken longer than expected and revised the maintenance plan.\n\nBellford's experience illustrates why adapting to floods involves more than building a single structure. The physical design, the ability to maintain it, and the ways people understand and use it all matter. A project can serve several purposes, but those purposes need to be explained honestly. Calling a floodable park permanently dry would create false expectations; treating it only as empty storage would overlook its everyday value to residents.",
           "audioUrl": "",
           "translation": ""
         }
@@ -15245,7 +16010,8 @@
       "exampleTranslation": "私たちは異なる結論に達しました。",
       "chapterIds": [
         "eiken_2_listening_01",
-        "eiken_2_vocabulary_01"
+        "eiken_2_vocabulary_01",
+        "eiken_2_written_01_short"
       ],
       "examples": [
         {
@@ -15263,6 +16029,15 @@
           "problemId": "eiken_2_vocabulary_01_1",
           "problemIndex": 0,
           "script": "The trial involved only one neighbourhood, so the researchers described their conclusion as ( ___ ) rather than final.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_2_written_01_short",
+          "chapterTitle": "英検2級 リーディング 第1回｜短文の語句空所補充",
+          "problemId": "eiken_2_written_01_q14",
+          "problemIndex": 13,
+          "script": "His argument is based on the (     ) that energy prices will remain stable. If they rise, his conclusion may be wrong.",
           "audioUrl": "",
           "translation": ""
         }
@@ -15524,8 +16299,20 @@
       "level": "eiken_2",
       "exampleSentence": "Do not assume that everyone agrees.",
       "exampleTranslation": "全員が賛成していると思い込まないでください。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_2_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_2_written_01_reading",
+          "chapterTitle": "英検2級 リーディング 第1回｜読解",
+          "problemId": "eiken_2_written_01_r2-email",
+          "problemIndex": 0,
+          "script": "Trial of the Flexible Workspace\n\nFrom: Priya Shah, Facilities Manager\nTo: Staff in the West Building\nSubject: Four-week workspace trial\n\nDear colleagues,\nFrom next Monday, the third-floor meeting room will be used as a quiet workspace during the morning. This is a four-week trial, not a permanent change. Staff feedback has shown that some tasks require longer periods without interruption than our open office currently allows. The room will remain available for meetings after 1 p.m.\n\nYou may reserve a desk through the internal booking page up to two working days ahead. To give more people a chance to participate, please book no more than two mornings per week. If you no longer need a booking, cancel it promptly. Desks cannot be reserved by leaving personal belongings overnight.\n\nDuring the trial, the room is intended for individual work. Please take telephone and video calls elsewhere, even if you use headphones. There will be no charge to your department for using the room. However, this does not include printing costs, which will continue to be charged in the usual way.\n\nWe will record how often desks are used, but the number of bookings will not be our only measure of success. At the end of the trial, participants and their team leaders will be asked whether the arrangement helped them complete suitable tasks and whether it created difficulties for their teams. We also want to hear from staff who wanted to participate but could not find a suitable time.\n\nPlease do not assume that the booking rules will remain unchanged after the trial. They will be reviewed along with the room's future use. Send any urgent concerns directly to me rather than waiting for the final survey.\n\nPriya",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-2-assume:e2j",
@@ -16079,8 +16866,20 @@
       "level": "eiken_pre1",
       "exampleSentence": "The committee assessed the risks.",
       "exampleTranslation": "委員会は危険性を評価しました。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_cloze"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_cloze",
+          "chapterTitle": "英検準1級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_pre1_written_01_rp1-cloze-a",
+          "problemIndex": 0,
+          "script": "The Silence in the Archive\n\nHistorical collections are sometimes treated as though they were transparent windows onto the past. A researcher asks a question, locates the relevant papers, and extracts an answer. Yet the existence of a document reflects a chain of decisions: someone had to produce it, someone had to retain it, and an institution eventually had to consider it worth preserving. Groups whose daily activities generated few written records may consequently be difficult to study, even when their contribution to a community was substantial.\n\nConsider a project reconstructing the history of a neighborhood market. Official files might contain detailed records of licenses and inspections, while offering almost nothing about informal arrangements through which traders shared transport or helped a sick colleague. If researchers relied exclusively on official files, they could (19). What was easiest to document would acquire disproportionate importance simply because it had survived in an accessible form.\n\nOral interviews can help broaden such a project, but they do not provide an uncomplicated solution. People may interpret earlier experiences through the concerns of the present. Different accounts may disagree without either speaker deliberately misleading the interviewer. (20), recordings should be accompanied by information about when and under what circumstances they were made. This enables later users to assess the accounts instead of treating them as context-free statements.\n\nAn honest archive therefore makes its own limitations visible. It can identify gaps, explain selection policies, and preserve disagreements rather than forcing every account into a single version of events. This does not make historical research impossible. On the contrary, recognizing how a collection was assembled allows researchers to (21). The aim is not to abandon evidence but to ask more precise questions of it.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-assess:e2j",
@@ -16116,8 +16915,30 @@
       "level": "eiken_pre1",
       "exampleSentence": "The project requires substantial funding.",
       "exampleTranslation": "その企画には相当な資金が必要です。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_cloze",
+        "eiken_pre1_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_cloze",
+          "chapterTitle": "英検準1級 リーディング 第1回｜長文の語句空所補充",
+          "problemId": "eiken_pre1_written_01_rp1-cloze-a",
+          "problemIndex": 0,
+          "script": "The Silence in the Archive\n\nHistorical collections are sometimes treated as though they were transparent windows onto the past. A researcher asks a question, locates the relevant papers, and extracts an answer. Yet the existence of a document reflects a chain of decisions: someone had to produce it, someone had to retain it, and an institution eventually had to consider it worth preserving. Groups whose daily activities generated few written records may consequently be difficult to study, even when their contribution to a community was substantial.\n\nConsider a project reconstructing the history of a neighborhood market. Official files might contain detailed records of licenses and inspections, while offering almost nothing about informal arrangements through which traders shared transport or helped a sick colleague. If researchers relied exclusively on official files, they could (19). What was easiest to document would acquire disproportionate importance simply because it had survived in an accessible form.\n\nOral interviews can help broaden such a project, but they do not provide an uncomplicated solution. People may interpret earlier experiences through the concerns of the present. Different accounts may disagree without either speaker deliberately misleading the interviewer. (20), recordings should be accompanied by information about when and under what circumstances they were made. This enables later users to assess the accounts instead of treating them as context-free statements.\n\nAn honest archive therefore makes its own limitations visible. It can identify gaps, explain selection policies, and preserve disagreements rather than forcing every account into a single version of events. This does not make historical research impossible. On the contrary, recognizing how a collection was assembled allows researchers to (21). The aim is not to abandon evidence but to ask more precise questions of it.",
+          "audioUrl": "",
+          "translation": ""
+        },
+        {
+          "chapterId": "eiken_pre1_written_01_reading",
+          "chapterTitle": "英検準1級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre1_written_01_rp1-reading-a",
+          "problemIndex": 0,
+          "script": "Who Benefits from a Quieter Street?\n\nReducing traffic on a residential street may seem an uncomplicated improvement. Fewer vehicles can mean less noise, cleaner air, and more space for people walking or cycling. Yet the evaluation of a traffic scheme depends on where its boundaries are drawn. A street that becomes quieter may sit beside another that receives the diverted vehicles. An assessment limited to the first street can therefore tell a convincing but incomplete story.\n\nSuppose a district introduces barriers that prevent through-traffic from using several residential roads. Initial monitoring shows a sharp decline in vehicles inside the area. Residents living near the barriers report that children can cross more easily and that conversations are no longer interrupted by engine noise. These are genuine benefits, not merely perceptions to be dismissed. However, residents along the main roads outside the area report longer queues. They question why their experience is absent from the first evaluation.\n\nOne response is to enlarge the monitoring area. This is necessary, but a larger average alone may still obscure important differences. If a substantial improvement for several thousand people outweighs a smaller deterioration for a few hundred, the overall figure may look favorable. That calculation does not by itself establish whether the distribution of costs is acceptable, especially if those facing deterioration already experience the greatest pollution. Choosing a measurement boundary is therefore not a neutral substitute for considering fairness.\n\nTiming introduces another complication. Drivers may initially follow familiar routes and later change their journey, travel at another hour, or choose another means of transport. The first week may consequently exaggerate permanent disruption. Conversely, waiting for people to adapt cannot justify disregarding persistent problems indefinitely. An evaluation should state in advance when it will be repeated and which findings would trigger a change. Otherwise, every unfavorable result can be described as temporary and every favorable result as final.\n\nA credible process combines measurements with ways for affected people to challenge the interpretation. Residents may identify a school entrance that monitors have missed or explain why a supposedly convenient alternative route is unusable for someone with limited mobility. Their accounts do not replace traffic counts, but they can reveal what the counts fail to capture.\n\nThe choice is not simply between accepting every scheme and rejecting any scheme with uneven effects. It is between treating evaluation as a defense of a completed decision and using it to revise that decision. A project can retain its original aims while adding protection for neighboring roads, adjusting delivery access, or removing a barrier that causes disproportionate harm. A quieter street is worth pursuing, but the claim of success becomes stronger when it accounts for people beyond that street.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-substantial:e2j",
@@ -16498,8 +17319,20 @@
       "level": "eiken_pre1",
       "exampleSentence": "There is a persistent shortage of staff.",
       "exampleTranslation": "職員不足が続いています。",
-      "chapterIds": [],
-      "examples": [],
+      "chapterIds": [
+        "eiken_pre1_written_01_reading"
+      ],
+      "examples": [
+        {
+          "chapterId": "eiken_pre1_written_01_reading",
+          "chapterTitle": "英検準1級 リーディング 第1回｜読解",
+          "problemId": "eiken_pre1_written_01_rp1-reading-a",
+          "problemIndex": 0,
+          "script": "Who Benefits from a Quieter Street?\n\nReducing traffic on a residential street may seem an uncomplicated improvement. Fewer vehicles can mean less noise, cleaner air, and more space for people walking or cycling. Yet the evaluation of a traffic scheme depends on where its boundaries are drawn. A street that becomes quieter may sit beside another that receives the diverted vehicles. An assessment limited to the first street can therefore tell a convincing but incomplete story.\n\nSuppose a district introduces barriers that prevent through-traffic from using several residential roads. Initial monitoring shows a sharp decline in vehicles inside the area. Residents living near the barriers report that children can cross more easily and that conversations are no longer interrupted by engine noise. These are genuine benefits, not merely perceptions to be dismissed. However, residents along the main roads outside the area report longer queues. They question why their experience is absent from the first evaluation.\n\nOne response is to enlarge the monitoring area. This is necessary, but a larger average alone may still obscure important differences. If a substantial improvement for several thousand people outweighs a smaller deterioration for a few hundred, the overall figure may look favorable. That calculation does not by itself establish whether the distribution of costs is acceptable, especially if those facing deterioration already experience the greatest pollution. Choosing a measurement boundary is therefore not a neutral substitute for considering fairness.\n\nTiming introduces another complication. Drivers may initially follow familiar routes and later change their journey, travel at another hour, or choose another means of transport. The first week may consequently exaggerate permanent disruption. Conversely, waiting for people to adapt cannot justify disregarding persistent problems indefinitely. An evaluation should state in advance when it will be repeated and which findings would trigger a change. Otherwise, every unfavorable result can be described as temporary and every favorable result as final.\n\nA credible process combines measurements with ways for affected people to challenge the interpretation. Residents may identify a school entrance that monitors have missed or explain why a supposedly convenient alternative route is unusable for someone with limited mobility. Their accounts do not replace traffic counts, but they can reveal what the counts fail to capture.\n\nThe choice is not simply between accepting every scheme and rejecting any scheme with uneven effects. It is between treating evaluation as a defense of a completed decision and using it to revise that decision. A project can retain its original aims while adding protection for neighboring roads, adjusting delivery access, or removing a barrier that causes disproportionate harm. A quieter street is worth pursuing, but the claim of success becomes stronger when it accounts for people beyond that street.",
+          "audioUrl": "",
+          "translation": ""
+        }
+      ],
       "questions": [
         {
           "id": "eiken-word-pre-1-persistent:e2j",

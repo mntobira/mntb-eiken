@@ -17,6 +17,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import pymupdf
 from PIL import Image
 from written_print_layout import build_questions, build_answer_sheet, CIRCLED
+from reading_print_layout import build_reading_questions
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / 'public'
@@ -40,15 +41,6 @@ def line_table(rows, widths):
  t.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),12),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
  return t
 
-class AnswerRow(Flowable):
- def __init__(self, number):
-  Flowable.__init__(self);self.number=number;self.width=480;self.height=21
- def draw(self):
-  c=self.canv;c.setFont('Helvetica',11);c.drawString(8,6,f'{self.number:02}')
-  for n in range(4):
-   x=75+n*58;c.circle(x,10,7,stroke=1,fill=0);c.setFont('Helvetica',9);c.drawCentredString(x,7,str(n+1))
-  c.setStrokeColor(colors.HexColor('#bbbbbb'));c.setLineWidth(.3);c.line(0,0,340,0)
-
 def build(path, story, label, part, exam):
  def footer(c,doc):
   c.saveState();c.setFillColor(colors.black);c.setStrokeColor(colors.black);c.setLineWidth(.4)
@@ -65,28 +57,36 @@ for directory in ['prints','prints/thumbs','prints/previews']:
  (PUBLIC/directory).mkdir(exist_ok=True,parents=True)
 for exam in DATA['booklets']:
  # Only release layouts actually reviewed; do not silently render unseen higher-grade formats.
- if exam['grade']!='eiken_5': raise ValueError('Higher-grade reading/writing print layout needs separate review before release')
+ if any(q['kind']!='choice' for q in exam['items']):raise ValueError('This pipeline releases reading-only question sets')
  label=labels[exam['grade']];item_id='print_'+exam['id'];base=PUBLIC/'prints'/item_id
  questions=exam['items'];minutes=DATA['blueprints'][exam['grade']]['minutes']
- story=[Spacer(1,44),p('MANATOBI / ORIGINAL PRACTICE','en'),p(f'{label}\n筆記トレーニング','title'),p(f'第{exam["round"]}回　問題冊子','heading'),p(f'目安 {minutes}分 ／ 全{len(questions)}問','heading'),Spacer(1,16)]
+ scope_label='リーディング' if exam.get('scope')=='reading' else '筆記'
+ specs=[s for s in DATA['blueprints'][exam['grade']]['sections'] if s['kind']=='choice']
+ story=[Spacer(1,44),p('MANATOBI / ORIGINAL PRACTICE','en'),p(f'{label}\n{scope_label}トレーニング','title'),p(f'第{exam["round"]}回　問題冊子','heading'),p((f'目安 {minutes}分 ／ ' if exam['grade'] in ['eiken_5','eiken_4'] else 'リスニング・英作文を含まない部分練習 ／ ')+f'全{len(questions)}問','heading'),Spacer(1,16)]
  rows=[[p('大問'),p('問題番号'),p('内容')]]
- for n,spec in enumerate(DATA['blueprints'][exam['grade']]['sections'],1):
+ for n,spec in enumerate(specs,1):
   numbers=[i+1 for i,q in enumerate(questions) if q['section']==spec['id']]
   rows.append([p(str(n)),p(f'{numbers[0]}〜{numbers[-1]}'),p(section_names[spec['id']])])
- story += [line_table(rows,[50,100,WIDTH-246]),Spacer(1,22),p('使い方','heading'),p('・解答用紙に答えを記入してください。問題冊子には正答を載せていません。\n・問題・解説はA4縦、解答用紙はA4横。白黒・片面・実際のサイズ（100%）で印刷します。\n・解き終わるまでは、別冊の解答・解説を開かないでください。\n・同じ問題をアプリの分野別練習でも解けます。'),Spacer(1,12),p('この冊子は独自作成した5級形式の筆記練習1回分です。リスニング・面接は含みません。公式模試・公式教材ではなく、合否やCSEスコアを算出するものではありません。専門家による外部難度校正は未実施です。','note'),p('氏名：________________________________','jp')]
+ story += [line_table(rows,[50,100,WIDTH-246]),Spacer(1,22),p('使い方','heading'),p('・解答用紙に答えを記入してください。問題冊子には正答を載せていません。\n・問題・解説はA4縦、解答用紙はA4横。白黒・片面・実際のサイズ（100%）で印刷します。\n・解き終わるまでは、別冊の解答・解説を開かないでください。\n・同じ問題をアプリの分野別練習でも解けます。'),Spacer(1,12),p(f'独自作成した{label}形式の{scope_label}第{exam["round"]}回です。リスニング・英作文・面接は含みません。公式教材ではなく、CSE・合否換算はしません。筆記全体の公式時間をリーディングだけの時間に流用しません。外部難度校正は未実施です。','note'),p('氏名：________________________________','jp')]
  cover=ROOT/'deliverables'/f'{item_id}_cover.pdf'
  build(cover,story,label,'問題',exam)
- qpath=Path(str(base)+'_questions.pdf');build_questions(qpath,exam,cover);cover.unlink()
+ qpath=Path(str(base)+'_questions.pdf')
+ layout=build_reading_questions(qpath,exam,cover) if exam['grade']!='eiken_5' else None
+ if exam['grade']=='eiken_5':build_questions(qpath,exam,cover)
+ cover.unlink()
  apath=Path(str(base)+'_answers.pdf');build_answer_sheet(apath,exam)
- story=[p(f'{label} 第{exam["round"]}回　解答・解説','heading'),p('問題を解き終わってから確認してください。各問1点として、25点満点の復習用素点で確認できます。公式得点・合否・CSEスコアへの換算はできません。','note')]
+ story=[p(f'{label} 第{exam["round"]}回　解答・解説','heading'),p(f'解き終わってから確認してください。各問1点、{len(questions)}点満点の復習用素点です。公式得点・CSE・合否へ換算しません。','note')]
  keyrows=[]
  for start in range(0,len(questions),5):
   keyrows.append([p(f'問{n+1:02}：{questions[n]["answer"]+1}') for n in range(start,min(start+5,len(questions)))])
  story += [line_table(keyrows,[(WIDTH-96)/5]*5),PageBreak()]
+ translated=set()
  for number,q in enumerate(questions,1):
-  if number in [4,7,10,13,16,19,22,24]: story.append(PageBreak())
+  if exam['grade']=='eiken_5' and number in [4,7,10,13,16,19,22,24]: story.append(PageBreak())
+  if q.get('passage') and q['passage']['id'] not in translated:
+   translated.add(q['passage']['id']);story += [PageBreak(),p(q['passage']['title'],'heading'),p('本文の和訳','heading'),p(q['passage']['translation']),Spacer(1,14)]
   block=[p(f'問{number:02}　正答 {q["answer"]+1}','heading')]
-  block += [p(q.get('completedSentence') or q['prompt'],'en'),p('【訳】'+q['translation']),p('【解き方】'+q['explanation'])]
+  block += [p(q.get('completedSentence') or q['prompt'],'jp' if q['section']=='cloze' else 'en'),p('【訳】'+q['translation']),p('【解き方】'+q['explanation'])]
   block += [p(f'{n+1}. {text}：{q["distractorReasons"][n]}','note') for n,text in enumerate(q['choices'])]
   block += [Spacer(1,12)]
   story.append(KeepTogether(block))
@@ -109,7 +109,7 @@ for exam in DATA['booklets']:
    qpages=[(index,question_texts[index]) for index,pdfpage in enumerate(doc[:parts[0]['end']]) if any(span['text'].strip()==f'({n})' for block in pdfpage.get_text('dict')['blocks'] for line in block.get('lines',[]) for span in line['spans'])]
    if len(qpages)!=1:raise ValueError(f'Question split or missing: {n}')
    page=qpages[0][1];question_pages.append(qpages[0][0]+1)
-   required=[q['translation'],q['orderPrefix'],*q['orderTokens']] if q['section']=='reorder' else [q['prompt']]
+   required=[q['translation'],q['orderPrefix'],*q['orderTokens']] if q['section']=='reorder' else ([] if q['section']=='cloze' else [q['prompt']])
    if q['section']=='reorder':
     required += [f'{no+1}'+ '－'.join(CIRCLED[int(v)-1] for v in choice.split('－')) for no,choice in enumerate(q['choices'])]
    else:required += [f'{no+1}{choice}' for no,choice in enumerate(q['choices'])]
@@ -117,6 +117,8 @@ for exam in DATA['booklets']:
    epages=[page for page in explanation_texts if f'問{n:02}正答' in page]
    required=[q['translation'],q['explanation'],q.get('completedSentence') or q['prompt'],*q['distractorReasons'],f'問{n:02} 正答 {q["answer"]+1}']
    if len(epages)!=1 or any(normalize(value) not in epages[0] for value in required):raise ValueError(f'Explanation split or incomplete: {n}')
+  for passage in {q['passage']['id']:q['passage'] for q in questions if q.get('passage')}.values():
+   if normalize(passage['text']) not in ''.join(question_texts) or normalize(passage['translation']) not in normalize(text):raise ValueError(f'Passage/translation missing: {passage["id"]}')
   if any(re.search(r'問\d+正答',page) or '【訳】' in page or '【解き方】' in page for page in question_texts):raise ValueError('Answer leaked into question booklet')
   for page in doc:
    for block in page.get_text('dict')['blocks']:
@@ -133,9 +135,9 @@ for exam in DATA['booklets']:
    target=PUBLIC/f'prints/previews/{item_id}_p{no+1}.webp';image.save(target,'WEBP',quality=90)
    previewpaths.append('/prints/previews/'+target.name)
    if no==0:image.resize((298,421)).save(PUBLIC/f'prints/thumbs/{item_id}.webp','WEBP',quality=90)
-  items.append(dict(id=item_id,label=f'{label} 筆記 第{exam["round"]}回（25問・問題／解答用紙／解説）',subject=exam['grade'],category='演習プリント',file='/prints/'+pack.name,thumb=f'/prints/thumbs/{item_id}.webp',pages=len(doc),kb=round(pack.stat().st_size/1024),description='筆記1回分。問題・解答用紙・解説を分離して印刷できます。リスニングは含みません。同じ25問をアプリの分野別練習で利用できます。外部難度校正は未実施。',variants=parts))
+  items.append(dict(id=item_id,label=f'{label} {scope_label} 第{exam["round"]}回（{len(questions)}問・問題／解答用紙／解説）',subject=exam['grade'],category='演習プリント',file='/prints/'+pack.name,thumb=f'/prints/thumbs/{item_id}.webp',pages=len(doc),kb=round(pack.stat().st_size/1024),description=f'{scope_label}1回分・{len(questions)}問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。',variants=parts))
   previews[item_id]=previewpaths
-  reports.append(dict(id=exam['id'],sourceHash=DATA['sourceHash'],pdfSha256=hashlib.sha256(pack.read_bytes()).hexdigest(),pages=len(doc),parts=parts,questionPages=question_pages,layout={'reference':'https://www.eiken.or.jp/eiken/exam/kakomon/2026-2-1ji_5kyu.pdf','answerReference':'https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf','shortQuestionPages':[7,8],'conversationQuestionPages':[5],'reorderQuestionPages':[5],'choiceColumns':{'short':4,'conversation':2,'reorder':4},'orderingChunkNumbers':'circled','orderingAnswerBoxes':4,'orderingMarkedPositions':[1,3],'answerSheet':'landscape A4; 1–15 / 16–25; vertical ovals','officialArtworkCopied':False},checks={'allPromptsChoicesTranslationsAndExplanations':True,'noSplitQuestions':True,'noAnswerLeak':True,'safeMargins':True,'grayscalePreviews':True},answers=[dict(id=q['id'],number=n+1,answer=q['answer']+1,explanation=q['explanation']) for n,q in enumerate(questions)]))
+  reports.append(dict(id=exam['id'],sourceHash=DATA['sourceHash'],pdfSha256=hashlib.sha256(pack.read_bytes()).hexdigest(),pages=len(doc),parts=parts,questionPages=question_pages,layout=layout or {'reference':'https://www.eiken.or.jp/eiken/exam/kakomon/2026-2-1ji_5kyu.pdf','answerReference':'https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf','shortQuestionPages':[7,8],'conversationQuestionPages':[5],'reorderQuestionPages':[5],'choiceColumns':{'short':4,'conversation':2,'reorder':4},'orderingChunkNumbers':'circled','orderingAnswerBoxes':4,'orderingMarkedPositions':[1,3],'answerSheet':'landscape A4; 1–15 / 16–25; vertical ovals','officialArtworkCopied':False},checks={'allPromptsChoicesTranslationsAndExplanations':True,'noSplitQuestions':True,'noAnswerLeak':True,'safeMargins':True,'grayscalePreviews':True},answers=[dict(id=q['id'],number=n+1,answer=q['answer']+1,explanation=q['explanation']) for n,q in enumerate(questions)]))
 (ROOT/'src/data/writtenPrints.generated.ts').write_text('// Generated by scripts/build-written-pdfs.py; validated original only.\nimport type { GachaPrintDef } from "./gachaPrints.generated";\nexport const WRITTEN_PRINTS: readonly GachaPrintDef[] = '+json.dumps(items,ensure_ascii=False,indent=2)+';\nexport const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = '+json.dumps(previews,ensure_ascii=False,indent=2)+';\n')
 (ROOT/'deliverables/written-pdf-validation.json').write_text(json.dumps(reports,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps([dict(id=r['id'],pages=r['pages'],parts=r['parts']) for r in reports],ensure_ascii=False,indent=2))

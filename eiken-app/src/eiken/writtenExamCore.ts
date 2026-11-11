@@ -15,18 +15,19 @@ export const WRITTEN_BLUEPRINTS: Partial<Record<EikenGrade, WrittenBlueprint>> =
 };
 export interface WrittenItem {
   id:string; section:WrittenSection; kind:'choice'|'writing'; prompt:string;
-  passage?:{id:string;title:string;text:string};
+  passage?:{id:string;title:string;text:string;translation?:string;format?:'notice'|'email'|'article'};
   choices?:[string,string,string,string]; answer?:number; explanation?:string; distractorReasons?:[string,string,string,string];
   model?:string; rubric?:string[]; wordRange?:[number,number]; orderTokens?:string[]; orderAnswer?:number[]; orderPrefix?:string; completedSentence?:string; translation?:string;
 }
-export interface WrittenExam { id:string;grade:EikenGrade;round:number;revision:string;origin:'manatobi-original';review:'draft'|'approved';items:readonly WrittenItem[] }
+export interface WrittenExam { id:string;grade:EikenGrade;round:number;scope?:'reading';revision:string;origin:'manatobi-original';review:'draft'|'approved';items:readonly WrittenItem[] }
 export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void {
   const blueprint=WRITTEN_BLUEPRINTS[exam.grade];
   if(!blueprint || exam.id!==`${exam.grade}_written_${String(exam.round).padStart(2,'0')}` || !Number.isInteger(exam.round) || exam.round<1 || exam.round>15 || !exam.revision || exam.origin!=='manatobi-original' || (requireApproved && exam.review!=='approved'))throw new Error('EXAM_NOT_RELEASE_READY');
-  if(exam.items.length!==blueprint.sections.reduce((count,item)=>count+item.count,0) || new Set(exam.items.map(item=>item.id)).size!==exam.items.length)throw new Error('EXAM_COUNT_OR_DUPLICATE_ID');
+  const sections=exam.scope==='reading'?blueprint.sections.filter(spec=>spec.kind==='choice'):blueprint.sections;
+  if(exam.items.length!==sections.reduce((count,item)=>count+item.count,0) || new Set(exam.items.map(item=>item.id)).size!==exam.items.length)throw new Error('EXAM_COUNT_OR_DUPLICATE_ID');
   let at=0;
   const passages=new Map<string,string>();
-  for(const spec of blueprint.sections)for(let offset=0;offset<spec.count;offset++,at++){
+  for(const spec of sections)for(let offset=0;offset<spec.count;offset++,at++){
     const item=exam.items[at];
     if(item.section!==spec.id || item.kind!==spec.kind || !item.id.startsWith(exam.id+'_') || !item.prompt?.trim() || JSON.stringify(item).includes('\uFFFD'))throw new Error('EXAM_SECTION_MISMATCH');
     if(item.kind==='choice'){
@@ -40,7 +41,13 @@ export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void
       }
     }else if(!item.model?.trim() || !item.rubric?.length || !item.wordRange || !Number.isInteger(item.wordRange[0]) || !Number.isInteger(item.wordRange[1]) || item.rubric.some(text=>!text.trim()) || item.wordRange[0]<1 || item.wordRange[1]<item.wordRange[0])throw new Error('WRITING_RUBRIC_REQUIRED');
     if(['reading','cloze','email','summary'].includes(item.section) && (!item.passage?.text.trim() || !item.passage.id || !item.passage.title.trim()))throw new Error('PASSAGE_REQUIRED');
-    if(item.passage){const old=passages.get(item.passage.id);if(old && old!==item.passage.text)throw new Error('PASSAGE_ID_COLLISION');passages.set(item.passage.id,item.passage.text);}
+    if(item.passage){
+      if(exam.scope==='reading' && (!item.passage.translation?.trim() || !['notice','email','article'].includes(item.passage.format || '')))throw new Error('PASSAGE_TRANSLATION_FORMAT_REQUIRED');
+      const signature=JSON.stringify(item.passage), old=passages.get(item.passage.id);
+      if(old && old!==signature)throw new Error('PASSAGE_ID_COLLISION');
+      passages.set(item.passage.id,signature);
+      if(exam.scope==='reading' && item.section==='cloze' && !new RegExp(`\\(\\s*${at+1}\\s*\\)`).test(item.passage.text))throw new Error('CLOZE_NUMBER_MISMATCH');
+    }
   }
 }
 /** Readiness means 15 DISTINCT, complete, approved exams, not fifteen labels pointing to one bank. */
