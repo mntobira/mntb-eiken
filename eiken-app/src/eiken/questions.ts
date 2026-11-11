@@ -87,7 +87,7 @@ export function partsForGrade(grade: EikenGrade): Part[] {
     }) };
   return [
     { id: `${grade}_listening`, title: `${label} リスニング`, section: 'listening', chapters: [listening] },
-    { id: `${grade}_reading`, title: `${label} リーディング`, section: 'reading', chapters: [reading] },
+    { id: `${grade}_reading`, title: `${label} リーディング`, section: 'reading', chapters: [reading, ...bookletPracticeChapters(grade, 'reading')] },
     { id: `${grade}_vocabulary`, title: `${label} 語彙・文法`, section: 'vocabulary', chapters: [vocabulary, ...bookletPracticeChapters(grade)] },
   ];
 }

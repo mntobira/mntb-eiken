@@ -40,9 +40,9 @@ export interface GachaPoolDef {
 /** 保存済みプールIDは維持し、英検の学習を応援する装飾だけを案内する。 */
 export const GACHA_POOLS: readonly GachaPoolDef[] = [
   { id: 'kyotsu', title: '英検 とびらコレクション', short: 'とびらコレクション',
-    lrName: '英検学習の着せ替えアイテム', lrNote: '5級筆記・第1回の問題／解答用紙／解説PDFと、5級〜準2級の重点語ノート・着せ替えを収録。同じ問題は分野別練習で無料で解けます。', preferSubjects: [] },
+    lrName: '英検学習の着せ替えアイテム', lrNote: '5級〜準2級のリーディング第1回（問題・解答用紙・解説）と重点語ノート・着せ替えを収録。同じ問題は分野別練習で無料で解けます。リスニング・ライティングは含みません。', preferSubjects: [] },
   { id: 'niji', title: '英検 がんばる自習室', short: 'がんばる自習室',
-    lrName: '自習室の着せ替えアイテム', lrNote: '準2級プラス〜準1級の重点語ノートPDFと学びの装飾を収録。PDFと同じ語・例文はアプリの単語帳で無料で学べます。', preferSubjects: [] },
+    lrName: '自習室の着せ替えアイテム', lrNote: '準2級プラス〜準1級のリーディング第1回（問題・解答用紙・解説）と重点語ノート・学びの装飾を収録。同じ問題は分野別練習で無料で解けます。リスニング・ライティングは含みません。', preferSubjects: [] },
 ];
 
 export const DEFAULT_GACHA_POOL: GachaPoolId = 'kyotsu';

@@ -128,24 +128,27 @@ def build_answer_sheet(path,exam):
  w,h=landscape(A4)
  def txt(text,x,y,size=10,font='BookletJP'):
   c.setFont(font,size);c.drawString(x,y,text)
- c.setTitle(f'マナトビ 英検5級形式 筆記 第{exam["round"]}回 解答用紙');c.setAuthor('マナトビ')
- txt('5級形式　筆記トレーニング',42,h-57,21);txt(f'第{exam["round"]}回　解答用紙',42,h-86,15)
+ label={'eiken_5':'5級','eiken_4':'4級','eiken_3':'3級','eiken_pre2':'準2級','eiken_pre2plus':'準2級プラス','eiken_2':'2級','eiken_pre1':'準1級'}[exam['grade']]
+ total=len(exam['items'])
+ c.setTitle(f'マナトビ 英検{label} リーディング 第{exam["round"]}回 解答用紙');c.setAuthor('マナトビ')
+ txt(f'{label}形式　リーディング',42,h-57,20);txt(f'第{exam["round"]}回　解答用紙',42,h-86,15)
  txt('マナトビ独自教材・公式の解答用紙ではありません',42,h-111,9)
  c.setLineWidth(.7);c.rect(42,83,325,365)
  txt('氏名',58,416,11);c.line(100,410,345,410)
  txt('実施日',58,363,11);c.line(113,357,345,357)
  txt('開始時刻',58,310,11);c.line(126,304,220,304)
  txt('終了時刻',58,267,11);c.line(126,261,220,261)
- txt('筆記の目安：25分／25問',58,219,12)
- txt('リスニング・個人番号の記入欄はありません。',58,189,9)
+ txt(f'リーディング 全{total}問',58,219,12)
+ txt('リスニング・ライティングは含みません。',58,189,9)
  txt('この用紙はアプリと同じ問題を解く練習用です。',58,170,9)
  txt('A4・横向き・白黒・実際のサイズで印刷。',58,139,9)
- txt('正解数：　　　　／25　（公式得点ではありません）',58,105,9)
+ txt(f'正解数：　　　　／{total}　（公式得点ではありません）',58,105,9)
  txt('リーディング解答欄（筆記）',448,h-57,17)
  txt('答えは一つ。選んだ番号のだ円をぬりつぶします。',448,h-83,9)
  c.setStrokeColor(colors.black)
- for start,end,x in [(1,15,448),(16,25,630)]:
-  top=469;rowh=21;colw=150;header=24
+ split=15 if total<=30 else 20
+ for start,end,x in [(1,split,448),(split+1,total,630)]:
+  top=469;rowh=21 if split==15 else 17;colw=150;header=24
   c.setLineWidth(.6);c.rect(x,top-header-(end-start+1)*rowh,colw,header+(end-start+1)*rowh)
   txt('問題番号',x+4,top-16,8)
   for a in range(4):txt(str(a+1),x+65+a*21,top-16,10,'Times-Roman')
@@ -159,7 +162,7 @@ def build_answer_sheet(path,exam):
    c.line(x+49,cy-rowh/2,x+49,cy+rowh/2)
  txt('正しいぬり方',630,188,9);c.ellipse(638,159,647,173,stroke=1,fill=1)
  txt('例：答えが3のときは、③をぬります。',448,104,9)
- txt('リスニングはこの練習セットに含みません。',448,83,9)
+ txt('筆記全体の時間を、この部分だけの制限時間とはしません。',448,83,8)
  c.setLineWidth(.4);c.line(42,51,w-42,51)
  txt('マナトビ｜独自教材・公式問題ではありません',42,32,8)
  txt(exam['revision'],w-202,32,7,'Times-Roman')

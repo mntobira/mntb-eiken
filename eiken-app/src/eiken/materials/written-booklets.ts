@@ -1,3 +1,9 @@
+import { READING_4 } from './reading-round-foundation';
+import { READING_3 } from './reading-round-three';
+import { READING_PRE2 } from './reading-round-pre-two';
+import { READING_PLUS } from './reading-round-bridge';
+import { READING_2 } from './reading-round-two';
+import { READING_PRE1 } from './reading-round-pre-one';
 import { validateWrittenExam, type WrittenExam, type WrittenItem } from '../writtenExamCore';
 
 const id='eiken_5_written_01';
@@ -39,5 +45,5 @@ export const WRITTEN_BOOKLETS:readonly WrittenExam[]=[{
   order(24,'あなたはどうやって学校へ行きますか。','How',['get','you','to school','do'],[4,2,1,3],['2－1','4－3','4－1','1－2'],2,'How do you get to school?','How＋do＋主語＋動詞で手段を尋ねる。1番目は④do、3番目は①get。'),
   order(25,'その本をこの机の上に置いてください。','Please',['the book','this desk','on','put'],[4,1,3,2],['4－3','1－2','3－4','4－2'],0,'Please put the book on this desk.','put＋物＋場所で「物をある場所に置く」。on this deskは「この机の上に」。1番目は④put、3番目は③on。'),
  ]
-}];
+},READING_4,READING_3,READING_PRE2,READING_PLUS,READING_2,READING_PRE1];
 WRITTEN_BOOKLETS.forEach(booklet=>validateWrittenExam(booklet));
