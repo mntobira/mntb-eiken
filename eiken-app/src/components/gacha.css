@@ -470,7 +470,7 @@
 
 /* ===== 2026-10-29 ガチャの種類（共通テスト／2次試験）を左右スワイプで切り替え =====
    バナーの中だけ横にスクロール（scroll-snap で1枚ずつ止まる）。縦には伸ばさない（1画面の決まり）。 */
-.gacha-pool-tabs { display: inline-flex; flex-wrap: wrap; min-width: 0; max-width: 100%; gap: 2px; padding: 2px; border-radius: 999px; background: rgba(90, 59, 6, .12); }
+.gacha-pool-tabs { display: inline-flex; flex-wrap: nowrap; min-width: 0; max-width: 100%; gap: 2px; padding: 2px; border-radius: 999px; background: rgba(90, 59, 6, .12); }
 .gacha-pool-tabs button { display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: #5a3b06; font: 800 13px/1 var(--mt-font-display); white-space: nowrap; }
 .gacha-pool-tabs button[aria-selected=true] { background: #5a3b06; color: #fff6d8; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
 .gacha-pool-tabs button:focus-visible { outline: 3px solid #245e7a; outline-offset: 2px; }
@@ -498,6 +498,7 @@
 @media (max-width: 420px) {
   .gacha-banner-head { align-items: flex-start; }
   .gacha-pool-tabs { flex: 1 1 220px; }
+  .gacha-pool-tabs button { padding: 0 8px; font-size: 12px; }
   .gacha-banner-head > small { margin-left: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .gacha-carousel { scroll-behavior: auto; } }

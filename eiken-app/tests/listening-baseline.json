@@ -615,6 +615,6 @@
     "src/components/ManaClan.tsx": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
     "src/utils/manaClan.ts": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
     "src/components/listening-home.css": "A3/A5 Eiken-only entry layout and Google-only visible authentication; responsive and sign-in entry browser regressions.",
-    "src/components/gacha.css": "Eiken mobile UI: contain the gacha banner, hero and carousel within narrow viewports; wrap pool tabs and date label at 420px; regression-tested in gacha-mobile-overflow.test.ts."
+    "src/components/gacha.css": "Eiken mobile layout: keep the gacha banner inside the viewport and retain the listening-style single-row pool selector; compact tab labels on narrow screens. Covered by gacha-mobile-overflow.test.ts."
   }
 }
