@@ -5,9 +5,13 @@ const origin=process.env.EIKEN_TEST_ORIGIN || 'http://localhost:3000';
 const engine=process.env.EIKEN_ENGINE==='webkit'?webkit:chromium;
 const booklets=JSON.parse(await readFile('deliverables/written-booklets.json','utf8')).booklets;
 const audit=JSON.parse(await readFile('deliverables/written-pdf-validation.json','utf8'));
-const browser=await engine.launch({args:engine===chromium?['--no-sandbox']:[]});
 const labels={short:'短文の語句空所補充',conversation:'会話文の空所補充',reorder:'語句整序',cloze:'長文の語句空所補充',reading:'読解'};
-try {
+// Keep each grade in its own browser process: the 1GB QA sandbox cannot retain
+// hundreds of explanation screens and PDF frames in one WebKit process.
+for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.grade===process.env.EIKEN_GRADE)){
+ const exams=[selected];
+ const browser=await engine.launch({args:engine===chromium?['--no-sandbox']:[]});
+ try {
  for(const viewport of [{width:1280,height:900},{width:390,height:844}].filter(v=>!process.env.EIKEN_WIDTH || v.width===Number(process.env.EIKEN_WIDTH))) {
   const context=await browser.newContext({viewport,serviceWorkers:'block',acceptDownloads:true,reducedMotion:'reduce'});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -16,10 +20,10 @@ try {
    localStorage.setItem('qa:booklets','1');localStorage.setItem('eiken:v1:login_fallback_local_v1','true');
    localStorage.setItem('eiken:v1:bgm_enabled','off');
    localStorage.setItem('eiken:v1:battle_growth_local_v1_guest',JSON.stringify({version:1,progress:{uid:'guest',coins:100,owned:ids,equipped:{}},receipts:[],day:''}));
-  },booklets.map(exam=>`print_${exam.id}`));
+  },exams.map(exam=>`print_${exam.id}`));
   await page.goto(`${origin}/?screenshot=1`);await page.locator('[data-home-mascot]').waitFor();
   let checked=0;
-  for(const exam of booklets){
+  for(const exam of exams){
    for(const section of [...new Set(exam.items.map(item=>item.section))]) {
     console.log(`${engine.name()} ${viewport.width}: ${exam.grade} ${section}`);
     const items=exam.items.filter(item=>item.section===section);
@@ -61,9 +65,9 @@ try {
     await page.evaluate(()=>window.__SET_APP_STATE__('home'));await page.locator('[data-home-practice]').waitFor();
    }
   }
-  assert.equal(checked,212);
+  assert.equal(checked,selected.items.length);
   await page.getByRole('button',{name:'マイページへ移動',exact:true}).click();await page.locator('[data-tab="prints"]').click();
-  for(const exam of booklets){
+  for(const exam of exams){
    const report=audit.find(report=>report.id===exam.id);
    const parts=[['中身を開く','.pdf'],[`問題冊子を開く（${report.questionPages.at(-1)}ページ）`,'_questions.pdf'],['解答用紙を開く（1ページ）','_answers.pdf'],[`解答・解説を開く（${report.pages-report.questionPages.at(-1)-1}ページ）`,'_explanations.pdf']];
    const search=page.getByPlaceholder('名前で探す');
@@ -79,7 +83,8 @@ try {
    }
   }
   await page.screenshot({path:`qa-booklet-collection-${engine.name()}-${viewport.width}.png`,fullPage:true});
-  assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${viewport.width}: 212 answers/explanations, 7 owned packs + 21 split PDFs downloaded.`);
+  assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${viewport.width} ${selected.grade}: ${checked} answers/explanations, owned pack + 3 split PDFs downloaded.`);
   await context.close();
  }
-} finally {await browser.close();}
+ } finally {await browser.close();}
+}
