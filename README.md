@@ -4,6 +4,8 @@
 
 - 対象は `eiken-app/` のReact 19 / TypeScript / Vite SPA。既存Vercel設定を維持し、ルートのHonoテンプレートへ置き換えません。
 - リポジトリ：<https://github.com/mntobira/mntb-eiken> のみ。大学受験版・リスニング本体のリポジトリ／Firebase／配信先へ書き込みません。
+- ガチャのスマホ横はみ出し修正PR #6と1列タブ修正PR #7も取り込み、CSS・回帰テスト・PR作成コマンドを保全しています。共通ソース579ファイルの同一性を維持。
+
 - 先行PR [#4](https://github.com/mntobira/mntb-eiken/pull/4)、[#5](https://github.com/mntobira/mntb-eiken/pull/5) はマージ済み。今回の追加差分は `feat/eiken-recording-and-staged-enrollment`。
 - PRマージによる既存Vercel連携の自動ビルドと、本番URL・Google認証の実動作確認は別です。Cloudflareへの新規配備は行いません。
 - Firebaseルール・索引・Functionsの本番配備は行っていません。ユーザーによる先の反映に、PR #4の追加ルール差分まで含まれるとは見なしません。
@@ -129,11 +131,20 @@ EIKEN_WIDTH=390 npm run test:release
 EIKEN_WIDTH=390 EIKEN_ENGINE=webkit npm run test:release
 ```
 
-今回の確認：45 Vitest成功、src全体・staged A6単独の型検査成功、production-mode build成功。Chromium／WebKit ×1280／390幅で新25問の採点・解説と、所有済みセット＋3分冊の閲覧・ダウンロード成功。既存7級の読解・語彙・単語帳・両ガチャプール・保存破損fallbackも両エンジン390幅で回帰成功。単体テストの疑似txはテスト専用で、本番の永続化ではありません。
+今回の確認：最新main（PR #6・#7）取込後47 Vitest成功、src全体・staged A6単独の型検査成功、production-mode build成功。Chromium／WebKit ×1280／390幅で新25問の採点・解説と、所有済みセット＋3分冊の閲覧・ダウンロード成功。既存7級の読解・語彙・単語帳・両ガチャプール・保存破損fallbackも両エンジン390幅で回帰成功。単体テストの疑似txはテスト専用で、本番の永続化ではありません。
 
 先行PRでは入口2エンジン×4サイズ、音声PCM・BGM保持、Writing10課題保存再開・同期、PDF、聞き取り14経路・AI・PWAを検証済み。今回それら全てを再実施したという意味ではありません。
 
 Auth／Firestore Emulatorは先行PRで8ルールケース・実Authトークン2クライアント同期・別uid拒否・対戦transaction等を確認。本番Google／Functions／実機2台検証とは別です。
+
+## PR作成
+
+英検リポジトリのルートで、コミット済みの作業ブランチから実行します。PR本文には「リスニング納品の判断」欄を必ず含めてください。コマンドは未コミット変更を拒否し、現在のブランチを `origin` へpushして、既存PRがあれば更新、なければ作成します。
+
+```sh
+npm run pr:create -- --title "変更のタイトル" --body-file /path/to/pr-body.md
+```
+
 
 ## 残件
 
