@@ -74,9 +74,9 @@ export const LEVEL_PRINTS: readonly GachaPrintDef[] = [
   { id: 'print_level_listening_howto', label: '英検リスニングの練習法（聞き取りと毎日の復習）', subject: 'eiken_5', category: '出題傾向', file: '/prints/print_level_eiken_howto.pdf', thumb: '/prints/thumbs/print_level_eiken_howto.webp', pages: 2, kb: 82 },
 ];
 
-/** 学習プリントのレア度：完全版の本は UR（大当たり）、それ以外の学習プリントは SR */
+/** 学習プリントのレア度：完全版の本・筆記1回分の冊子セットは UR（大当たり）、その他は SR */
 export function printRarity(p: GachaPrintDef): GachaRarity {
-  return p.category === '完全版' ? 'UR' : 'SR';
+  return p.category === '完全版' || p.id.includes('_written_') ? 'UR' : 'SR';
 }
 
 /** レベルでだけ解放される装備（ガチャ・ショップには出さない） */

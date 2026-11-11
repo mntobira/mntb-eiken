@@ -94,8 +94,9 @@ export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_P
             </small>
           </div>
         </div>
+        {print?.description && <p className="gacha-detail-note">{print.description}</p>}
         {pages.length > 0 && <div className="gacha-detail-pages" aria-label="中身の一部">
-          {pages.map((src) => <img key={src} src={src} loading="lazy" alt={`${item.label} の一部（${src.match(/_p(\d+)\.webp$/)?.[1] ?? ''}ページ目の上半分）`} />)}
+          {pages.map((src) => <img key={src} src={src} loading="lazy" alt={`${item.label} の一部（${src.match(/_p(\d+)\.webp$/)?.[1] ?? ''}ページ目${print?.variants ? '' : 'の上半分'}）`} />)}
         </div>}
         {sample && <p className="gacha-detail-audio"><span>試し聞き（{sample.label}）</span><audio controls preload="none" src={sample.file} /></p>}
         {item && print && isFreeFullPrint(item.id) && (
@@ -104,7 +105,7 @@ export function GachaItemDetail({ dialog, item, progress, pool = DEFAULT_GACHA_P
           </button>
         )}
         {nijiUniv && <p className="gacha-detail-disclaimer" data-niji-disclaimer>※ {nijiDisclaimerFor(nijiUniv.name)}</p>}
-        <p className="gacha-detail-note">{isFreeFullPrint(item.id) ? '第1回は全文を見られます。見終わったら「‹ もどる」でこの画面に戻ります。' : pages.length ? '見られるのは一部の上半分だけ。全部はガチャで当てると「マイPDF」で保存できます。' : print ? 'ガチャで当てると「マイPDF」で保存できます。' : 'ガチャで当てると、とびら君に装備できます。'}</p>
+        <p className="gacha-detail-note">{isFreeFullPrint(item.id) ? '第1回は全文を見られます。見終わったら「‹ もどる」でこの画面に戻ります。' : pages.length ? (print?.variants ? '表紙・問題・解説の見本ページです。獲得後は「マイPDF」でセット全体と分冊を保存できます。' : '見られるのは一部の上半分だけ。全部はガチャで当てると「マイPDF」で保存できます。') : print ? 'ガチャで当てると「マイPDF」で保存できます。' : 'ガチャで当てると、とびら君に装備できます。'}</p>
       </div>}
     </dialog>
   );

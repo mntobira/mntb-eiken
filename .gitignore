@@ -58,3 +58,11 @@ check.mjs
 core
 core.*
 .reference-preview/
+
+# Offline authoring diagnostics and third-party reference images (not app assets)
+__pycache__/
+*.pyc
+eiken-app/qa-*.png
+qa-home.png
+eiken-app/deliverables/*.png
+eiken-app/deliverables/reference_*

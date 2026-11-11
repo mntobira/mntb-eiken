@@ -9,6 +9,8 @@
     "build:demo": "vite build --mode eiken",
     "build:vercel": "tsx scripts/build-eiken-wordbook.ts && node scripts/check-target.mjs --production && vite build --mode eiken.production",
     "generate:materials": "tsx scripts/build-eiken-wordbook.ts",
+    "generate:booklets": "tsx scripts/export-written-booklets.ts && python3 scripts/build-written-pdfs.py && python3 scripts/build-eiken-rewards.py",
+    "generate:recording": "tsx scripts/build-recording-scripts.ts && python3 scripts/build-recording-pdf.py",
     "test:release": "node tests/release.browser.mjs",
     "test:audio": "node tests/audio.browser.mjs",
     "typecheck": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
@@ -16,6 +18,7 @@
     "test:rules": "node --test tests/firestore-rules.test.mjs",
     "test:sdk": "tsx tests/firebase-sdk.emulator.ts",
     "test:integration:browser": "node tests/integration.browser.mjs",
+    "test:booklets:browser": "node tests/booklets.browser.mjs",
     "test:browser": "node tests/shell.browser.mjs"
   },
   "dependencies": {
