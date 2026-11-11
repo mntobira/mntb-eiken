@@ -27,6 +27,27 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_5_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_5_written_01_conversation",
+        "title": "筆記 第1回｜会話文の空所補充",
+        "abstractTitle": "筆記 第1回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_5_written_01_reorder",
+        "title": "筆記 第1回｜語句整序",
+        "abstractTitle": "筆記 第1回｜語句整序",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
       }
     ]
   },
@@ -200,10 +221,10 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
 ];
 export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
   "eiken_5": {
-    "chapters": 3,
-    "units": 3,
-    "questions": 6,
-    "marks": 8
+    "chapters": 6,
+    "units": 6,
+    "questions": 31,
+    "marks": 33
   },
   "eiken_4": {
     "chapters": 3,

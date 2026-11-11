@@ -1,0 +1,4 @@
+# Preserve generated printable assets byte-for-byte; do not normalize PDF streams.
+*.pdf binary
+*.ttf binary
+*.webp binary

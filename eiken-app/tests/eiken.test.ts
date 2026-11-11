@@ -241,7 +241,8 @@ describe('Release content completeness', () => {
       expect(parts.map(part => part.section)).toEqual(['listening', 'reading', 'vocabulary']);
       for (const chapter of parts.flatMap(part => part.chapters)) {
         expect(chapter.title).toBeTruthy();
-        expect(chapter.practiceProblems).toHaveLength(2);
+        if (!chapter.id.includes('_written_')) expect(chapter.practiceProblems).toHaveLength(2);
+        else expect(chapter.practiceProblems.length).toBe(chapter.id.endsWith('_short') ? 15 : 5);
         for (const problem of chapter.practiceProblems) {
           expect(ids.has(problem.id)).toBe(false); ids.add(problem.id);
           for (const question of problem.subQuestions) {
@@ -283,9 +284,11 @@ describe('Release content completeness', () => {
       expect(rarityTable('N', pool.id).reduce((n, row) => n + row.rate, 0)).toBeCloseTo(1, 10);
       for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
     }
-    expect(GACHA_PRINTS).toHaveLength(7);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(7);
+    expect(GACHA_PRINTS).toHaveLength(8);
     for (const print of GACHA_PRINTS) {
-      expect(print.subject).toMatch(/^eiken_/); expect(print.pages).toBe(5);
+      expect(print.subject).toMatch(/^eiken_/);
+      expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : 5);
       expect(readFileSync(`public${print.file}`).subarray(0, 4).toString()).toBe('%PDF');
       expect(existsSync(`public${print.thumb}`)).toBe(true);
       expect(GACHA_PREVIEWS[print.id].every(path => existsSync(`public${path}`))).toBe(true);
