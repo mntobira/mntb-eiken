@@ -4,13 +4,31 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, BookOpen, Save } from 'lucide-react';
 import { EIKEN_GRADES, type EikenGrade } from '../eiken/config';
 import { EIKEN_UNITS } from '../eiken/questions';
+import { bookletWritingTasks } from '../eiken/writtenPractice';
 import { emptyWriting, parseWriting, wordCount, writingKey, type WritingDraft, type WritingProgress } from '../eiken/writingProgress';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
 import './eiken-writing.css';
 
 const gradeIds = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const;
-const tasks = EIKEN_UNITS.flatMap((unit, index) => unit.writing.map(task => ({ ...task, grade: gradeIds[index], key: `${gradeIds[index]}_writing_${task.id}` })));
+interface UnifiedWritingTask {
+  id: string;
+  key: string;
+  grade: EikenGrade;
+  title: string;
+  instruction: string;
+  source?: string;
+  target: string;
+  model: string;
+  modelTranslation?: string;
+  commentary: string;
+  checklist: string[];
+}
+export const EIKEN_WRITING_TASKS: readonly UnifiedWritingTask[] = [
+  ...EIKEN_UNITS.flatMap((unit, index) => unit.writing.map(task => ({ ...task, grade: gradeIds[index], key: `${gradeIds[index]}_writing_${task.id}` }))),
+  ...bookletWritingTasks(),
+];
+const tasks = EIKEN_WRITING_TASKS;
 const blank: WritingDraft = { text: '', checked: [], reviewed: false, updatedAt: 0 };
 function read(uid: string): { data: WritingProgress; error: string } {
   try {
@@ -62,7 +80,7 @@ export function EikenWriting({ uid, grade: selectedGrade, onGrade, onBack }: { u
         <fieldset><legend>書いた後の自己点検</legend>{task.checklist.map((check, index) => <label key={check}><input type="checkbox" checked={current.checked.includes(index)} onChange={event => save({ checked: event.target.checked ? [...current.checked, index] : current.checked.filter(i => i !== index), reviewed: false })} />{check}</label>)}</fieldset>
         <button type="button" disabled={!current.text.trim() || current.checked.length !== task.checklist.length || !!saved.error} onClick={() => save({ reviewed: true })}>自己点検を完了する</button>
         <button type="button" aria-expanded={showModel} onClick={() => setShowModel(value => !value)}><BookOpen size={16} />参考解答・解説{showModel ? 'を閉じる' : 'を見る'}</button>
-        {showModel && <aside data-writing-model><h3>参考解答（一例）</h3><p lang="en">{task.model}</p><p>{task.commentary}</p><p>同じ文章にする必要はありません。課題への応答と内容・構成・表現を確認してください。</p></aside>}
+        {showModel && <aside data-writing-model><h3>参考解答（一例・{wordCount(task.model)} words）</h3><p lang="en">{task.model}</p>{task.modelTranslation && <p>【参考解答の和訳】{task.modelTranslation}</p>}<p style={{ whiteSpace: 'pre-wrap' }}>{task.commentary}</p><p>同じ文章にする必要はありません。課題への応答と内容・構成・表現を確認してください。</p></aside>}
         {!!saved.data.conflicts[task.key]?.length && <details><summary>他の端末で編集した別の下書き（コピーして復元できます）</summary>{saved.data.conflicts[task.key].map((draft, index) => <textarea key={index} aria-label={`別の下書き${index + 1}`} readOnly value={draft.text} />)}</details>}
       </section>
     </div>

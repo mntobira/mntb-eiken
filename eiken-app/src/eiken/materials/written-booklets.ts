@@ -4,7 +4,16 @@ import { READING_PRE2 } from './reading-round-pre-two';
 import { READING_PLUS } from './reading-round-bridge';
 import { READING_2 } from './reading-round-two';
 import { READING_PRE1 } from './reading-round-pre-one';
-import { validateWrittenExam, type WrittenExam, type WrittenItem } from '../writtenExamCore';
+import { WRITTEN_5_R2 } from './written-round2-five';
+import { WRITTEN_4_R2 } from './written-round2-four';
+import { WRITTEN_3_R2 } from './written-round2-three';
+import { WRITTEN_3_R3 } from './written-round3-three';
+import { WRITTEN_3_R4 } from './written-round4-three';
+import { WRITTEN_PRE2_R2 } from './written-round2-pre-two';
+import { WRITTEN_PLUS_R2 } from './written-round2-bridge';
+import { WRITTEN_2_R2 } from './written-round2-two';
+import { WRITTEN_PRE1_R2 } from './written-round2-pre-one';
+import { validateReleasedBooklets, type WrittenExam, type WrittenItem } from '../writtenExamCore';
 
 const id='eiken_5_written_01';
 const choice=(number:number,prompt:string,choices:[string,string,string,string],answer:number,explanation:string,reasons:[string,string,string,string],translation:string,section:WrittenItem['section']='short'):WrittenItem=>({id:`${id}_q${String(number).padStart(2,'0')}`,section,kind:'choice',prompt,choices,answer,explanation,distractorReasons:reasons,translation});
@@ -45,5 +54,21 @@ export const WRITTEN_BOOKLETS:readonly WrittenExam[]=[{
   order(24,'あなたはどうやって学校へ行きますか。','How',['get','you','to school','do'],[4,2,1,3],['2－1','4－3','4－1','1－2'],2,'How do you get to school?','How＋do＋主語＋動詞で手段を尋ねる。1番目は④do、3番目は①get。'),
   order(25,'その本をこの机の上に置いてください。','Please',['the book','this desk','on','put'],[4,1,3,2],['4－3','1－2','3－4','4－2'],0,'Please put the book on this desk.','put＋物＋場所で「物をある場所に置く」。on this deskは「この机の上に」。1番目は④put、3番目は③on。'),
  ]
-},READING_4,READING_3,READING_PRE2,READING_PLUS,READING_2,READING_PRE1];
-WRITTEN_BOOKLETS.forEach(booklet=>validateWrittenExam(booklet));
+},
+WRITTEN_5_R2,
+READING_4,
+WRITTEN_4_R2,
+READING_3,
+WRITTEN_3_R2,
+WRITTEN_3_R3,
+WRITTEN_3_R4,
+READING_PRE2,
+WRITTEN_PRE2_R2,
+READING_PLUS,
+WRITTEN_PLUS_R2,
+READING_2,
+WRITTEN_2_R2,
+READING_PRE1,
+WRITTEN_PRE1_R2,
+];
+validateReleasedBooklets(WRITTEN_BOOKLETS);
