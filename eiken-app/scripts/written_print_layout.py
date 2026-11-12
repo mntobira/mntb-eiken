@@ -1,8 +1,8 @@
 """Print-only layout for Eiken-style written booklets:
-- Exam-style cover sheet with section/score table & candidate record box
+- Exam-style cover sheet with official Manatobi brand logo, section/score table & candidate record box
 - Grade-5 choice layout (7/8 short, 5 conversation, 5 four-box ordering)
-- Mark sheet (landscape A4, zero overlap even at 35 items, zebra stripes & 5-row dividers)
-- Lined writing answer sheet (portrait A4 page 2 for grades 3 through Pre-1)
+- Mark sheet (landscape A4 page 1, zero overlap even at 35 items, zebra stripes & 5-row dividers)
+- Official-style side-by-side 2-column lined writing answer sheet (landscape A4 page 2 for grades 3 through Pre-1)
 Only functional exam conventions are used. Zero official text, logos, or cover art.
 """
 from html import escape
@@ -41,14 +41,21 @@ SECTION_NAMES = {
  'reorder': '日本文付き語句整序',
  'cloze': '長文の語句空所補充',
  'reading': '長文の内容一致選択',
- 'email': 'ライティング（Eメール返信）',
+ 'email': 'ライティング（Eメール）',
  'summary': 'ライティング（英文要約）',
- 'essay': 'ライティング（英作文・意見論述）',
+ 'essay': 'ライティング（英作文）',
+}
+WRITING_BOX_LABELS = {
+ 'email': 'Eメール解答欄',
+ 'summary': '英文要約解答欄',
+ 'essay': '英作文解答欄',
 }
 
 def paragraph(c, text, x, top, width, style=EN, max_height=None):
- markup = escape(text).replace('(     )', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)').replace('\n', '<br/>')
- markup = re.sub(r'(^|<br/>)([AB]):', r'\1<b><i>\2:</i></b>', markup)
+ markup = escape(text)
+ markup = re.sub(r'\(\s{3,}\)', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)', markup)
+ markup = markup.replace('\n', '<br/>')
+ markup = re.sub(r'(^|<br/>)([AB]):', r'\1<b><i>\2 :</i></b>', markup)
  p = Paragraph(markup, style)
  _, ph = p.wrap(width, H)
  if max_height is not None and ph > max_height:
@@ -78,9 +85,9 @@ def build_cover_pdf(path, exam, blueprint):
  c.drawImage(str(LOGO_PATH), 52, H - 64, width=98, height=31, mask='auto', preserveAspectRatio=True)
  c.setStrokeColor(colors.black)
  c.setFillColor(colors.black)
- string(c, f'MANATOBI ORIGINAL PRACTICE  /  {en_grade}', 160, 35, 'Times-Bold', 8.5)
+ string(c, f'{full_label}形式　予想演習プリント', 160, 35, 'BookletJP', 9.2)
  c.setFont('BookletJP', 8.8)
- c.drawRightString(W - 54, H - 56, f'マナトビ独自予想・演習冊子｜第{exam["round"]}回')
+ c.drawRightString(W - 54, H - 56, f'第{exam["round"]}回　問題冊子')
  c.setLineWidth(1.2)
  c.line(52, H - 72, W - 52, H - 72)
  c.setLineWidth(0.4)
@@ -98,8 +105,8 @@ def build_cover_pdf(path, exam, blueprint):
  badge_size = 20 if len(badge_label) >= 4 else 25
  c.setFont('BookletJP', badge_size)
  c.drawCentredString(112, H - banner_top - 52, badge_label)
- c.setFont('Times-Bold', 9.5)
- c.drawCentredString(112, H - banner_top - 78, f'ROUND {exam["round"]:02d}')
+ c.setFont('BookletJP', 9.2)
+ c.drawCentredString(112, H - banner_top - 78, f'第{exam["round"]}回')
  c.setFillColor(colors.black)
 
  # Title & timing summary on the right of badge
@@ -114,7 +121,7 @@ def build_cover_pdf(path, exam, blueprint):
  c.setFillColor(colors.HexColor('#f2f2f2'))
  c.rect(176, H - banner_top - banner_h + 14, W - 240, 27, stroke=0, fill=1)
  c.setFillColor(colors.black)
- string(c, f'第{exam["round"]}回 問題冊子　｜　{time_note}　｜　{count_note}', 184, banner_top + 76, 'BookletJP', 9.3)
+ string(c, f'第{exam["round"]}回　｜　{time_note}　｜　{count_note}', 184, banner_top + 76, 'BookletJP', 9.0)
 
  # Section breakdown & self-scoring table
  tbl_top = 218
@@ -158,7 +165,7 @@ def build_cover_pdf(path, exam, blueprint):
    writing_seq += 1
    w_item = [q for q in writing_items if q['section'] == spec['id']][0]
    wmin, wmax = w_item['wordRange']
-   num_label = f'Writing {writing_seq}'
+   num_label = f'大問 {sec_no}'
    sec_desc = f'{SECTION_NAMES[spec["id"]]}（目安 {wmin}〜{wmax}語）'
    cnt_label = '1題'
    score_label = '□ 自己点検済'
@@ -177,13 +184,13 @@ def build_cover_pdf(path, exam, blueprint):
  string(c, '■ 演習・印刷の手引き', 54, guide_top, 'BookletJP', 11)
  box_top = guide_top + 18
  sheet_guide = (
-  '解答用紙は2ページ構成です（1ページ目：A4横マークシート／2ページ目：A4縦ライティング解答欄）。'
+  '解答用紙はA4横2ページ構成です（A面：マークシート／B面：左右2列のライティング解答欄）。'
   if has_writing
   else '解答用紙はA4横マークシート（1ページ）です。'
  )
  guide_lines = '\n'.join([
   f'1. 問題冊子には正答や解説を載せていません。{sheet_guide}',
-  '2. 印刷時は「白黒・片面・実際のサイズ（100%）」を選ぶと、マーク欄や英作文罫線が実寸で出力されます。',
+  '2. 印刷時は「白黒・実際のサイズ（100%）」を選ぶと、マーク欄や英作文罫線が本番見本に近い実寸で出力されます。',
   '3. 解き終わるまでは「解答・解説」を開かず、本番と同じ時間配分を意識して取り組んでください。',
   '4. 同じ選択問題はアプリの「分野別練習」、英作文課題はアプリの「ライティング練習」でも学習・保存できます。',
  ])
@@ -221,29 +228,35 @@ def build_cover_pdf(path, exam, blueprint):
  c.save()
 
 def page_chrome(c, exam, page, section=None):
+ # Subtle left vertical margin band matching examination booklet aesthetic
+ c.setFillColor(colors.HexColor('#e4e4e4'))
+ c.rect(50, 34, 38, H - 68, stroke=0, fill=1)
  c.setFillColor(colors.black)
- string(c, f'MANATOBI  /  GRADE 5  /  ROUND {exam["round"]:02d}', 58, 40, 'Times-Bold', 8)
- string(c, f'英検5級形式・一次筆記 第{exam["round"]}回', 345, 40, 'BookletJP', 8)
+ string(c, 'Grade 5', 52, 40, 'Times-Bold', 8)
+ c.setFont('BookletJP', 8)
+ c.drawRightString(RIGHT, H - 46, f'マナトビ｜英検5級形式 第{exam["round"]}回 一次筆記')
  c.setLineWidth(.4)
- c.line(56, 34, W - 56, 34)
- c.line(56, H - 34, W - 56, H - 34)
- string(c, 'マナトビ独自教材｜公式問題ではありません', 56, H - 26, 'BookletJP', 7.5)
- string(c, str(page), W / 2 - 3, H - 26, 'Times-Bold', 9)
- string(c, exam['revision'], 375, H - 26, 'Times-Roman', 7)
+ c.line(50, 34, W - 56, 34)
+ c.line(50, H - 34, W - 56, H - 34)
+ string(c, '独自作成教材（公式問題ではありません）', 94, H - 26, 'BookletJP', 7.5)
+ string(c, f'— {page} —', W / 2 - 12, H - 26, 'Times-Roman', 9)
+ c.setFont('Times-Roman', 7)
+ c.drawRightString(RIGHT, 20, exam['revision'])
 
 def section_header(c, no, text, top, height):
- c.setLineWidth(.7)
+ c.setLineWidth(.75)
  c.setStrokeColor(colors.black)
- c.line(56, H - top, 539, H - top)
- c.line(56, H - top - height, 539, H - top - height)
- c.setFillColor(colors.HexColor('#e8e8e8'))
- c.rect(56, H - top - height, 37, height, fill=1, stroke=0)
+ c.line(50, H - top, 539, H - top)
+ c.line(50, H - top - height, 539, H - top - height)
+ c.setFillColor(colors.HexColor('#222222'))
+ c.rect(50, H - top - height, 38, height, fill=1, stroke=0)
+ c.setFillColor(colors.white)
+ string(c, str(no), 62, top + height / 2 - 13, 'Times-BoldItalic', 24)
  c.setFillColor(colors.black)
- string(c, str(no), 66, top + height / 2 - 13, 'Times-Bold', 25)
- paragraph(c, text, 110, top + 13, 414, JP, height - 20)
+ paragraph(c, text, 102, top + 12, 428, JP, height - 18)
 
 def question_number(c, number, top):
- string(c, f'({number})', 62, top, 'Times-BoldItalic', 12)
+ string(c, f'({number})', 55, top, 'Times-BoldItalic', 11.5)
 
 def choice_row(c, choices, top, columns=4):
  col_width = (RIGHT - LEFT) / columns
@@ -251,8 +264,8 @@ def choice_row(c, choices, top, columns=4):
   row = index // columns
   column = index % columns
   x = LEFT + column * col_width
-  string(c, str(index + 1), x + 10, top + row * 23, 'Times-Bold', 12.5)
-  paragraph(c, text, x + 32, top + row * 23, col_width - 37, EN, 20)
+  string(c, str(index + 1), x + 8, top + row * 23, 'Times-Bold', 12)
+  paragraph(c, text, x + 28, top + row * 23, col_width - 33, EN, 20)
 
 def short_question(c, number, item, top, slot):
  question_number(c, number, top)
@@ -261,10 +274,17 @@ def short_question(c, number, item, top, slot):
  if height + 25 > slot:
   raise ValueError('Short question slot is too small')
 
-def conversation_question(c, number, item, top):
+def conversation_question(c, number, item, top, show_divider=False):
  question_number(c, number, top)
- height = paragraph(c, item['prompt'], LEFT, top, RIGHT - LEFT, EN, 40)
+ height = paragraph(c, item['prompt'], LEFT, top, RIGHT - LEFT, EN, 42)
  choice_row(c, item['choices'], top + height + 5, columns=2)
+ if show_divider:
+  c.setStrokeColor(colors.HexColor('#999999'))
+  c.setDash(1.2, 2.2)
+  c.setLineWidth(0.4)
+  c.line(LEFT, H - (top + height + 55), RIGHT, H - (top + height + 55))
+  c.setDash()
+  c.setStrokeColor(colors.black)
 
 def reorder_question(c, number, item, top):
  question_number(c, number, top)
@@ -293,9 +313,9 @@ def reorder_question(c, number, item, top):
   string(c, str(index + 1), x + 10, top + 84, 'Times-Bold', 12.5)
   displayed = '－'.join(CIRCLED[int(value) - 1] for value in pair.split('－'))
   string(c, displayed, x + 31, top + 84, 'BookletJP', 11)
- c.setStrokeColor(colors.HexColor('#bbbbbb'))
- c.setDash(1, 2)
- c.setLineWidth(.3)
+ c.setStrokeColor(colors.HexColor('#999999'))
+ c.setDash(1.2, 2.2)
+ c.setLineWidth(.35)
  c.line(LEFT, H - top - 107, RIGHT, H - top - 107)
  c.setDash()
  c.setStrokeColor(colors.black)
@@ -307,27 +327,32 @@ def build_questions(path, exam, cover_pdf):
  page_chrome(c, exam, 2)
  c.setFillColor(colors.HexColor('#f7f7f7'))
  c.setLineWidth(.5)
- c.rect(65, H - 128, 465, 66, stroke=1, fill=1)
+ c.rect(96, H - 128, 443, 66, stroke=1, fill=1)
  c.setFillColor(colors.black)
- paragraph(c, '解答上の注意\n問題冊子ではなく、別の解答用紙に答えをマークしてください。各問1つ、1〜4の番号を選びます。訂正するときは、前のマークを消しゴムできれいに消してください。', 80, 70, 435, SMALL, 55)
- section_header(c, 1, '(1)〜(15)：空所に入る最も適切な語句を、1〜4から1つ選び、その番号を解答用紙にマークしてください。', 148, 84)
+ paragraph(c, '解答上の注意\n問題冊子ではなく、別の解答用紙に答えをマークしてください。各問1つ、1〜4の番号を選びます。訂正するときは、前のマークを消しゴムできれいに消してください。', 108, 70, 419, SMALL, 55)
+ section_header(c, 1, '次の(1)から(15)までの（　　　）に入れるのに最も適切なものを1, 2, 3, 4の中から一つ選び、その番号のマーク欄をぬりつぶしなさい。', 148, 84)
  for i, item in enumerate(exam['items'][:7]):
   short_question(c, i + 1, item, 256 + i * 74, 74)
  c.showPage()
  page_chrome(c, exam, 3)
- string(c, '1　短文の語句空所補充（続き）', 102, 66, 'BookletJP', 10)
+ c.setFillColor(colors.HexColor('#222222'))
+ c.rect(50, H - 84, 38, 24, stroke=0, fill=1)
+ c.setFillColor(colors.white)
+ string(c, '1', 64, 63, 'Times-BoldItalic', 14)
+ c.setFillColor(colors.black)
+ string(c, '短文の語句空所補充（続き）', 102, 66, 'BookletJP', 9.5)
  c.setLineWidth(.5)
- c.line(56, H - 90, 539, H - 90)
+ c.line(50, H - 90, 539, H - 90)
  for i, item in enumerate(exam['items'][7:15]):
   short_question(c, i + 8, item, 114 + i * 82, 82)
  c.showPage()
  page_chrome(c, exam, 4)
- section_header(c, 2, '(16)〜(20)：会話の空所に入る最も適切な文や語句を、1〜4から1つ選び、その番号を解答用紙にマークしてください。', 62, 82)
+ section_header(c, 2, '次の(16)から(20)までの会話文を完成させるために、（　　　）に入れるのに最も適切なものを1, 2, 3, 4の中から一つ選び、その番号をマークしなさい。', 62, 82)
  for i, item in enumerate(exam['items'][15:20]):
-  conversation_question(c, i + 16, item, 174 + i * 121)
+  conversation_question(c, i + 16, item, 174 + i * 121, show_divider=(i < 4))
  c.showPage()
  page_chrome(c, exam, 5)
- section_header(c, 3, '(21)〜(25)：日本語に合うように①〜④を並べ替え、四つのわくに入れます。1番目と3番目の語句番号の組を、1〜4から1つ選んでマークしてください。', 62, 92)
+ section_header(c, 3, '次の(21)から(25)までの日本文の意味を表すように①から④までを並べ替えてわくの中に入れたとき、1番目と3番目にくるものの組合せを1, 2, 3, 4から選びなさい。', 62, 92)
  for i, item in enumerate(exam['items'][20:25]):
   reorder_question(c, i + 21, item, 180 + i * 119)
  c.showPage()
@@ -342,7 +367,7 @@ def build_questions(path, exam, cover_pdf):
  Path(temp).unlink()
 
 def _build_mark_sheet_page(path, exam, blueprint):
- """Page 1: Landscape A4 mark sheet with zebra rows, 5-question dividers, and zero text overlap."""
+ """Page 1 (Side A): Landscape A4 mark sheet with zebra rows, 5-question dividers, and zero text overlap."""
  c = canvas.Canvas(str(path), pagesize=landscape(A4), pageCompression=1, invariant=1)
  w, h = landscape(A4)
 
@@ -366,13 +391,14 @@ def _build_mark_sheet_page(path, exam, blueprint):
  c.setFont('BookletJP', 15 if len(badge_label) >= 4 else 17)
  c.drawCentredString(76, h - 61, badge_label)
  c.setFillColor(colors.black)
- txt(f'{full_label}形式　一次筆記 第{exam["round"]}回　解答用紙（マークシート）', 120, h - 55, 15.5)
+ side_tag = '（A面：マークシート）' if has_writing else '（マークシート）'
+ txt(f'{full_label}形式　一次筆記 第{exam["round"]}回　解答用紙{side_tag}', 120, h - 55, 15)
  sub_note = (
-  'マナトビ独自教材｜公式の解答用紙ではありません｜2ページ目にライティング解答欄があります'
+  'マナトビ独自教材｜公式の解答用紙ではありません｜2ページ目（B面・A4横）にライティング解答欄があります'
   if has_writing
   else 'マナトビ独自教材｜公式の解答用紙ではありません｜A4横・白黒・実際のサイズ（100%）で印刷'
  )
- txt(sub_note, 120, h - 73, 8.5)
+ txt(sub_note, 120, h - 73, 8.4)
  c.setLineWidth(0.6)
  c.line(42, h - 82, w - 42, h - 82)
 
@@ -421,7 +447,7 @@ def _build_mark_sheet_page(path, exam, blueprint):
  cur_sy -= 34
 
  if has_writing:
-  txt(f'■ ライティング（全{len(writing_items)}題）：別紙（2ページ目）の罫線枠に記入', 58, cur_sy - 6, 8.6)
+  txt(f'■ ライティング（全{len(writing_items)}題）：B面（2ページ目）の2列解答欄に記入', 58, cur_sy - 6, 8.6)
   txt(f'※ 公式筆記目安時間：{blueprint["minutes"]}分（リーディング＋ライティング合計）', 58, cur_sy - 22, 8.2)
  else:
   txt(f'※ 公式筆記目安時間：{blueprint["minutes"]}分｜リスニング・英作文は含みません。', 58, cur_sy - 6, 8.4)
@@ -473,7 +499,7 @@ def _build_mark_sheet_page(path, exam, blueprint):
   c.setLineWidth(0.75)
   c.rect(x, mark_top - box_h, colw, box_h, stroke=1, fill=0)
 
- # Mark example neatly placed below the shorter right column or bottom margin (guaranteed y >= 72, well below mark_top - box_h)
+ # Mark example neatly placed below the mark columns
  guide_y = 84
  txt('良いぬり方：', right_x1, guide_y, 8.8)
  c.setFillColor(colors.black)
@@ -483,15 +509,19 @@ def _build_mark_sheet_page(path, exam, blueprint):
  # Footer
  c.setLineWidth(0.4)
  c.line(42, 48, w - 42, 48)
- txt('マナトビ｜独自教材・公式問題ではありません', 42, 31, 8)
- c.setFont('Times-Roman', 7.5)
- c.drawRightString(w - 42, 31, f'{exam["revision"]}  |  Answer Sheet 1/{2 if has_writing else 1}')
+ txt('マナトビ｜独自作成教材（公式問題ではありません）', 42, 31, 8)
+ c.setFont('BookletJP', 7.8)
+ sheet_footer = f'{exam["revision"]}　｜　解答用紙 1/2（A面）' if has_writing else f'{exam["revision"]}　｜　解答用紙 1/1'
+ c.drawRightString(w - 42, 31, sheet_footer)
  c.showPage()
  c.save()
 
 def _build_writing_sheet_page(path, exam):
- """Page 2 (Grades 3 through Pre-1): Portrait A4 lined writing answer sheet with word-count & self-check."""
- c = canvas.Canvas(str(path), pagesize=A4, pageCompression=1, invariant=1)
+ """Page 2 (Side B, Grades 3 through Pre-1): Landscape A4 side-by-side 2-column ruled writing answer sheet,
+ faithfully mirroring the current Eiken B-side structure (Left: Email/Summary, Right: Essay, 5-line markers).
+ """
+ c = canvas.Canvas(str(path), pagesize=landscape(A4), pageCompression=1, invariant=1)
+ w, h = landscape(A4)
  full_label, badge_label, _ = GRADE_LABELS[exam['grade']]
  writing_items = [q for q in exam['items'] if q['kind'] == 'writing']
  choice_sections = len({q['section'] for q in exam['items'] if q['kind'] == 'choice'})
@@ -500,86 +530,119 @@ def _build_writing_sheet_page(path, exam):
   c.setFont(font, size)
   c.drawString(x, y, text)
 
- # Top chrome
+ # Top-left badge + Side B title
  c.setFillColor(colors.black)
- c.rect(48, H - 68, 58, 28, stroke=0, fill=1)
+ c.rect(42, h - 68, 62, 32, stroke=0, fill=1)
  c.setFillColor(colors.white)
- c.setFont('BookletJP', 12 if len(badge_label) >= 4 else 14)
- c.drawCentredString(77, H - 59, badge_label)
+ c.setFont('BookletJP', 13.5 if len(badge_label) >= 4 else 15.5)
+ c.drawCentredString(73, h - 58, badge_label)
  c.setFillColor(colors.black)
- txt(f'{full_label}形式　第{exam["round"]}回　ライティング解答用紙', 116, H - 54, 15)
- txt('枠内の罫線に英語で丁寧に記入してください。語数目安を確認し、書き終えたら下の自己点検を行いましょう。', 116, H - 70, 8.2)
+ txt(f'{full_label}形式 解答用紙（B面：ライティング）', 112, h - 50, 12.2)
+ txt(f'第{exam["round"]}回　氏名：____________________', 112, h - 67, 9.0)
+
+ # Top-right double-bordered instruction box (authentic B-side guidance)
+ notice_x = 408
+ notice_w = w - 48 - notice_x
+ notice_top = h - 30
+ notice_h = 46
+ c.setLineWidth(0.7)
+ c.rect(notice_x, notice_top - notice_h, notice_w, notice_h, stroke=1, fill=0)
+ c.setLineWidth(0.3)
+ c.rect(notice_x + 2, notice_top - notice_h + 2, notice_w - 4, notice_h - 4, stroke=1, fill=0)
+ txt('・太枠に囲まれた解答欄の内側のみが自己点検・添削の対象です。', notice_x + 8, notice_top - 14, 7.5)
+ txt('・文字ははっきりと分かりやすく濃く書き、訂正は消しゴムできれいに消してください。', notice_x + 8, notice_top - 26, 7.5)
+ txt('・解答が英語以外の言語や課題と無関係な内容になっている場合は採点対象になりません。', notice_x + 8, notice_top - 38, 7.5)
+
  c.setLineWidth(0.5)
- c.line(48, H - 78, W - 48, H - 78)
+ c.line(42, h - 80, w - 48, h - 80)
 
- # Candidate name strip
- txt('氏名：______________________________', 48, H - 98, 9.5)
- txt('実施日：　　　年　　月　　日', 330, H - 98, 9.5)
-
- # Line allocations tailored to grade word ranges
+ # Line counts matching official B-side proportions per grade
  line_counts = {
-  'eiken_3': (7, 9),
-  'eiken_pre2': (9, 11),
-  'eiken_pre2plus': (8, 11),
-  'eiken_2': (10, 14),
-  'eiken_pre1': (11, 16),
+  'eiken_3': (10, 10),
+  'eiken_pre2': (12, 14),
+  'eiken_pre2plus': (12, 14),
+  'eiken_2': (15, 16),
+  'eiken_pre1': (16, 20),
  }[exam['grade']]
 
- cursor_y = H - 118
- for idx, (w_item, lines) in enumerate(zip(writing_items, line_counts), 1):
+ col_gap = 24
+ total_usable_w = w - 98 - col_gap
+ col_widths = [total_usable_w * 0.455, total_usable_w * 0.545]
+ col_xs = [42, 42 + col_widths[0] + col_gap]
+
+ header_top = h - 92
+ header_h = 38
+ body_top = header_top - header_h
+ body_bottom = 90
+ body_h = body_top - body_bottom
+
+ for idx, (w_item, lines, cx, cw) in enumerate(zip(writing_items, line_counts, col_xs, col_widths), 1):
   sec_no = choice_sections + idx
   wmin, wmax = w_item['wordRange']
-  part_title = SECTION_NAMES[w_item['section']]
-  header_h = 24
-  line_h = 19.5 if exam['grade'] == 'eiken_pre1' else 21.0
-  body_h = lines * line_h + 14
+  box_title = WRITING_BOX_LABELS[w_item['section']]
 
-  # Box header
-  c.setFillColor(colors.HexColor('#eaeaea'))
-  c.rect(48, cursor_y - header_h, W - 96, header_h, stroke=1, fill=1)
+  # Column top label frame
+  c.setFillColor(colors.HexColor('#f4f4f4'))
+  c.setLineWidth(0.6)
+  c.rect(cx, body_top, cw, header_h, stroke=1, fill=1)
   c.setFillColor(colors.black)
-  txt(f'大問 {sec_no}　{part_title}（目安語数：{wmin}〜{wmax}語）', 56, cursor_y - 16, 10)
-  c.setFont('BookletJP', 9)
-  c.drawRightString(W - 56, cursor_y - 16, '記入語数：［　　　　］words')
 
-  # Ruled writing frame
-  frame_top = cursor_y - header_h
+  # Boxed section number + title centered
+  num_box_w = 20
+  num_box_h = 17
+  title_str = f'  {box_title}'
+  title_w = pdfmetrics.stringWidth(title_str, 'BookletJP', 11.5)
+  group_x = cx + (cw - (num_box_w + title_w)) / 2
+  c.setFillColor(colors.white)
   c.setLineWidth(0.75)
-  c.rect(48, frame_top - body_h, W - 96, body_h, stroke=1, fill=0)
+  c.rect(group_x, header_top - 20, num_box_w, num_box_h, stroke=1, fill=1)
+  c.setFillColor(colors.black)
+  c.setFont('Times-Bold', 11.5)
+  c.drawCentredString(group_x + num_box_w / 2, header_top - 16, str(sec_no))
+  txt(title_str, group_x + num_box_w, header_top - 16, 11.5)
+
+  c.setFont('BookletJP', 8.3)
+  c.drawCentredString(cx + cw / 2, body_top + 5, f'語数の目安：{wmin}〜{wmax}語　　記入語数：［　　　］語')
+
+  # Thick outer ruled frame (official style)
+  c.setLineWidth(1.35)
+  c.rect(cx, body_bottom, cw, body_h, stroke=1, fill=0)
+
+  step_h = (body_h - 8) / lines
   for ln in range(1, lines + 1):
-   ly = frame_top - ln * line_h - 4
-   c.setStrokeColor(colors.HexColor('#888888') if ln % 5 == 0 else colors.HexColor('#cccccc'))
-   c.setLineWidth(0.55 if ln % 5 == 0 else 0.35)
-   c.line(60, ly, W - 74, ly)
-   if ln % 5 == 0 or ln == lines:
-    c.setFillColor(colors.HexColor('#666666'))
-    c.setFont('Times-Roman', 7.5)
-    c.drawRightString(W - 54, ly + 2, str(ln))
+   ly = body_top - ln * step_h
+   is_fifth = (ln % 5 == 0)
+   c.setStrokeColor(colors.HexColor('#666666') if is_fifth else colors.HexColor('#bbbbbb'))
+   c.setLineWidth(0.55 if is_fifth else 0.35)
+   c.line(cx + 2, ly, cx + cw - 2, ly)
+   if is_fifth or ln == lines:
+    c.setFillColor(colors.HexColor('#444444'))
+    c.setFont('Times-Bold' if is_fifth else 'Times-Roman', 7.5)
+    c.drawString(cx + cw + 3.5, ly - 2, str(ln))
     c.setFillColor(colors.black)
   c.setStrokeColor(colors.black)
-  cursor_y = frame_top - body_h - 18
 
- # Self-check bar at bottom
- check_h = 44
- check_bottom = max(56, cursor_y - check_h + 6)
+ # Self-check strip & A-side guide bar at bottom
+ check_y = 56
  c.setFillColor(colors.HexColor('#f7f7f7'))
- c.setLineWidth(0.5)
- c.rect(48, check_bottom, W - 96, check_h, stroke=1, fill=1)
+ c.setLineWidth(0.45)
+ c.rect(42, check_y, w - 98, 24, stroke=1, fill=1)
  c.setFillColor(colors.black)
- txt('■ 書いた後の自己点検（解答・解説の参考解答を見る前にチェック）', 58, check_bottom + 27, 8.8)
- txt('□ 課題の条件にすべて答えた　　□ 構成・理由が一貫している　　□ 語彙・つづりを見直した　　□ 文法・語数目安を確認した', 58, check_bottom + 10, 8.2)
+ txt('自己点検： □ 課題の条件にすべて答えた　 □ 構成・理由が一貫している　 □ 語彙・つづりを見直した　 □ 文法・語数目安を確認した', 50, check_y + 8, 8.1)
+ c.setFont('BookletJP', 7.8)
+ c.drawRightString(w - 62, check_y + 8, '※ マーク欄はA面')
 
  # Footer
  c.setLineWidth(0.4)
- c.line(48, 42, W - 48, 42)
- txt('マナトビ｜独自教材・公式問題ではありません', 48, 28, 8)
- c.setFont('Times-Roman', 7.5)
- c.drawRightString(W - 48, 28, f'{exam["revision"]}  |  Answer Sheet 2/2')
+ c.line(42, 45, w - 48, 45)
+ txt('マナトビ｜独自作成教材（公式問題ではありません）', 42, 30, 8)
+ c.setFont('BookletJP', 7.8)
+ c.drawRightString(w - 48, 30, f'{exam["revision"]}　｜　解答用紙 2/2（B面）')
  c.showPage()
  c.save()
 
 def build_answer_sheet(path, exam, blueprint):
- """Build 1-page mark sheet (5/4) or 2-page mark + writing answer sheet (3 through Pre-1)."""
+ """Build 1-page mark sheet (5/4) or 2-page landscape mark + side-by-side writing sheet (3 through Pre-1)."""
  has_writing = any(q['kind'] == 'writing' for q in exam['items'])
  if not has_writing:
   _build_mark_sheet_page(path, exam, blueprint)
@@ -597,4 +660,4 @@ def build_answer_sheet(path, exam, blueprint):
  out.close()
  temp_mark.unlink()
  temp_write.unlink()
- return {'pages': 2, 'markSheet': 'landscape A4 (page 1)', 'writingSheet': 'portrait A4 ruled (page 2)'}
+ return {'pages': 2, 'markSheet': 'landscape A4 (page 1 / Side A)', 'writingSheet': 'landscape A4 2-column ruled (page 2 / Side B)'}

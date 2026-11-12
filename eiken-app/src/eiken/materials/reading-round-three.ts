@@ -36,17 +36,17 @@ export const READING_3=writtenRound('eiken_3',1,[
  emailWriting(
   'r3-writing-email',
   'E-mail from Ben',
-  `Hi!\nYesterday, I went to __the new skating rink__ near North Station with my cousin. We had a wonderful afternoon there!\nYour friend,\nBen`,
-  `こんにちは！昨日、いとこと一緒に北駅の近くの新しいスケートリンクへ行きました。そこでとても楽しい午後を過ごしました！あなたの友人、ベンより`,
-  `友人のBenから届いたEメールを読み、下線部についてあなたがもっと知りたいことを2つ質問する返信メールを英語で書きなさい。（目安語数：15〜25語）`,
+  `Hi,\nThank you for your e-mail.\nI heard that you went to the new skating rink near North Station yesterday! I have some questions for you. __How long did you skate there?__ __And who did you go with?__\nYour friend,\nBen`,
+  `こんにちは。Eメールをありがとう。昨日、北駅の近くの新しいスケートリンクへ行ったそうですね！いくつか質問があります。そこでどのくらいの時間滑りましたか。また、誰と一緒にそこへ行きましたか。あなたの友人、ベンより`,
+  `外国人の友達（Ben）から以下のEメールを受け取りました。Eメールを読み、それに対する返信メールを英文で書きなさい。返信メールの中で、友達（Ben）からの2つの質問（下線部）に対応する内容を、あなた自身で自由に考えて答えなさい。（目安語数：15〜25語）`,
   [15,25],
-  `Hi Ben, That sounds exciting! How much was a ticket for the rink? Also, how long did you skate there?`,
-  `こんにちは、ベン。とても楽しそうですね！リンクのチケットはいくらでしたか。また、そこでどのくらいの時間滑りましたか。`,
-  `下線部（新しいスケートリンク）に関連して、料金（How much ...?）と滞在・滑走時間（how long ...?）の2つの異なる具体的な質問を疑問文の正しい語順で尋ねています。`,
-  ['下線部（新しいスケートリンク）に関する質問を2つ書いた','2つの質問の内容が重複していない','疑問詞や助動詞を用いた正しい疑問文の語順になっている','15〜25語の目安に収まっている']
+  `I skated there for about two hours. I went to the rink with my older cousin, and we had fun.`,
+  `私はそこで約2時間滑りました。年上のいとこと一緒にそのリンクへ行き、とても楽しかったです。`,
+  `友達からの2つの下線質問（①どのくらいの時間滑ったか：for about two hours、②誰と行ったか：with my older cousin）の両方に20語で自然に答えています（返信枠に印字済みの挨拶・結びを除いた本文語数）。`,
+  ['友達からの1つ目の質問（滑った時間）に明確に答えた','友達からの2つ目の質問（一緒に行った相手）に明確に答えた','過去形を用いて主語と動詞の整った英文で書いた','返信本文が15〜25語の目安に収まっている']
  ),
  essayWriting(
-  `次のTOPICについて、あなたの考えとその理由を2つ英文で書きなさい。（目安語数：25〜35語）\nTOPIC: Which season do you like better, spring or autumn?`,
+  `次のQUESTIONについて、あなたの考えとその理由を2つ英文で書きなさい。（目安語数：25〜35語）\nQUESTION: Which season do you like better, spring or autumn?`,
   [25,35],
   `I like autumn better than spring. First, the weather is cool and comfortable for playing sports outside. Second, I enjoy eating delicious autumn foods such as sweet potatoes and chestnuts.`,
   `私は春より秋のほうが好きです。第一に、気候が涼しく外でスポーツをするのに快適だからです。第二に、サツマイモや栗などのおいしい秋の食べ物を食べるのが楽しいからです。`,

@@ -9,9 +9,22 @@ import { WRITTEN_4_R2 } from './written-round2-four';
 import { WRITTEN_3_R2 } from './written-round2-three';
 import { WRITTEN_3_R3 } from './written-round3-three';
 import { WRITTEN_3_R4 } from './written-round4-three';
+import { WRITTEN_3_R5 } from './written-round5-three';
+import { WRITTEN_3_R6 } from './written-round6-three';
+import { WRITTEN_3_R7 } from './written-round7-three';
+import { WRITTEN_3_R8 } from './written-round8-three';
+import { WRITTEN_3_R9 } from './written-round9-three';
+import { WRITTEN_3_R10 } from './written-round10-three';
+import { WRITTEN_3_R11 } from './written-round11-three';
+import { WRITTEN_3_R12 } from './written-round12-three';
+import { WRITTEN_3_R13 } from './written-round13-three';
+import { WRITTEN_3_R14 } from './written-round14-three';
+import { WRITTEN_3_R15 } from './written-round15-three';
 import { WRITTEN_PRE2_R2 } from './written-round2-pre-two';
+import { WRITTEN_PRE2_R3 } from './written-round3-pre-two';
 import { WRITTEN_PLUS_R2 } from './written-round2-bridge';
 import { WRITTEN_2_R2 } from './written-round2-two';
+import { WRITTEN_2_R3 } from './written-round3-two';
 import { WRITTEN_PRE1_R2 } from './written-round2-pre-one';
 import { validateReleasedBooklets, type WrittenExam, type WrittenItem } from '../writtenExamCore';
 
@@ -62,12 +75,25 @@ READING_3,
 WRITTEN_3_R2,
 WRITTEN_3_R3,
 WRITTEN_3_R4,
+WRITTEN_3_R5,
+WRITTEN_3_R6,
+WRITTEN_3_R7,
+WRITTEN_3_R8,
+WRITTEN_3_R9,
+WRITTEN_3_R10,
+WRITTEN_3_R11,
+WRITTEN_3_R12,
+WRITTEN_3_R13,
+WRITTEN_3_R14,
+WRITTEN_3_R15,
 READING_PRE2,
 WRITTEN_PRE2_R2,
+WRITTEN_PRE2_R3,
 READING_PLUS,
 WRITTEN_PLUS_R2,
 READING_2,
 WRITTEN_2_R2,
+WRITTEN_2_R3,
 READING_PRE1,
 WRITTEN_PRE1_R2,
 ];
