@@ -1,10 +1,11 @@
 import type { Chapter, Problem, SubQuestion } from '../types/curriculum';
 import type { EikenGrade } from './config';
+import type { WritingTask } from './materials/original-types';
 import { WRITTEN_BOOKLETS } from './materials/written-booklets';
 import type { WrittenExam, WrittenItem } from './writtenExamCore';
-const LABELS={short:'短文の語句空所補充',conversation:'会話文の空所補充',reorder:'語句整序',reading:'読解',cloze:'長文の語句空所補充',email:'Eメール',summary:'要約',essay:'英作文'};
+const LABELS={short:'短文の語句空所補充',conversation:'会話文の空所補充',reorder:'語句整序',reading:'読解',cloze:'長文の語句空所補充',email:'Eメール返信',summary:'英文要約',essay:'英作文（意見論述）'};
 function subQuestion(exam:WrittenExam,item:WrittenItem):SubQuestion {
- return {id:`${item.id}_answer`,label:`問${exam.items.indexOf(item)+1}（冊子と共通）${item.passage?' '+item.prompt:''}`,type:'multiple_choice',options:['1','2','3','4'],optionTexts:[...item.choices!],correctAnswer:String(item.answer!+1),skill:LABELS[item.section],explainJa:item.explanation,detailedExplanation:{theme:LABELS[item.section],steps:[item.completedSentence || '',item.explanation!].filter(Boolean)},distractors:item.distractorReasons!.map((why,index)=>({no:index+1,why}))};
+ return {id:`${item.id}_answer`,label:`問${exam.items.indexOf(item)+1}（第${exam.round}回冊子と共通）${item.passage?' '+item.prompt:''}`,type:'multiple_choice',options:['1','2','3','4'],optionTexts:[...item.choices!],correctAnswer:String(item.answer!+1),skill:LABELS[item.section],explainJa:item.explanation,detailedExplanation:{theme:LABELS[item.section],steps:[item.completedSentence || '',item.explanation!].filter(Boolean)},distractors:item.distractorReasons!.map((why,index)=>({no:index+1,why}))};
 }
 /** Original IDs, choice positions, explanations and translations are never re-authored here. */
 export function bookletItemToProblem(exam:WrittenExam,item:WrittenItem):Problem {
@@ -22,6 +23,37 @@ export function bookletPracticeChapters(grade:EikenGrade,part:'vocabulary'|'read
  return WRITTEN_BOOKLETS.filter(exam=>exam.grade===grade && exam.review==='approved').flatMap(exam=>sections.flatMap(section=>{
   const items=exam.items.filter(item=>item.section===section);if(!items.length)return [];
   const title=`${exam.scope==='reading'?'リーディング':'筆記'} 第${exam.round}回｜${LABELS[section]}`;
-  return [{id:`${exam.id}_${section}`,title,abstractTitle:title,realTitle:part==='reading'?'リーディング練習':'語彙・文法練習',questionGroup:`冊子${LABELS[section]}`,topics:['印刷用冊子と同じ原本・番号・解説'],marks:items.length,miniTest:[],practiceProblems:part==='reading'?passageProblems(exam,items):items.map(item=>bookletItemToProblem(exam,item))}];
+  return [{id:`${exam.id}_${section}`,title,abstractTitle:title,realTitle:part==='reading'?'リーディング練習':'語彙・文法練習',questionGroup:`冊子${LABELS[section]}`,topics:[`印刷用冊子（第${exam.round}回）と同じ原本・番号・解説`],marks:items.length,miniTest:[],practiceProblems:part==='reading'?passageProblems(exam,items):items.map(item=>bookletItemToProblem(exam,item))}];
  }));
+}
+export interface BookletWritingEntry extends WritingTask {
+ grade:EikenGrade;
+ key:string;
+ round:number;
+ bookletId:string;
+ modelTranslation:string;
+}
+/** Same writing originals power both the printable booklet (question + lined sheet + model answer) and in-app Writing practice. */
+export function bookletWritingTasks():BookletWritingEntry[] {
+ return WRITTEN_BOOKLETS.filter(exam=>exam.review==='approved').flatMap(exam=>{
+  const roundLetter=String.fromCharCode(96+exam.round);
+  return exam.items.filter(item=>item.kind==='writing').map(item=>{
+   const id=`round${roundLetter}${item.section}`;
+   return {
+    id,
+    key:`${exam.grade}_writing_${id}`,
+    grade:exam.grade,
+    round:exam.round,
+    bookletId:exam.id,
+    title:`筆記 第${exam.round}回｜${LABELS[item.section]}`,
+    instruction:item.prompt,
+    source:item.passage?`${item.passage.title}\n\n${item.passage.text}`:undefined,
+    target:`目安語数：${item.wordRange![0]}〜${item.wordRange![1]}語（印刷用冊子 第${exam.round}回と共通課題）`,
+    model:item.model!,
+    modelTranslation:item.translation!,
+    commentary:[item.passage?.translation?`【元文の和訳】\n${item.passage.translation}`:'',`【構成・表現のポイント】\n${item.explanation!}`].filter(Boolean).join('\n\n'),
+    checklist:[...item.rubric!],
+   };
+  });
+ });
 }
