@@ -45,11 +45,11 @@ export const READING_PRE2=writtenRound('eiken_pre2',1,[
   ['相手からの質問（料理の頻度・作るのが好きな料理）に答えた','下線部（週末の料理教室）に関する具体的な質問を2つ書いた','疑問文の語順・時制・冠詞が正確である','40〜50語の目安に収まっている']
  ),
  essayWriting(
-  `次のTOPICについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nTOPIC: Do you think it is a good idea for high school students to study at a cafe?`,
+  `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think it is a good idea for high school students to study at a cafe?`,
   [50,60],
   `I think it is a good idea for high school students to study at a cafe. First, a quiet change of environment helps them concentrate better than staying in their bedrooms all day. Second, there are fewer distractions such as television or video games at home, so they can finish their homework efficiently.`,
   `私は高校生がカフェで勉強するのはよい考えだと思います。第一に、静かに環境を変えることで、一日中自分の部屋にいるよりも集中しやすくなります。第二に、家にあるテレビやテレビゲームのような気を散らすものが少ないため、効率よく宿題を終えられます。`,
   `冒頭で賛成の立場を明示し、First（環境変化による集中力の維持）とSecond（家庭内の誘惑からの切り離しによる効率化）の2つの異なる理由を因果関係とともに展開しています。`,
-  ['TOPICに対する賛成・反対の立場を冒頭で明示した','異なる2つの理由をFirst / Second等で整理して述べた','理由を支える具体的な説明を添えた','50〜60語の目安に収まっている']
+  ['QUESTIONに対する賛成・反対の立場を冒頭で明示した','異なる2つの理由をFirst / Second等で整理して述べた','理由を支える具体的な説明を添えた','50〜60語の目安に収まっている']
  ),
 ],'original-written-20261111-r1');

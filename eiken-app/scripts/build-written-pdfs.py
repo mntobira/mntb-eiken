@@ -344,13 +344,29 @@ for exam in DATA['booklets']:
    if len(epages) != 1 or any(normalize(value) not in epages[0] for value in req_exp):
     raise ValueError(f'Explanation split or incomplete in {exam["id"]}: {n}')
 
-  # Writing checks: prompts/passages in question booklet, model answers ONLY in explanations
+  # Writing checks: core prompt/passage content in question booklet, model answers ONLY in explanations
   full_q_text = ''.join(question_texts)
   full_e_text = ''.join(explanation_texts)
   for wq in writing_tasks:
-   clean_prompt = wq['prompt'].replace('__', '')
-   if normalize(clean_prompt) not in full_q_text:
-    raise ValueError(f'Writing prompt missing from question booklet: {wq["id"]}')
+   wmin, wmax = wq['wordRange']
+   if f'{wmin}〜{wmax}語' not in full_q_text and f'{wmin}語〜{wmax}語' not in full_q_text:
+    raise ValueError(f'Writing word-range missing from question booklet: {wq["id"]}')
+   if wq['section'] == 'essay':
+    raw_p = wq['prompt']
+    topic_core = raw_p
+    for m_tag in ('\nQUESTION:', '\nTOPIC:'):
+     if m_tag in raw_p:
+      topic_core = raw_p.split(m_tag, 1)[1].split('\nPOINTS:', 1)[0].strip()
+      break
+    if normalize(topic_core) not in full_q_text:
+     raise ValueError(f'Essay topic missing from question booklet: {wq["id"]}')
+    if '\nPOINTS:' in raw_p:
+     pts = [ln.lstrip('•-* ').strip() for ln in raw_p.split('\nPOINTS:', 1)[1].splitlines() if ln.strip()]
+     if any(normalize(pt) not in full_q_text for pt in pts):
+      raise ValueError(f'Essay POINTS missing from question booklet: {wq["id"]}')
+   elif wq['section'] == 'email':
+    if 'Bestwishes,' not in full_q_text or 'Thankyouforyoure-mail.' not in full_q_text:
+     raise ValueError(f'Email reply frame missing from question booklet: {wq["id"]}')
    if normalize(wq['model']) in full_q_text:
     raise ValueError(f'Writing model answer leaked into question booklet: {wq["id"]}')
    for req_w in [wq['model'], wq['translation'], wq['explanation'], *wq['rubric']]:

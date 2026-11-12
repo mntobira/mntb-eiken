@@ -50,11 +50,11 @@ export const WRITTEN_PRE2_R2 = writtenRound('eiken_pre2', 2, [
     ['相手の質問（好きな場所・乗る頻度）に漏れなく答えた', '下線部（町のサイクリングイベント）に関する質問を2つ書いた', '時制（現在習慣と過去イベントの区別）と疑問文語順が正確である', '40〜50語の目安に収まっている'],
   ),
   essayWriting(
-    `次のTOPICについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nTOPIC: Do you think schools should teach high school students how to manage money?`,
+    `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think schools should teach high school students how to manage money?`,
     [50, 60],
     `I think schools should teach high school students how to manage money wisely. First, many teenagers earn money from part-time jobs, so learning how to save and budget prevents careless spending. Second, understanding bank accounts and credit cards prepares young people to live independently after they graduate from high school.`,
     `私は学校が高校生に賢いお金の管理方法を教えるべきだと思います。第一に、多くの十代がアルバイトでお金を稼ぐため、貯蓄や予算立てを学ぶことで無駄遣いを防げます。第二に、銀行口座やクレジットカードの仕組みを理解することは、若者が高校卒業後に自立して暮らす準備になります。`,
     `金銭教育への賛成を冒頭で示し、First（アルバイト収入の貯蓄・予算管理による浪費防止）とSecond（銀行口座やカードの理解による卒業後の自立準備）の2つの理由を51語で論理的に述べています。`,
-    ['TOPICに対する賛否の意見を明確に示した', '在学中の実感と卒業後の備えなど異なる理由を2つ挙げた', '動名詞主語や不定詞を用いて論理的に説明した', '50〜60語の目安に収まっている'],
+    ['QUESTIONに対する賛否の意見を明確に示した', '在学中の実感と卒業後の備えなど異なる理由を2つ挙げた', '動名詞主語や不定詞を用いて論理的に説明した', '50〜60語の目安に収まっている'],
   ),
 ], 'original-written-20261112-r2');

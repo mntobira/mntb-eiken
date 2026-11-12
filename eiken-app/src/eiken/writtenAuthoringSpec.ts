@@ -96,7 +96,7 @@ export const GRADE_AUTHORING_SPECS: Record<Exclude<EikenGrade, 'eiken_1'>, Grade
         section: 'email',
         wordRange: [15, 25],
         sourceWords: [30, 65],
-        formatRule: '友人のEメール本文中に __下線部__ を1か所設け、その下線部について自分がもっと知りたい具体的な質問を2つ英語で尋ねる返信を書く。',
+        formatRule: '外国人の友達からのEメール本文中に __2つの質問（下線部）__ を設け、返信枠（Hi, Name! / Thank you for your e-mail. / Best wishes,）に入る本文として、その2つの質問に対応する内容を15〜25語で答える。',
       },
       {
         section: 'essay',

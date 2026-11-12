@@ -54,7 +54,7 @@ export const WRITTEN_PLUS_R2 = writtenRound('eiken_pre2plus', 2, [
     ['タブレットメニューの利点（迅速な注文・更新の容易さ等）を含めた', '利用上の課題（操作の戸惑い・見比べにくさ）を含めた', '店舗側の対応（紙メニューの併用）までつなげた', '自分の意見を加えず25〜35語の目安に収めた'],
   ),
   essayWriting(
-    `次のTOPICについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nTOPIC: Do you think public libraries should stay open later in the evening?`,
+    `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think public libraries should stay open later in the evening?`,
     [50, 60],
     `I think public libraries should stay open later in the evening. First, office workers and high school students with club activities often cannot visit before early closing times, so evening hours give them fair access. Second, libraries offer a safe, quiet study space at night without requiring people to spend money at cafes.`,
     `私は公立図書館は夜もっと遅くまで開館すべきだと思います。第一に、会社員や部活動のある高校生は早い閉館時刻の前に行けないことが多く、夜間開館によって公平に利用できるようになります。第二に、図書館はカフェでお金を使わなくても夜に落ち着いて学べる安全で静かな場所を提供してくれます。`,
