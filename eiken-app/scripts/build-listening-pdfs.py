@@ -22,6 +22,7 @@ from reportlab.platypus import (
     TableStyle,
     PageBreak,
     KeepTogether,
+    Image as RLImage,
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -38,7 +39,14 @@ AUDIO_DATA = json.loads((DELIV / 'eiken-elevenlabs-audio-prompts.json').read_tex
 IMAGE_DATA = json.loads((DELIV / 'eiken-chatgpt-image-prompts.json').read_text('utf-8'))
 
 pdfmetrics.registerFont(TTFont('BookletJP', str(PUBLIC / 'fonts/booklet-noto-serif-jp.ttf')))
+LOGO_PATH = PUBLIC / 'brand/manatobi-logo-gray.png'
 WIDTH, HEIGHT = A4
+
+
+def brand_logo() -> RLImage:
+    logo = RLImage(str(LOGO_PATH), width=132, height=42)
+    logo.hAlign = 'RIGHT'
+    return logo
 
 STYLES = {
     'cover_kicker': ParagraphStyle('cover_kicker', fontName='BookletJP', fontSize=10, leading=15, textColor=colors.HexColor('#1f5f66'), spaceAfter=8),
@@ -136,7 +144,8 @@ def build_elevenlabs_audio_pdfs() -> list[dict]:
         items = [it for it in AUDIO_DATA['items'] if it['grade'] == gid]
 
         story = [
-            Spacer(1, 24),
+            brand_logo(),
+            Spacer(1, 14),
             p('MANATOBI EIKEN — ELEVENLABS AUDIO PROMPT BOOK (SEPARATE VOLUME)', 'cover_kicker'),
             p(f'{glabel}\nElevenLabs 音声生成プロンプト・収録台本集（全15回）', 'cover_title'),
             p(f'収録音源数：{len(items)} ファイル（1回{bp["totalAudioFiles"]}音源×15回）｜目標速度：{bp["wpmRange"][0]}〜{bp["wpmRange"][1]} WPM', 'cover_sub'),
@@ -191,7 +200,8 @@ def build_chatgpt_image_pdfs() -> list[dict]:
         items = [it for it in IMAGE_DATA['items'] if it['grade'] == gid]
 
         story = [
-            Spacer(1, 24),
+            brand_logo(),
+            Spacer(1, 14),
             p('MANATOBI EIKEN — CHATGPT IMAGE PROMPT BOOK (SEPARATE VOLUME)', 'cover_kicker'),
             p(f'{glabel}\nChatGPT 画像生成プロンプト集（全15回）', 'cover_title'),
             p(f'収録図版プロンプト数：{len(items)} 枚（1回{bp["totalImages"]}枚×15回）｜白黒線画・文字完全禁止仕様', 'cover_sub'),
@@ -233,7 +243,8 @@ def build_chatgpt_image_pdfs() -> list[dict]:
 
     # 全750枚 総覧インデックス＋第1回代表プロンプト集（軽量マスター確認用）
     master_story = [
-        Spacer(1, 24),
+        brand_logo(),
+        Spacer(1, 14),
         p('MANATOBI EIKEN — MASTER IMAGE PROMPT INDEX (750 ILLUSTRATIONS)', 'cover_kicker'),
         p('全級総覧 ChatGPT 画像プロンプト台帳（全750枚）', 'cover_title'),
         p('5級300枚・4級150枚・3級150枚・準1級75枚・1級75枚（準2級・準2級プラス・2級は公式仕様どおり0枚）', 'cover_sub'),
@@ -295,7 +306,8 @@ def build_question_and_explanation_booklets() -> list[dict]:
         exams = [b for b in BOOKLETS_DATA['booklets'] if b['grade'] == gid]
 
         story = [
-            Spacer(1, 24),
+            brand_logo(),
+            Spacer(1, 14),
             p('MANATOBI EIKEN — LISTENING MOCK EXAMS (15 ROUNDS)', 'cover_kicker'),
             p(f'{glabel}\nリスニング予想問題・正答・全肢解説冊子（全15回）', 'cover_title'),
             p(f'全15回収録（1回{bp["totalQuestions"]}問×15回＝計{bp["totalQuestions"] * 15}問）｜目安時間：{bp["minutes"]}分', 'cover_sub'),

@@ -1,4 +1,5 @@
 import type { EikenGrade } from './config';
+import { FORBIDDEN_GENERIC_REASON_PATTERNS, FORBIDDEN_PROMPT_PATTERNS } from './writtenAuthoringSpec';
 
 export type WrittenSection = 'short' | 'conversation' | 'reorder' | 'cloze' | 'reading' | 'email' | 'summary' | 'essay';
 export interface WrittenBlueprint { minutes: number; sections: readonly { id: WrittenSection; count: number; kind: 'choice' | 'writing' }[]; source: string }
@@ -15,22 +16,28 @@ export const WRITTEN_BLUEPRINTS: Partial<Record<EikenGrade, WrittenBlueprint>> =
 };
 export interface WrittenItem {
   id:string; section:WrittenSection; kind:'choice'|'writing'; prompt:string;
-  passage?:{id:string;title:string;text:string};
+  passage?:{id:string;title:string;text:string;translation?:string;format?:'notice'|'email'|'article'};
   choices?:[string,string,string,string]; answer?:number; explanation?:string; distractorReasons?:[string,string,string,string];
   model?:string; rubric?:string[]; wordRange?:[number,number]; orderTokens?:string[]; orderAnswer?:number[]; orderPrefix?:string; completedSentence?:string; translation?:string;
 }
-export interface WrittenExam { id:string;grade:EikenGrade;round:number;revision:string;origin:'manatobi-original';review:'draft'|'approved';items:readonly WrittenItem[] }
+export interface WrittenExam { id:string;grade:EikenGrade;round:number;scope?:'reading';revision:string;origin:'manatobi-original';review:'draft'|'approved';items:readonly WrittenItem[] }
+export function countEnglishWords(text:string):number {
+  return text.match(/[A-Za-z]+(?:['’-][A-Za-z]+)*/g)?.length ?? 0;
+}
 export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void {
   const blueprint=WRITTEN_BLUEPRINTS[exam.grade];
   if(!blueprint || exam.id!==`${exam.grade}_written_${String(exam.round).padStart(2,'0')}` || !Number.isInteger(exam.round) || exam.round<1 || exam.round>15 || !exam.revision || exam.origin!=='manatobi-original' || (requireApproved && exam.review!=='approved'))throw new Error('EXAM_NOT_RELEASE_READY');
-  if(exam.items.length!==blueprint.sections.reduce((count,item)=>count+item.count,0) || new Set(exam.items.map(item=>item.id)).size!==exam.items.length)throw new Error('EXAM_COUNT_OR_DUPLICATE_ID');
+  const sections=exam.scope==='reading'?blueprint.sections.filter(spec=>spec.kind==='choice'):blueprint.sections;
+  if(exam.items.length!==sections.reduce((count,item)=>count+item.count,0) || new Set(exam.items.map(item=>item.id)).size!==exam.items.length)throw new Error('EXAM_COUNT_OR_DUPLICATE_ID');
   let at=0;
   const passages=new Map<string,string>();
-  for(const spec of blueprint.sections)for(let offset=0;offset<spec.count;offset++,at++){
+  for(const spec of sections)for(let offset=0;offset<spec.count;offset++,at++){
     const item=exam.items[at];
     if(item.section!==spec.id || item.kind!==spec.kind || !item.id.startsWith(exam.id+'_') || !item.prompt?.trim() || JSON.stringify(item).includes('\uFFFD'))throw new Error('EXAM_SECTION_MISMATCH');
+    if(!exam.revision.startsWith('test-') && FORBIDDEN_PROMPT_PATTERNS.some(rx=>rx.test(item.prompt)))throw new Error(`FORBIDDEN_PROMPT_FORMAT:${item.id}`);
     if(item.kind==='choice'){
       if(item.choices?.length!==4 || item.choices.some(text=>!text.trim()) || new Set(item.choices).size!==4 || !Number.isInteger(item.answer) || item.answer!<0 || item.answer!>3 || !item.explanation?.trim() || item.distractorReasons?.length!==4 || item.distractorReasons.some(text=>!text.trim()))throw new Error('CHOICE_NOT_REVIEWABLE');
+      if(!exam.revision.startsWith('test-') && item.distractorReasons.some(reason=>FORBIDDEN_GENERIC_REASON_PATTERNS.some(rx=>rx.test(reason.trim()))))throw new Error(`GENERIC_DISTRACTOR_REASON:${item.id}`);
       if(item.section==='reorder') {
         const tokens=item.orderTokens, order=item.orderAnswer;
         if(!tokens || tokens.length!==4 || tokens.some(token=>!token.trim()) || new Set(tokens).size!==4)throw new Error('ORDER_TOKENS_REQUIRED');
@@ -38,9 +45,37 @@ export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void
         const sentence=`${item.orderPrefix} ${order.map(no=>tokens[no-1]).join(' ')}`;
         if(item.completedSentence.replace(/[.?]$/,'')!==sentence || item.choices[item.answer!].replace(/\s/g,'')!==`${order[0]}－${order[2]}`)throw new Error('ORDER_ANSWER_MISMATCH');
       }
-    }else if(!item.model?.trim() || !item.rubric?.length || !item.wordRange || !Number.isInteger(item.wordRange[0]) || !Number.isInteger(item.wordRange[1]) || item.rubric.some(text=>!text.trim()) || item.wordRange[0]<1 || item.wordRange[1]<item.wordRange[0])throw new Error('WRITING_RUBRIC_REQUIRED');
+    }else{
+      if(!item.model?.trim() || !item.rubric?.length || !item.wordRange || !Number.isInteger(item.wordRange[0]) || !Number.isInteger(item.wordRange[1]) || item.rubric.some(text=>!text.trim()) || item.wordRange[0]<1 || item.wordRange[1]<item.wordRange[0])throw new Error('WRITING_RUBRIC_REQUIRED');
+      if(!exam.revision.startsWith('test-')){
+        const words=countEnglishWords(item.model);
+        if(!item.translation?.trim() || !item.explanation?.trim() || item.rubric.length<4 || words<item.wordRange[0] || words>item.wordRange[1])throw new Error(`WRITING_MODEL_OUT_OF_SPEC:${item.id}:${words}`);
+      }
+    }
     if(['reading','cloze','email','summary'].includes(item.section) && (!item.passage?.text.trim() || !item.passage.id || !item.passage.title.trim()))throw new Error('PASSAGE_REQUIRED');
-    if(item.passage){const old=passages.get(item.passage.id);if(old && old!==item.passage.text)throw new Error('PASSAGE_ID_COLLISION');passages.set(item.passage.id,item.passage.text);}
+    if(item.passage){
+      if(!exam.revision.startsWith('test-') && (!item.passage.translation?.trim() || !['notice','email','article'].includes(item.passage.format || '')))throw new Error('PASSAGE_TRANSLATION_FORMAT_REQUIRED');
+      const signature=JSON.stringify(item.passage), old=passages.get(item.passage.id);
+      if(old && old!==signature)throw new Error('PASSAGE_ID_COLLISION');
+      passages.set(item.passage.id,signature);
+      if(!exam.revision.startsWith('test-') && item.section==='cloze' && !new RegExp(`\\(\\s*${at+1}\\s*\\)`).test(item.passage.text))throw new Error('CLOZE_NUMBER_MISMATCH');
+    }
+  }
+}
+/** Ensure released rounds across grades and rounds have unique IDs, unique round numbers per grade, and zero copied prompts/passages. */
+export function validateReleasedBooklets(exams:readonly WrittenExam[]):void {
+  const gradeRounds=new Set<string>();
+  const prompts=new Set<string>();
+  for(const exam of exams){
+    validateWrittenExam(exam);
+    const key=`${exam.grade}:${exam.round}`;
+    if(gradeRounds.has(key))throw new Error(`DUPLICATE_GRADE_ROUND:${key}`);
+    gradeRounds.add(key);
+    for(const item of exam.items){
+      const signature=item.section==='cloze'?`${exam.grade}:cloze:${item.passage!.id}:${item.choices!.join('|')}`:`${item.section}:${item.prompt}:${item.passage?.text || ''}`;
+      if(prompts.has(signature))throw new Error(`DUPLICATE_ITEM_CONTENT:${item.id}`);
+      prompts.add(signature);
+    }
   }
 }
 /** Readiness means 15 DISTINCT, complete, approved exams, not fifteen labels pointing to one bank. */

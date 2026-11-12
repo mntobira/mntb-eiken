@@ -71,4 +71,5 @@ eiken-app/deliverables/eiken-elevenlabs-audio-prompts.json
 eiken-app/deliverables/eiken-chatgpt-image-prompts.json
 eiken-app/deliverables/eiken-listening-segments.tsv
 eiken-app/deliverables/pdfs/
+eiken-app/.vite-seq-cache/
 spec/

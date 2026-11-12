@@ -243,10 +243,11 @@ describe('Release content completeness', () => {
         expect(chapter.title).toBeTruthy();
         if (chapter.id.includes('_listening_r')) {
           expect(chapter.practiceProblems.length).toBeGreaterThanOrEqual(21);
+          expect(chapter.practiceProblems.reduce((n, problem) => n + problem.subQuestions.length, 0)).toBe(chapter.marks);
         } else if (!chapter.id.includes('_written_')) {
           expect(chapter.practiceProblems).toHaveLength(2);
         } else {
-          expect(chapter.practiceProblems.length).toBe(chapter.id.endsWith('_short') ? 15 : 5);
+          expect(chapter.practiceProblems.reduce((n, problem) => n + problem.subQuestions.length, 0)).toBe(chapter.marks);
         }
         for (const problem of chapter.practiceProblems) {
           expect(ids.has(problem.id)).toBe(false); ids.add(problem.id);
@@ -290,7 +291,8 @@ describe('Release content completeness', () => {
       for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
     }
     expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(7);
-    expect(GACHA_PRINTS).toHaveLength(8);
+    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(16);
+    expect(GACHA_PRINTS).toHaveLength(23);
     for (const print of GACHA_PRINTS) {
       expect(print.subject).toMatch(/^eiken_/);
       expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : 5);

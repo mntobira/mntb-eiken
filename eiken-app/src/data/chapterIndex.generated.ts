@@ -153,6 +153,27 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "abstractTitle": "筆記 第1回｜語句整序",
         "realTitle": "語彙・文法練習",
         "problemCount": 5
+      },
+      {
+        "id": "eiken_5_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_5_written_02_conversation",
+        "title": "筆記 第2回｜会話文の空所補充",
+        "abstractTitle": "筆記 第2回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_5_written_02_reorder",
+        "title": "筆記 第2回｜語句整序",
+        "abstractTitle": "筆記 第2回｜語句整序",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
       }
     ]
   },
@@ -280,11 +301,67 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_4_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
+        "id": "eiken_4_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
         "id": "eiken_4_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_4_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_4_written_01_conversation",
+        "title": "筆記 第1回｜会話文の空所補充",
+        "abstractTitle": "筆記 第1回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_4_written_01_reorder",
+        "title": "筆記 第1回｜語句整序",
+        "abstractTitle": "筆記 第1回｜語句整序",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_4_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_4_written_02_conversation",
+        "title": "筆記 第2回｜会話文の空所補充",
+        "abstractTitle": "筆記 第2回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_4_written_02_reorder",
+        "title": "筆記 第2回｜語句整序",
+        "abstractTitle": "筆記 第2回｜語句整序",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
       }
     ]
   },
@@ -412,11 +489,95 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_3_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
+        "id": "eiken_3_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
+        "id": "eiken_3_written_03_reading",
+        "title": "筆記 第3回｜読解",
+        "abstractTitle": "筆記 第3回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
+        "id": "eiken_3_written_04_reading",
+        "title": "筆記 第4回｜読解",
+        "abstractTitle": "筆記 第4回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 3
+      },
+      {
         "id": "eiken_3_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_3_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_3_written_01_conversation",
+        "title": "筆記 第1回｜会話文の空所補充",
+        "abstractTitle": "筆記 第1回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_3_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_3_written_02_conversation",
+        "title": "筆記 第2回｜会話文の空所補充",
+        "abstractTitle": "筆記 第2回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_3_written_03_short",
+        "title": "筆記 第3回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第3回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_3_written_03_conversation",
+        "title": "筆記 第3回｜会話文の空所補充",
+        "abstractTitle": "筆記 第3回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_3_written_04_short",
+        "title": "筆記 第4回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第4回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_3_written_04_conversation",
+        "title": "筆記 第4回｜会話文の空所補充",
+        "abstractTitle": "筆記 第4回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
       }
     ]
   },
@@ -544,11 +705,67 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_pre2_written_01_cloze",
+        "title": "筆記 第1回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_pre2_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2_written_02_cloze",
+        "title": "筆記 第2回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_pre2_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
         "id": "eiken_pre2_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_pre2_written_01_conversation",
+        "title": "筆記 第1回｜会話文の空所補充",
+        "abstractTitle": "筆記 第1回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
+      },
+      {
+        "id": "eiken_pre2_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 15
+      },
+      {
+        "id": "eiken_pre2_written_02_conversation",
+        "title": "筆記 第2回｜会話文の空所補充",
+        "abstractTitle": "筆記 第2回｜会話文の空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 5
       }
     ]
   },
@@ -676,11 +893,53 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_pre2plus_written_01_cloze",
+        "title": "筆記 第1回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2plus_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2plus_written_02_cloze",
+        "title": "筆記 第2回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2plus_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
         "id": "eiken_pre2plus_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_pre2plus_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 17
+      },
+      {
+        "id": "eiken_pre2plus_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 17
       }
     ]
   },
@@ -808,11 +1067,53 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_2_written_01_cloze",
+        "title": "筆記 第1回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_2_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_2_written_02_cloze",
+        "title": "筆記 第2回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_2_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
         "id": "eiken_2_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_2_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 17
+      },
+      {
+        "id": "eiken_2_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 17
       }
     ]
   },
@@ -940,11 +1241,53 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_pre1_written_01_cloze",
+        "title": "筆記 第1回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre1_written_01_reading",
+        "title": "筆記 第1回｜読解",
+        "abstractTitle": "筆記 第1回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre1_written_02_cloze",
+        "title": "筆記 第2回｜長文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜長文の語句空所補充",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_pre1_written_02_reading",
+        "title": "筆記 第2回｜読解",
+        "abstractTitle": "筆記 第2回｜読解",
+        "realTitle": "リーディング練習",
+        "problemCount": 2
+      },
+      {
         "id": "eiken_pre1_vocabulary_01",
         "title": "語彙・文法練習",
         "abstractTitle": "語彙・文法練習",
         "realTitle": "語彙・文法練習",
         "problemCount": 2
+      },
+      {
+        "id": "eiken_pre1_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第1回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 18
+      },
+      {
+        "id": "eiken_pre1_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "筆記 第2回｜短文の語句空所補充",
+        "realTitle": "語彙・文法練習",
+        "problemCount": 18
       }
     ]
   },
@@ -1069,46 +1412,46 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
 ];
 export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
   "eiken_5": {
-    "chapters": 21,
-    "units": 21,
-    "questions": 406,
-    "marks": 408
+    "chapters": 24,
+    "units": 24,
+    "questions": 431,
+    "marks": 433
   },
   "eiken_4": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 456,
-    "marks": 458
+    "chapters": 26,
+    "units": 26,
+    "questions": 512,
+    "marks": 528
   },
   "eiken_3": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 456,
-    "marks": 458
+    "chapters": 30,
+    "units": 30,
+    "questions": 548,
+    "marks": 578
   },
   "eiken_pre2": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 456,
-    "marks": 458
+    "chapters": 26,
+    "units": 26,
+    "questions": 502,
+    "marks": 516
   },
   "eiken_pre2plus": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 456,
-    "marks": 458
+    "chapters": 24,
+    "units": 24,
+    "questions": 498,
+    "marks": 520
   },
   "eiken_2": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 456,
-    "marks": 458
+    "chapters": 24,
+    "units": 24,
+    "questions": 498,
+    "marks": 520
   },
   "eiken_pre1": {
-    "chapters": 18,
-    "units": 18,
-    "questions": 351,
-    "marks": 443
+    "chapters": 24,
+    "units": 24,
+    "questions": 395,
+    "marks": 505
   },
   "eiken_1": {
     "chapters": 16,

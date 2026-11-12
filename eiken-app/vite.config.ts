@@ -2,10 +2,12 @@ import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
 import path from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_EIKEN_');
   const base = process.env.EIKEN_BASE_PATH || '/';
+  const isBuildOnly = command === 'build' && !process.env.VITEST;
   const rewriteAssets: Plugin = {
     name: 'eiken-isolated-assets',
     transform(code, id) {
@@ -26,27 +28,55 @@ export default defineConfig(({ mode }) => {
       return html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="${csp}">`);
     },
   };
+  const seqManifestPath = path.resolve(process.cwd(), '.vite-seq-cache/manifest.json');
+  const seqBundle: {
+    materials: Record<string, { key: string; exports: string[] }>;
+    aliases: Record<string, string>;
+  } = isBuildOnly && existsSync(seqManifestPath)
+    ? JSON.parse(readFileSync(seqManifestPath, 'utf-8'))
+    : { materials: {}, aliases: {} };
+
+  const sequentialCachePlugin: Plugin = {
+    name: 'sequential-precompiled-materials',
+    load(id) {
+      if (!isBuildOnly) return null;
+      const cleanId = id.split('?')[0];
+      const entry = seqBundle.materials[cleanId];
+      if (!entry) return null;
+      return entry.exports
+        .map(exp => `export const ${exp} = "__MANATOBI_SEQ_DATA__:${entry.key}:${exp}__";`)
+        .join('\n');
+    },
+  };
   return {
     base,
-    plugins: [rewriteAssets, react(), tailwind()],
-    resolve: { alias: { '@': path.resolve(process.cwd(), '.') } },
+    plugins: [rewriteAssets, ...(isBuildOnly ? [sequentialCachePlugin] : []), react(), tailwind()],
+    resolve: {
+      alias: [
+        ...(isBuildOnly
+          ? Object.entries(seqBundle.aliases).map(([find, replacement]) => ({
+              find: new RegExp(`^${find}$`),
+              replacement,
+            }))
+          : []),
+        { find: '@', replacement: path.resolve(process.cwd(), '.') },
+      ],
+    },
     define: { __KIT_BUILD__: JSON.stringify('英検版 2026-11-08') },
     build: {
-      minify: 'esbuild',
+      minify: false,
       cssMinify: false,
       reportCompressedSize: false,
       sourcemap: false,
       rollupOptions: {
-        maxParallelFileOps: 2,
+        maxParallelFileOps: 1,
         output: {
           manualChunks(id) {
-            if (id.includes('/src/eiken/materials/listening-g5')) return 'eiken-listening-g5';
-            if (id.includes('/src/eiken/materials/listening-g4')) return 'eiken-listening-g4';
-            if (id.includes('/src/eiken/materials/listening-g3-pre2')) return 'eiken-listening-g3-pre2';
-            if (id.includes('/src/eiken/materials/listening-pre2plus-g2')) return 'eiken-listening-pre2plus-g2';
-            if (id.includes('/src/eiken/materials/listening-pre1')) return 'eiken-listening-pre1';
-            if (id.includes('/src/eiken/materials/listening-g1')) return 'eiken-listening-g1';
+            const matMatch = id.match(/\/src\/eiken\/materials\/([^/.]+)/);
+            if (matMatch) return `eiken-mat-${matMatch[1]}`;
             if (id.includes('node_modules')) {
+              if (id.includes('/firebase/firestore')) return 'vendor-firestore';
+              if (id.includes('/firebase/auth')) return 'vendor-fireauth';
               if (id.includes('/firebase/') || id.includes('/@firebase/') || id.includes('/@capacitor')) return 'vendor-firebase';
               if (id.includes('/pdfjs-dist/')) return 'vendor-pdf';
               if (id.includes('/katex/')) return 'vendor-katex';
