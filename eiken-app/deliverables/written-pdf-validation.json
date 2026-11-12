@@ -1,8 +1,8 @@
 [
   {
     "id": "eiken_5_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "6d45442b9367973daf7084b02f4f4a49dc35ecab2bb6b797299a800890ff2307",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "3f9aa7a91776a54f75f965e0b72fe6e6e2e7d73896cc25b02e7fb1da6177eb01",
     "pages": 16,
     "parts": [
       {
@@ -243,8 +243,8 @@
   },
   {
     "id": "eiken_5_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "bca1b906aeea0111b1c1ccfb13b75611f43ab3b2be125e27fa74f50fd5875e90",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "33f71ac0e607fec16464818968b1c48d93ed764e2e0b1bb58036698ee0ad3e9f",
     "pages": 16,
     "parts": [
       {
@@ -485,8 +485,8 @@
   },
   {
     "id": "eiken_5_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "b1e6a0db6b80d4478dbc1ccfab9a279292b8c9c3f6cc43cd617f30904f9577c3",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "0e109cc672f77ee32ddb10c232b13bf10f4b96f8ccae5ec64749ca4e59bfa3e6",
     "pages": 16,
     "parts": [
       {
@@ -726,9 +726,735 @@
     ]
   },
   {
+    "id": "eiken_5_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "fa5c08b8b0e9b6386e64e974df5eb8112f7db998af13bb2fd0096c6a142f5af7",
+    "pages": 16,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_04_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_04_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_04_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "layout": {
+      "reference": "https://www.eiken.or.jp/eiken/exam/kakomon/2026-2-1ji_5kyu.pdf",
+      "answerReference": "https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf",
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "conversationQuestionPages": [
+        5
+      ],
+      "reorderQuestionPages": [
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "reorder": 4
+      },
+      "orderingChunkNumbers": "circled",
+      "orderingAnswerBoxes": 4,
+      "orderingMarkedPositions": [
+        1,
+        3
+      ],
+      "answerSheet": "landscape A4; 1–15 / 16–25; vertical ovals",
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_5_written_04_q01",
+        "number": 1,
+        "answer": 1,
+        "explanation": "It starts at seven.（7時に始まります）と時刻を答えているのでWhat time。"
+      },
+      {
+        "id": "eiken_5_written_04_q02",
+        "number": 2,
+        "answer": 3,
+        "explanation": "名詞nameの前で単数の動物a black rabbitの「その〜」を表す所有格Its。"
+      },
+      {
+        "id": "eiken_5_written_04_q03",
+        "number": 3,
+        "answer": 2,
+        "explanation": "数fiveの後ろには動物を表す複数形sheep（単複同形）を置く。"
+      },
+      {
+        "id": "eiken_5_written_04_q04",
+        "number": 4,
+        "answer": 4,
+        "explanation": "Do＋複数主語の一般動詞の質問にはYes, they do.で答える。"
+      },
+      {
+        "id": "eiken_5_written_04_q05",
+        "number": 5,
+        "answer": 1,
+        "explanation": "Pleaseの後ろには動詞の原形walkを置いて依頼を表す。"
+      },
+      {
+        "id": "eiken_5_written_04_q06",
+        "number": 6,
+        "answer": 2,
+        "explanation": "He is our new music teacher.と人物を答えているのでWho（誰）。"
+      },
+      {
+        "id": "eiken_5_written_04_q07",
+        "number": 7,
+        "answer": 3,
+        "explanation": "主語My auntは3人称単数で、毎週日曜の習慣を表す現在形はmakes。"
+      },
+      {
+        "id": "eiken_5_written_04_q08",
+        "number": 8,
+        "answer": 4,
+        "explanation": "autumn（秋）の次に来る季節はwinter（冬）。"
+      },
+      {
+        "id": "eiken_5_written_04_q09",
+        "number": 9,
+        "answer": 3,
+        "explanation": "明日の美術のテストに向けてクレヨンを「買う」のでbuy。"
+      },
+      {
+        "id": "eiken_5_written_04_q10",
+        "number": 10,
+        "answer": 1,
+        "explanation": "Is this towel ...? の質問には単数代名詞itとis notで答える。"
+      },
+      {
+        "id": "eiken_5_written_04_q11",
+        "number": 11,
+        "answer": 2,
+        "explanation": "a cup of teaで「1杯のお茶」。"
+      },
+      {
+        "id": "eiken_5_written_04_q12",
+        "number": 12,
+        "answer": 4,
+        "explanation": "川の「長さ」を尋ね、About ten kilometersと答えているのでHow long。"
+      },
+      {
+        "id": "eiken_5_written_04_q13",
+        "number": 13,
+        "answer": 1,
+        "explanation": "月（April）の前には前置詞inを使う。"
+      },
+      {
+        "id": "eiken_5_written_04_q14",
+        "number": 14,
+        "answer": 4,
+        "explanation": "歯が痛い（My tooth hurts）ので放課後に行く先はdentist（歯医者）。"
+      },
+      {
+        "id": "eiken_5_written_04_q15",
+        "number": 15,
+        "answer": 3,
+        "explanation": "動詞helpの目的語として「私たちを（手伝う）」を表す目的格us。"
+      },
+      {
+        "id": "eiken_5_written_04_q16",
+        "number": 16,
+        "answer": 2,
+        "explanation": "店員の「いらっしゃいませ（お手伝いしましょうか）」にYes, please.と応じて探し物を伝える。"
+      },
+      {
+        "id": "eiken_5_written_04_q17",
+        "number": 17,
+        "answer": 1,
+        "explanation": "How do you go ...? と交通手段を尋ねられているのでBy bike.と答える。"
+      },
+      {
+        "id": "eiken_5_written_04_q18",
+        "number": 18,
+        "answer": 3,
+        "explanation": "黒い雲を見て傘を持っているか聞かれ、持っていないので急いで帰ろうと答える。"
+      },
+      {
+        "id": "eiken_5_written_04_q19",
+        "number": 19,
+        "answer": 2,
+        "explanation": "お手洗いの場所を尋ねられ、まっすぐ進んで左側だと案内する。"
+      },
+      {
+        "id": "eiken_5_written_04_q20",
+        "number": 20,
+        "answer": 4,
+        "explanation": "試合前の応援Good luck!に対してThank you!とお礼を言い、がんばると続ける。"
+      },
+      {
+        "id": "eiken_5_written_04_q21",
+        "number": 21,
+        "answer": 1,
+        "explanation": "動詞write＋目的語an English diary＋場所at home＋時every night。"
+      },
+      {
+        "id": "eiken_5_written_04_q22",
+        "number": 22,
+        "answer": 2,
+        "explanation": "There are＋複数名詞many balls＋場所in that box。"
+      },
+      {
+        "id": "eiken_5_written_04_q23",
+        "number": 23,
+        "answer": 3,
+        "explanation": "Do you like＋winter sports? の語順。"
+      },
+      {
+        "id": "eiken_5_written_04_q24",
+        "number": 24,
+        "answer": 4,
+        "explanation": "否定の依頼Please do not＋動詞の原形open＋this door。"
+      },
+      {
+        "id": "eiken_5_written_04_q25",
+        "number": 25,
+        "answer": 3,
+        "explanation": "Whose piano＋is＋that over there? の語順。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_5_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "6026651a5315ef724c8540c42a19eededd0103ff28a4cd0ed16d157a01584fd7",
+    "pages": 16,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_05_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_05_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_05_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "layout": {
+      "reference": "https://www.eiken.or.jp/eiken/exam/kakomon/2026-2-1ji_5kyu.pdf",
+      "answerReference": "https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf",
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "conversationQuestionPages": [
+        5
+      ],
+      "reorderQuestionPages": [
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "reorder": 4
+      },
+      "orderingChunkNumbers": "circled",
+      "orderingAnswerBoxes": 4,
+      "orderingMarkedPositions": [
+        1,
+        3
+      ],
+      "answerSheet": "landscape A4; 1–15 / 16–25; vertical ovals",
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_5_written_05_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "We study science.（理科を勉強します）と答えているのでsubject（教科）。"
+      },
+      {
+        "id": "eiken_5_written_05_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "名詞capsの前で2人（彼ら）の所有を表す所有格Their。"
+      },
+      {
+        "id": "eiken_5_written_05_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "数twoの後ろには数えられる名詞の複数形peachesを置く。"
+      },
+      {
+        "id": "eiken_5_written_05_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "Canで始まる質問への否定応答はNo, they cannot.。"
+      },
+      {
+        "id": "eiken_5_written_05_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "命令文Come and ... でandの後ろも動詞の原形sitを並べる。"
+      },
+      {
+        "id": "eiken_5_written_05_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "Ms. Aoiと人物を答えているのでWho（誰）。"
+      },
+      {
+        "id": "eiken_5_written_05_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "主語Our catは3人称単数なので現在形はsleeps。"
+      },
+      {
+        "id": "eiken_5_written_05_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "今日が金曜日（Friday）なら、明後日（the day after tomorrow）は日曜日（Sunday）。"
+      },
+      {
+        "id": "eiken_5_written_05_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "前置詞toを伴ってCDの音声を「聴く」はlisten to。"
+      },
+      {
+        "id": "eiken_5_written_05_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "Does this bus ...? の質問にはYes, it does.で答える。"
+      },
+      {
+        "id": "eiken_5_written_05_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "紙を切る（cut this paper）道具はa pair of scissors（はさみ）。"
+      },
+      {
+        "id": "eiken_5_written_05_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "175 centimetersと身長を答えているのでHow tall。"
+      },
+      {
+        "id": "eiken_5_written_05_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "特定の時刻twelve thirtyの前にはatを使う。"
+      },
+      {
+        "id": "eiken_5_written_05_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "イルカを見る（watch the dolphins）施設はaquarium（水族館）。"
+      },
+      {
+        "id": "eiken_5_written_05_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "動詞teachesの目的語として「私に（教える）」を表す目的格me。"
+      },
+      {
+        "id": "eiken_5_written_05_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "温かいミルクを出してもらった場面なのでThank you, Dad.とお礼を言う。"
+      },
+      {
+        "id": "eiken_5_written_05_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "バドミントンの誘いに対し、いま宿題があるのでSorry, I can't.と断る。"
+      },
+      {
+        "id": "eiken_5_written_05_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "台所で何を作っているか尋ねられ、野菜スープだと答えて1杯食べるか聞く。"
+      },
+      {
+        "id": "eiken_5_written_05_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "Is that girl ...? の質問に対し、Yes, she is.と答えて名前を紹介する。"
+      },
+      {
+        "id": "eiken_5_written_05_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "寝る前のGood night!に対してGood night. Sweet dreams.と返す。"
+      },
+      {
+        "id": "eiken_5_written_05_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "主語My sister＋動詞sings＋目的語English songs＋様態very well。"
+      },
+      {
+        "id": "eiken_5_written_05_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "現在進行形It is raining＋場所outside＋now。"
+      },
+      {
+        "id": "eiken_5_written_05_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "How many＋複数名詞notebooks＋are in your bag? の語順。"
+      },
+      {
+        "id": "eiken_5_written_05_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "Let us＋play soccer＋on Sunday morning。"
+      },
+      {
+        "id": "eiken_5_written_05_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "That white dog over there（あそこの白い犬）を主語にし、is my grandfather'sと続ける。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_5_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "e870b7266375aadca0d682c68fcfe7ea569a60a46e8815a45931ab2dc8196b6c",
+    "pages": 16,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_06_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_06_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_06_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "layout": {
+      "reference": "https://www.eiken.or.jp/eiken/exam/kakomon/2026-2-1ji_5kyu.pdf",
+      "answerReference": "https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf",
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "conversationQuestionPages": [
+        5
+      ],
+      "reorderQuestionPages": [
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "reorder": 4
+      },
+      "orderingChunkNumbers": "circled",
+      "orderingAnswerBoxes": 4,
+      "orderingMarkedPositions": [
+        1,
+        3
+      ],
+      "answerSheet": "landscape A4; 1–15 / 16–25; vertical ovals",
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_5_written_06_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "October tenth（10月10日）と日付を答えているのでWhat date。"
+      },
+      {
+        "id": "eiken_5_written_06_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "名詞fatherの前で男性1人that boyの所有を表すHis。"
+      },
+      {
+        "id": "eiken_5_written_06_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "manyの後ろには数えられる名詞leafの複数形leavesを置く。"
+      },
+      {
+        "id": "eiken_5_written_06_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "Are you ...? の質問にはYes, I am.で答える。"
+      },
+      {
+        "id": "eiken_5_written_06_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "Pleaseの後ろには動詞の原形wear（着る・身につける）を置く。"
+      },
+      {
+        "id": "eiken_5_written_06_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "near Green Parkと住んでいる場所を答えているのでWhere。"
+      },
+      {
+        "id": "eiken_5_written_06_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "主語My brotherは3人称単数。shで終わる動詞washの現在形はwashes。"
+      },
+      {
+        "id": "eiken_5_written_06_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "December（12月）の直後に来る月はJanuary（1月）。"
+      },
+      {
+        "id": "eiken_5_written_06_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "壁の小さな標識の文字を「読む」なのでread。"
+      },
+      {
+        "id": "eiken_5_written_06_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "複数主語pandasを使ったDoの質問にはNo, they do not.で答える。"
+      },
+      {
+        "id": "eiken_5_written_06_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "写真を撮る（take a picture）道具なのでcamera。"
+      },
+      {
+        "id": "eiken_5_written_06_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "About thirty minutesと所要時間を答えているのでHow long。"
+      },
+      {
+        "id": "eiken_5_written_06_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "「夜に」を表す定型表現はat night。"
+      },
+      {
+        "id": "eiken_5_written_06_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "ライオンやキリン、サルを見た場所なのでzoo（動物園）。"
+      },
+      {
+        "id": "eiken_5_written_06_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "前置詞toの目的語で、女性1人Ms. Satoを受ける目的格her。"
+      },
+      {
+        "id": "eiken_5_written_06_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "落としたハンカチを拾って相手に手渡すときの表現Here you are.（はい、どうぞ）。"
+      },
+      {
+        "id": "eiken_5_written_06_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "何のスポーツをするか尋ねられ、バスケットボールをしていると具体的に答える。"
+      },
+      {
+        "id": "eiken_5_written_06_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "今開けてよいか聞かれ、父が帰るまで待ってほしいのでNot yet.（まだだめ）と答える。"
+      },
+      {
+        "id": "eiken_5_written_06_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "祖母の体調・様子を尋ねるHow is ...? に対し、とても元気だと答える。"
+      },
+      {
+        "id": "eiken_5_written_06_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "黒板をきれいにしようという提案にAll right.（いいよ）と応じ、黒板消しを取ってくると続ける。"
+      },
+      {
+        "id": "eiken_5_written_06_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "動詞like＋目的語this new bike＋程度very much。"
+      },
+      {
+        "id": "eiken_5_written_06_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "否定命令Do not＋動詞eat＋目的語lunch＋場所in the library。"
+      },
+      {
+        "id": "eiken_5_written_06_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "Can＋主語your brother＋動詞の原形play＋the piano? の語順。"
+      },
+      {
+        "id": "eiken_5_written_06_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "動詞run＋場所in the park＋時on Saturdays。"
+      },
+      {
+        "id": "eiken_5_written_06_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "How many＋複数名詞people＋are＋場所at that bus stop? の語順。"
+      }
+    ]
+  },
+  {
     "id": "eiken_4_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "67d72e83fb3dc55b2cd8bf7244453fae42deb9c1e72938bc473eaf80124c85c0",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "70ae796b53dc87458696308be4b1362e60368dbbec3d25fbdbfbedbbfb3b4e3a",
     "pages": 27,
     "parts": [
       {
@@ -1107,8 +1833,8 @@
   },
   {
     "id": "eiken_4_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "d80f395a560123532ce2f382be98764b56d346e1404d28e953eeba73529581d9",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "6b972fbbd0079e2cff14ae859daaebf36a3469ef0d05194b2a71bc020e8cf29a",
     "pages": 27,
     "parts": [
       {
@@ -1487,8 +2213,8 @@
   },
   {
     "id": "eiken_4_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "0b3cd589291d89faf6475ff2b0d10fb9eccecbcad77917211593bdb94a4e617c",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "d9ed4577e9494bd4c6db35920daa0caf3a6a3b3736e002f47265576ea4382dc3",
     "pages": 27,
     "parts": [
       {
@@ -1866,9 +2592,1149 @@
     ]
   },
   {
+    "id": "eiken_4_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "a59bd238621c65e3874e4d721e1ec056619507cffef64b97f34f6deeb36d4614",
+    "pages": 27,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_04_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_04_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_04_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        7
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reorder",
+          "page": 5,
+          "questions": [
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "r4r4-notice",
+          "questions": [
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r4r4-email",
+          "questions": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "r4r4-story",
+          "questions": [
+            31,
+            32,
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_4_written_04_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "古い木の橋を「渡って」桜を見に行ったのでacross。"
+      },
+      {
+        "id": "eiken_4_written_04_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "two days ago（2日前）は過去を表すのでsendの過去形sent。"
+      },
+      {
+        "id": "eiken_4_written_04_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "「リナのもの」と所有代名詞の働きをするRina's。"
+      },
+      {
+        "id": "eiken_4_written_04_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "thanがあり今日と昨日の風を比べているので比較級stronger。"
+      },
+      {
+        "id": "eiken_4_written_04_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "規則違反なので「持ち込んではいけない」という禁止を表すmust not。"
+      },
+      {
+        "id": "eiken_4_written_04_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "hopeの後ろにはto不定詞（to take）を続けて希望を表す。"
+      },
+      {
+        "id": "eiken_4_written_04_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "複数名詞many colorful fishが主語なので複数形were。"
+      },
+      {
+        "id": "eiken_4_written_04_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "動詞smiledを修飾する副詞happily（うれしそうに）。"
+      },
+      {
+        "id": "eiken_4_written_04_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "激しい雨がやむ「までずっと」屋根の下で待とう、の接続詞until。"
+      },
+      {
+        "id": "eiken_4_written_04_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "theがあり「1年で最も雨の多い月」を表す最上級wettest。"
+      },
+      {
+        "id": "eiken_4_written_04_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "In fifteen minutes（15分後です）と時を答えているのでWhen。"
+      },
+      {
+        "id": "eiken_4_written_04_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "誰も教室にいないときに照明を「消す」のでturn off。"
+      },
+      {
+        "id": "eiken_4_written_04_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "体育館へ向かう途中で靴ひもを「結ぶために立ち止まった」stop to do。"
+      },
+      {
+        "id": "eiken_4_written_04_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "1人では運べない理由として「とても重い」heavyが合う。"
+      },
+      {
+        "id": "eiken_4_written_04_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "駅の窓口で買う往復のものはround-trip tickets（往復切符）。"
+      },
+      {
+        "id": "eiken_4_written_04_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "電話でケンタをお願いされ、「少々お待ちください」と応じて呼びに行く。"
+      },
+      {
+        "id": "eiken_4_written_04_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "How do you like ...? で感想を尋ねられ、とても気に入っていて軽いと答える。"
+      },
+      {
+        "id": "eiken_4_written_04_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "木の下のベンチに座ろうかという提案にSounds good.（いいね）と賛成する。"
+      },
+      {
+        "id": "eiken_4_written_04_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "水をこぼして焦る相手に「大丈夫だよ」と言い、ふきんを渡す。"
+      },
+      {
+        "id": "eiken_4_written_04_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "明日何時に会うか聞かれ、「午前中はどう？10時で大丈夫？」と時間帯を提案する。"
+      },
+      {
+        "id": "eiken_4_written_04_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "made a birthday cake for my mother（母のために誕生日ケーキを作った）。"
+      },
+      {
+        "id": "eiken_4_written_04_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "義務を表すhave to＋動詞句get up＋副詞early。"
+      },
+      {
+        "id": "eiken_4_written_04_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "主語を尋ねる疑問詞Who＋過去形painted＋this nice picture?"
+      },
+      {
+        "id": "eiken_4_written_04_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "動名詞主語Drinking warm soup＋動詞is＋補語nice＋on cold days。"
+      },
+      {
+        "id": "eiken_4_written_04_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "Could you＋tell me＋the way＋to the station? の語順。"
+      },
+      {
+        "id": "eiken_4_written_04_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "本を借りて2行の感想を書くごとにスタンプが1つもらえるとある。"
+      },
+      {
+        "id": "eiken_4_written_04_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "receive a handmade bookmark from the library committeeとある。"
+      },
+      {
+        "id": "eiken_4_written_04_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "ろくろでコップを作るのは初めてなのでとても楽しみだと書いている。"
+      },
+      {
+        "id": "eiken_4_written_04_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "my father baked some walnut cookies tonightとある。"
+      },
+      {
+        "id": "eiken_4_written_04_q30",
+        "number": 30,
+        "answer": 1,
+        "explanation": "wait in front of the north ticket gate at 8:45 a.m.とある。"
+      },
+      {
+        "id": "eiken_4_written_04_q31",
+        "number": 31,
+        "answer": 4,
+        "explanation": "雨の日は校庭が閉まり、やることがなく机に座るか廊下に集まっていた。"
+      },
+      {
+        "id": "eiken_4_written_04_q32",
+        "number": 32,
+        "answer": 3,
+        "explanation": "祖父が雨の午後に将棋やカードゲームを教えてくれたことを思い出したとある。"
+      },
+      {
+        "id": "eiken_4_written_04_q33",
+        "number": 33,
+        "answer": 2,
+        "explanation": "games had to finish five minutes before afternoon classesとある。"
+      },
+      {
+        "id": "eiken_4_written_04_q34",
+        "number": 34,
+        "answer": 4,
+        "explanation": "Teachers and families donated chess sets, reversi boards, and word-card games.とある。"
+      },
+      {
+        "id": "eiken_4_written_04_q35",
+        "number": 35,
+        "answer": 1,
+        "explanation": "1年生と3年生がリバーシで対戦し、新しい友達ができたと書かれている。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_4_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "c978b76d3acd3463f8a039cdae40b75d917337fc9d51b1b5f341bfae4f0eb8eb",
+    "pages": 27,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_05_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_05_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_05_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        7
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reorder",
+          "page": 5,
+          "questions": [
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "r4r5-notice",
+          "questions": [
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r4r5-email",
+          "questions": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "r4r5-story",
+          "questions": [
+            31,
+            32,
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_4_written_05_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "かくれんぼでソファの「後ろに」隠れたのでbehind。"
+      },
+      {
+        "id": "eiken_4_written_05_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "last Saturday（先週の土曜）は過去なのでbakeの過去形baked。"
+      },
+      {
+        "id": "eiken_4_written_05_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "「彼らのもの（彼らの地図）」を表す独立所有代名詞theirs。"
+      },
+      {
+        "id": "eiken_4_written_05_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "thanがあるので2つの作業を比べる比較級more interesting。"
+      },
+      {
+        "id": "eiken_4_written_05_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "May I ...? で「〜してもよろしいですか」と丁寧に許可を求める。"
+      },
+      {
+        "id": "eiken_4_written_05_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "promiseの後ろにはto不定詞（to clean）を置く。"
+      },
+      {
+        "id": "eiken_4_written_05_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "過去の節while I was outと複数名詞any messagesに対応するのでWere there ...?。"
+      },
+      {
+        "id": "eiken_4_written_05_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "動詞句speaks Englishを修飾する副詞naturally（自然に）。"
+      },
+      {
+        "id": "eiken_4_written_05_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "夕方は涼しくなるかもしれない「から」セーターを持っていった、の理由を表すbecause。"
+      },
+      {
+        "id": "eiken_4_written_05_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "theがあり「近所で一番おいしい」を表すgoodの最上級best。"
+      },
+      {
+        "id": "eiken_4_written_05_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "For three nights（3泊）と滞在期間を答えているのでHow long。"
+      },
+      {
+        "id": "eiken_4_written_05_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "辞書で単語の意味を「調べる」はlook up。"
+      },
+      {
+        "id": "eiken_4_written_05_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "finishの目的語には動名詞drawingを置く。"
+      },
+      {
+        "id": "eiken_4_written_05_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "気をつけて！と注意するナイフの性質なのでsharp（鋭い・よく切れる）。"
+      },
+      {
+        "id": "eiken_4_written_05_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "競技場で大きな声援を送った人たちなのでfans（ファン・観客）。"
+      },
+      {
+        "id": "eiken_4_written_05_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "ここから遠いか尋ねられ、歩いて5分だから「まったく遠くない（Not at all.）」と答える。"
+      },
+      {
+        "id": "eiken_4_written_05_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "何か買うものがあるか聞かれ、朝食で最後の卵を使ったので卵を1パック買ってきてと頼む。"
+      },
+      {
+        "id": "eiken_4_written_05_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "みんなが窓の外を見ている理由を聞かれ、「虹が出ているよ！大きくてきれい！」と答える。"
+      },
+      {
+        "id": "eiken_4_written_05_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "学校を案内してくれたお礼に対し、My pleasure.（どういたしまして／喜んで）と返す。"
+      },
+      {
+        "id": "eiken_4_written_05_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "いつ習字を習い始めたか聞かれ、「8歳のときです」と始めた時期を答える。"
+      },
+      {
+        "id": "eiken_4_written_05_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "got＋目的語this old camera＋from my grandfather。"
+      },
+      {
+        "id": "eiken_4_written_05_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "Do not＋動詞watch＋TV＋too much＋tonight。"
+      },
+      {
+        "id": "eiken_4_written_05_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "Where＋is＋the biggest park＋in your town? の語順。"
+      },
+      {
+        "id": "eiken_4_written_05_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "第4文型told＋人（us）＋物（many stories）。"
+      },
+      {
+        "id": "eiken_4_written_05_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "Let's go to the sea＋接続詞if＋it is sunny。"
+      },
+      {
+        "id": "eiken_4_written_05_q26",
+        "number": 26,
+        "answer": 3,
+        "explanation": "新しい部品を使う場合に100〜300円払う必要があると書かれている。"
+      },
+      {
+        "id": "eiken_4_written_05_q27",
+        "number": 27,
+        "answer": 4,
+        "explanation": "One family may bring up to two toys.とある。"
+      },
+      {
+        "id": "eiken_4_written_05_q28",
+        "number": 28,
+        "answer": 2,
+        "explanation": "Our train leaves at 7:55 a.m.とある。"
+      },
+      {
+        "id": "eiken_4_written_05_q29",
+        "number": 29,
+        "answer": 3,
+        "explanation": "We will eat lunch near the top of the mountain.とある。"
+      },
+      {
+        "id": "eiken_4_written_05_q30",
+        "number": 30,
+        "answer": 2,
+        "explanation": "the wind at the top is cold in Novemberとある。"
+      },
+      {
+        "id": "eiken_4_written_05_q31",
+        "number": 31,
+        "answer": 1,
+        "explanation": "祖母と物置（storage room）を掃除していて見つけた。"
+      },
+      {
+        "id": "eiken_4_written_05_q32",
+        "number": 32,
+        "answer": 4,
+        "explanation": "a retired electrician who lived next doorとある。"
+      },
+      {
+        "id": "eiken_4_written_05_q33",
+        "number": 33,
+        "answer": 3,
+        "explanation": "one thin wire had come loose, and dust covered the speakerとある。"
+      },
+      {
+        "id": "eiken_4_written_05_q34",
+        "number": 34,
+        "answer": 1,
+        "explanation": "clear jazz music filled the room!とある。"
+      },
+      {
+        "id": "eiken_4_written_05_q35",
+        "number": 35,
+        "answer": 4,
+        "explanation": "目に涙を浮かべ、何度もソウタに感謝したとある。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_4_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "62823d21470569e666a9720745aa1891cadf346a892abd935fd5685788d3a060",
+    "pages": 27,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_06_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_06_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_06_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        7
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reorder",
+          "page": 5,
+          "questions": [
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "r4r6-notice",
+          "questions": [
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r4r6-email",
+          "questions": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "r4r6-story",
+          "questions": [
+            31,
+            32,
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_4_written_06_q01",
+        "number": 1,
+        "answer": 4,
+        "explanation": "ご飯「それとも」パンにしますか、と選択を尋ねる接続詞or。"
+      },
+      {
+        "id": "eiken_4_written_06_q02",
+        "number": 2,
+        "answer": 2,
+        "explanation": "this morning（今朝）の出来事なのでfindの過去形found。"
+      },
+      {
+        "id": "eiken_4_written_06_q03",
+        "number": 3,
+        "answer": 3,
+        "explanation": "動詞taughtの間接目的語「私たちに」を表す目的格us。"
+      },
+      {
+        "id": "eiken_4_written_06_q04",
+        "number": 4,
+        "answer": 1,
+        "explanation": "thanがあるので2つのスーツケースを比べる比較級heavier。"
+      },
+      {
+        "id": "eiken_4_written_06_q05",
+        "number": 5,
+        "answer": 4,
+        "explanation": "寒そうなのでマフラーを巻いたほうがよいという助言を表すshould。"
+      },
+      {
+        "id": "eiken_4_written_06_q06",
+        "number": 6,
+        "answer": 1,
+        "explanation": "planの後ろにはto不定詞（to visit）を続けて予定を表す。"
+      },
+      {
+        "id": "eiken_4_written_06_q07",
+        "number": 7,
+        "answer": 2,
+        "explanation": "冠詞aと名詞clockの間に入り単数名詞を修飾する原級の形容詞large。"
+      },
+      {
+        "id": "eiken_4_written_06_q08",
+        "number": 8,
+        "answer": 3,
+        "explanation": "動詞speakを修飾する副詞quietly（静かに）。"
+      },
+      {
+        "id": "eiken_4_written_06_q09",
+        "number": 9,
+        "answer": 2,
+        "explanation": "金曜に父が早く帰ってくるときは6時に一緒に夕食をとる、を表す接続詞When。"
+      },
+      {
+        "id": "eiken_4_written_06_q10",
+        "number": 10,
+        "answer": 4,
+        "explanation": "theがありクラスの中で一番を表す最上級most popular。"
+      },
+      {
+        "id": "eiken_4_written_06_q11",
+        "number": 11,
+        "answer": 1,
+        "explanation": "数えられる複数名詞strawberriesの数を尋ね、About twelveと答えているのでHow many。"
+      },
+      {
+        "id": "eiken_4_written_06_q12",
+        "number": 12,
+        "answer": 3,
+        "explanation": "席を譲るために「立ち上がった」のでstood up。"
+      },
+      {
+        "id": "eiken_4_written_06_q13",
+        "number": 13,
+        "answer": 4,
+        "explanation": "practiceの目的語には動名詞playingを使う。"
+      },
+      {
+        "id": "eiken_4_written_06_q14",
+        "number": 14,
+        "answer": 3,
+        "explanation": "泥だらけの公園で歩いて洗うことになったのでdirty（汚れた）。"
+      },
+      {
+        "id": "eiken_4_written_06_q15",
+        "number": 15,
+        "answer": 2,
+        "explanation": "パスタの後にメニューから選ぶ甘い一品なのでdessert（デザート）。"
+      },
+      {
+        "id": "eiken_4_written_06_q16",
+        "number": 16,
+        "answer": 1,
+        "explanation": "落とした生徒証を教えてもらったので丁寧にお礼を言う。"
+      },
+      {
+        "id": "eiken_4_written_06_q17",
+        "number": 17,
+        "answer": 4,
+        "explanation": "土曜のスケッチ散歩への誘いにI'd love to!（ぜひ行きたい）と応じ、持ち物を尋ねる。"
+      },
+      {
+        "id": "eiken_4_written_06_q18",
+        "number": 18,
+        "answer": 2,
+        "explanation": "今朝の数学の小テストはどうだったか聞かれ、「少し難しかった」と答える。"
+      },
+      {
+        "id": "eiken_4_written_06_q19",
+        "number": 19,
+        "answer": 3,
+        "explanation": "パソコンを使ってよいか尋ねられ、Go ahead.（どうぞ）と許可して使い方を添える。"
+      },
+      {
+        "id": "eiken_4_written_06_q20",
+        "number": 20,
+        "answer": 1,
+        "explanation": "良い週末を！という声かけにThanks, you too!（ありがとう、あなたもね！）と返す。"
+      },
+      {
+        "id": "eiken_4_written_06_q21",
+        "number": 21,
+        "answer": 4,
+        "explanation": "take my dog for a walkで「犬を散歩に連れていく」。"
+      },
+      {
+        "id": "eiken_4_written_06_q22",
+        "number": 22,
+        "answer": 1,
+        "explanation": "禁止must not＋動詞run＋場所in the classroom。"
+      },
+      {
+        "id": "eiken_4_written_06_q23",
+        "number": 23,
+        "answer": 2,
+        "explanation": "What＋is＋that building＋with the red roof? の語順。"
+      },
+      {
+        "id": "eiken_4_written_06_q24",
+        "number": 24,
+        "answer": 3,
+        "explanation": "showed us＋how to make＋origamiの語順。"
+      },
+      {
+        "id": "eiken_4_written_06_q25",
+        "number": 25,
+        "answer": 2,
+        "explanation": "命令文Wash your hands＋接続詞when＋you get home。"
+      },
+      {
+        "id": "eiken_4_written_06_q26",
+        "number": 26,
+        "answer": 4,
+        "explanation": "free for junior high school students and youngerとある。"
+      },
+      {
+        "id": "eiken_4_written_06_q27",
+        "number": 27,
+        "answer": 1,
+        "explanation": "enter the dome ten minutes before the show beginsとある。"
+      },
+      {
+        "id": "eiken_4_written_06_q28",
+        "number": 28,
+        "answer": 3,
+        "explanation": "it saved my textbooks from getting wetとある。"
+      },
+      {
+        "id": "eiken_4_written_06_q29",
+        "number": 29,
+        "answer": 4,
+        "explanation": "during the ten-minute break after first period to give it backとある。"
+      },
+      {
+        "id": "eiken_4_written_06_q30",
+        "number": 30,
+        "answer": 3,
+        "explanation": "愛媛の叔母から届いた甘いみかんを3つ持っていくと書いている。"
+      },
+      {
+        "id": "eiken_4_written_06_q31",
+        "number": 31,
+        "answer": 2,
+        "explanation": "正面入口に石段が2段あり、ベビーカーや重い荷物のある人が入りにくかった。"
+      },
+      {
+        "id": "eiken_4_written_06_q32",
+        "number": 32,
+        "answer": 1,
+        "explanation": "路地に面した広い横扉には段差がまったくないことに気づいた。"
+      },
+      {
+        "id": "eiken_4_written_06_q33",
+        "number": 33,
+        "answer": 4,
+        "explanation": "客も使ってよいのだが、ほとんどの人がその存在を知らなかったと原さんが説明している。"
+      },
+      {
+        "id": "eiken_4_written_06_q34",
+        "number": 34,
+        "answer": 2,
+        "explanation": "made two bright wooden signs in her school woodshop clubとある。"
+      },
+      {
+        "id": "eiken_4_written_06_q35",
+        "number": 35,
+        "answer": 3,
+        "explanation": "Mr. Hara also added a small bell beside the side doorとある。"
+      }
+    ]
+  },
+  {
     "id": "eiken_3_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "f6dffb4f6e551a602758b3ab7e7e455231c743e84798f207bf11513e84885399",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "fa3164faf2d92f13a2843db733729916e7e528cdb518618e0b84a55552d96c8b",
     "pages": 23,
     "parts": [
       {
@@ -2201,8 +4067,8 @@
   },
   {
     "id": "eiken_3_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "da3c7e3903762dace62e937a131d2d7679c927b82c013805cd3be3dd611757e1",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "ab8811259f2265869965edeaf9acea76c84dd160255068b7e03b1ebeef246829",
     "pages": 23,
     "parts": [
       {
@@ -2535,8 +4401,8 @@
   },
   {
     "id": "eiken_3_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "0062bf03d12a15fc6630a4a9df65d5d8a8e1737f9f48e9b02a44281d21b58a45",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "5a3a6109a20f8ab94392447dc50ca7ffb69f7249f1790d660992c9bf8f8ee24c",
     "pages": 23,
     "parts": [
       {
@@ -2868,9 +4734,1011 @@
     ]
   },
   {
+    "id": "eiken_3_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "d10112725d975033411fb4c5ac639e9d7c67c7840a7726d42bfa0486a3f89709",
+    "pages": 24,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_04_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_04_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_04_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9,
+      9
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 5,
+          "passage": "r3r4-notice",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "r3r4-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r3r4-story",
+          "questions": [
+            26,
+            27,
+            28,
+            29,
+            30
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_3_written_04_q01",
+        "number": 1,
+        "answer": 1,
+        "explanation": "ケーキ作りの仕上げに上にイチゴをのせる相手としてcream（クリーム）が適切。"
+      },
+      {
+        "id": "eiken_3_written_04_q02",
+        "number": 2,
+        "answer": 3,
+        "explanation": "finishの目的語には動名詞writingをとる。"
+      },
+      {
+        "id": "eiken_3_written_04_q03",
+        "number": 3,
+        "answer": 2,
+        "explanation": "橋は「建てられた」側でmore than a hundred years agoの過去なので受動態was built。"
+      },
+      {
+        "id": "eiken_3_written_04_q04",
+        "number": 4,
+        "answer": 4,
+        "explanation": "tell＋人＋not to doで「人に〜しないよう言う」。"
+      },
+      {
+        "id": "eiken_3_written_04_q05",
+        "number": 5,
+        "answer": 1,
+        "explanation": "先行詞が人（visitors）で動詞speakの主語になる主格の関係代名詞who。"
+      },
+      {
+        "id": "eiken_3_written_04_q06",
+        "number": 6,
+        "answer": 2,
+        "explanation": "be made ofで材料が元の性質を保っている「〜でできている」。"
+      },
+      {
+        "id": "eiken_3_written_04_q07",
+        "number": 7,
+        "answer": 3,
+        "explanation": "過去の一時点を表す節he started ... と結びついて現在完了の起点を示す接続詞Since。"
+      },
+      {
+        "id": "eiken_3_written_04_q08",
+        "number": 8,
+        "answer": 4,
+        "explanation": "条件を表すif節の中では未来のことも現在形isで表す。"
+      },
+      {
+        "id": "eiken_3_written_04_q09",
+        "number": 9,
+        "answer": 3,
+        "explanation": "相手が私にノートを「貸す」動作を頼んでいるのでlend＋人＋物。"
+      },
+      {
+        "id": "eiken_3_written_04_q10",
+        "number": 10,
+        "answer": 1,
+        "explanation": "so＋形容詞＋that節で「とても〜なので…だ」。"
+      },
+      {
+        "id": "eiken_3_written_04_q11",
+        "number": 11,
+        "answer": 2,
+        "explanation": "和室に入る前に玄関で靴をきれいに「並べる」のでline up。"
+      },
+      {
+        "id": "eiken_3_written_04_q12",
+        "number": 12,
+        "answer": 4,
+        "explanation": "be excited aboutで「（知らせ・出来事）にわくわくする」。"
+      },
+      {
+        "id": "eiken_3_written_04_q13",
+        "number": 13,
+        "answer": 1,
+        "explanation": "丸い植木鉢を包装紙できれいに包む「方法」が分からないのでhow to wrap。"
+      },
+      {
+        "id": "eiken_3_written_04_q14",
+        "number": 14,
+        "answer": 4,
+        "explanation": "カードを作ったすべての新しい「会員・利用者」なのでmember。"
+      },
+      {
+        "id": "eiken_3_written_04_q15",
+        "number": 15,
+        "answer": 3,
+        "explanation": "plenty of timeで「十分な時間・たっぷりの時間」。不可算名詞timeに使えるのはplenty。"
+      },
+      {
+        "id": "eiken_3_written_04_q16",
+        "number": 16,
+        "answer": 2,
+        "explanation": "健康診断で腕時計を外す必要があるか聞かれ、着けたままでよいと答えて左袖をまくるよう案内する。"
+      },
+      {
+        "id": "eiken_3_written_04_q17",
+        "number": 17,
+        "answer": 1,
+        "explanation": "日曜の10キロロードレースの結果を尋ねられ、10位でゴールして自己記録を2分縮めたと答える。"
+      },
+      {
+        "id": "eiken_3_written_04_q18",
+        "number": 18,
+        "answer": 3,
+        "explanation": "座れるようかばんを少し動かしてもらえるか頼まれ、席をふさいでいたことに気づかなかったと詫びて応じる。"
+      },
+      {
+        "id": "eiken_3_written_04_q19",
+        "number": 19,
+        "answer": 2,
+        "explanation": "今日の午後なぜ理科室に鍵がかかっているのか聞かれ、技術者がガス管を点検中だと理由を説明する。"
+      },
+      {
+        "id": "eiken_3_written_04_q20",
+        "number": 20,
+        "answer": 4,
+        "explanation": "祖母の誕生日に小さな鉢植えを買おうかという提案に大賛成し、ベランダで花の世話をするのが大好きだと続ける。"
+      },
+      {
+        "id": "eiken_3_written_04_q21",
+        "number": 21,
+        "answer": 1,
+        "explanation": "The fee is 300 yen, including paper, glue, and one LED light.とある。"
+      },
+      {
+        "id": "eiken_3_written_04_q22",
+        "number": 22,
+        "answer": 2,
+        "explanation": "Only twenty seats are available, so please write your name on the list ... by November 4.とある。"
+      },
+      {
+        "id": "eiken_3_written_04_q23",
+        "number": 23,
+        "answer": 3,
+        "explanation": "how she plans warm soup menus using vegetables grown in our cityとある。"
+      },
+      {
+        "id": "eiken_3_written_04_q24",
+        "number": 24,
+        "answer": 4,
+        "explanation": "she has a city meeting that afternoon（水曜午後に市の会議がある）ため変更された。"
+      },
+      {
+        "id": "eiken_3_written_04_q25",
+        "number": 25,
+        "answer": 3,
+        "explanation": "write one question you want to ask Ms. Kimura and put it in our club box by Thursday noonとある。"
+      },
+      {
+        "id": "eiken_3_written_04_q26",
+        "number": 26,
+        "answer": 1,
+        "explanation": "放課後に踏切で待っているときに聞いたチャイムやカエル、移動販売の音から思いついた。"
+      },
+      {
+        "id": "eiken_3_written_04_q27",
+        "number": 27,
+        "answer": 2,
+        "explanation": "Before recording inside shops, they politely explained their school project and asked permission.とある。"
+      },
+      {
+        "id": "eiken_3_written_04_q28",
+        "number": 28,
+        "answer": 4,
+        "explanation": "drew colored icons for each place and wrote what time of day the sound could be heardとある。"
+      },
+      {
+        "id": "eiken_3_written_04_q29",
+        "number": 29,
+        "answer": 1,
+        "explanation": "visitors scanned codes beside the map to listen through headphonesとある。"
+      },
+      {
+        "id": "eiken_3_written_04_q30",
+        "number": 30,
+        "answer": 4,
+        "explanation": "笑顔になり、普段の町がこれほど生き生きしていたと思い出させてくれたと話した。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_3_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "095f5b3cd451e80668b547214060e2a23ee83c186da207c8b5a7509ff693ab72",
+    "pages": 24,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_05_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_05_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_05_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9,
+      9
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 5,
+          "passage": "r3r5-notice",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "r3r5-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r3r5-story",
+          "questions": [
+            26,
+            27,
+            28,
+            29,
+            30
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_3_written_05_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "エレベーターに乗るときに押してくれたものなのでbutton（ボタン）。"
+      },
+      {
+        "id": "eiken_3_written_05_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "enjoyの目的語には動名詞makingを置く。"
+      },
+      {
+        "id": "eiken_3_written_05_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "雑誌は「読まれる」側でevery monthの現在の習慣なので受動態is read。"
+      },
+      {
+        "id": "eiken_3_written_05_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "ask＋人＋not to doで「人に〜しないよう頼む・指示する」。"
+      },
+      {
+        "id": "eiken_3_written_05_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "無冠詞の名詞句walnut breadと結びついて「その店のクルミパンが」と所有関係を表すwhose。"
+      },
+      {
+        "id": "eiken_3_written_05_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "be afraid ofで「〜を怖がる」。"
+      },
+      {
+        "id": "eiken_3_written_05_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "Not yet.（まだです）で未完了を表す定型表現。"
+      },
+      {
+        "id": "eiken_3_written_05_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "時を表すas soon as節の中では未来のことも現在形arrives（3人称単数）で表す。"
+      },
+      {
+        "id": "eiken_3_written_05_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "前置詞なしで場所の目的語the topを直接とり「〜に到達する」を表す他動詞reach。"
+      },
+      {
+        "id": "eiken_3_written_05_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "形容詞＋enough＋for A＋to不定詞で「Aが〜するのに十分…だ」。"
+      },
+      {
+        "id": "eiken_3_written_05_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "家族で出かける間、猫の「世話をする」ことを頼むのでlook after。"
+      },
+      {
+        "id": "eiken_3_written_05_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "be different fromで「〜と異なっている・違う」。"
+      },
+      {
+        "id": "eiken_3_written_05_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "ほどけないようにロープを結ぶ「やり方」を教えてほしいのでhow to tie。"
+      },
+      {
+        "id": "eiken_3_written_05_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "バスが満員で次の便を停留所で待った人たちなのでpassengers（乗客）。"
+      },
+      {
+        "id": "eiken_3_written_05_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "混雑した屋台で昼食を買う「代わりに」サンドイッチを持参したinstead of doing。"
+      },
+      {
+        "id": "eiken_3_written_05_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "各駅停車がみどり公園に止まるか聞かれ、はい全駅に止まりますと答え、急行は通過するからこれで合っていると添える。"
+      },
+      {
+        "id": "eiken_3_written_05_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "初心者で不安がる相手をDon't worry at all.（全然心配いらないよ）と励まし、半数が4月始めだと伝える。"
+      },
+      {
+        "id": "eiken_3_written_05_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "夜遅くまで勉強していたのかと聞かれ、勉強ではなく子犬が風の音に吠え続けてよく眠れなかったと説明する。"
+      },
+      {
+        "id": "eiken_3_written_05_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "ホッチキスを少し借りてよいか聞かれ、どうぞ使ってと快諾し4時間目までに返すよう添える。"
+      },
+      {
+        "id": "eiken_3_written_05_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "プラネタリウムの感想を聞かれ、とても魅力的で幼いいとこも最後まで静かに見入っていたと答える。"
+      },
+      {
+        "id": "eiken_3_written_05_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "Please bring coins and your own shopping bag.とある。"
+      },
+      {
+        "id": "eiken_3_written_05_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "Bicycle helmets cannot be sold or bought here for safety reasons.とある。"
+      },
+      {
+        "id": "eiken_3_written_05_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "bring indoor shoes, because our booth is inside their gymnasiumとある。"
+      },
+      {
+        "id": "eiken_3_written_05_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "so everyone also has thirty minutes to look around the festival and buy snacksとある。"
+      },
+      {
+        "id": "eiken_3_written_05_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "speak slowly and crouch down to eye level when explaining rules to first and second gradersとある。"
+      },
+      {
+        "id": "eiken_3_written_05_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "two of the seat boards cracked, and the city put yellow tape around the benchとある。"
+      },
+      {
+        "id": "eiken_3_written_05_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "買い物袋を持った高齢の男性がテープの巻かれたベンチの横で疲れて立っているのを見たから。"
+      },
+      {
+        "id": "eiken_3_written_05_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "dozens of park repairs were waiting after winter storms, so minor benches came lastとある。"
+      },
+      {
+        "id": "eiken_3_written_05_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "父の材木店が杉板を寄付し、市の職人が工具を持って施工しハナたちもやすりがけを手伝った。"
+      },
+      {
+        "id": "eiken_3_written_05_q30",
+        "number": 30,
+        "answer": 1,
+        "explanation": "someone left a small bouquet of daisies tied to the armrest with a \"Thank you\" tagとある。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_3_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "79e459d1ba0b9ab9fc2dc961fc672df2d0909a28869eb745efd6d59956aedbfc",
+    "pages": 23,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_06_questions.pdf",
+        "pages": 8,
+        "start": 1,
+        "end": 8
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_06_answers.pdf",
+        "pages": 1,
+        "start": 9,
+        "end": 9
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_06_explanations.pdf",
+        "pages": 14,
+        "start": 10,
+        "end": 23
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      8,
+      8,
+      8,
+      8,
+      8
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        7,
+        8
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 5,
+          "passage": "r3r6-notice",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 6,
+          "passage": "r3r6-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 8,
+          "passage": "r3r6-story",
+          "questions": [
+            26,
+            27,
+            28,
+            29,
+            30
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_3_written_06_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "出発案内板で特急列車が何番「ホーム」から出るか確認するのでplatform。"
+      },
+      {
+        "id": "eiken_3_written_06_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "practiceの目的語には動名詞givingをとる。"
+      },
+      {
+        "id": "eiken_3_written_06_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "複数主語Many kinds of tropical fruitが島で「栽培されている」受動態are grown。"
+      },
+      {
+        "id": "eiken_3_written_06_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "warn＋人＋not to doで「人に〜しないよう警告する・注意する」。"
+      },
+      {
+        "id": "eiken_3_written_06_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "先行詞が人（a traveler）でhad riddenの主語になる主格の関係代名詞who。"
+      },
+      {
+        "id": "eiken_3_written_06_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "be crowded withで「〜で混雑している・いっぱいである」。"
+      },
+      {
+        "id": "eiken_3_written_06_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "How many times（何回）と回数を尋ねられ、家族旅行で1回・学校で1回の計「2回（Twice）」と答える。"
+      },
+      {
+        "id": "eiken_3_written_06_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "条件を表すif節の中では未来のことも現在形becomes（単数主語the wind）で表す。"
+      },
+      {
+        "id": "eiken_3_written_06_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "graduate from universityで「大学を卒業する」。"
+      },
+      {
+        "id": "eiken_3_written_06_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "such＋a＋形容詞＋単数名詞＋that節で「とても〜な…なので〜だ」。"
+      },
+      {
+        "id": "eiken_3_written_06_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "熱があるので一日中家に「いる」stay home。"
+      },
+      {
+        "id": "eiken_3_written_06_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "be surprised at ... で「…に驚く」。"
+      },
+      {
+        "id": "eiken_3_written_06_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "直後の名詞timeと結びついて「何時に」を表すwhat time。"
+      },
+      {
+        "id": "eiken_3_written_06_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "図書カードや生徒証で証明するものとしてaddress（住所）が適切。"
+      },
+      {
+        "id": "eiken_3_written_06_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "動詞の原形winが後ろに続き、「合唱コンクールで優勝するために」という目的を表すin order to。"
+      },
+      {
+        "id": "eiken_3_written_06_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "お城を背景に写真を撮ってもらえるか頼まれ、喜んで引き受けつつシャッターボタンを確認する。"
+      },
+      {
+        "id": "eiken_3_written_06_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "青いキーケースが見つかったか聞かれ、誰かが駅務室に届けてくれていて本当にほっとしたと答える。"
+      },
+      {
+        "id": "eiken_3_written_06_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "土曜までに福岡へ届くか尋ねられ、今日は水曜で2日あれば十分だから問題なく届くと答える。"
+      },
+      {
+        "id": "eiken_3_written_06_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "なぜエスカレーターではなく階段を使うのか聞かれ、今点検中だと説明して看板を指す。"
+      },
+      {
+        "id": "eiken_3_written_06_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "アイスティーにレモンを入れるか聞かれ、ストレートが好きなのでNo, thanks.と断る。"
+      },
+      {
+        "id": "eiken_3_written_06_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "Elementary and junior high school students must come with an adult.とある。"
+      },
+      {
+        "id": "eiken_3_written_06_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "If the sky is cloudy or rainy, we will hold a special star talk in the planetarium instead.とある。"
+      },
+      {
+        "id": "eiken_3_written_06_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "to open together in five years, when we turn twentyとある。"
+      },
+      {
+        "id": "eiken_3_written_06_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "because they can spoil or leak over five years and ruin everyone's lettersとある。"
+      },
+      {
+        "id": "eiken_3_written_06_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "inside a clear zip bag with your name written on the outsideとある。"
+      },
+      {
+        "id": "eiken_3_written_06_q26",
+        "number": 26,
+        "answer": 3,
+        "explanation": "a narrow strip of dry ground where nothing grew except weedsとある。"
+      },
+      {
+        "id": "eiken_3_written_06_q27",
+        "number": 27,
+        "answer": 4,
+        "explanation": "少量でも料理の香りを良くするが、給食用に大量購入するには高価なことが多いと説明して喜んだ。"
+      },
+      {
+        "id": "eiken_3_written_06_q28",
+        "number": 28,
+        "answer": 2,
+        "explanation": "Because the cafeteria roof blocked some rain, the students took turns watering the bed every morningとある。"
+      },
+      {
+        "id": "eiken_3_written_06_q29",
+        "number": 29,
+        "answer": 3,
+        "explanation": "Mr. Ono also taught them which leaves to trim so the plants would grow thicker.とある。"
+      },
+      {
+        "id": "eiken_3_written_06_q30",
+        "number": 30,
+        "answer": 2,
+        "explanation": "The cafeteria served \"Garden Herb Potato Soup,\" and a small card ... thanked the gardening club.とある。"
+      }
+    ]
+  },
+  {
     "id": "eiken_pre2_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "72a960267a05ce149827f6b2abd177e50e08078592d399f29d00e121a8d979fb",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "e9ebecdf568e3816909a1eafef8bcbf423fabbb71325a2c35ea3cfcb6eb58f50",
     "pages": 24,
     "parts": [
       {
@@ -3195,8 +6063,8 @@
   },
   {
     "id": "eiken_pre2_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "16b9c3f9094430b081d2489057bb4204c2de2958a1171f66e38eba65f99f096b",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "50d70eb05bd11302341aa222a7367d2fc2c3622e60d06618bfd79f8b69f01afb",
     "pages": 24,
     "parts": [
       {
@@ -3521,8 +6389,8 @@
   },
   {
     "id": "eiken_pre2_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "c7da30de88b0fbe3af85f9023988af94febbe704a39c5597c9fe14a8778443ee",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "7282970d9f2648e8729c466b914605b192ffc3c749384c86aa92168d2006bc40",
     "pages": 24,
     "parts": [
       {
@@ -3846,9 +6714,987 @@
     ]
   },
   {
+    "id": "eiken_pre2_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "7e28389a9349c51e3d6e59b1633d5e2a18342d70f974db3ca26cdc10d7086ff4",
+    "pages": 24,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_04_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_04_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_04_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        10,
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp2r4-cloze",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "rp2r4-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rp2r4-article",
+          "questions": [
+            26,
+            27,
+            28,
+            29
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2_written_04_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "丘の上の新しい診療所まで届くようバス路線が「変更・調整された」のでmodified。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "複雑に見えたが手順の説明は「たどりやすかった・従いやすかった」のでfollow。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "走る前に脚を伸ばして筋肉の「けが」を防ぐのでinjuries。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "on a first-come, first-served basisで「先着順で」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "be absorbed in ... で「…に夢中になっている・没頭している」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "不可算名詞milkの前に置き、帰り道に買う必要があるので「ほとんど残っていない」を表すlittle。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "take placeでイベントが「開催される・行われる」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "毎週金曜日に遅れず「時間どおりに・期限を守って」提出するpunctually。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "知覚動詞see＋目的語＋動詞の原形（carry）で「〜が運ぶのを見た」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "for the sake of ... で「…のために（安全や利益を考えて）」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "No sooner had S＋過去分詞 ... than ~ で「…するやいなや〜した」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "B as well as Aで「AだけでなくBも」。地元の家族だけでなく近隣県からの来場者も引きつける。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "point out that ... で「…だと指摘する・教えてくれる」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "通学かばんの横ポケットに「収まる・入る」のでfit。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "compared with ... で「…と比べると」。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "ノートパソコンをつなげるコンセントがあるか尋ねられ、壁際の窓側席の下に全部あると案内する。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "なぜ今朝は高速バスに乗らなかったのか聞かれ、出発前に姉が交通アプリを見て高速道路の事故を教えてくれたから電車にしたと答える。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "二重奏の練習を火曜から木曜に移せるか相談され、自分は大丈夫だと思うと応じて音楽室の空きを確認する。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "白いセーターのお茶の染みが落ちたか聞かれ、ぬるま湯と食器用洗剤に浸したらきれいに落ちたと答える。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "梨狩りをしたことがあるか聞かれ、初めてなので熟しているものの見分け方を教えてほしいと頼む。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "パンを乾燥させることなく午前中ずっと陳列窓を曇らせず透明に保った。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "暖房を増やす代わりに空気と湿気の動きを理解して滞留を防ぐ工夫をした。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "come wearing the thin T-shirt and leggings you will wear under your costumeとある。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "先週土曜のリハーサルで市民ホールの木の舞台が滑りやすいと分かったため。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "as household detergent may change the dye color of the matching jacketsと明記。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "電車が2分遅れか20分遅れか知る確実な方法がなく、やみくもに待つと先の停留所の利用者を遅らせてしまう恐れがあったため。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "バスが乗り場で待っていると車内で知らせることで、駅の階段を危険に走るのを防ぐ。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "大雪で15分遅れるなど遅延が大きく、待たせると地域路線網全体が麻痺してしまう場合。"
+      },
+      {
+        "id": "eiken_pre2_written_04_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "乗り物同士が連携していると分かることで、乗り継ぎが必要な移動でも自家用車を家に置いて公共交通を使おうとする人が増えた。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre2_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "96780a8c4def94bef56e12cf6d1e6ff276173e25ea5fb151b47ca51417c2475b",
+    "pages": 24,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_05_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_05_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_05_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        10,
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp2r5-cloze",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "rp2r5-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rp2r5-article",
+          "questions": [
+            26,
+            27,
+            28,
+            29
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2_written_05_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "日没前にテントのペグが地面に「しっかりと」打ち込まれているか確認するfirmly。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "3日間の陶器市のあいだ臨時シャトルバスを「運行する」のでoperate。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "一度会った人の顔を覚える素晴らしい「才能・特技」なのでtalent for doing。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "険しい尾根で隔てられているため、それぞれ「異なる・独自の」祭りの踊りが発達したdistinct。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "refrain from doingで「〜するのを控える・慎む」。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "準否定語Hardlyと組み合わせて「ほとんど誰も気づかなかった」を表すのはHardly anybody。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "重いボトルを底に置いて柔らかい果物が「押しつぶされる」のを防ぐget crushed。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "treat ... with equal respectで「同等の敬意をもって扱う・尊重する」。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "人の性質・態度を表す形容詞（careless, kind, polite等）の後ろではIt is ... of＋人＋to doを用いる。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "out of the wayで「邪魔にならない場所へ・道の脇へ」。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "場所の副詞句が文頭に出たことによる第1文型の倒置。単数主語a lighthouseに対応するのはstands。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "水族館で働きたかったので都市銀行からの内定を「断った」turned down。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "depend on ... で「…次第である」。名詞節Whether ... が単数扱いの主語なのでdepends。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "in case＋節で「〜する場合に備えて」。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "チェスなどのボードゲームを「指す・する」はplay chess。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "値札とレジ表示の食い違いを指摘され、失礼しましたと詫びて棚表示を確認・修正すると応じる。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "紺色の折りたたみ傘を見なかったか聞かれ、今朝からは見ていないと答えて音楽室前の傘立てを確認したか尋ねる。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "大きなピザを分けるか別々にパスタを頼むか聞かれ、2種類のソースを味わえるようパスタを2つ頼んで分けようと提案する。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "先月の膝の手術後の経過を尋ねられ、予想よりずっと良く昨日は杖なしで郵便局まで歩けたと答える。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "Do you mind if ...?（〜しても構いませんか）への快諾はNot at all.（まったく構いませんよ）。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "テントウムシなどの天敵がアブラムシを食べてくれることで農薬散布を減らせる。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "幹の下は刈りつつ通路中央に花帯を残す小さな生息環境の工夫が、農作業のしやすさと自然の恵みを両立させる。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "so staff can adjust the straps to fit your boots（出発前にスタッフがストラップを靴に合わせて調整するため）。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "You must wear waterproof hiking boots or tall snow boots that cover your anklesとある。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "体が予想以上に温まるため、分厚いコート1枚ではなく脱ぎ着や温度調節ができる2〜3枚の重ね着をするよう勧めている。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q26",
+        "number": 26,
+        "answer": 3,
+        "explanation": "手がふさがっていたり手袋をしていたりする時もポケットからスマホを出さず一瞬で確認でき、通知に気を取られることもない。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q27",
+        "number": 27,
+        "answer": 4,
+        "explanation": "広場での分かりやすい待ち合わせの目印になり、停電や通信障害の際にも動き続けた例がある。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q28",
+        "number": 28,
+        "answer": 2,
+        "explanation": "凍雨や潮風、鳥の営巣にさらされて定期整備が必要である一方、塔時計の技術を学ぶ若い技術者が減っている。"
+      },
+      {
+        "id": "eiken_pre2_written_05_q29",
+        "number": 29,
+        "answer": 3,
+        "explanation": "歴史ある文字盤の後ろに現代のソーラー充電式ムーブメントを組み合わせ、馴染み深い外観を保ちつつ保守を簡単にしている。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre2_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "b3d2aa1f5c227a2eca03cce1f938da3ab189aabc18a137d7d688d9e881678688",
+    "pages": 24,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_06_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_06_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_06_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        10,
+        5
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "conversation",
+          "page": 4,
+          "questions": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp2r6-cloze",
+          "questions": [
+            21,
+            22
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 7,
+          "passage": "rp2r6-email",
+          "questions": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rp2r6-article",
+          "questions": [
+            26,
+            27,
+            28,
+            29
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2_written_06_q01",
+        "number": 1,
+        "answer": 4,
+        "explanation": "場所を取らないようガラスボウルが互いの中に「きちんときれいに」重なる設計なのでneatly。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q02",
+        "number": 2,
+        "answer": 2,
+        "explanation": "at no additional chargeで「追加料金なしで」。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q03",
+        "number": 3,
+        "answer": 3,
+        "explanation": "80歳でも歴史の年号に対する記憶力が「鋭い・はっきりしている」sharp。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q04",
+        "number": 4,
+        "answer": 1,
+        "explanation": "大雨のため花火大会を翌週末まで「延期する」ことを余儀なくされたpostpone。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q05",
+        "number": 5,
+        "answer": 4,
+        "explanation": "be free of/from ... で「…が含まれていない・…がない」。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q06",
+        "number": 6,
+        "answer": 1,
+        "explanation": "過去完了に続き「歩いて10分もしないうちに濃い霧が押し寄せた」と出来事の発生を表す接続詞when。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q07",
+        "number": 7,
+        "answer": 2,
+        "explanation": "behind the scenesで「舞台裏で・陰で支えて」。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q08",
+        "number": 8,
+        "answer": 3,
+        "explanation": "中古自転車を買う前にフレームに「錆（さび）」の兆候がないかよく調べるrust。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q09",
+        "number": 9,
+        "answer": 2,
+        "explanation": "suggestの目的語には動名詞printingをとる（suggest to doとはしない）。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q10",
+        "number": 10,
+        "answer": 4,
+        "explanation": "in spite of ... で「…にもかかわらず」。冷たい風にもかかわらず200人以上が集まった。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q11",
+        "number": 11,
+        "answer": 1,
+        "explanation": "定期的にバックアップすべきだ、「さもないと」故障時に大切な思い出を失うかもしれない、なのでotherwise。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q12",
+        "number": 12,
+        "answer": 3,
+        "explanation": "宿泊施設などが最大8人まで「収容する・泊める」ことができるaccommodate。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q13",
+        "number": 13,
+        "answer": 4,
+        "explanation": "漁港の近くで育ったという過去の経験を表す完了分詞構文Having＋過去分詞grown。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q14",
+        "number": 14,
+        "answer": 3,
+        "explanation": "run parallel to ... で「…と平行に走る」。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q15",
+        "number": 15,
+        "answer": 2,
+        "explanation": "leave outで「〜を抜かす・入れ忘れる」。小さな金属ワッシャーを1つも入れ忘れないよう注意する。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q16",
+        "number": 16,
+        "answer": 1,
+        "explanation": "サラダのスライスアーモンド抜きでランチセットを頼めるか聞かれ、もちろんですと快諾し厨房へのメモを入れる。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q17",
+        "number": 17,
+        "answer": 4,
+        "explanation": "朝から文具店の外に長い列ができている理由を聞かれ、地元電車デザインの限定ノートが発売されるからだと教える。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q18",
+        "number": 18,
+        "answer": 2,
+        "explanation": "調理室の予約結果が届いたか聞かれ、土曜午後は埋まっていたが同じ週末の日曜午前なら空いていると伝える。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q19",
+        "number": 19,
+        "answer": 3,
+        "explanation": "坂をこぐたびに自転車のチェーンがきしむと相談され、ガレージにチェーンオイルがあるから放課後に掃除して油を差そうと提案する。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q20",
+        "number": 20,
+        "answer": 1,
+        "explanation": "動物保護施設での初ボランティアの感想を聞かれ、20個のケージ洗いは想像以上に大変だったが、怖がりな保護犬が尻尾を振ってくれて報われたと答える。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q21",
+        "number": 21,
+        "answer": 4,
+        "explanation": "店員個人の率直な紹介と好みの相性によって、自分ひとりでは手に取らなかったような本に出会える。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q22",
+        "number": 22,
+        "answer": 1,
+        "explanation": "単調な棚補充を「地域の読者との心のこもった対話」へと変える。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q23",
+        "number": 23,
+        "answer": 2,
+        "explanation": "ホールのマイクが高感度で、布のこすれる音や金属が当たる音まで拾ってしまうため。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q24",
+        "number": 24,
+        "answer": 3,
+        "explanation": "We will enter through the backstage door on the west side at 1:15 p.m.とある。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q25",
+        "number": 25,
+        "answer": 2,
+        "explanation": "as sugar and dairy can coat your throat and make clear high notes harderと明記されている。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q26",
+        "number": 26,
+        "answer": 4,
+        "explanation": "車が時速25〜30キロで速く曲がれてしまうことと、縁石が下がって横断歩道の距離が数メートル長くなることの2点。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q27",
+        "number": 27,
+        "answer": 1,
+        "explanation": "横断距離を短くし、道路へ踏み出さなくても駐車車両の向こうを見通しやすくする。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q28",
+        "number": 28,
+        "answer": 3,
+        "explanation": "乗用車はガタガタする表面を避ける一方、緊急車両の幅広タイヤは必要時にゆっくり乗り越えられる低い石畳エプロンを縁石横に設ける。"
+      },
+      {
+        "id": "eiken_pre2_written_06_q29",
+        "number": 29,
+        "answer": 4,
+        "explanation": "コンクリートの形状の小さな幾何学的工夫が、地域全体の交差点の日常的な安全を高めるという趣旨。"
+      }
+    ]
+  },
+  {
     "id": "eiken_pre2plus_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "f858e1010c4a6ffb6591ec6ef2fc6c284144769dbbb16c904ad2010ac0e67162",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "726b970edfccf7d2267513b129bc864e89076c1cb52d70a9d9020eb2bc0e33ce",
     "pages": 27,
     "parts": [
       {
@@ -4204,8 +8050,8 @@
   },
   {
     "id": "eiken_pre2plus_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "be6a7a0c33c6794176d7ee5699b18b31e7d7e064974671e4f14f33fe22cb9540",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "c981359b006f05b9b10076d969caff4cb57d23f33014d294b2e22e6b142cda80",
     "pages": 28,
     "parts": [
       {
@@ -4561,8 +8407,8 @@
   },
   {
     "id": "eiken_pre2plus_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "66257eab4f2dd3204bd087fb9c7c31b7af10bdd5810f0ec4260ef683d0cd1372",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "825a567165cfbfd2bd5ea3831eb2b8553b8e05dc6c426d8d56f668b23cf16ebe",
     "pages": 28,
     "parts": [
       {
@@ -4917,9 +8763,1080 @@
     ]
   },
   {
+    "id": "eiken_pre2plus_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "891b7639f151fbea2ec0a7d67ae532275336d6360a85d6db2683118d830307be",
+    "pages": 28,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_04_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_04_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_04_explanations.pdf",
+        "pages": 16,
+        "start": 13,
+        "end": 28
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rplusr4-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "rplusr4-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rplusr4-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "rplusr4-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2plus_written_04_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "錆びた鉄骨の梁を「補強する」ために2週間通行止めにしたreinforce。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "well in advanceで「かなり前もって・十分に余裕をもって事前に」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "grow on＋人で「次第に（人）に好まれるようになる・良さがわかってくる」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "自分で取っていると思う睡眠時間と実際の睡眠時間との「隔たり・差」なのでgap。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "without exceptionで「例外なく」。常時保護ゴーグルを着用する義務を強める。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "乗り継ぎがいかにスムーズか実際に見るまでは改正に「懐疑的だった」skeptical about。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "駐輪ラック不足という課題に「対処する・取り組む」を表すaddress。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "沿岸の濃い秋霧が「視界」を著しく悪化させたのでvisibility。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "二重窓の設置により冬の暖房費が1シーズンで「大幅に」削減されたsubstantially。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "ログオフ前に保存しなければならない、「さもないと」未保存の変更が消えてしまう、なのでotherwise。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "急激な温度変化に対して驚くほど「強い・耐性がある」resistant to。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "公園の西5キロで確認された落雷「が原因で」中止されたowing to。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "300着発注する前に生地の品質を「確認する・確かめる」ため見本を求めたverify。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "not/against relying solely on ... で「…だけに頼る」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "ベビーカーの保護者の通行を「妨げていた」障害物を取り除いたhindered。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "in the event of＋名詞で「万が一〜が起きた場合には」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "far from＋動名詞（hurting）で「〜に打撃を与えるどころか」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "歩行レーンが空いたまま残ることで輸送力が落ち、その結果として乗り口の行列が長くなる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "片側だけでなく段の両側に乗客の重さが均等にかかるようになるため、偏摩耗が減る。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "2列に並んで立ち止まるほうが、結果的に駅全体の乗客をより速く安全に上へ運べるという本文の結論。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "10倍の周波数の音と小型マイクで測定する仕組みによって、建設前に天井角度を比較できる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "空気の湿気による減衰を補正するのに「同様に」、観客の衣服による吸音もミニチュア人形で再現する。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "巨費を投じて建てた後に取り返しのつかない音響欠陥が見つかるのを防ぐ頼もしい安全網になる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "折り目がつくと体育館のスポットライトの下で影ができ、小さなグラフが読みにくくなるため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "prohibited because the panels are rented from the city hall（市役所からの借用パネルだから）と明記。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "全員が他校の研究も見られるよう、奇数番号と偶数番号の班が1時間ずつ交代で発表と見学を行う。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "写真はある一瞬の1個体（虫食い等の偶然を含む）しか写せず、春のつぼみと秋の種子のように同時に存在しない成長段階を1枚に統合しにくい。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "解剖顕微鏡のピントを少しずつ動かして観察し、線の太さを使い分けながら手前から奥まで全ての層を鮮明に描く。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "ノギスで測った下絵の段階で、微細な毛の角度や茎の鱗片の数など分類上の特徴が科学的に正確か確認し合うため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q30",
+        "number": 30,
+        "answer": 1,
+        "explanation": "Sometimes the act of drawing uncovers diagnostic details that the scientist had overlookedとある。"
+      },
+      {
+        "id": "eiken_pre2plus_written_04_q31",
+        "number": 31,
+        "answer": 4,
+        "explanation": "現地での色や環境を記録する写真と、複雑な立体構造を明快に抽出する線画はライバルではなく互いに補い合うパートナーだとしている。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre2plus_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "25568bdd4ee015ca2fcf36fcd232a1468824b70660f56143032bcf39315125ce",
+    "pages": 28,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_05_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_05_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_05_explanations.pdf",
+        "pages": 16,
+        "start": 13,
+        "end": 28
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rplusr5-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "rplusr5-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rplusr5-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "rplusr5-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2plus_written_05_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "週末の激しい交通渋滞を「緩和する・和らげる」ために道路を拡幅するのでrelieve。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "熱湯によって粘土がわずかに「膨張する」ことで小さなひびから水漏れするexpand。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "back up A with Bで「BによってA（主張）を裏づける」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "穏やかな春と秋の時期にだけ「季節限定で」使われるon a seasonal basis。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "in consultation with ... で「…と協議のうえ・相談しながら」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "時が経つにつれ互いに強い「影響」を与え合ったmutual influence on each other。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "軽いが内側のフォームが急な衝撃を「吸収する」のに十分な密度があるabsorb。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "have no alternative but to doで「〜する以外に選択肢がない・〜せざるを得ない」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "for the convenience of ... で「…の便宜のために・利用しやすいように」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "自動選別機は速いが、傷みやすい桃は今も熟練スタッフの「手作業で」箱詰めされるmanually。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "一方の側に「偏っている」のではなくバランスの取れた見方を示したbiased toward。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "lest＋主語＋(should)＋原形（be）で「〜されないように」。湿原の繊細な植物が踏みつぶされないよう木道から出ない。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "Only when ... が文頭に出たことによる主節の倒置。過去時制でrealizeが原形なのでdid。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "稚魚や若いサケが「妨げなしに・障害なく」川を遡上できるように泥を取り除いたwithout obstruction。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "regardless of whether ... で「…かどうかにかかわらず」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "市民ホールの舞台が80人の合唱団員を「収容できる」ため選んだaccommodate。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "give offで（気体・光・においなどを）「発する・放出する」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "説明カード付きで2割安く売り出したことに「応えるように・反応して」、家庭客が数日で買い切った。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "消費者側が味に納得した一方で、同時に生産者側もジュース加工向けの約2倍の収益を得られた。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "丁寧な説明を添えれば、見た目の傷は手頃に買いたい消費者と正当な収入を得たい農家の双方にとってプラスになる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "時間帯の整理と1行おきの網掛けを入れた「結果として」、読み間違いが半減した。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "分岐図の導入に「さらに加えて」、つや消し高コントラスト配色で光の反射も抑えた。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "充電切れや通信契約がない人を含め、画面に頼らずバス停に立つ誰もが自力で街を移動できること。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "素手の指先の皮脂が目に見えない跡を残し、古い銀塩写真を徐々に茶色く変色させてしまうため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "インクや画面のほこりが資料に移らないよう、先に手袋を外すよう指示されている。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q26",
+        "number": 26,
+        "answer": 3,
+        "explanation": "貸出者がフルネームでの掲載を望んだかイニシャル表記のみを望んだか、同意書で確認するため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q27",
+        "number": 27,
+        "answer": 4,
+        "explanation": "空調の効いた高効率な建物が優先され、かつての庭が駐車場や増築検査棟に転用されたため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q28",
+        "number": 28,
+        "answer": 2,
+        "explanation": "蛍光灯の廊下のタイルを数えるのに比べ、季節の花のそばの陽だまりのベンチまで歩くことが意味のある目標となり意欲を高めた。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q29",
+        "number": 29,
+        "answer": 3,
+        "explanation": "化学療法後などでにおいに敏感な患者や花粉に弱い人の負担になるため、触れたときだけ香るハーブや笹などが選ばれる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q30",
+        "number": 30,
+        "answer": 2,
+        "explanation": "難しい話し合いの合間などに気持ちを落ち着ける5分間の静かな居場所を必要とする家族や看護師。"
+      },
+      {
+        "id": "eiken_pre2plus_written_05_q31",
+        "number": 31,
+        "answer": 1,
+        "explanation": "職員の定着や患者のリハビリ意欲を支え、施設全体に穏やかな効果をもたらす価値ある共有インフラとして捉えている。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre2plus_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "d0500c70fcfc7a7b1eb0ba4bb86528da5dd101552b882f42b0b77221870cf54d",
+    "pages": 29,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_06_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_06_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_06_explanations.pdf",
+        "pages": 17,
+        "start": 13,
+        "end": 29
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rplusr6-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "rplusr6-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "rplusr6-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "rplusr6-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre2plus_written_06_q01",
+        "number": 1,
+        "answer": 4,
+        "explanation": "台風で週末の全便が欠航した際、乗客に全額「払い戻す・返金する」ことに同意したreimburse。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q02",
+        "number": 2,
+        "answer": 2,
+        "explanation": "太陽光パネルの上の薄いほこりの層でも発電量を「減少させる・損なう」ことがあるdiminish。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q03",
+        "number": 3,
+        "answer": 3,
+        "explanation": "on the spur of the momentで「とっさに・その場の思いつきで」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q04",
+        "number": 4,
+        "answer": 1,
+        "explanation": "近くの谷の杉板を選び、新しい駅舎が周囲の丘と「調和して・しっくりと」溶け込むようにしたharmoniously。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q05",
+        "number": 5,
+        "answer": 4,
+        "explanation": "be capable of doingで「〜する能力がある・〜ができる」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q06",
+        "number": 6,
+        "answer": 1,
+        "explanation": "紫外線の下では紙のインクが色あせ「しやすい・弱い」ため暗い引き出しに保管するvulnerable to。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q07",
+        "number": 7,
+        "answer": 2,
+        "explanation": "carry onで（トラブルの後も中断せず）「続ける」。黒板のチョークを使って冷静に講義を続けた。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q08",
+        "number": 8,
+        "answer": 3,
+        "explanation": "2基の陶芸窯を隔日で動かし、ピーク電力需要が工房の上限を「超える」ことがないようにするexceed。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q09",
+        "number": 9,
+        "answer": 2,
+        "explanation": "on a voluntary basisで「ボランティアとして・無償ベースで」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q10",
+        "number": 10,
+        "answer": 4,
+        "explanation": "Not until ... が文頭に出たことによる主節の倒置。原形seeと結びつき「見ることができた」を表す助動詞could。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q11",
+        "number": 11,
+        "answer": 1,
+        "explanation": "谷間では携帯電話の電波が弱い「場合に備えて」紙の地図を予備として持っていったin case。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q12",
+        "number": 12,
+        "answer": 3,
+        "explanation": "do away with ... で「…をなくす・不要にする」。使い捨て電池の必要性をなくした。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q13",
+        "number": 13,
+        "answer": 4,
+        "explanation": "12月の道路工事が買い物客を遠ざけるのではないかという「懸念・心配」を表明したconcern that ...。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q14",
+        "number": 14,
+        "answer": 3,
+        "explanation": "differ in ... で「…の点で異なる」。地域特有の慣用句の説明の仕方の点で少し異なる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q15",
+        "number": 15,
+        "answer": 2,
+        "explanation": "炊いたご飯を冷凍する前にしっかり包み、水分が外へ「逃げる・抜ける」のを防ぐescape。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q16",
+        "number": 16,
+        "answer": 1,
+        "explanation": "much to one's delightで「（人が）大いに喜んだことに」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q17",
+        "number": 17,
+        "answer": 4,
+        "explanation": "conform to ... で「（基準・規則など）に適合する・従う」。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q18",
+        "number": 18,
+        "answer": 2,
+        "explanation": "各家庭が個別に買って収納を圧迫するの「とは対照的に」、地域で共有すれば無駄なく活用できる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q19",
+        "number": 19,
+        "answer": 3,
+        "explanation": "次に同じ地域の誰かが使うと意識するため、利用者が共有品を丁寧に扱う。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q20",
+        "number": 20,
+        "answer": 1,
+        "explanation": "紙の本に限らず、どんな形であれ知識や技能への入り口を市民に開くこと。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q21",
+        "number": 21,
+        "answer": 4,
+        "explanation": "主エンジンの出力を抑えられるという説明を受け、「実際に」北海航路で8〜15％の燃費改善が記録されたと具体例で裏づける。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q22",
+        "number": 22,
+        "answer": 1,
+        "explanation": "自動制御で帆走操作が不要な利点に「加えてさらに」、低い橋の下を通れる可倒式の工夫もある。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q23",
+        "number": 23,
+        "answer": 2,
+        "explanation": "次世代のクリーン燃料が本格普及するまでの間にも、既存の船で今すぐ排出量と燃料を減らせる現実的な手段。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q24",
+        "number": 24,
+        "answer": 3,
+        "explanation": "your job is to record species counts every fifteen minutes on the waterproof clipboards providedとある。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q25",
+        "number": 25,
+        "answer": 2,
+        "explanation": "as sudden flashes of white light through the viewing slots can startle resting flocksとある。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q26",
+        "number": 26,
+        "answer": 4,
+        "explanation": "2つの小屋が浅い水上に建っており、床板から冷たい風が吹き上げてくるため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q27",
+        "number": 27,
+        "answer": 1,
+        "explanation": "道路のための平地を得て、ごみの投げ捨てを防ぎ、雨水をできるだけ早く街外へ流すため。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q28",
+        "number": 28,
+        "answer": 3,
+        "explanation": "滑らかな地下管は豪雨の流出水を減速させず一気に前方へ押し出すため、下流の合流点をあふれさせてしまう。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q29",
+        "number": 29,
+        "answer": 4,
+        "explanation": "8月の午後に周囲より数度涼しい木陰の歩道を生み、水生生物や鳥が戻り、歩行者が増えて沿道のにぎわいにつながる。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q30",
+        "number": 30,
+        "answer": 3,
+        "explanation": "upstream street runoff must be filtered through gravel beds before entering the open brookとある。"
+      },
+      {
+        "id": "eiken_pre2plus_written_06_q31",
+        "number": 31,
+        "answer": 2,
+        "explanation": "都市が単なるコンクリートの板ではなく生きた地形の上に築かれていることを住民に思い起こさせる。"
+      }
+    ]
+  },
+  {
     "id": "eiken_2_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "b5be441bdc74969ca70764ef17480ec13c3d669caff1213667fb606d9cf2fc3e",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "03fe7be6a5025657efff9c19b2b3fb80cc254ea4f0f14710b012cdcf56a1050d",
     "pages": 27,
     "parts": [
       {
@@ -5275,8 +10192,8 @@
   },
   {
     "id": "eiken_2_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "29ed4da29290d3ed3dc710f28df73ef39aaa19759803b469e23ead0bce92f5cb",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "4cd8aca6533ebef8b5b7a2a4a07b985908ec0565004e2259460a0fc5677e8272",
     "pages": 28,
     "parts": [
       {
@@ -5632,8 +10549,8 @@
   },
   {
     "id": "eiken_2_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "ecbbf5faa8081178421f2978f2e4de17f920686ecf640bc04bb597386497fa54",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "d7e531bf76dbbca4109a840c8057068354fcc2da421ff4569e00342b1d873495",
     "pages": 29,
     "parts": [
       {
@@ -5988,9 +10905,1080 @@
     ]
   },
   {
+    "id": "eiken_2_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "d6bbfb63badc5ccde6249fdc9ca644097c3a5d24edb427951b85a0f0789cc2c1",
+    "pages": 30,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_04_questions.pdf",
+        "pages": 12,
+        "start": 1,
+        "end": 12
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_04_answers.pdf",
+        "pages": 1,
+        "start": 13,
+        "end": 13
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_04_explanations.pdf",
+        "pages": 17,
+        "start": 14,
+        "end": 30
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      12
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "r2r4-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "r2r4-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r2r4-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 12,
+          "passage": "r2r4-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_2_written_04_q01",
+        "number": 1,
+        "answer": 4,
+        "explanation": "大型旅客フェリーが安全に着岸できるよう古い石造桟橋を「長くする・延長する」lengthen。"
+      },
+      {
+        "id": "eiken_2_written_04_q02",
+        "number": 2,
+        "answer": 2,
+        "explanation": "at any given momentで「どの時点においても・一度には」。"
+      },
+      {
+        "id": "eiken_2_written_04_q03",
+        "number": 3,
+        "answer": 3,
+        "explanation": "虫刺されのかゆみや炎症を「和らげる・鎮める」のに非常に効くsoothing。"
+      },
+      {
+        "id": "eiken_2_written_04_q04",
+        "number": 4,
+        "answer": 1,
+        "explanation": "正午に発令された市の熱中症警戒アラート「に従って」屋内に移されたin accordance with。"
+      },
+      {
+        "id": "eiken_2_written_04_q05",
+        "number": 5,
+        "answer": 4,
+        "explanation": "木製玩具を欧州へ輸出する前に、塗料サンプルすべてについて化学的安全性の「認証を受けた」certified。"
+      },
+      {
+        "id": "eiken_2_written_04_q06",
+        "number": 6,
+        "answer": 1,
+        "explanation": "視界が50メートル未満に落ちると、熟練の山岳ガイドでさえその狭い尾根を渡るのを「ためらう・気が進まない」reluctant to do。"
+      },
+      {
+        "id": "eiken_2_written_04_q07",
+        "number": 7,
+        "answer": 2,
+        "explanation": "路肩の荷さばきスペースを失うことを心配する店主たちからの強い「反対」に遭ったstiff opposition。"
+      },
+      {
+        "id": "eiken_2_written_04_q08",
+        "number": 8,
+        "answer": 3,
+        "explanation": "仮定法過去の倒置（Were＋S＋to do）に対する帰結節なので助動詞の過去形could。"
+      },
+      {
+        "id": "eiken_2_written_04_q09",
+        "number": 9,
+        "answer": 2,
+        "explanation": "送電網が止まってもワクチン在庫が「損なわれず無事なまま」保たれるremain intact。"
+      },
+      {
+        "id": "eiken_2_written_04_q10",
+        "number": 10,
+        "answer": 4,
+        "explanation": "リレーの前に陸上トラックから水たまりを「排水する・水を抜く」drain。"
+      },
+      {
+        "id": "eiken_2_written_04_q11",
+        "number": 11,
+        "answer": 1,
+        "explanation": "互いの交易接触とは「まったく無関係に・独立して」よく似た釉薬を発達させたindependently of。"
+      },
+      {
+        "id": "eiken_2_written_04_q12",
+        "number": 12,
+        "answer": 3,
+        "explanation": "小さな雨漏りを放置すると杉の柱に「取り返しのつかない・元に戻せない」腐食を招きかねないirreversible。"
+      },
+      {
+        "id": "eiken_2_written_04_q13",
+        "number": 13,
+        "answer": 4,
+        "explanation": "分岐点での道迷いを防ぐため、色あせた木製の道標を「塗り直す」よう頼んだrepaint。"
+      },
+      {
+        "id": "eiken_2_written_04_q14",
+        "number": 14,
+        "answer": 3,
+        "explanation": "観光会話にはよく対応するが、法律の議論では精度に明確な「限界」があるlimitations。"
+      },
+      {
+        "id": "eiken_2_written_04_q15",
+        "number": 15,
+        "answer": 2,
+        "explanation": "deter A from doingの構文とprey on ~（〜を捕食する・餌食にする）の組み合わせ。"
+      },
+      {
+        "id": "eiken_2_written_04_q16",
+        "number": 16,
+        "answer": 1,
+        "explanation": "academic backgroundで「学歴・学術的背景」。"
+      },
+      {
+        "id": "eiken_2_written_04_q17",
+        "number": 17,
+        "answer": 4,
+        "explanation": "看護師3人が病欠のため、急な発熱患者に集中すべく定期健診を「先送りする・延期する」defer。"
+      },
+      {
+        "id": "eiken_2_written_04_q18",
+        "number": 18,
+        "answer": 2,
+        "explanation": "騒音吸収と歩行速度の自然な緩和という2つの働きを受け、「その結果」人の流れが滑らかになり待合空間が落ち着く。"
+      },
+      {
+        "id": "eiken_2_written_04_q19",
+        "number": 19,
+        "answer": 3,
+        "explanation": "タイル単位で夜間交換できる保守上の工夫に「加えてさらに」、模様のデザインも擦れを目立たなくしている。"
+      },
+      {
+        "id": "eiken_2_written_04_q20",
+        "number": 20,
+        "answer": 1,
+        "explanation": "乗客の心理的な落ち着き・快適さと、タイル交換などの現実的な維持管理は混雑する公共空間で両立できる。"
+      },
+      {
+        "id": "eiken_2_written_04_q21",
+        "number": 21,
+        "answer": 4,
+        "explanation": "コンブが二酸化炭素を吸って周囲のpHを高める、その結果として隣で育つ稚貝の殻が厚くなる。"
+      },
+      {
+        "id": "eiken_2_written_04_q22",
+        "number": 22,
+        "answer": 1,
+        "explanation": "漁具の通年活用や販売収益に「加えてさらに」、過剰な窒素を吸って水質を守る利点もある。"
+      },
+      {
+        "id": "eiken_2_written_04_q23",
+        "number": 23,
+        "answer": 2,
+        "explanation": "地域の漁獲（経営）と水質の双方を高める現実的な局所対策。"
+      },
+      {
+        "id": "eiken_2_written_04_q24",
+        "number": 24,
+        "answer": 3,
+        "explanation": "内部に水分が残っていた厚手の花瓶が激しく割れ、同じ中段にあった周囲の器に破片が飛び散った。"
+      },
+      {
+        "id": "eiken_2_written_04_q25",
+        "number": 25,
+        "answer": 2,
+        "explanation": "最低24時間の乾燥規則により、Pieces glazed on Friday afternoon will be held over for next month's firing, with no exceptions.と明記されている。"
+      },
+      {
+        "id": "eiken_2_written_04_q26",
+        "number": 26,
+        "answer": 4,
+        "explanation": "流れた釉薬が高価な窯の棚板に永久に融着するのを防ぎ、自分の受け皿の上に垂れるようにして最下段へ配置するため。"
+      },
+      {
+        "id": "eiken_2_written_04_q27",
+        "number": 27,
+        "answer": 1,
+        "explanation": "計算された折り目パターンが薄い板紙に高い剛性と弾力を与えるため、成形プラスチックの発泡緩衝材を置き換えられる。"
+      },
+      {
+        "id": "eiken_2_written_04_q28",
+        "number": 28,
+        "answer": 3,
+        "explanation": "従来品は複数の板紙とプラスチックフィルムを接着していたが、1枚のシートを折り込む方式なら異素材の接着がなくそのまま古紙回収に出せる。"
+      },
+      {
+        "id": "eiken_2_written_04_q29",
+        "number": 29,
+        "answer": 4,
+        "explanation": "毎分300箱の高速折り加工では急な角度で紙の繊維が割れやすく、夏の湿気と冬の乾燥で折り目の硬さが変わる課題があった。"
+      },
+      {
+        "id": "eiken_2_written_04_q30",
+        "number": 30,
+        "answer": 3,
+        "explanation": "紙繊維の目（流れ）の向きを検証し、鋭い刃線ではなく丸みを持たせた微細な押し罫を入れることで季節を問わずしなやかに曲がるようにした。"
+      },
+      {
+        "id": "eiken_2_written_04_q31",
+        "number": 31,
+        "answer": 2,
+        "explanation": "長い歴史を持つ折り紙の構造原理が現代の製造技術で磨かれ、強くてプラスチックごみの少ない包装を実現している。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_2_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "b77b4ee26a7e4a925ade7d85b229a74d3478a51f7322dacb714c4bea3bce35da",
+    "pages": 30,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_05_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_05_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_05_explanations.pdf",
+        "pages": 18,
+        "start": 13,
+        "end": 30
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "r2r5-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "r2r5-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r2r5-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "r2r5-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_2_written_05_q01",
+        "number": 1,
+        "answer": 1,
+        "explanation": "水漏れする蛇口の問題を速やかに「直す・是正する」よう呼びかけたrectify。"
+      },
+      {
+        "id": "eiken_2_written_05_q02",
+        "number": 2,
+        "answer": 3,
+        "explanation": "週2便しか燃料車を運ばないため、ガソリンスタンドは「十分な」備蓄を手元に保つ必要があるadequate。"
+      },
+      {
+        "id": "eiken_2_written_05_q03",
+        "number": 3,
+        "answer": 2,
+        "explanation": "事実誤認が著書の信頼性を「損なう・弱める」ことがないよう3つの独立資料を照合したundermine。"
+      },
+      {
+        "id": "eiken_2_written_05_q04",
+        "number": 4,
+        "answer": 4,
+        "explanation": "山の気象条件が穏やかである「という条件でのみ（〜である場合に限り）」屋上への立ち入りが認められるprovided that＋節。"
+      },
+      {
+        "id": "eiken_2_written_05_q05",
+        "number": 5,
+        "answer": 1,
+        "explanation": "4月の不意の霜に際し、リンゴの花が「しおれる・枯れる」のを防いだkeep ... from withering。"
+      },
+      {
+        "id": "eiken_2_written_05_q06",
+        "number": 6,
+        "answer": 2,
+        "explanation": "対立する政党に属していたにもかかわらず、両町を守る堤防建設では「友好的に・誠意をもって」協力したcordially。"
+      },
+      {
+        "id": "eiken_2_written_05_q07",
+        "number": 7,
+        "answer": 3,
+        "explanation": "in fine printで「（裏面などの）小さな活字・細かい注意書きの中に」。"
+      },
+      {
+        "id": "eiken_2_written_05_q08",
+        "number": 8,
+        "answer": 4,
+        "explanation": "梱包担当者の丁寧な緩衝作業の「証し・証明」として1枚も割れなかったtestimony to ...。"
+      },
+      {
+        "id": "eiken_2_written_05_q09",
+        "number": 9,
+        "answer": 3,
+        "explanation": "潮風で普通の鉄はすぐ腐食するため、沿岸鉄道の信号機はステンレス製の「部品」で作られるcomponents。"
+      },
+      {
+        "id": "eiken_2_written_05_q10",
+        "number": 10,
+        "answer": 1,
+        "explanation": "in minute detailで「ごく詳細に・細部に至るまで綿密に」。"
+      },
+      {
+        "id": "eiken_2_written_05_q11",
+        "number": 11,
+        "answer": 2,
+        "explanation": "若い見習いたちを「落胆させる・やる気をなくさせる」どころか、明確な目標を与えたFar from discouraging。"
+      },
+      {
+        "id": "eiken_2_written_05_q12",
+        "number": 12,
+        "answer": 4,
+        "explanation": "折りたたみ自転車を特急車内に持ち込む際は事前に専用の携帯用「ケース・袋」に完全に収納するcarrying case。"
+      },
+      {
+        "id": "eiken_2_written_05_q13",
+        "number": 13,
+        "answer": 1,
+        "explanation": "keep＋O＋Cの構文で、室内湿度を70％に「一定に」保つことで熱帯ランを育てているconstant。"
+      },
+      {
+        "id": "eiken_2_written_05_q14",
+        "number": 14,
+        "answer": 4,
+        "explanation": "come across as ... で「…という印象を与える・…のように受け取られる」。"
+      },
+      {
+        "id": "eiken_2_written_05_q15",
+        "number": 15,
+        "answer": 3,
+        "explanation": "飛び火が山火事を「着火させる・引き起こす」ことのないよう毎春落ち葉を片づけるlest ... ignite。"
+      },
+      {
+        "id": "eiken_2_written_05_q16",
+        "number": 16,
+        "answer": 2,
+        "explanation": "cater to ... で「…の要望に応える・…向けに作られている」。"
+      },
+      {
+        "id": "eiken_2_written_05_q17",
+        "number": 17,
+        "answer": 1,
+        "explanation": "have a comprehensive grasp of ... で「…を包括的に把握・理解している」。"
+      },
+      {
+        "id": "eiken_2_written_05_q18",
+        "number": 18,
+        "answer": 3,
+        "explanation": "売上維持と電力4割削減という成果に「加えてさらに」、買い物客にとって通路が寒くなくなった利点も生まれた。"
+      },
+      {
+        "id": "eiken_2_written_05_q19",
+        "number": 19,
+        "answer": 2,
+        "explanation": "庫内を均一な3度に保てるようになった、「その結果」傷みによる廃棄が減り在庫整理の手間も減った。"
+      },
+      {
+        "id": "eiken_2_written_05_q20",
+        "number": 20,
+        "answer": 4,
+        "explanation": "省エネ・商品の鮮度保持・買い物客の快適さは対立するどころか互いに高め合える。"
+      },
+      {
+        "id": "eiken_2_written_05_q21",
+        "number": 21,
+        "answer": 1,
+        "explanation": "場所ごとの微生物群集の違いを調べる「このようにして」、かつての部屋の用途まで見分けられる。"
+      },
+      {
+        "id": "eiken_2_written_05_q22",
+        "number": 22,
+        "answer": 2,
+        "explanation": "先に小さな点試料で活動範囲を特定できる、「その結果」本格発掘を最小限の重要箇所に絞れる。"
+      },
+      {
+        "id": "eiken_2_written_05_q23",
+        "number": 23,
+        "answer": 3,
+        "explanation": "遺跡全体を掘り返して壊すことなく、古代の空間がどう使われていたかを復元すること。"
+      },
+      {
+        "id": "eiken_2_written_05_q24",
+        "number": 24,
+        "answer": 4,
+        "explanation": "金曜に気温が6度を超えて重く締まった雪が突然滑り落ち、非常口をふさぐ恐れがあるため。"
+      },
+      {
+        "id": "eiken_2_written_05_q25",
+        "number": 25,
+        "answer": 3,
+        "explanation": "ensure that all second-floor tilt windows are latched tightly before leaving work Wednesday eveningとある。"
+      },
+      {
+        "id": "eiken_2_written_05_q26",
+        "number": 26,
+        "answer": 1,
+        "explanation": "振動の影響を避けるため、木曜午後に予定を移すか地下の天びん室102を使うよう案内している。"
+      },
+      {
+        "id": "eiken_2_written_05_q27",
+        "number": 27,
+        "answer": 2,
+        "explanation": "機械収穫に合わせて一斉に熟す多収品種が選ばれた結果、特定の土地に適応した多くの在来種が栽培されなくなった。"
+      },
+      {
+        "id": "eiken_2_written_05_q28",
+        "number": 28,
+        "answer": 4,
+        "explanation": "収量自体は控えめでも、塩分を含んだ土壌への耐性やさび病への抵抗性など貴重な遺伝形質を持っていることが多いから。"
+      },
+      {
+        "id": "eiken_2_written_05_q29",
+        "number": 29,
+        "answer": 1,
+        "explanation": "世界各地のジーンバンクから送られた重複種子を凍土の岩盤内に保管し、停電や洪水、紛争による喪失を防ぐ保険とするため。"
+      },
+      {
+        "id": "eiken_2_written_05_q30",
+        "number": 30,
+        "answer": 4,
+        "explanation": "数十年経つと発芽力が落ちて植え継ぎが要るうえ、凍結された種子は現実の畑の変化する気候や害虫と共に進化しない点。"
+      },
+      {
+        "id": "eiken_2_written_05_q31",
+        "number": 31,
+        "answer": 3,
+        "explanation": "氷点下の種子保管庫による静かな保険と、小規模農家が現地で在来種を育て続ける生きたネットワークを組み合わせる手法。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_2_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "aff16ca423bde8e5892b3a3b361efff57f736eb9e7a8512a0879e6622f9d8a59",
+    "pages": 29,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_06_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_06_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_06_explanations.pdf",
+        "pages": 17,
+        "start": 13,
+        "end": 29
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      9,
+      9,
+      9,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "section": "short",
+          "page": 5,
+          "questions": [
+            16,
+            17
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "r2r6-cloze-a",
+          "questions": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 7,
+          "passage": "r2r6-cloze-b",
+          "questions": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 9,
+          "passage": "r2r6-email",
+          "questions": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 11,
+          "passage": "r2r6-article",
+          "questions": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_2_written_06_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "秋の台風時の氾濫を防ぐため、運河から落ち枝や堆積土砂を定期的に「掘り出す・浚渫して取り除く」excavate。"
+      },
+      {
+        "id": "eiken_2_written_06_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "紙の上では複雑に見えるが、実際の乗り継ぎはずっと「切れ目なくスムーズな」ものになったseamless。"
+      },
+      {
+        "id": "eiken_2_written_06_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "ドローンの羽音が池沿いで営巣するサギを「動揺させる・かき乱す」ことのないよう飛行を禁じるlest ... agitate。"
+      },
+      {
+        "id": "eiken_2_written_06_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "保存修復を必要とする博物館や収集家という「ニッチ（特定の専門的）市場」に応えることで存続しているniche market。"
+      },
+      {
+        "id": "eiken_2_written_06_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "2人の目撃証言が食い違ったため、事実関係を「裏づける・確証する」映像を探したcorroborate。"
+      },
+      {
+        "id": "eiken_2_written_06_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "never compromise on ... で「…について決して妥協しない・手を抜かない」。"
+      },
+      {
+        "id": "eiken_2_written_06_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "準否定語Littleが文頭に出たことによる主節の倒置。原形suspectと結びつき過去の事実として「夢にも思わなかった」を表すdid。"
+      },
+      {
+        "id": "eiken_2_written_06_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "東側車線がクレーンでふさがれていたため、配送バンは正午まで工業団地経由へ「迂回させられた」diverted。"
+      },
+      {
+        "id": "eiken_2_written_06_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "厚手の炻器の壁が淹れたてコーヒーの熱を「保つ・逃がさない」retain heat。"
+      },
+      {
+        "id": "eiken_2_written_06_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "顧客記録を社外に「漏らさない・開示しない」と誓約する契約に署名するdisclose。"
+      },
+      {
+        "id": "eiken_2_written_06_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "島の人口は減ったが、秋の灯籠祭りは50年前と変わらず「活気に満ちた・生き生きとした」ままだvibrant。"
+      },
+      {
+        "id": "eiken_2_written_06_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "take effectで（規則・料金・法律などが）「発効する・実施される」。"
+      },
+      {
+        "id": "eiken_2_written_06_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "何十年もの栽培で土壌中のどのミネラルが「枯渇した・消耗した」か調べるdepleted。"
+      },
+      {
+        "id": "eiken_2_written_06_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "pay offで（投資や工夫が）「元が取れる・報われる・効果を生む」。"
+      },
+      {
+        "id": "eiken_2_written_06_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "1998年に吊り橋がその「海峡・瀬戸」をまたいで架かるまでフェリーだけで結ばれていたstrait。"
+      },
+      {
+        "id": "eiken_2_written_06_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "in keeping with ... で「…に合わせて・…に従って」。シラバスに示された形式に沿ってファイル名を付ける。"
+      },
+      {
+        "id": "eiken_2_written_06_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "attention to detailで「細部への注意・丁寧な配慮」。"
+      },
+      {
+        "id": "eiken_2_written_06_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "スイッチバックで急な高低差を緩やかな勾配に分散できる、「その結果」路線バスや除雪車が通年運行できる。"
+      },
+      {
+        "id": "eiken_2_written_06_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "雨水の流速を抑えて舗装を守る利点に「さらに加えて」、擁壁を低くして山の土壌への負荷も減らせる。"
+      },
+      {
+        "id": "eiken_2_written_06_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "重力に真っ向から逆らう直線よりも、斜面の物理に沿った設計のほうが安全で長持ちする山間道路を生む。"
+      },
+      {
+        "id": "eiken_2_written_06_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "満潮のたびに植物の根が浮遊土砂を絡め取る、「このようにして」生きた湿地は年々自らの高さを築き上げられる。"
+      },
+      {
+        "id": "eiken_2_written_06_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "段階的な水門開放や浚渫土による地盤かさ上げと「同様に」、沖側のカキ礁も若い草の定着を助ける工夫である。"
+      },
+      {
+        "id": "eiken_2_written_06_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "時間とともに自ら適応・強化される多層的な沿岸防御。"
+      },
+      {
+        "id": "eiken_2_written_06_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "氷点下の屋外から21度の舞台へ急に移すと木材が割れる恐れがあるため、ケースを閉じたまま徐々に温度に慣らすため。"
+      },
+      {
+        "id": "eiken_2_written_06_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "午前8時45分までに音楽学校で緩衝材入りのハードケースに入れて積み込む必要があり、布製ソフトバッグは不可。"
+      },
+      {
+        "id": "eiken_2_written_06_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "During the intermission, keep oboes and clarinets swabbed dry and resting on stage stands rather than carrying them out into the cold lobby.とある。"
+      },
+      {
+        "id": "eiken_2_written_06_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "説明書や契約書は用語が1対1で対応するが、笑いは音の重なりや文法リズム、文化的背景に依存しているため。"
+      },
+      {
+        "id": "eiken_2_written_06_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "1つの言語内の偶然の同音異義を利用した言葉遊びは、別の単語になる他言語へ直訳した瞬間に消えてしまう例として挙げている。"
+      },
+      {
+        "id": "eiken_2_written_06_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "笑いを消す注釈で説明するのではなく、作者がその場面で意図した感情的効果を捉え、訳出言語の表現で新しい言葉遊びを作る。"
+      },
+      {
+        "id": "eiken_2_written_06_q30",
+        "number": 30,
+        "answer": 1,
+        "explanation": "観客が俳優の眉の動きを見たり元の声の抑揚を聞いたりしながら3秒で読める長さに収めなければならない厳しい制約。"
+      },
+      {
+        "id": "eiken_2_written_06_q31",
+        "number": 31,
+        "answer": 4,
+        "explanation": "字面どおりでも生気のない訳は作品を裏切ることになり、字義から離れて工夫することこそ作品の喜劇的精神に忠実になるという逆説。"
+      }
+    ]
+  },
+  {
     "id": "eiken_pre1_written_01",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "da00fadd1268c91bcccb72e747fb709f8be8a02466ee0a20129e09d4dea91b8a",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "375c3cc8345a5da6c36c30b4f94ed23ed8febd1050e5f401fde508e1e781155d",
     "pages": 26,
     "parts": [
       {
@@ -6339,8 +12327,8 @@
   },
   {
     "id": "eiken_pre1_written_02",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "9eb7940daebfe353914788255074d36559f515e248561756d66004b2455dd81e",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "65b24abb47b350e6b3af8201a0c64870dda33bf83636b007eba3897b829ba5c4",
     "pages": 27,
     "parts": [
       {
@@ -6689,8 +12677,8 @@
   },
   {
     "id": "eiken_pre1_written_03",
-    "sourceHash": "d0be12b5cac4a277fb99af3df229e8edfa22c798315a29383f6111dc28ec4b4c",
-    "pdfSha256": "a61f09adff926094c6e376a74a1635b5577b5008c41f4fc49844fcf1a1e5b788",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "9ac2419eaa2ff746bd5f7cb691bcb617dfc8184c56e349111bf844517a92cad5",
     "pages": 28,
     "parts": [
       {
@@ -7034,6 +13022,1056 @@
         "number": 31,
         "answer": 4,
         "explanation": "地域語と標準語の双方を場面に応じて補完的に活かすことが公共サービスの質を高める。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre1_written_04",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "1f74acf7113d4981df6e1813267379db9b4bd1c99e94d0891cce22bc24044ef1",
+    "pages": 30,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_04_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_04_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_04_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      8,
+      8,
+      8,
+      10,
+      10,
+      10,
+      10
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        8,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            17,
+            18
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp1-r4-cloze-a",
+          "questions": [
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rp1-r4-cloze-b",
+          "questions": [
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 8,
+          "passage": "rp1-r4-reading-a",
+          "questions": [
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 10,
+          "passage": "rp1-r4-reading-b",
+          "questions": [
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre1_written_04_q01",
+        "number": 1,
+        "answer": 2,
+        "explanation": "監督の甘さにより小さな手抜きが3つの組立ラインすべてに「蔓延した・広まった」pervasive。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q02",
+        "number": 2,
+        "answer": 4,
+        "explanation": "抜本的改革を約束したにもかかわらず、最終法案は既存の税率区分への「漸進的な・小幅な」調整にとどまったincremental。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q03",
+        "number": 3,
+        "answer": 1,
+        "explanation": "集中豪雨時のピーク流出水を地下の巨大貯留槽に「せき止めて貯留する」impound。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q04",
+        "number": 4,
+        "answer": 3,
+        "explanation": "来歴に関する学芸員の「丹念な・勤勉な」記録が盗掘墓までの追跡を助けたassiduous。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q05",
+        "number": 5,
+        "answer": 2,
+        "explanation": "境界紛争を解決するどころか、急ごしらえの地図は2教区間の新たな「対立・論争」の火種になったcontention。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q06",
+        "number": 6,
+        "answer": 3,
+        "explanation": "山の天気は数分で悪化し得るため、晴天予報に「油断・安心しきること」がないよう促すcomplacency。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q07",
+        "number": 7,
+        "answer": 4,
+        "explanation": "発明の5年後に書かれたメモは特許請求の本筋と「無関係だ・外れている」として退けたextraneous to。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q08",
+        "number": 8,
+        "answer": 1,
+        "explanation": "denude A of Bで「A（牧草地）からB（根の深い草）を剥ぎ取る・奪い去る」。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q09",
+        "number": 9,
+        "answer": 4,
+        "explanation": "反対派でさえ、発券基盤の統合により「当惑させるほど複雑な」地域別追加料金の数々が解消されたと認めたbewildering array。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q10",
+        "number": 10,
+        "answer": 2,
+        "explanation": "報復から内部告発者を守るため、情報提供者の身元を「極秘・非公開」に保つ法的権限があるkeep ... confidential。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q11",
+        "number": 11,
+        "answer": 3,
+        "explanation": "微量の銅不純物が触媒の働きを「損なう・台無しにする」恐れがあると警告したvitiate。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q12",
+        "number": 12,
+        "answer": 1,
+        "explanation": "一晩で画一的な課程を押しつけるのではなく、希望地区から「段階的な」導入を選んだphased rollout。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q13",
+        "number": 13,
+        "answer": 2,
+        "explanation": "何世紀もの乾燥保管で羊皮紙が非常に「もろく割れやすい」状態だったため加湿してから広げたbrittle。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q14",
+        "number": 14,
+        "answer": 1,
+        "explanation": "開発業者の見栄えのよい交通予測と住民の日常的な渋滞との間の鮮明な「乖離・二極対立」dichotomy。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q15",
+        "number": 15,
+        "answer": 4,
+        "explanation": "感情の高ぶりや怒りが「静まる・収まる」のを待つため休会したlet tempers subside。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q16",
+        "number": 16,
+        "answer": 3,
+        "explanation": "初期の随筆は「難解で一部の人にしか分からない」として片づけられたが、30年後のメディア論争を先取りしていたesoteric。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q17",
+        "number": 17,
+        "answer": 2,
+        "explanation": "よく似た薬品名が忙しい夜勤病棟の「ミスを誘う・つまずかせる」ことがないよう二重確認するtrip up。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q18",
+        "number": 18,
+        "answer": 4,
+        "explanation": "繊維工場の閉鎖後、熟練賃金に見合う新たな雇用主を町へ「誘致する・呼び込む」のに苦心したbring in。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q19",
+        "number": 19,
+        "answer": 1,
+        "explanation": "道路容量を増やすこと自体が新たな自動車通行を生み出し、やがてその増えた車線を使い尽くしてしまう。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q20",
+        "number": 20,
+        "answer": 3,
+        "explanation": "道路拡張の限界と高架撤去の実績を受け、「それに応じて・そのため」交通投資の評価軸が変わってきた。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q21",
+        "number": 21,
+        "answer": 2,
+        "explanation": "際限なくコンクリートを広げる代わりに、多様な交通手段を組み合わせた持続的な移動利便性を設計する。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q22",
+        "number": 22,
+        "answer": 3,
+        "explanation": "旧河道を示すこうした手がかりを手にすることで、手当たり次第ではなく本来の蛇行水路をつなぎ直せる。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q23",
+        "number": 23,
+        "answer": 4,
+        "explanation": "測量上の癖を堆積物等と照合する注意点に「加えてさらに」、当時の景観自体が人の営みと結びついていた視点も重要だと添える。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q24",
+        "number": 24,
+        "answer": 1,
+        "explanation": "受け継がれてきた水文学的な地形パターンに逆らわず寄り添って活かしながら、将来の極端気象にも耐える景観を設計する。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q25",
+        "number": 25,
+        "answer": 4,
+        "explanation": "種子伝染病による壊滅的被害を防いできた一方、親植物から受け継がれる有益な微生物群まで表面から取り除いてしまうという二面性。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q26",
+        "number": 26,
+        "answer": 2,
+        "explanation": "土壌中のリンの可溶化、短期乾燥への耐性向上、場所や糖分をめぐる競合による日和見病原菌の抑制を助ける。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q27",
+        "number": 27,
+        "answer": 3,
+        "explanation": "未処理の種子ロットは悪性の細菌性潰瘍病などを1シーズンで地域全体に広げてしまう危険があり、商業生産者は許容できないため。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q28",
+        "number": 28,
+        "answer": 1,
+        "explanation": "1台ずつは慎重に見えても病棟全体では不要な警告音が絶え間なく重なり、脳が音に慣れて真に重大な警報が紛れてしまう危険を生んだ。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q29",
+        "number": 29,
+        "answer": 2,
+        "explanation": "80〜95％は臨床介入が不要で、患者の体動や指クリップのずれ、数秒で自然に戻る変動によるものだった。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q30",
+        "number": 30,
+        "answer": 1,
+        "explanation": "臨床上安全な範囲で閾値を少し広げ、10秒の遅延を入れて体動ノイズをやり過ごし、乾いた粘着電極を毎朝新しいパッドに交換したこと。"
+      },
+      {
+        "id": "eiken_pre1_written_04_q31",
+        "number": 31,
+        "answer": 4,
+        "explanation": "甲高い警報音は生命に関わる緊急事態だけに絞り、生理食塩水バッグの残量低下のような通常連絡は看護師の携帯バッジへ静かに送る。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre1_written_05",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "b2bd3a89a92ae8dfd4bc6fcb5c4723ae3392d2098e18324716ba3948dba7ccde",
+    "pages": 30,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_05_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_05_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_05_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      8,
+      8,
+      8,
+      10,
+      10,
+      10,
+      10
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        8,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            17,
+            18
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp1-r5-cloze-a",
+          "questions": [
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rp1-r5-cloze-b",
+          "questions": [
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 8,
+          "passage": "rp1-r5-reading-a",
+          "questions": [
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 10,
+          "passage": "rp1-r5-reading-b",
+          "questions": [
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre1_written_05_q01",
+        "number": 1,
+        "answer": 3,
+        "explanation": "未編集草稿の発見が、条約は1人の外交官が書いたという長年の通説を「払拭する・一掃する」助けとなったdispel a myth。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q02",
+        "number": 2,
+        "answer": 1,
+        "explanation": "島への貨物輸送をほぼ独占しているため、運賃が「法外に高い」ものにならないよう規制当局が注視しているexorbitant。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q03",
+        "number": 3,
+        "answer": 4,
+        "explanation": "車両修理の遅れに関する穏やかな質問から始まったものが、民営化そのものをめぐる「騒々しい・激しい」論戦へと発展したvociferous。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q04",
+        "number": 4,
+        "answer": 2,
+        "explanation": "鉄砲水が橋脚を削るのを防ぐため、水流の勢いを「弱める・減衰させる」重い花崗岩ブロックを置いたattenuate。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q05",
+        "number": 5,
+        "answer": 3,
+        "explanation": "大胆な仮説は称賛しつつも、再現可能な対照実験を求める点では「妥協しない・揺るぎない」姿勢を貫いたunyielding。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q06",
+        "number": 6,
+        "answer": 4,
+        "explanation": "実際の鑑賞回数にかかわらず年会費を払う地元常連客の「惜しみない支援・寛大さ」によって黒字を保っているmunificence。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q07",
+        "number": 7,
+        "answer": 1,
+        "explanation": "硬い現代セメントで補修すると古いレンガの内部に湿気を「閉じ込める」ことになるため石灰モルタルを選んだentrap。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q08",
+        "number": 8,
+        "answer": 2,
+        "explanation": "白書の楽観的な雇用数値は、世界のエネルギー価格に関する「根拠の薄い・脆弱な」前提に立っていたtenuous assumptions。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q09",
+        "number": 9,
+        "answer": 1,
+        "explanation": "be adept at doingで「〜に非常に熟達している・巧みである」。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q10",
+        "number": 10,
+        "answer": 3,
+        "explanation": "潮から遮断されて泥炭が乾燥・酸化すると、地表が着実に「沈下する」subside。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q11",
+        "number": 11,
+        "answer": 4,
+        "explanation": "ログイン時の強制終了は直ったが、日本語ファイル名を文字化けさせる予期せぬ「異常・不具合」を生んだanomaly。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q12",
+        "number": 12,
+        "answer": 2,
+        "explanation": "専門用語で陪審員を圧倒しないよう、3千件の帳簿記録を「明快でわかりやすい」視覚的な年表に凝縮したlucid。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q13",
+        "number": 13,
+        "answer": 3,
+        "explanation": "lest＋主語＋(should)＋原形（ebb）で「発芽力が気づかぬうちに衰えることのないように」。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q14",
+        "number": 14,
+        "answer": 2,
+        "explanation": "30年に及ぶ輝かしい「在任期間」に幕を下ろし6月に退任すると発表したtenure。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q15",
+        "number": 15,
+        "answer": 1,
+        "explanation": "1990年代から空き家だった近隣倉庫への投資を「刺激する・促す」ことを期待したspur investment。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q16",
+        "number": 16,
+        "answer": 4,
+        "explanation": "加熱時の膨張率が異なる2種の合金を直接溶接すると、ひび割れを「急激に引き起こす・誘発する」応力が生じるprecipitate。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q17",
+        "number": 17,
+        "answer": 3,
+        "explanation": "地域航空会社が一夜にして破綻した際、本土の検査室へ血液検体を届けるためチャーター船を「急きょ動員する・臨時に使う」ほかなかったpress ... into service。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q18",
+        "number": 18,
+        "answer": 1,
+        "explanation": "昼時の歩行者数が4割増えたのをカフェ店主たちが目の当たりにすると、歩行者広場への当初の反発はじきに「次第に消えていった・下火になった」petered out。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q19",
+        "number": 19,
+        "answer": 4,
+        "explanation": "振り子や温度変化という難題を機械的工夫で乗り越え、「驚くべきことに」1760年代の実海域試験で大西洋横断でも数秒の誤差に収まったと成果を強調する。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q20",
+        "number": 20,
+        "answer": 2,
+        "explanation": "19世紀の標準化生産によって商船に広く普及した、「その普及が広がるにつれて」海難が減り海図が正確になった。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q21",
+        "number": 21,
+        "answer": 3,
+        "explanation": "ハリソンの粘り強い工作技術と、19世紀の手頃な標準化製造の双方が理論と同じくらい重要だった。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q22",
+        "number": 22,
+        "answer": 4,
+        "explanation": "水圧を逃がし霜にも耐える構造的なしなやかさと、多様な生き物の豊かな隠れ家としての機能を兼ね備えている。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q23",
+        "number": 23,
+        "answer": 1,
+        "explanation": "若手への技術継承の研修助成と「並行して・歩調を合わせて」、再生補助金でも治水・生態インフラとしての評価が進んでいる。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q24",
+        "number": 24,
+        "answer": 2,
+        "explanation": "時代を超えて受け継がれた農村の手仕事が、現代の治水や生物多様性保全という環境目標に貢献し得る。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q25",
+        "number": 25,
+        "answer": 1,
+        "explanation": "手書きは話す速度に追いつけないため、聴きながら要点を絞り自分の言葉で圧縮・構造化するリアルタイムの知的処理を促すから。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q26",
+        "number": 26,
+        "answer": 3,
+        "explanation": "概念テストでの差の多くは縮まったが、キーボードでは図や数式を文中で組みにくい点や通知の誘惑という2つの不利は残った。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q27",
+        "number": 27,
+        "answer": 4,
+        "explanation": "手書きであっても一語一句そのまま丸写しして頭で再構成しなければ、手首が疲れるわりによく覚えられないことを示すため。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q28",
+        "number": 28,
+        "answer": 2,
+        "explanation": "複数年の確実な公的受注見通しが新設備や人員訓練への投資を可能にし、量産化によって民間市場向けの単価も引き下げる。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q29",
+        "number": 29,
+        "answer": 3,
+        "explanation": "細かい従来材料を指定し初期納入価格の安さだけで決める方式は、20年間の維持稼働費を含めれば安くなるクリーンな選択肢を閉ざし従来品を固定化してしまう。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q30",
+        "number": 30,
+        "answer": 2,
+        "explanation": "特定の特許製法に縛ると競合手法を締め出して税負担を膨らませるため、達成すべき性能基準だけを示して多様な技術提案を競わせる。"
+      },
+      {
+        "id": "eiken_pre1_written_05_q31",
+        "number": 31,
+        "answer": 1,
+        "explanation": "広域の共同調達コンソーシアムと、標準化された第三者機関の環境製品宣言（EPD）を活用することで厳格な基準を適用できる。"
+      }
+    ]
+  },
+  {
+    "id": "eiken_pre1_written_06",
+    "sourceHash": "1a5f3eaef3c71f163a7ca27a4ad8c4a43ad6c4890fa33a611da4261a771a5a46",
+    "pdfSha256": "0664c523a42eb7e07a9fe11358ee6068dde423b8ed206e6ac4fb58516f42d1d9",
+    "pages": 30,
+    "parts": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_06_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_06_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_06_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ],
+    "questionPages": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      8,
+      8,
+      8,
+      10,
+      10,
+      10,
+      10
+    ],
+    "layout": {
+      "shortQuestionPages": [
+        8,
+        8,
+        2
+      ],
+      "choiceColumns": {
+        "short": 4,
+        "conversation": 2,
+        "cloze": 2,
+        "reading": 1
+      },
+      "passagePlans": [
+        {
+          "section": "short",
+          "page": 2,
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "section": "short",
+          "page": 3,
+          "questions": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "section": "short",
+          "page": 4,
+          "questions": [
+            17,
+            18
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 5,
+          "passage": "rp1-r6-cloze-a",
+          "questions": [
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "section": "cloze",
+          "page": 6,
+          "passage": "rp1-r6-cloze-b",
+          "questions": [
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 8,
+          "passage": "rp1-r6-reading-a",
+          "questions": [
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "section": "reading",
+          "page": 10,
+          "passage": "rp1-r6-reading-b",
+          "questions": [
+            28,
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "officialArtworkCopied": false
+    },
+    "checks": {
+      "allPromptsChoicesTranslationsAndExplanations": true,
+      "noSplitQuestions": true,
+      "noAnswerLeak": true,
+      "safeMargins": true,
+      "grayscalePreviews": true
+    },
+    "answers": [
+      {
+        "id": "eiken_pre1_written_06_q01",
+        "number": 1,
+        "answer": 4,
+        "explanation": "分断された無線チャンネルが水先案内人とタグボート乗組員の連携を「大きく妨げた・麻痺させた」hamstrung。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q02",
+        "number": 2,
+        "answer": 2,
+        "explanation": "舞台上では洗練されて見えた試作品だが、コードを調べた技術者は内部設計が驚くほど「寄せ集めでガタガタな・粗雑な」ものだと気づいたramshackle。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q03",
+        "number": 3,
+        "answer": 3,
+        "explanation": "外来種のイガイが湖に定着するのを防ぐため、入水前に胴長靴や船底を「除染・洗浄消毒する」よう義務づけているdecontaminate。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q04",
+        "number": 4,
+        "answer": 1,
+        "explanation": "多くの退官者がぼかしたがる判断ミスも認めた「飾らない・ありのままの」率直さが称賛されたunvarnished candor。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q05",
+        "number": 5,
+        "answer": 4,
+        "explanation": "tailor A to Bで「A（放流計画）をB（下流の稲作）に合わせて調整する」。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q06",
+        "number": 6,
+        "answer": 1,
+        "explanation": "暖冬に予備の除雪車2台を遊ばせておくことを批判派は市の「浪費・無駄遣い」と嘲笑したが、1月の猛吹雪で病院ルートを救ったprofligacy。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q07",
+        "number": 7,
+        "answer": 2,
+        "explanation": "統計学者によって目玉の結果が「恣意的で気まぐれな」データ除外の産物にすぎないと示され論文が撤回されたcapricious。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q08",
+        "number": 8,
+        "answer": 3,
+        "explanation": "be oblivious to ... で「…に気づかない・無頓着である」。声に出して読むまで自分の文章の重複に気づかないことがある。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q09",
+        "number": 9,
+        "answer": 2,
+        "explanation": "責任を明確にするどころか、重複する委員会がどの機関も責任を「かわす・他へそらす」ことができる官僚的迷路を生んだdeflect blame。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q10",
+        "number": 10,
+        "answer": 4,
+        "explanation": "induce A to doで「A（松かさ）が〜するのを促す・誘発する」。低温の地表火が松かさを開かせて種子を放出させる。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q11",
+        "number": 11,
+        "answer": 1,
+        "explanation": "座学の冶金学と現場実習を3年間組み合わせることで、理論が「抽象的な机上の空論」のまま終わらないようにするabstract。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q12",
+        "number": 12,
+        "answer": 3,
+        "explanation": "石灰岩の帯水層は多孔質なため、大雨から数週間以内に農業由来の硝酸塩が飲料用井戸へ「浸透する・しみ出す」percolate into。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q13",
+        "number": 13,
+        "answer": 4,
+        "explanation": "lest＋主語＋(should)＋原形（disrupt）で「季節外れの突風雨で青空古本市が中断されないように」。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q14",
+        "number": 14,
+        "answer": 3,
+        "explanation": "かつては梱包材くらいにしか見られていなかった打ち上げ海藻が、砂質の野菜畑に「強力な・高い効果を持つ」土壌改良材だと分かったpotent。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q15",
+        "number": 15,
+        "answer": 2,
+        "explanation": "予算削減をめぐる激しい対立にもかかわらず、公開放送のあいだ理事たちは表面上の「礼節・品位」を保ったdecorum。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q16",
+        "number": 16,
+        "answer": 1,
+        "explanation": "標本棚のたった1点の誤ラベルが、その後の何十件もの学生の同定作業に誤りを「広げる・連鎖させる」propagate errors。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q17",
+        "number": 17,
+        "answer": 4,
+        "explanation": "同じ四半期にベテラン整備士3人が退職した際、40年分の口伝の故障診断ノウハウを後進へ「引き継ぐ・伝える」のに苦心したpass on。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q18",
+        "number": 18,
+        "answer": 2,
+        "explanation": "地元漁師の観察を退けるどころか、小型漁船の航海日誌が衛星水温図の正しさを「裏づけている・実証している」と分かったbore out（bear outの過去形）。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q19",
+        "number": 19,
+        "answer": 3,
+        "explanation": "建設時の初期炭素排出がごく一部で済む利点に「加えてさらに」、街並みを守り工期も何か月も短い利点がある。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q20",
+        "number": 20,
+        "answer": 1,
+        "explanation": "制度面で生涯炭素会計と改修を正当に評価すべきだという議論の「延長線上で・それに伴い」、現場の診断・改修人材の育成も急務になっている。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q21",
+        "number": 21,
+        "answer": 4,
+        "explanation": "今後数十年という重要な時期の排出を抑えつつ、街の建築資産の寿命を延ばすこと。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q22",
+        "number": 22,
+        "answer": 1,
+        "explanation": "昼間の花粉媒介者だけでは取り返せない形で植物の繁殖（結実）を損なってしまう。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q23",
+        "number": 23,
+        "answer": 2,
+        "explanation": "夜間のガ類が長距離の花粉移動など独自の役割を担っている、「その結果・したがって」暗い回廊の保全や照明対策が24時間の受粉網を守る。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q24",
+        "number": 24,
+        "answer": 3,
+        "explanation": "昼間だけでなく夜間も含めた24時間全体の植物と昆虫のつながりを守ること。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q25",
+        "number": 25,
+        "answer": 2,
+        "explanation": "暖房需要のピークは暗く風のない1月の夜に訪れ、雪の下で太陽光発電が動かず電力網全体が逼迫する時期と重なるため。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q26",
+        "number": 26,
+        "answer": 4,
+        "explanation": "タービン発電用の超高温蒸気を必要とせず、より広い居住地域の下に存在する60〜120度の中温の岩盤で効率よく機能するから。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q27",
+        "number": 27,
+        "answer": 1,
+        "explanation": "初期掘削で十分な水量が得られなかった場合の損失の一部を補填し、成功した井戸から控えめな使用料を回収する公的リスク保険プールを創設した。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q28",
+        "number": 28,
+        "answer": 3,
+        "explanation": "1950年代以前のナイトレートフィルムは分解や自然発火の危険があり、後のアセテートフィルムも酸性ガスを出して変形・退色するビネガー・シンドロームを起こす。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q29",
+        "number": 29,
+        "answer": 4,
+        "explanation": "本来の銀塩フィルムの粒子感まで削ぎ落としてしまい、俳優の肌が蝋のようにつるつるした時代錯誤な質感になってしまう。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q30",
+        "number": 30,
+        "answer": 3,
+        "explanation": "現代の編集感覚で勝手に推測するのではなく、当時の検閲台帳や音楽キューシート、業界誌評などの歴史資料を照合して再構成する。"
+      },
+      {
+        "id": "eiken_pre1_written_06_q31",
+        "number": 31,
+        "answer": 2,
+        "explanation": "後年の映写機による傷や埃などの経年損傷は取り除く一方、1920年代の撮影時のわずかなゲート揺れや照明の影は歴史的証拠として残し、修復記録も公開する。"
       }
     ]
   }
