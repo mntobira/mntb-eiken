@@ -31,6 +31,33 @@ export default defineConfig(({ mode }) => {
     plugins: [rewriteAssets, react(), tailwind()],
     resolve: { alias: { '@': path.resolve(process.cwd(), '.') } },
     define: { __KIT_BUILD__: JSON.stringify('英検版 2026-11-08') },
-    build: { minify: false, cssMinify: false, reportCompressedSize: false, sourcemap: false, rollupOptions: { maxParallelFileOps: 2, output: { manualChunks(id) { if (id.includes('node_modules')) { if (id.includes('/firebase/') || id.includes('/@firebase/') || id.includes('/@capacitor')) return 'vendor-firebase'; if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/scheduler/')) return 'vendor-react'; if (id.includes('/motion') || id.includes('/framer-motion')) return 'vendor-motion'; if (id.includes('/lucide-react/')) return 'vendor-icons'; return 'vendor'; } } } } },
+    build: {
+      minify: 'esbuild',
+      cssMinify: false,
+      reportCompressedSize: false,
+      sourcemap: false,
+      rollupOptions: {
+        maxParallelFileOps: 2,
+        output: {
+          manualChunks(id) {
+            if (id.includes('/src/eiken/materials/listening-g5')) return 'eiken-listening-g5';
+            if (id.includes('/src/eiken/materials/listening-g4')) return 'eiken-listening-g4';
+            if (id.includes('/src/eiken/materials/listening-g3-pre2')) return 'eiken-listening-g3-pre2';
+            if (id.includes('/src/eiken/materials/listening-pre2plus-g2')) return 'eiken-listening-pre2plus-g2';
+            if (id.includes('/src/eiken/materials/listening-pre1')) return 'eiken-listening-pre1';
+            if (id.includes('/src/eiken/materials/listening-g1')) return 'eiken-listening-g1';
+            if (id.includes('node_modules')) {
+              if (id.includes('/firebase/') || id.includes('/@firebase/') || id.includes('/@capacitor')) return 'vendor-firebase';
+              if (id.includes('/pdfjs-dist/')) return 'vendor-pdf';
+              if (id.includes('/katex/')) return 'vendor-katex';
+              if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/scheduler/')) return 'vendor-react';
+              if (id.includes('/motion') || id.includes('/framer-motion')) return 'vendor-motion';
+              if (id.includes('/lucide-react/')) return 'vendor-icons';
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
   };
 });

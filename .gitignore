@@ -66,3 +66,9 @@ eiken-app/qa-*.png
 qa-home.png
 eiken-app/deliverables/*.png
 eiken-app/deliverables/reference_*
+eiken-app/deliverables/listening-booklets.json
+eiken-app/deliverables/eiken-elevenlabs-audio-prompts.json
+eiken-app/deliverables/eiken-chatgpt-image-prompts.json
+eiken-app/deliverables/eiken-listening-segments.tsv
+eiken-app/deliverables/pdfs/
+spec/

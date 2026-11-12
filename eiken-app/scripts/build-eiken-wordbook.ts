@@ -6,11 +6,20 @@ import type { ListeningWord, VocabularyData } from '../src/data/listeningSupport
 // 級別に選定した重点語と独自例文を原本にする。大学受験データの級ラベル付け替えはしない。
 const rows = readFileSync('src/eiken/materials/wordbook.tsv', 'utf8').split('\n')
   .filter(line => line && !line.startsWith('#')).map(line => line.split('|'));
-const grades = ['5', '4', '3', 'pre-2', 'pre-2-plus', '2', 'pre-1'];
+const gradeIdMap: Record<string, string> = {
+  '5': 'eiken_5',
+  '4': 'eiken_4',
+  '3': 'eiken_3',
+  'pre-2': 'eiken_pre2',
+  'pre-2-plus': 'eiken_pre2plus',
+  '2': 'eiken_2',
+  'pre-1': 'eiken_pre1',
+  '1': 'eiken_1',
+};
 const chapters = EIKEN_GRADES.filter(grade => grade.available).flatMap(grade => partsForGrade(grade.id).flatMap(part => part.chapters));
 const words: ListeningWord[] = rows.map(([rawGrade, word, meaning, exampleSentence, exampleTranslation], index) => {
   if (![rawGrade, word, meaning, exampleSentence, exampleTranslation].every(Boolean)) throw new Error(`Incomplete row ${index + 1}`);
-  const grade = EIKEN_GRADES.filter(grade => grade.available)[grades.indexOf(rawGrade)];
+  const grade = EIKEN_GRADES.find(g => g.id === gradeIdMap[rawGrade]);
   if (!grade) throw new Error(`Unknown grade ${rawGrade}`);
   const id = `eiken-word-${rawGrade}-${word.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
   const sameGrade = rows.filter(row => row[0] === rawGrade);
