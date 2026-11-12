@@ -93,6 +93,18 @@ describe('written booklets — same original for print, field practice, and writ
     const badReason = structuredClone(realBase);
     badReason.items[0].distractorReasons![1] = '文脈に合いません。';
     expect(() => validateWrittenExam(badReason)).toThrow('GENERIC_DISTRACTOR_REASON');
+
+    const badStreak = structuredClone(realBase);
+    for (let i = 0; i < 4; i += 1) badStreak.items[i].answer = 0;
+    expect(() => validateWrittenExam(badStreak)).toThrow('ANSWER_STREAK_TOO_LONG');
+
+    const badBalance = structuredClone(realBase);
+    badBalance.items
+      .filter((item) => item.kind === 'choice' && item.section !== 'reorder')
+      .forEach((item, idx) => {
+        item.answer = idx % 2 === 0 ? 0 : idx % 3 === 0 ? 1 : 0;
+      });
+    expect(() => validateWrittenExam(badBalance)).toThrow(/ANSWER_(STREAK_TOO_LONG|DISTRIBUTION_IMBALANCED)/);
   });
 
   it('validates all 29 released full written booklets (874 choice + 50 writing = 924 items) with zero cross-round duplication', () => {

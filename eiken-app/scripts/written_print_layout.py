@@ -52,7 +52,9 @@ WRITING_BOX_LABELS = {
 }
 
 def paragraph(c, text, x, top, width, style=EN, max_height=None):
- markup = escape(text).replace('(     )', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)').replace('\n', '<br/>')
+ markup = escape(text)
+ markup = re.sub(r'\(\s{3,}\)', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)', markup)
+ markup = markup.replace('\n', '<br/>')
  markup = re.sub(r'(^|<br/>)([AB]):', r'\1<b><i>\2 :</i></b>', markup)
  p = Paragraph(markup, style)
  _, ph = p.wrap(width, H)
@@ -83,9 +85,9 @@ def build_cover_pdf(path, exam, blueprint):
  c.drawImage(str(LOGO_PATH), 52, H - 64, width=98, height=31, mask='auto', preserveAspectRatio=True)
  c.setStrokeColor(colors.black)
  c.setFillColor(colors.black)
- string(c, f'MANATOBI ORIGINAL PRACTICE  /  {en_grade}', 160, 35, 'Times-Bold', 8.5)
+ string(c, f'{full_label}形式　予想演習プリント', 160, 35, 'BookletJP', 9.2)
  c.setFont('BookletJP', 8.8)
- c.drawRightString(W - 54, H - 56, f'マナトビ独自予想・演習冊子｜第{exam["round"]}回')
+ c.drawRightString(W - 54, H - 56, f'第{exam["round"]}回　問題冊子')
  c.setLineWidth(1.2)
  c.line(52, H - 72, W - 52, H - 72)
  c.setLineWidth(0.4)
@@ -103,8 +105,8 @@ def build_cover_pdf(path, exam, blueprint):
  badge_size = 20 if len(badge_label) >= 4 else 25
  c.setFont('BookletJP', badge_size)
  c.drawCentredString(112, H - banner_top - 52, badge_label)
- c.setFont('Times-Bold', 9.5)
- c.drawCentredString(112, H - banner_top - 78, f'ROUND {exam["round"]:02d}')
+ c.setFont('BookletJP', 9.2)
+ c.drawCentredString(112, H - banner_top - 78, f'第{exam["round"]}回')
  c.setFillColor(colors.black)
 
  # Title & timing summary on the right of badge
@@ -119,7 +121,7 @@ def build_cover_pdf(path, exam, blueprint):
  c.setFillColor(colors.HexColor('#f2f2f2'))
  c.rect(176, H - banner_top - banner_h + 14, W - 240, 27, stroke=0, fill=1)
  c.setFillColor(colors.black)
- string(c, f'第{exam["round"]}回 問題冊子　｜　{time_note}　｜　{count_note}', 184, banner_top + 76, 'BookletJP', 9.3)
+ string(c, f'第{exam["round"]}回　｜　{time_note}　｜　{count_note}', 184, banner_top + 76, 'BookletJP', 9.0)
 
  # Section breakdown & self-scoring table
  tbl_top = 218
@@ -230,14 +232,16 @@ def page_chrome(c, exam, page, section=None):
  c.setFillColor(colors.HexColor('#e4e4e4'))
  c.rect(50, 34, 38, H - 68, stroke=0, fill=1)
  c.setFillColor(colors.black)
- string(c, f'MANATOBI  /  GRADE 5  /  ROUND {exam["round"]:02d}', 54, 40, 'Times-Bold', 8)
- string(c, f'英検5級形式・一次筆記 第{exam["round"]}回', 345, 40, 'BookletJP', 8)
+ string(c, 'Grade 5', 52, 40, 'Times-Bold', 8)
+ c.setFont('BookletJP', 8)
+ c.drawRightString(RIGHT, H - 46, f'マナトビ｜英検5級形式 第{exam["round"]}回 一次筆記')
  c.setLineWidth(.4)
  c.line(50, 34, W - 56, 34)
  c.line(50, H - 34, W - 56, H - 34)
- string(c, 'マナトビ独自教材｜公式問題ではありません', 94, H - 26, 'BookletJP', 7.5)
- string(c, f'• {page} •', W / 2 - 10, H - 26, 'Times-Bold', 9)
- string(c, exam['revision'], 385, H - 26, 'Times-Roman', 7)
+ string(c, '独自作成教材（公式問題ではありません）', 94, H - 26, 'BookletJP', 7.5)
+ string(c, f'— {page} —', W / 2 - 12, H - 26, 'Times-Roman', 9)
+ c.setFont('Times-Roman', 7)
+ c.drawRightString(RIGHT, 20, exam['revision'])
 
 def section_header(c, no, text, top, height):
  c.setLineWidth(.75)
@@ -505,9 +509,10 @@ def _build_mark_sheet_page(path, exam, blueprint):
  # Footer
  c.setLineWidth(0.4)
  c.line(42, 48, w - 42, 48)
- txt('マナトビ｜独自教材・公式問題ではありません', 42, 31, 8)
- c.setFont('Times-Roman', 7.5)
- c.drawRightString(w - 42, 31, f'{exam["revision"]}  |  Answer Sheet 1/{2 if has_writing else 1}')
+ txt('マナトビ｜独自作成教材（公式問題ではありません）', 42, 31, 8)
+ c.setFont('BookletJP', 7.8)
+ sheet_footer = f'{exam["revision"]}　｜　解答用紙 1/2（A面）' if has_writing else f'{exam["revision"]}　｜　解答用紙 1/1'
+ c.drawRightString(w - 42, 31, sheet_footer)
  c.showPage()
  c.save()
 
@@ -597,7 +602,7 @@ def _build_writing_sheet_page(path, exam):
   txt(title_str, group_x + num_box_w, header_top - 16, 11.5)
 
   c.setFont('BookletJP', 8.3)
-  c.drawCentredString(cx + cw / 2, body_top + 5, f'語数の目安は {wmin}〜{wmax}語 です。　記入語数：［　　　］words')
+  c.drawCentredString(cx + cw / 2, body_top + 5, f'語数の目安：{wmin}〜{wmax}語　　記入語数：［　　　］語')
 
   # Thick outer ruled frame (official style)
   c.setLineWidth(1.35)
@@ -630,9 +635,9 @@ def _build_writing_sheet_page(path, exam):
  # Footer
  c.setLineWidth(0.4)
  c.line(42, 45, w - 48, 45)
- txt('マナトビ｜独自教材・公式問題ではありません', 42, 30, 8)
- c.setFont('Times-Roman', 7.5)
- c.drawRightString(w - 48, 30, f'{exam["revision"]}  |  Answer Sheet 2/2 (Side B)')
+ txt('マナトビ｜独自作成教材（公式問題ではありません）', 42, 30, 8)
+ c.setFont('BookletJP', 7.8)
+ c.drawRightString(w - 48, 30, f'{exam["revision"]}　｜　解答用紙 2/2（B面）')
  c.showPage()
  c.save()
 

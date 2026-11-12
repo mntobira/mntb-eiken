@@ -61,6 +61,18 @@ export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void
       if(!exam.revision.startsWith('test-') && item.section==='cloze' && !new RegExp(`\\(\\s*${at+1}\\s*\\)`).test(item.passage.text))throw new Error('CLOZE_NUMBER_MISMATCH');
     }
   }
+  if(!exam.revision.startsWith('test-')){
+    const choiceAnswers=exam.items.filter(item=>item.kind==='choice').map(item=>item.answer!);
+    const counts=[0,0,0,0];
+    let run=1;
+    for(let i=0;i<choiceAnswers.length;i++){
+      counts[choiceAnswers[i]]++;
+      run=i>0 && choiceAnswers[i]===choiceAnswers[i-1]?run+1:1;
+      if(run>3)throw new Error(`ANSWER_STREAK_TOO_LONG:${exam.id}:q${i+1}`);
+    }
+    const ideal=choiceAnswers.length/4;
+    if(counts.some(c=>Math.abs(c-ideal)>3))throw new Error(`ANSWER_DISTRIBUTION_IMBALANCED:${exam.id}:${counts.join(',')}`);
+  }
 }
 /** Ensure released rounds across grades and rounds have unique IDs, unique round numbers per grade, and zero copied prompts/passages. */
 export function validateReleasedBooklets(exams:readonly WrittenExam[]):void {

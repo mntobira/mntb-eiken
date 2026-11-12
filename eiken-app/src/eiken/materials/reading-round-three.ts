@@ -46,7 +46,7 @@ export const READING_3=writtenRound('eiken_3',1,[
   ['友達からの1つ目の質問（滑った時間）に明確に答えた','友達からの2つ目の質問（一緒に行った相手）に明確に答えた','過去形を用いて主語と動詞の整った英文で書いた','返信本文が15〜25語の目安に収まっている']
  ),
  essayWriting(
-  `次のTOPICについて、あなたの考えとその理由を2つ英文で書きなさい。（目安語数：25〜35語）\nTOPIC: Which season do you like better, spring or autumn?`,
+  `次のQUESTIONについて、あなたの考えとその理由を2つ英文で書きなさい。（目安語数：25〜35語）\nQUESTION: Which season do you like better, spring or autumn?`,
   [25,35],
   `I like autumn better than spring. First, the weather is cool and comfortable for playing sports outside. Second, I enjoy eating delicious autumn foods such as sweet potatoes and chestnuts.`,
   `私は春より秋のほうが好きです。第一に、気候が涼しく外でスポーツをするのに快適だからです。第二に、サツマイモや栗などのおいしい秋の食べ物を食べるのが楽しいからです。`,

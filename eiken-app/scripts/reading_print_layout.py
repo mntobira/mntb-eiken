@@ -53,6 +53,7 @@ SPLITS = {
  'eiken_pre1': [6, 6, 6],
 }
 FONT = ParagraphStyle('reading-en', fontName='Times-Roman', fontSize=11.5, leading=17)
+CONV_FONT = ParagraphStyle('conv-en', fontName='Times-Roman', fontSize=10.8, leading=15.0)
 WRITING_EN = ParagraphStyle('writing-en', fontName='Times-Roman', fontSize=11.5, leading=17.5)
 WRITING_INDENT_EN = ParagraphStyle('writing-indent-en', fontName='Times-Roman', fontSize=11.5, leading=18, firstLineIndent=18, spaceAfter=5)
 TOPIC_ITALIC = ParagraphStyle('topic-italic', fontName='Times-BoldItalic', fontSize=12.5, leading=18.5)
@@ -62,7 +63,9 @@ BANNER_WHITE = ParagraphStyle('banner-white', fontName='BookletJP', fontSize=8.2
 NOTE = ParagraphStyle('reading-small', fontName='BookletJP', fontSize=8.8, leading=14, wordWrap='CJK')
 
 def format_markup(text, highlight_cloze=False):
- markup = escape(text).replace('(     )', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)').replace('\n', '<br/>')
+ markup = escape(text)
+ markup = re.sub(r'\(\s{3,}\)', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)', markup)
+ markup = markup.replace('\n', '<br/>')
  markup = re.sub(r'(^|<br/>)([AB]):', r'\1<b><i>\2 :</i></b>', markup)
  # Support __underlined text__ in email writing prompts
  markup = re.sub(r'__([^_]+)__', r'<u>\1</u>', markup)
@@ -116,13 +119,13 @@ def frame(c, exam, page):
  c.setStrokeColor(colors.black)
  c.setLineWidth(.4)
  kind_jp = 'リーディング' if exam.get('scope') == 'reading' else '一次筆記'
- line(c, f'{EN_GRADES[exam["grade"]]}  /  MANATOBI ORIGINAL', 52, 39, 'Times-Bold', 8)
+ line(c, f'{EN_GRADES[exam["grade"]]}', 52, 39, 'Times-Bold', 8)
  c.setFont('BookletJP', 8)
- c.drawRightString(RIGHT, H - 46, f'{LABELS[exam["grade"]]}形式 第{exam["round"]}回 {kind_jp}')
+ c.drawRightString(RIGHT, H - 46, f'マナトビ｜{LABELS[exam["grade"]]}形式 第{exam["round"]}回 {kind_jp}')
  c.line(BAND_X, 34, W - 56, 34)
  c.line(BAND_X, H - 34, W - 56, H - 34)
- line(c, 'マナトビ独自教材・公式問題ではありません', 94, H - 26, 'BookletJP', 7.5)
- line(c, f'• {page} •', W / 2 - 10, H - 26, 'Times-Bold', 9)
+ line(c, '独自作成教材（公式問題ではありません）', 94, H - 26, 'BookletJP', 7.5)
+ line(c, f'— {page} —', W / 2 - 12, H - 26, 'Times-Roman', 9)
  c.setFont('Times-Roman', 7)
  c.drawRightString(RIGHT, 20, exam['revision'])
 
@@ -164,30 +167,30 @@ def compact_continuation_bar(c, section_no, sub_letter, note_text, top=54):
  c.line(BAND_X, H - top - 28, RIGHT, H - top - 28)
  return top + 40
 
-def options_height(choices, columns):
+def options_height(choices, columns, style=FONT, row_gap=5):
  cw = BW / columns
- return sum(max(height(text, cw - 26) for text in choices[i:i + columns]) + 5 for i in range(0, 4, columns))
+ return sum(max(height(text, cw - 24, style) for text in choices[i:i + columns]) + row_gap for i in range(0, 4, columns))
 
-def options(c, choices, top, columns=1):
+def options(c, choices, top, columns=1, style=FONT, row_gap=5):
  cw = BW / columns
  cursor = top
  for start in range(0, 4, columns):
-  rh = max(height(text, cw - 26) for text in choices[start:start + columns])
+  rh = max(height(text, cw - 24, style) for text in choices[start:start + columns])
   for index in range(start, start + columns):
    x = X + (index - start) * cw
-   line(c, str(index + 1), x + 4, cursor, 'Times-Bold')
-   draw(c, choices[index], x + 22, cursor, cw - 26)
-  cursor += rh + 5
+   line(c, str(index + 1), x + 4, cursor, 'Times-Bold', style.fontSize)
+   draw(c, choices[index], x + 20, cursor, cw - 24, style)
+  cursor += rh + row_gap
  return cursor
 
-def question(c, number, item, top, columns=1, show_prompt=True):
- line(c, f'({number})', 55, top, 'Times-BoldItalic', 11.5)
+def question(c, number, item, top, columns=1, show_prompt=True, style=FONT, prompt_gap=5, row_gap=5, after_gap=11):
+ line(c, f'({number})', 55, top, 'Times-BoldItalic', style.fontSize)
  if show_prompt:
-  top += draw(c, item['prompt'], X, top) + 5
- return options(c, item['choices'], top, columns) + 11
+  top += draw(c, item['prompt'], X, top, BW, style) + prompt_gap
+ return options(c, item['choices'], top, columns, style, row_gap) + after_gap
 
-def qheight(item, columns=1, show_prompt=True):
- return (height(item['prompt']) + 5 if show_prompt else 0) + options_height(item['choices'], columns) + 11
+def qheight(item, columns=1, show_prompt=True, style=FONT, prompt_gap=5, row_gap=5, after_gap=11):
+ return (height(item['prompt'], BW, style) + prompt_gap if show_prompt else 0) + options_height(item['choices'], columns, style, row_gap) + after_gap
 
 def best_cloze_columns(item):
  if qheight(item, 4, False) <= 34:
@@ -201,7 +204,19 @@ def draw_passage_block(c, passage, top, is_cloze=False):
  fmt = passage.get('format', 'article')
  pt = passage['text']
  if fmt == 'notice':
-  body_h = height(pt, BW - 24, highlight_cloze=is_cloze)
+  raw_notice_lines = pt.split('\n')
+  norm_title = re.sub(r'[^a-z0-9]+', '', passage['title'].lower())
+  filtered_lines = []
+  removed_dup = False
+  for li, ln in enumerate(raw_notice_lines):
+   if not removed_dup and li <= 2 and norm_title and re.sub(r'[^a-z0-9]+', '', ln.lower()) == norm_title:
+    removed_dup = True
+    continue
+   filtered_lines.append(ln)
+  while filtered_lines and not filtered_lines[0].strip():
+   filtered_lines.pop(0)
+  notice_body = '\n'.join(filtered_lines)
+  body_h = height(notice_body, BW - 24, highlight_cloze=is_cloze)
   title_band_h = 30
   total_h = title_band_h + body_h + 22
   if top + total_h > H - 60:
@@ -213,7 +228,7 @@ def draw_passage_block(c, passage, top, is_cloze=False):
   c.setFont('Times-Bold', 13.5)
   c.drawCentredString(X + BW / 2, H - top - 22, passage['title'])
   draw_dotted_rule(c, X + 4, X + BW - 4, top + title_band_h)
-  draw(c, pt, X + 2, top + title_band_h + 9, BW - 24, highlight_cloze=is_cloze)
+  draw(c, notice_body, X + 2, top + title_band_h + 9, BW - 24, highlight_cloze=is_cloze)
   return top + total_h + 16
  elif fmt == 'email':
   raw_lines = pt.split('\n')
@@ -486,17 +501,20 @@ def build_reading_questions(path, exam, cover_pdf):
     '',
     f'次の({first_n})から({last_n})までの会話文を完成させるために、（　　　）に入れるのに最も適切なものを1, 2, 3, 4の中から一つ選び、その番号のマーク欄をぬりつぶしなさい。',
    )
-   slot = (H - 52 - top) / len(items)
-   for idx_conv, item in enumerate(items):
-    cols = 2 if qheight(item, 2) <= slot - 4 else 1
-    if qheight(item, cols) > slot:
-     raise ValueError(f'Conversation slot overflow: {item["id"]}')
-    used_end = question(c, numbers[item['id']], item, top, cols)
+   available_conv = H - 52 - top
+   cols_list = [2 if qheight(it, 2, True, CONV_FONT, 4, 4, 6) <= 140 else 1 for it in items]
+   item_hs = [qheight(it, col_c, True, CONV_FONT, 4, 4, 6) for it, col_c in zip(items, cols_list)]
+   total_conv_h = sum(item_hs)
+   if total_conv_h > available_conv:
+    raise ValueError(f'Conversation page overflow ({total_conv_h:.1f}>{available_conv:.1f}): {items[0]["id"]}')
+   extra_gap = (available_conv - total_conv_h) / len(items)
+   for idx_conv, (item, cols, ih) in enumerate(zip(items, cols_list, item_hs)):
+    used_end = question(c, numbers[item['id']], item, top, cols, True, CONV_FONT, 4, 4, 6)
+    slot_end = top + ih + extra_gap
     if idx_conv < len(items) - 1:
-     rule_y = top + slot - 6
-     if used_end - 4 < rule_y:
-      draw_dotted_rule(c, X - 8, RIGHT, rule_y)
-    top += slot
+     rule_y = (used_end - 2 + slot_end) / 2
+     draw_dotted_rule(c, X - 8, RIGHT, rule_y)
+    top = slot_end
    plans.append({'section': section, 'page': page, 'questions': [numbers[q['id']] for q in items]})
 
   elif section == 'reorder':
@@ -556,14 +574,14 @@ def build_reading_questions(path, exam, cover_pdf):
     top = draw_passage_block(c, passage, top, is_cloze=(section == 'cloze'))
     if not combined:
      new_page()
-     top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]} — Questions ({g_first})–({g_last})')
+     top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}　設問 ({g_first})〜({g_last})')
 
     for idx_q, item in enumerate(group):
      cols = best_cloze_columns(item) if section == 'cloze' else 1
      required = qheight(item, cols, section != 'cloze')
      if top + required > H - 46:
       new_page()
-      top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]} — Questions (continued)')
+      top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}　設問（続き）')
      top = question(c, numbers[item['id']], item, top, cols, section != 'cloze')
      if section == 'reading' and idx_q < len(group) - 1 and top + 24 < H - 46:
       draw_dotted_rule(c, BAND_X + 6, RIGHT, top - 3)

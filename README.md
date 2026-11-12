@@ -20,7 +20,7 @@
 
 - **制作仕様書（GitHubコード同梱）**：
   - ドキュメント：`eiken-app/docs/WRITTEN_AUTHORING_GUIDE.md`（全7級の設問構成・CEFR・学年目安・語彙文法範囲・長文語数・2024〜2026現行ライティング仕様・A4横2カラムB面解答用紙仕様・AI手抜き禁止ルール・ビルド＆検証手順を明記）
-  - 機械検証定義：`eiken-app/src/eiken/writtenAuthoringSpec.ts`（`GRADE_AUTHORING_SPECS`、AIテンプレ前置きや汎用誤答理由を弾く `FORBIDDEN_PROMPT_PATTERNS` / `FORBIDDEN_GENERIC_REASON_PATTERNS`）
+  - 機械検証定義：`eiken-app/src/eiken/writtenAuthoringSpec.ts`（`GRADE_AUTHORING_SPECS`、AIテンプレ前置きや汎用誤答理由を弾く `FORBIDDEN_PROMPT_PATTERNS` / `FORBIDDEN_GENERIC_REASON_PATTERNS`）および `writtenExamCore.ts`（正答連続・正答番号偏りを機械拒否する `ANSWER_STREAK_TOO_LONG` / `ANSWER_DISTRIBUTION_IMBALANCED`）
 - **Hub「リスニングの部屋」との形式整合・将来統合設計**：
   - リスニング部屋側の試験ID規則 `${grade}_listening_r${round02}`（`eiken_5`〜`eiken_pre1`、`round: 1..15`）と完全対応する `buildPrimaryBundleRef(grade, round)` を実装。
   - `deliverables/written-booklets.json` の `primaryBundles`（全29件）に共通統合キー `bundleId: "${grade}_primary_r${round02}"`、`writtenExamId`、`listeningExamId`、双方のPDFベースパスを出力しており、後続の一次試験統合時にID変換なしで結合可能です。
@@ -75,8 +75,8 @@ npm run generate:booklets
 
 - 公開7級の既存読解14本文28問、語彙文法14問、聞き取り14問（56問・42大問・21単元）を完全保全。冊子29セット（選択874問）を加え、**選択問題930問**。
 - ライティング練習：**既存10課題＋冊子連動50課題＝計60課題**（入力・語数・保存・再開・自己点検・参考解答・クラウド同期対応）。
-- 単語帳：420語・英日／日英840問（実問題リンク188語）。語彙PDF 7冊＋一次筆記PDF 29冊＝ガチャPDF景品36件。
-- とびらくん・装備・ブランド・動画・BGM・効果音・クレジット・SW世代（`eiken-written-20261112b`）を保全。
+- 単語帳：420語・英日／日英840問（実問題リンク187語）。語彙PDF 7冊＋一次筆記PDF 29冊＝ガチャPDF景品36件。
+- とびらくん・装備・ブランド・動画・BGM・効果音・クレジット・SW世代（`eiken-written-20261112c`）を保全。
 
 ## 検証と再現
 
