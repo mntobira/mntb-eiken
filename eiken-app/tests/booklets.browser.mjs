@@ -8,7 +8,7 @@ const audit=JSON.parse(await readFile('deliverables/written-pdf-validation.json'
 const labels={short:'短文の語句空所補充',conversation:'会話文の空所補充',reorder:'語句整序',cloze:'長文の語句空所補充',reading:'読解'};
 // Keep each grade in its own browser process: the 1GB QA sandbox cannot retain
 // hundreds of explanation screens and PDF frames in one WebKit process.
-for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.grade===process.env.EIKEN_GRADE)){
+for(const selected of booklets.filter(exam=>(!process.env.EIKEN_GRADE || exam.grade===process.env.EIKEN_GRADE) && (!process.env.EIKEN_ROUND || exam.round===Number(process.env.EIKEN_ROUND)))){
  const exams=[selected];
  const browser=await engine.launch({args:engine===chromium?['--no-sandbox']:[]});
  try {
@@ -25,7 +25,7 @@ for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.gra
   let checked=0;
   for(const exam of exams){
    for(const section of [...new Set(exam.items.map(item=>item.section))]) {
-    console.log(`${engine.name()} ${viewport.width}: ${exam.grade} ${section}`);
+    console.log(`${engine.name()} ${viewport.width}: ${exam.grade} r${exam.round} ${section}`);
     const items=exam.items.filter(item=>item.section===section);
     const groups=[];
     for(const item of items){
@@ -34,7 +34,7 @@ for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.gra
     }
     await page.locator('[data-home-practice]').click();await page.locator(`[data-study-card="${exam.grade}"]`).click();
     await page.getByRole('tab',{name:section==='reading'||section==='cloze'?/リーディング/:/語彙・文法/}).first().click();
-    await page.locator('.unit-card').filter({hasText:`${exam.scope==='reading'?'リーディング':'筆記'} 第1回｜${labels[section]}`}).locator('.unit-card-primary').click();
+    await page.locator('.unit-card').filter({hasText:`${exam.scope==='reading'?'リーディング':'筆記'} 第${exam.round}回｜${labels[section]}`}).locator('.unit-card-primary').click();
     for(const group of groups) {
      await page.getByRole('button',{name:'解答と解説を見る',exact:true}).waitFor();
      const body=await page.locator('body').innerText();
@@ -72,7 +72,9 @@ for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.gra
    const parts=[['中身を開く','.pdf'],[`問題冊子を開く（${report.questionPages.at(-1)}ページ）`,'_questions.pdf'],['解答用紙を開く（1ページ）','_answers.pdf'],[`解答・解説を開く（${report.pages-report.questionPages.at(-1)-1}ページ）`,'_explanations.pdf']];
    const search=page.getByPlaceholder('名前で探す');
    // Isolate the owned tile by its actual registry title, including grade.
-   await search.fill(exam.grade==='eiken_5'?'英検5級':exam.grade==='eiken_4'?'英検4級':exam.grade==='eiken_3'?'英検3級':exam.grade==='eiken_pre2'?'英検準2級':exam.grade==='eiken_pre2plus'?'英検準2級プラス':exam.grade==='eiken_2'?'英検2級':'英検準1級');
+   const gradeLabel=exam.grade==='eiken_5'?'英検5級':exam.grade==='eiken_4'?'英検4級':exam.grade==='eiken_3'?'英検3級':exam.grade==='eiken_pre2'?'英検準2級':exam.grade==='eiken_pre2plus'?'英検準2級プラス':exam.grade==='eiken_2'?'英検2級':'英検準1級';
+   const scopeLabel=exam.scope==='reading'?'リーディング':'筆記';
+   await search.fill(`${gradeLabel} ${scopeLabel} 第${exam.round}回`);
    for(const [label,suffix] of parts){
     await page.locator('.collection-tile').first().click();await page.getByRole('button',{name:label,exact:true}).click();
     const viewer=page.locator('[data-pdf-viewer]');await viewer.waitFor();
@@ -83,7 +85,7 @@ for(const selected of booklets.filter(exam=>!process.env.EIKEN_GRADE || exam.gra
    }
   }
   await page.screenshot({path:`qa-booklet-collection-${engine.name()}-${viewport.width}.png`,fullPage:true});
-  assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${viewport.width} ${selected.grade}: ${checked} answers/explanations, owned pack + 3 split PDFs downloaded.`);
+  assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${viewport.width} ${selected.id}: ${checked} answers/explanations, owned pack + 3 split PDFs downloaded.`);
   await context.close();
  }
  } finally {await browser.close();}

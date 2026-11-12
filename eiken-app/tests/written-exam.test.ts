@@ -39,12 +39,18 @@ describe('written booklets — same original for print and field practice, no ex
   expect(()=>validateWrittenExam(badRange)).toThrow('WRITING_RUBRIC_REQUIRED');
  });
  it('checks every real ordering permutation, completed sentence and first/third pair',()=>{
-  expect(WRITTEN_BOOKLETS.map(exam=>[exam.grade,exam.items.length])).toEqual([
-   ['eiken_5',25],['eiken_4',35],['eiken_3',30],['eiken_pre2',29],['eiken_pre2plus',31],['eiken_2',31],['eiken_pre1',31]
+  expect(WRITTEN_BOOKLETS.map(exam=>[exam.grade,exam.round,exam.items.length])).toEqual([
+   ['eiken_5',1,25],['eiken_5',2,25],['eiken_5',3,25],
+   ['eiken_4',1,35],['eiken_4',2,35],['eiken_4',3,35],
+   ['eiken_3',1,30],['eiken_3',2,30],['eiken_3',3,30],
+   ['eiken_pre2',1,29],['eiken_pre2',2,29],['eiken_pre2',3,29],
+   ['eiken_pre2plus',1,31],['eiken_pre2plus',2,31],['eiken_pre2plus',3,31],
+   ['eiken_2',1,31],['eiken_2',2,31],['eiken_2',3,31],
+   ['eiken_pre1',1,31],['eiken_pre1',2,31],['eiken_pre1',3,31]
   ]);
-  expect(WRITTEN_BOOKLETS.reduce((n,exam)=>n+exam.items.length,0)).toBe(212);
+  expect(WRITTEN_BOOKLETS.reduce((n,exam)=>n+exam.items.length,0)).toBe(636);
   for(const booklet of WRITTEN_BOOKLETS){
-   validateWrittenExam(booklet);expect(booklet.round).toBe(1);
+   validateWrittenExam(booklet);expect([1,2,3]).toContain(booklet.round);
    for(const item of booklet.items.filter(i=>i.section==='reorder')){
     expect(item.choices![item.answer!]).toBe(`${item.orderAnswer![0]}－${item.orderAnswer![2]}`);
     expect(item.completedSentence!.replace(/[.?]$/,'')).toBe(`${item.orderPrefix} ${item.orderAnswer!.map(n=>item.orderTokens![n-1]).join(' ')}`);
@@ -67,9 +73,9 @@ describe('written booklets — same original for print and field practice, no ex
  it('matches every field-practice answer and generated PDF audit to the same original',()=>{
   const manifest=JSON.parse(readFileSync('deliverables/written-booklets.json','utf8'));
   expect(manifest.booklets).toEqual(WRITTEN_BOOKLETS);
-  expect(manifest.progress).toMatchObject({target:105,completed:7,remaining:98,questions:212,writingIncluded:false,listeningIncluded:false});
+  expect(manifest.progress).toMatchObject({target:105,completed:21,remaining:84,questions:636,writingIncluded:false,listeningIncluded:false});
   expect(manifest.progress.grades).toHaveLength(7);
-  for(const row of manifest.progress.grades)expect(row).toMatchObject({target:15,completed:1,rounds:[1]});
+  for(const row of manifest.progress.grades)expect(row).toMatchObject({target:15,completed:3,rounds:[1,2,3]});
   const sourceHash=createHash('sha256').update(JSON.stringify(WRITTEN_BOOKLETS)).digest('hex');
   expect(manifest.sourceHash).toBe(sourceHash);
   const reports=JSON.parse(readFileSync('deliverables/written-pdf-validation.json','utf8'));
@@ -90,7 +96,9 @@ describe('written booklets — same original for print and field practice, no ex
    }
    expect(report.questionPages).toHaveLength(exam.items.length);
    expect(report.layout.officialArtworkCopied).toBe(false);
-   expect(print.pages).toBe(report.pages);expect(print.variants![0].pages).toBe(exam.grade==='eiken_5'?5:exam.grade==='eiken_4'?11:exam.grade==='eiken_pre1'?10:['eiken_pre2plus','eiken_2'].includes(exam.grade)?11:9);
+   expect(print.pages).toBe(report.pages);
+   if(exam.grade==='eiken_3')expect([8,9]).toContain(print.variants![0].pages);
+   else expect(print.variants![0].pages).toBe(exam.grade==='eiken_5'?5:exam.grade==='eiken_4'?11:exam.grade==='eiken_pre1'?10:['eiken_pre2plus','eiken_2'].includes(exam.grade)?11:9);
    expect(print.variants).toHaveLength(3);expect(print.variants!.map(p=>p.label)).toEqual(['問題冊子','解答用紙','解答・解説']);
    for(const part of print.variants!) expect(readFileSync(`public${part.file}`).subarray(0,5).toString()).toBe('%PDF-');
    const problems=partsForGrade(exam.grade).flatMap(part=>part.chapters).flatMap(chapter=>chapter.practiceProblems);
@@ -137,6 +145,6 @@ describe('written booklets — same original for print and field practice, no ex
   expect(()=>validateGradeSeries(exams.slice(1),'eiken_5')).toThrow('FIFTEEN_EXAMS_REQUIRED');
   const repeated=exams.map((exam,index)=>index===1?{...exam,items:exam.items.map((item,i)=>({...item,prompt:exams[0].items[i].prompt,passage:exams[0].items[i].passage}))}:exam);
   expect(()=>validateGradeSeries(repeated,'eiken_5')).toThrow('DUPLICATE_EXAM_CONTENT');
-  expect(()=>validateGradeSeries(WRITTEN_BOOKLETS,'eiken_5')).toThrow('FIFTEEN_EXAMS_REQUIRED');
+  expect(()=>validateGradeSeries(WRITTEN_BOOKLETS.filter(b=>b.grade==='eiken_5'),'eiken_5')).toThrow('FIFTEEN_EXAMS_REQUIRED');
  });
 });

@@ -1,10 +1,10 @@
 # マナトビ 英検版
 
-## 対象と配信方針（2026-11-11）
+## 対象と配信方針（2026-11-12）
 
 - 対象は `eiken-app/` のReact 19 / TypeScript / Vite SPA。既存Vercel設定を維持し、ルートHonoテンプレートへ置き換えません。
 - リポジトリは <https://github.com/mntobira/mntb-eiken> のみ。大学受験版・リスニング本体のリポジトリ／Firebase／配信先へ書き込みません。
-- PR #4〜#8はマージ済み。今回の作業ブランチは `feat/eiken-reading-rounds-all-grades`。PR #6のスマホ横はみ出し修正、#7の1列タブ修正、PR作成コマンドも保全しています。共通ソース579ファイルの同一性を維持。
+- PR #4〜#9はマージ済み。今回の作業ブランチは `feat/eiken-reading-rounds-2-and-3`。PR #6のスマホ横はみ出し修正、#7の1列タブ修正、PR作成コマンドも保全しています。共通ソース579ファイルの同一性を維持。
 - PRマージによる既存Vercel連携の自動ビルドと、本番URL・Google認証の実動作確認は別です。Cloudflareへの新規配備は行いません。
 - Firebaseルール・索引・Functionsを本番へ配備していません。先のユーザー反映にPR #4の追加ルール差分まで含まれるとは見なしません。
 
@@ -14,14 +14,14 @@
 
 全体目標は公開7級（5・4・3・準2・準2プラス・2・準1級）それぞれ15回分。最新指示に従い、まずリーディングを優先し、リスニングは後回し、ライティングは別管理です。
 
-現在は **各級第1回、7セット・計212問** を原本・分野別練習・PDF・ガチャへ接続。新規187問と先行5級25問の合計です。各級1/15、合計7/105、残り98セットであり、15回分完成や一次筆記全体完成とは扱いません。1級は従来どおり準備中です。
+現在は **公開7級それぞれの第1〜3回、計21セット・636問** を原本・分野別練習・PDF・ガチャへ接続。先行の第1回7セット（212問）に加え、全7級の第2回・第3回（14セット・424問）を独自作問して揃えました。各級3/15、合計21/105、残り84セットであり、15回分完成や一次筆記全体完成とは扱いません。1級は従来どおり準備中です。
 
 ### 教材と使い方
 
-- 原本：`src/eiken/materials/written-booklets.ts` と `reading-round-*.ts`。本文・選択肢・本文和訳・設問訳・正答・4選択肢の理由を独自作成。
-- アプリ：級 → 語彙・文法練習（短文・会話・整序）／リーディング練習（長文空所・読解）→ 第1回の分野別カード。従来の採点・解説・復習を使用。既存5級の保存IDも維持。
+- 原本：`src/eiken/materials/written-booklets.ts`、`reading-round-*.ts`、`reading-round-*-more.ts`。本文・選択肢・本文和訳・設問訳・正答・4選択肢の理由を独自作成。
+- アプリ：級 → 語彙・文法練習（短文・会話・整序）／リーディング練習（長文空所・読解）→ 第1〜3回の分野別カード（回数ごとの見出し付き）。従来の採点・解説・復習を使用。既存第1回の保存IDも維持。
 - 変換：`writtenPractice.ts`。冊子の問題ID・問題番号・正答・解説をそのまま利用。長文は1本文に複数小問をまとめ、本文を重複表示しません。
-- ガチャ：`print_eiken_<grade>_written_01` の実在UR7冊。5級〜準2級は `kyotsu`、準2級プラス〜準1級は `niji`。既存語彙ノート7冊と合わせPDF景品14件。各冊第1回のみであり、15回分の完全版ではありません。
+- ガチャ：`print_eiken_<grade>_written_01`〜`_03` の実在UR21冊。5級〜準2級は `kyotsu`、準2級プラス〜準1級は `niji`。既存語彙ノート7冊と合わせPDF景品28件。各級第1〜3回であり、15回分の完全版ではありません。
 - 所有後：マイPDFからセット全体、問題冊子、解答用紙、解答・解説をそれぞれ閲覧・保存。分冊ごとに印刷できます。同じ問題はアプリの分野別練習で無料で解けます。
 - 公開静的PDFはアクセス制限済みではありません。ガチャ所有UIと厳密な教材アクセス保護は別です。
 
@@ -33,15 +33,15 @@
 - 5級解答用紙見本：<https://www.eiken.or.jp/eiken/schedule/pdf/5q-hon.pdf>
 - 各級の構成確認元：公式 `/solutions.html`（`writtenExamCore.ts` にURLを保持）。
 
-| 級（すべて第1回） | 設問 | 問題 | 解答用紙 | 解説 | セット全体 |
-|---|---:|---:|---:|---:|---:|
-| 5級 | 25 | 5p | 1p | 10p | 16p |
-| 4級 | 35 | 11p | 1p | 15p | 27p |
-| 3級 | 30 | 9p | 1p | 13p | 23p |
-| 準2級 | 29 | 9p | 1p | 14p | 24p |
-| 準2級プラス | 31 | 11p | 1p | 15p | 27p |
-| 2級 | 31 | 11p | 1p | 15p | 27p |
-| 準1級 | 31 | 10p | 1p | 15p | 26p |
+| 級（各級 第1〜3回） | 1回設問 | 3回合計 | 問題 | 解答用紙 | 解説 | セット全体 |
+|---|---:|---:|---:|---:|---:|---:|
+| 5級 | 25 | 75 | 5p | 1p | 10p | 16p |
+| 4級 | 35 | 105 | 11p | 1p | 15p | 27p |
+| 3級 | 30 | 90 | 8〜9p | 1p | 13〜14p | 23p |
+| 準2級 | 29 | 87 | 9p | 1p | 14p | 24p |
+| 準2級プラス | 31 | 93 | 11p | 1p | 15〜16p | 27〜28p |
+| 2級 | 31 | 93 | 11p | 1p | 15〜17p | 27〜29p |
+| 準1級 | 31 | 93 | 10p | 1p | 15〜17p | 26〜28p |
 
 - 大問・問題番号と各級の選択問題数が一致。短文は横4列、会話は2列×2段。短文ページ割りは5級7/8、4級8/7、3級7/8、準2級10/5、準2級プラス・2級5/5/5/2、準1級8/8/2。
 - 整序は①〜④の語句、4枠、「1番目／3番目」。選択肢はアラビア数字、語句の組は丸数字で区別。
@@ -64,7 +64,7 @@ npm run generate:booklets
 
 オフライン生成にPythonのReportLab／PyMuPDF／Pillowが必要。VercelでPython生成は実行せず、PDF・画像・レジストリをコミットします。
 
-`export-written-booklets.ts` → `deliverables/written-booklets.json`（各級の回数・7/105の進捗台帳）→ `build-written-pdfs.py` / `written_print_layout.py` / `reading_print_layout.py` → PDF・プレビュー・`writtenPrints.generated.ts`。
+`export-written-booklets.ts` → `deliverables/written-booklets.json`（各級の回数・21/105の進捗台帳）→ `build-written-pdfs.py` / `written_print_layout.py` / `reading_print_layout.py` → PDF・プレビュー・`writtenPrints.generated.ts`。
 
 語彙ノート再生成でも別冊レジストリを統合し、新冊子を消しません。`written-pdf-validation.json` に原本SHA-256・PDF SHA-256・正答・ページ配置を保持。`validateGradeSeries()` は独立した完全な15回分を要求し、ラベル替えの複製を拒否。内部 `review: approved` は執筆・正答整合性確認であり、外部校閲や難度校正済みという意味ではありません。
 
@@ -95,8 +95,8 @@ npm run generate:booklets
 
 ## 既存機能と保全
 
-- 公開7級の既存読解14本文28問、語彙文法14問、聞き取り14問（56問・42大問・21単元）を保全。冊子212問を加え、**選択問題268問・205大問・44単元**。Writing10課題は別枠。
-- 単語帳420語、英日／日英840問。実問題リンク142語。語彙PDF7冊は各5p・30語で、アプリ60語／級とは異なります。
+- 公開7級の既存読解14本文28問、語彙文法14問、聞き取り14問（56問・42大問・21単元）を保全。冊子21セット636問を加え、**選択問題692問・531大問・90単元**。Writing10課題は別枠。
+- 単語帳420語、英日／日英840問。実問題リンク189語。語彙PDF7冊は各5p・30語で、アプリ60語／級とは異なります。
 - Writing10課題：入力・語数・保存・再開・自己点検・参考解答・同期。自動採点や合否判定なし。
 - 同期キー、同期待ち中のアカウント切替・追加入力、手動同期失敗の成功扱い、同期後の画面更新を修正済み。
 - とびらくん・装備・ブランド・動画・BGM・効果音・クレジットを保全。破損保存時は基本画像にfallbackし記録を上書きしません。
@@ -108,13 +108,13 @@ npm run generate:booklets
 ## 保存・入口・配信パス
 
 - `/`：AppStateで遷移するSPA入口。`/?screenshot=1` は検証起動。
-- `/prints/print_eiken_<grade>_written_01.pdf`：第1回セット16〜27p。gradeは `5`, `4`, `3`, `pre2`, `pre2plus`, `2`, `pre1`。
-- `/prints/print_eiken_<grade>_written_01_questions.pdf`、`_answers.pdf`、`_explanations.pdf`：分冊。
+- `/prints/print_eiken_<grade>_written_01.pdf`〜`_03.pdf`：第1〜3回セット16〜29p。gradeは `5`, `4`, `3`, `pre2`, `pre2plus`, `2`, `pre1`。
+- `/prints/print_eiken_<grade>_written_<01..03>_questions.pdf`、`_answers.pdf`、`_explanations.pdf`：分冊（計84 PDF）。
 - `/prints/print_eiken_wordbook_<grade>.pdf`、`/data/listeningVocabulary.json?v=eiken-wordbook-20261110b`、既存 `/brand/`・`/mascots/`・`/fonts/`・`/cinematics/`・BGM。
 - localStorageは `eiken:v1:` wrapper・uid別キー。名前付きFirebase App `manatobi-eiken`、Firestoreルート `eiken_`。`eiken_user_data/{uid}` の許可済み `s_*` JSONを3-way merge。
 - Writingは許可済み `s_reading` を使用し旧値を保護。新フィールドの勝手な追加なし。
 - 環境は `VITE_EIKEN_ENABLE_CLOUD` / `VITE_EIKEN_FIREBASE_*`。旧環境はbuild guardで拒否。ローカルpreviewはcloud無効。
-- SW世代 `eiken-reading-20261111b`。英検専用キャッシュのみ管理。
+- SW世代 `eiken-reading-20261112a`。英検専用キャッシュのみ管理。
 - Vercel：Rootはリポジトリ直下、Install `npm ci --prefix eiken-app`、Build `npm --prefix eiken-app run build:vercel`、Output `eiken-app/dist`、Production Branch main、Node22.18以上。
 - 本番URLと本番Authの確認は別途。今回新規Cloudflare配備なし。
 
@@ -133,7 +133,7 @@ EIKEN_WIDTH=390 npm run test:release
 EIKEN_WIDTH=390 EIKEN_ENGINE=webkit npm run test:release
 ```
 
-今回：48 Vitest成功、src型検査・production build成功。全212問のSubQuestionとの一対一対応、本文group内の小問数、PDF hash、全7景品のpool・実率を照合。本文和訳／format欠落、同IDの本文訳衝突、空所番号不一致、上位級のwriting不足の拒否テストを追加。ブラウザ検証結果はPR本文にも記録します。疑似txはテスト用で本番永続化ではありません。
+今回：48 Vitest成功、src型検査・production build成功。全636問（21セット）のSubQuestionとの一対一対応、本文group内の小問数、PDF hash、全28景品（筆記・リーディング21冊＋語彙ノート7冊）のpool・実率を照合。Chromium（1280px・390px）にて全7級の新設第2・3回分野別練習フロー、マイPDFからの結合版＋3分冊DL、および `test:release` 全項目を確認。疑似txはテスト用で本番永続化ではありません。
 
 先行PR #8：Chromium／WebKit ×1280／390幅で5級25問とセット＋3分冊を検証。既存7級読解・語彙・単語帳・両pool・破損fallbackを両エンジン390幅で検証。先行PRではWriting10課題、聞き取り14経路、音声PCM・BGM・PWA等も確認。今回全て再実施したという意味ではありません。
 
@@ -149,4 +149,4 @@ npm run pr:create -- --title "変更のタイトル" --body-file /path/to/pr-bod
 
 ## 残件と次の開発
 
-次はリーディング各級第2〜15回、**残り98セット**の独自作問・校閲を優先。ライティング冊子・英作文欄、1級教材、外部難度校正、A1全件再編、録音接続、本番Google・Functions・実端末2台同期、物理iPhone／Androidの共有・印刷、旧PWA更新は未完了。リスニングは後回し。ラベル替えや語彙ノートの繰り返しで完成扱いにしません。
+次はリーディング各級第4〜15回、**残り84セット**の独自作問・校閲を優先。ライティング冊子・英作文欄、1級教材、外部難度校正、A1全件再編、録音接続、本番Google・Functions・実端末2台同期、物理iPhone／Androidの共有・印刷、旧PWA更新は未完了。リスニングは後回し。ラベル替えや語彙ノートの繰り返しで完成扱いにしません。

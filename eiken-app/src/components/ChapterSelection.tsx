@@ -179,7 +179,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
         </button>
         <div className="unit-head-title">
           <h2 style={{ color: theme.accent }}>{isEiken ? `${theme.label} 級別練習` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isEiken ? '分野別練習（第1〜3回冊子と共通）／本試験の通し模試ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
@@ -454,13 +454,39 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                   ? (questions.length > 0 && clearedRounds === questions.length ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || roundTried) ? 'doing' : 'todo')
                   : isStageCleared(stage) ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || !!stage) ? 'doing' : 'todo';
 
-                // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中）★ src/data/unitSections.ts
+                // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中・英検の回数別演習）★ src/data/unitSections.ts
                 const section = unitSectionByChapter.get(chapter.id);
                 const prevSection = routeIndex > 0 ? unitSectionByChapter.get(orderedChapters[routeIndex - 1].id) : undefined;
+                const eikenGroup = isEiken && !isListening
+                  ? (() => {
+                      const m = chapter.id.match(/_written_(\d+)_/);
+                      return m
+                        ? { key: `round-${Number(m[1])}`, label: `${chapter.abstractTitle.startsWith('筆記') ? '筆記' : 'リーディング'} 第${Number(m[1])}回（印刷用冊子と共通）`, stage: 'exam' }
+                        : { key: 'sample', label: '基礎ウォームアップ', stage: 'unit' };
+                    })()
+                  : null;
+                const prevEikenGroup = isEiken && !isListening && routeIndex > 0
+                  ? (() => {
+                      const prev = orderedChapters[routeIndex - 1];
+                      const m = prev.id.match(/_written_(\d+)_/);
+                      return m ? `round-${Number(m[1])}` : 'sample';
+                    })()
+                  : null;
+                const eikenGroupCount = eikenGroup && eikenGroup.key !== prevEikenGroup
+                  ? orderedChapters.filter(c => {
+                      const m = c.id.match(/_written_(\d+)_/);
+                      return (m ? `round-${Number(m[1])}` : 'sample') === eikenGroup.key;
+                    }).length
+                  : 0;
                 const stageHeading = section?.label && section !== prevSection ? (
                   <h4 className="math-stage-heading col-span-full" data-stage={section.key?.split(':')[1] ?? section.key ?? ''}>
                     <span>{section.label}</span>
                     <small>{section.chapters.length}単元</small>
+                  </h4>
+                ) : eikenGroup && eikenGroup.key !== prevEikenGroup && orderedChapters.length > 1 ? (
+                  <h4 className="math-stage-heading col-span-full" data-stage={eikenGroup.stage}>
+                    <span>{eikenGroup.label}</span>
+                    <small>{eikenGroupCount}単元</small>
                   </h4>
                 ) : null;
                 const expanded = expandedChapterId === chapter.id;

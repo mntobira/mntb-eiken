@@ -36,7 +36,7 @@ export function ListeningSubjectSelection({ onSelectSubject, currentSubject, onB
             aria-current={currentSubject === grade.id ? 'true' : undefined} disabled={!enabled}
             onClick={() => { if (enabled) onSelectSubject(grade.id); }}>
             <span className="lh-main-icon"><Headphones size={28} aria-hidden="true" /></span>
-            <span><strong>{grade.label}</strong><span>{enabled ? `${stats.chapters}単元・${stats.marks}問の重点練習` : '教材準備中'}</span></span>
+            <span><strong>{grade.label}</strong><span>{enabled ? `${stats.chapters}単元・${stats.marks}問（第1〜3回分野別＋基礎）` : '教材準備中'}</span></span>
             <ArrowRight size={22} aria-hidden="true" />
           </button>;
         })}
