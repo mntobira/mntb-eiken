@@ -48,7 +48,7 @@ export const READING_PLUS=writtenRound('eiken_pre2plus',1,[
   ['導入された仕組み（文房具の共有棚）と利点（節約・ごみ削減）を含めた','生じた問題（壊れた品の混入）と改善策（毎週の点検）を含めた','原文の表現をそのまま丸写しせず適切に言い換えた','本文にない自分の意見を加えず25〜35語に収めた']
  ),
  essayWriting(
-  `次のTOPICについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nTOPIC: Do you think more towns should hold outdoor markets on weekends?`,
+  `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think more towns should hold outdoor markets on weekends?`,
   [50,60],
   `I think more towns should hold outdoor markets on weekends. First, residents can buy fresh vegetables directly from local farmers and learn how their food is grown. Second, weekend markets attract visitors to town centers, which supports nearby small shops and gives neighbors a lively place to talk with one another.`,
   `私はより多くの町が週末に屋外マーケットを開くべきだと思います。第一に、住民は地元の農家から直接新鮮な野菜を購入でき、食べ物がどのように育てられているか学べます。第二に、週末の市場は町の中心部に訪問者を呼び込み、近くの小さな店を支えるとともに近隣住民が語り合う活気ある場を生みます。`,

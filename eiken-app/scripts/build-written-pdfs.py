@@ -40,7 +40,9 @@ STYLES = {
 }
 
 def p(text, style='jp'):
- markup = escape(str(text)).replace('(     )', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)').replace('\n', '<br/>')
+ markup = escape(str(text))
+ markup = re.sub(r'\(\s{3,}\)', '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)', markup)
+ markup = markup.replace('\n', '<br/>')
  markup = re.sub(r'__([^_]+)__', r'<u>\1</u>', markup)
  return Paragraph(markup, STYLES[style])
 
@@ -193,13 +195,14 @@ for exam in DATA['booklets']:
  ]))
  story += [key_table, Spacer(1, 14)]
 
+ choice_section_count = len({q['section'] for q in choice_questions})
  if has_writing:
   story.append(p('■ ライティング課題 概要（詳しい模範解答・和訳・解説は本冊子の後半に掲載）', 'heading'))
-  w_rows = [[p('課題', 'cell'), p('形式', 'cell'), p('目安語数', 'cell'), p('自己点検の4観点', 'cell')]]
+  w_rows = [[p('大問', 'cell'), p('出題形式', 'cell'), p('目安語数', 'cell'), p('自己点検の4観点', 'cell')]]
   for wi, wq in enumerate(writing_tasks, 1):
    wmin, wmax = wq['wordRange']
    w_rows.append([
-    p(f'Writing {wi}', 'cell'),
+    p(f'大問{choice_section_count + wi}', 'cell'),
     p(SECTION_NAMES[wq['section']], 'cell'),
     p(f'{wmin}〜{wmax}語', 'cell'),
     p('内容・構成・語彙・文法（巻末チェックリスト参照）', 'cell'),
@@ -241,7 +244,6 @@ for exam in DATA['booklets']:
   story.append(KeepTogether(block))
 
  # Writing model answers & rubrics
- choice_section_count = len({q['section'] for q in choice_questions})
  for wi, wq in enumerate(writing_tasks, 1):
   sec_no = choice_section_count + wi
   wmin, wmax = wq['wordRange']
@@ -257,7 +259,7 @@ for exam in DATA['booklets']:
    ]
   story += [
    Spacer(1, 8),
-   boxed_block(f'【参考解答（Model Answer — {wc} words）】', wq['model'], 'en_model'),
+   boxed_block(f'【参考解答（{wc}語）】', wq['model'], 'en_model'),
    Spacer(1, 6),
    KeepTogether([
     p('【参考解答の和訳】\n' + wq['translation'], 'jp'),
@@ -344,13 +346,29 @@ for exam in DATA['booklets']:
    if len(epages) != 1 or any(normalize(value) not in epages[0] for value in req_exp):
     raise ValueError(f'Explanation split or incomplete in {exam["id"]}: {n}')
 
-  # Writing checks: prompts/passages in question booklet, model answers ONLY in explanations
+  # Writing checks: core prompt/passage content in question booklet, model answers ONLY in explanations
   full_q_text = ''.join(question_texts)
   full_e_text = ''.join(explanation_texts)
   for wq in writing_tasks:
-   clean_prompt = wq['prompt'].replace('__', '')
-   if normalize(clean_prompt) not in full_q_text:
-    raise ValueError(f'Writing prompt missing from question booklet: {wq["id"]}')
+   wmin, wmax = wq['wordRange']
+   if f'{wmin}〜{wmax}語' not in full_q_text and f'{wmin}語〜{wmax}語' not in full_q_text:
+    raise ValueError(f'Writing word-range missing from question booklet: {wq["id"]}')
+   if wq['section'] == 'essay':
+    raw_p = wq['prompt']
+    topic_core = raw_p
+    for m_tag in ('\nQUESTION:', '\nTOPIC:'):
+     if m_tag in raw_p:
+      topic_core = raw_p.split(m_tag, 1)[1].split('\nPOINTS:', 1)[0].strip()
+      break
+    if normalize(topic_core) not in full_q_text:
+     raise ValueError(f'Essay topic missing from question booklet: {wq["id"]}')
+    if '\nPOINTS:' in raw_p:
+     pts = [ln.lstrip('•-* ').strip() for ln in raw_p.split('\nPOINTS:', 1)[1].splitlines() if ln.strip()]
+     if any(normalize(pt) not in full_q_text for pt in pts):
+      raise ValueError(f'Essay POINTS missing from question booklet: {wq["id"]}')
+   elif wq['section'] == 'email':
+    if 'Bestwishes,' not in full_q_text or 'Thankyouforyoure-mail.' not in full_q_text:
+     raise ValueError(f'Email reply frame missing from question booklet: {wq["id"]}')
    if normalize(wq['model']) in full_q_text:
     raise ValueError(f'Writing model answer leaked into question booklet: {wq["id"]}')
    for req_w in [wq['model'], wq['translation'], wq['explanation'], *wq['rubric']]:
@@ -358,11 +376,14 @@ for exam in DATA['booklets']:
      raise ValueError(f'Writing explanation/rubric incomplete: {wq["id"]} :: {normalize(req_w)[:120]}')
 
   for passage in {q['passage']['id']: q['passage'] for q in all_items if q.get('passage')}.values():
-   clean_pas = passage['text'].replace('__', '')
-   if normalize(clean_pas) not in full_q_text or normalize(passage['translation']) not in full_e_text:
+   clean_lines = [ln.strip() for ln in passage['text'].replace('__', '').splitlines() if ln.strip()]
+   norm_title_alnum = re.sub(r'[^a-z0-9]+', '', passage['title'].lower())
+   if passage.get('format') == 'notice':
+    clean_lines = [ln for idx_l, ln in enumerate(clean_lines) if not (idx_l <= 2 and norm_title_alnum and re.sub(r'[^a-z0-9]+', '', ln.lower()) == norm_title_alnum)]
+   if any(normalize(ln) not in full_q_text for ln in clean_lines) or normalize(passage['translation']) not in full_e_text:
     raise ValueError(f'Passage/translation missing: {passage["id"]}')
 
-  if any(re.search(r'問\d+正答', page) or '【訳】' in page or '【解き方】' in page or 'ModelAnswer' in page for page in question_texts):
+  if any(re.search(r'問\d+正答', page) or '【訳】' in page or '【解き方】' in page or '【参考解答' in page for page in question_texts):
    raise ValueError(f'Answer leaked into question booklet: {exam["id"]}')
 
   # Check cover page MUST contain embedded Manatobi brand logo image

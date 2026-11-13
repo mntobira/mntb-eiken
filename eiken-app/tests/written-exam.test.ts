@@ -93,9 +93,21 @@ describe('written booklets — same original for print, field practice, and writ
     const badReason = structuredClone(realBase);
     badReason.items[0].distractorReasons![1] = '文脈に合いません。';
     expect(() => validateWrittenExam(badReason)).toThrow('GENERIC_DISTRACTOR_REASON');
+
+    const badStreak = structuredClone(realBase);
+    for (let i = 0; i < 4; i += 1) badStreak.items[i].answer = 0;
+    expect(() => validateWrittenExam(badStreak)).toThrow('ANSWER_STREAK_TOO_LONG');
+
+    const badBalance = structuredClone(realBase);
+    badBalance.items
+      .filter((item) => item.kind === 'choice' && item.section !== 'reorder')
+      .forEach((item, idx) => {
+        item.answer = idx % 2 === 0 ? 0 : idx % 3 === 0 ? 1 : 0;
+      });
+    expect(() => validateWrittenExam(badBalance)).toThrow(/ANSWER_(STREAK_TOO_LONG|DISTRIBUTION_IMBALANCED)/);
   });
 
-  it('validates all 16 released full written booklets (484 choice + 24 writing = 508 items) with zero cross-round duplication', () => {
+  it('validates all 29 released full written booklets (874 choice + 50 writing = 924 items) with zero cross-round duplication', () => {
     expect(() => validateReleasedBooklets(WRITTEN_BOOKLETS)).not.toThrow();
     expect(WRITTEN_BOOKLETS.map((exam) => [exam.grade, exam.round, exam.items.length])).toEqual([
       ['eiken_5', 1, 25],
@@ -106,20 +118,41 @@ describe('written booklets — same original for print, field practice, and writ
       ['eiken_3', 2, 32],
       ['eiken_3', 3, 32],
       ['eiken_3', 4, 32],
+      ['eiken_3', 5, 32],
+      ['eiken_3', 6, 32],
+      ['eiken_3', 7, 32],
+      ['eiken_3', 8, 32],
+      ['eiken_3', 9, 32],
+      ['eiken_3', 10, 32],
+      ['eiken_3', 11, 32],
+      ['eiken_3', 12, 32],
+      ['eiken_3', 13, 32],
+      ['eiken_3', 14, 32],
+      ['eiken_3', 15, 32],
       ['eiken_pre2', 1, 31],
       ['eiken_pre2', 2, 31],
+      ['eiken_pre2', 3, 31],
       ['eiken_pre2plus', 1, 33],
       ['eiken_pre2plus', 2, 33],
       ['eiken_2', 1, 33],
       ['eiken_2', 2, 33],
+      ['eiken_2', 3, 33],
       ['eiken_pre1', 1, 33],
       ['eiken_pre1', 2, 33],
     ]);
     const choiceTotal = WRITTEN_BOOKLETS.reduce((n, exam) => n + exam.items.filter((i) => i.kind === 'choice').length, 0);
     const writingTotal = WRITTEN_BOOKLETS.reduce((n, exam) => n + exam.items.filter((i) => i.kind === 'writing').length, 0);
-    expect(choiceTotal).toBe(484);
-    expect(writingTotal).toBe(24);
-    expect(choiceTotal + writingTotal).toBe(508);
+    expect(choiceTotal).toBe(874);
+    expect(writingTotal).toBe(50);
+    expect(choiceTotal + writingTotal).toBe(924);
+
+    // Grade 3 now satisfies the complete 15-round full series validation on real authored items!
+    expect(() =>
+      validateGradeSeries(
+        WRITTEN_BOOKLETS.filter((b) => b.grade === 'eiken_3'),
+        'eiken_3',
+      ),
+    ).not.toThrow();
 
     for (const booklet of WRITTEN_BOOKLETS) {
       validateWrittenExam(booklet);
@@ -157,10 +190,10 @@ describe('written booklets — same original for print, field practice, and writ
     expect(JSON.stringify(WRITTEN_BOOKLETS)).not.toContain('\uFFFD');
   });
 
-  it('connects all 24 booklet writing tasks into EikenWriting with cloud-safe storage IDs', () => {
+  it('connects all 50 booklet writing tasks into EikenWriting with cloud-safe storage IDs', () => {
     const tasks = bookletWritingTasks();
-    expect(tasks).toHaveLength(24);
-    expect(EIKEN_WRITING_TASKS.length).toBe(10 + 24);
+    expect(tasks).toHaveLength(50);
+    expect(EIKEN_WRITING_TASKS.length).toBe(10 + 50);
     for (const task of tasks) {
       // Must satisfy s_reading cloud sync safeId regex /^[a-z0-9_]{3,80}$/
       expect(task.key).toMatch(/^[a-z0-9_]{3,80}$/);
@@ -180,15 +213,15 @@ describe('written booklets — same original for print, field practice, and writ
     expect(manifest.booklets).toEqual(WRITTEN_BOOKLETS);
     expect(manifest.progress).toMatchObject({
       target: 105,
-      completed: 16,
-      remaining: 89,
-      questions: 484,
-      writingTasks: 24,
-      totalItems: 508,
+      completed: 29,
+      remaining: 76,
+      questions: 874,
+      writingTasks: 50,
+      totalItems: 924,
       writingIncluded: true,
       listeningIncluded: false,
     });
-    expect(manifest.primaryBundles).toHaveLength(16);
+    expect(manifest.primaryBundles).toHaveLength(29);
     expect(manifest.progress.grades).toHaveLength(7);
     const sourceHash = createHash('sha256').update(JSON.stringify(WRITTEN_BOOKLETS)).digest('hex');
     expect(manifest.sourceHash).toBe(sourceHash);
@@ -237,8 +270,8 @@ describe('written booklets — same original for print, field practice, and writ
           eiken_4: [8, 7],
           eiken_3: [7, 8],
           eiken_pre2: [8, 7],
-          eiken_pre2plus: [5, 5, 5, 2],
-          eiken_2: [5, 5, 5, 2],
+          eiken_pre2plus: [6, 6, 5],
+          eiken_2: [6, 6, 5],
           eiken_pre1: [6, 6, 6],
         };
         expect(report.layout.shortQuestionPages).toEqual(splits[exam.grade]);

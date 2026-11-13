@@ -291,8 +291,8 @@ describe('Release content completeness', () => {
       for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
     }
     expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(16);
-    expect(GACHA_PRINTS).toHaveLength(23);
+    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(29);
+    expect(GACHA_PRINTS).toHaveLength(36);
     for (const print of GACHA_PRINTS) {
       expect(print.subject).toMatch(/^eiken_/);
       expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : 5);

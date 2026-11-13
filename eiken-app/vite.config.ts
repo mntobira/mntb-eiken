@@ -64,6 +64,7 @@ export default defineConfig(({ mode, command }) => {
     },
     define: { __KIT_BUILD__: JSON.stringify('英検版 2026-11-08') },
     build: {
+      copyPublicDir: false,
       minify: false,
       cssMinify: false,
       reportCompressedSize: false,
