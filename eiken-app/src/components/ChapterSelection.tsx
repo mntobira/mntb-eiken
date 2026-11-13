@@ -27,6 +27,8 @@ import { accuracyOf, readUnitStats } from '../utils/unitStats';
 import { STAGE_CLEAR_PERFECTS, isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
 import { safeGetItem, safeParseJson } from '../utils/safeLocalStorage';
 import { getChapterGroups, getGrammarPartGroups, collectAudioSets, splitTabTitle } from '../utils/chapterGroups';
+import { getDaimonSpecsForGrade, isEikenGradeSubject, partitionEikenTabChapters } from '../eiken/daimonCatalog';
+import { EikenDaimonSection } from '../eiken/EikenDaimonSection';
 
 interface ChapterSelectionProps {
   mode: 'mini_test' | 'practice';
@@ -158,6 +160,11 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
     [subject, activeGroup, mode],
   );
   const orderedChapters = useMemo(() => unitSections.flatMap(sec => sec.chapters), [unitSections]);
+  const eikenPartition = useMemo(
+    () => (isEiken && !isListening && isEikenGradeSubject(subject) ? partitionEikenTabChapters(subject, orderedChapters) : null),
+    [isEiken, isListening, subject, orderedChapters],
+  );
+  const renderedChapters = eikenPartition ? eikenPartition.warmupChapters : orderedChapters;
   const unitSectionByChapter = useMemo(() => {
     const m = new Map<string, (typeof unitSections)[number]>();
     for (const sec of unitSections) for (const c of sec.chapters) m.set(c.id, sec);
@@ -179,7 +186,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
         </button>
         <div className="unit-head-title">
           <h2 style={{ color: theme.accent }}>{isEiken ? `${theme.label} 級別練習` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isEiken ? '分野別練習（第1〜15回冊子と共通）／本試験の通し模試ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isEiken ? '大問別演習（第1〜15回冊子と共通）／本試験の通し模試ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
@@ -208,8 +215,18 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           >
             {groups.map((group, index) => {
               const isActive = group.title === activeGroup?.title;
+              const eikenTabKicker = isEiken && isEikenGradeSubject(subject)
+                ? (() => {
+                    if (group.chapters.some(c => c.id.includes('_listening_'))) return 'リスニング';
+                    const part = group.chapters.some(c => c.id.includes('_reading_') || c.id.endsWith('_reading') || c.id.endsWith('_cloze')) ? 'reading' : 'vocabulary';
+                    const specs = getDaimonSpecsForGrade(subject).filter(s => s.part === part);
+                    return specs.length > 0 ? `${specs.map(s => s.daimonLabel).join('・')}（各15回）` : '基礎演習';
+                  })()
+                : null;
               const { kicker: chapterNumber, label: shortTitle } = isToeic
                 ? { kicker: String(group.chapters[0]?.abstractTitle || '').replace(/^Part \d+\s*/, ''), label: group.title }
+                : eikenTabKicker
+                ? { kicker: eikenTabKicker, label: group.title }
                 : group.kicker
                 ? { kicker: `${group.kicker}・${group.chapters.length}単元`, label: group.label as string }
                 : splitTabTitle(group.title, index);
@@ -422,7 +439,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
               </div>
             ) : (
             <div className="chapter-route-list unit-card-list">
-              {orderedChapters.map((chapter, routeIndex) => {
+              {renderedChapters.map((chapter, routeIndex) => {
                 const questions = mode === 'mini_test' ? (chapter.miniTest || []) : (chapter.practiceProblems || []);
                 const hasQuestions = questions.length > 0;
                 const savedIndex = Math.max(0, Math.min(
@@ -454,39 +471,18 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                   ? (questions.length > 0 && clearedRounds === questions.length ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || roundTried) ? 'doing' : 'todo')
                   : isStageCleared(stage) ? 'done' : (solvedCount > 0 || hasSavedProgress || !!stat || !!stage) ? 'doing' : 'todo';
 
-                // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中・英検の回数別演習）★ src/data/unitSections.ts
+                // ★見出しつきの小分け（数学の段階・地理の単元演習/模試・準備中・英検の基礎ウォームアップ）★ src/data/unitSections.ts
                 const section = unitSectionByChapter.get(chapter.id);
-                const prevSection = routeIndex > 0 ? unitSectionByChapter.get(orderedChapters[routeIndex - 1].id) : undefined;
-                const eikenGroup = isEiken && !isListening
-                  ? (() => {
-                      const m = chapter.id.match(/_written_(\d+)_/);
-                      return m
-                        ? { key: `round-${Number(m[1])}`, label: `${chapter.abstractTitle.startsWith('筆記') ? '筆記' : 'リーディング'} 第${Number(m[1])}回（印刷用冊子と共通）`, stage: 'exam' }
-                        : { key: 'sample', label: '基礎ウォームアップ', stage: 'unit' };
-                    })()
-                  : null;
-                const prevEikenGroup = isEiken && !isListening && routeIndex > 0
-                  ? (() => {
-                      const prev = orderedChapters[routeIndex - 1];
-                      const m = prev.id.match(/_written_(\d+)_/);
-                      return m ? `round-${Number(m[1])}` : 'sample';
-                    })()
-                  : null;
-                const eikenGroupCount = eikenGroup && eikenGroup.key !== prevEikenGroup
-                  ? orderedChapters.filter(c => {
-                      const m = c.id.match(/_written_(\d+)_/);
-                      return (m ? `round-${Number(m[1])}` : 'sample') === eikenGroup.key;
-                    }).length
-                  : 0;
+                const prevSection = routeIndex > 0 ? unitSectionByChapter.get(renderedChapters[routeIndex - 1].id) : undefined;
                 const stageHeading = section?.label && section !== prevSection ? (
                   <h4 className="math-stage-heading col-span-full" data-stage={section.key?.split(':')[1] ?? section.key ?? ''}>
                     <span>{section.label}</span>
                     <small>{section.chapters.length}単元</small>
                   </h4>
-                ) : eikenGroup && eikenGroup.key !== prevEikenGroup && orderedChapters.length > 1 ? (
-                  <h4 className="math-stage-heading col-span-full" data-stage={eikenGroup.stage}>
-                    <span>{eikenGroup.label}</span>
-                    <small>{eikenGroupCount}単元</small>
+                ) : eikenPartition && routeIndex === 0 ? (
+                  <h4 className="math-stage-heading col-span-full" data-stage="unit">
+                    <span>基礎ウォームアップ</span>
+                    <small>{renderedChapters.length}単元</small>
                   </h4>
                 ) : null;
                 const expanded = expandedChapterId === chapter.id;
@@ -575,6 +571,24 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
                   </React.Fragment>
                 );
               })}
+
+              {eikenPartition && eikenPartition.daimonGroups.length > 0 && (
+                <>
+                  <h4 className="math-stage-heading col-span-full" data-stage="exam">
+                    <span>大問別演習（印刷用冊子 第1〜15回と共通）</span>
+                    <small>{eikenPartition.daimonGroups.length}大問 × 全15回</small>
+                  </h4>
+                  <EikenDaimonSection
+                    daimonGroups={eikenPartition.daimonGroups}
+                    mode={mode}
+                    accent={theme.accent}
+                    solvedMap={solvedMap}
+                    stageRecords={stageRecords}
+                    unitStats={unitStats}
+                    onSelectChapter={onSelectChapter}
+                  />
+                </>
+              )}
             </div>
             )}
 

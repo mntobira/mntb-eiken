@@ -34,7 +34,13 @@ for(const selected of booklets.filter(exam=>(!process.env.EIKEN_GRADE || exam.gr
     }
     await page.locator('[data-home-practice]').click();await page.locator(`[data-study-card="${exam.grade}"]`).click();
     await page.getByRole('tab',{name:section==='reading'||section==='cloze'?/リーディング/:/語彙・文法/}).first().click();
-    await page.locator('.unit-card').filter({hasText:`${exam.scope==='reading'?'リーディング':'筆記'} 第${exam.round}回｜${labels[section]}`}).locator('.unit-card-primary').click();
+    const daimonCard=page.locator(`[data-daimon-section="${section}"]`);
+    await daimonCard.waitFor();
+    const daimonToggle=daimonCard.locator('.eiken-daimon-toggle');
+    if(await daimonToggle.getAttribute('aria-expanded')!=='true')await daimonToggle.click();
+    // 1つの大問の中に第1回〜第15回が整然と15個だけ並び、以前のフラット45枚羅列になっていないことも検証する
+    assert.equal(await daimonCard.locator('.eiken-round-cell').count(),15);
+    await daimonCard.locator(`[data-unit-id="${exam.id}_${section}"] .eiken-round-btn`).click();
     for(const group of groups) {
      await page.getByRole('button',{name:'解答と解説を見る',exact:true}).waitFor();
      const body=await page.locator('body').innerText();

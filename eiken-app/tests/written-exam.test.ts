@@ -8,6 +8,10 @@ import { WRITTEN_PRINTS } from '../src/data/writtenPrints.generated';
 import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 import { gachaItems, gachaItemRate } from '../src/battle/core/arenaEconomy';
 import type { EikenGrade } from '../src/eiken/config';
+import { getDaimonSpecsForGrade, partitionEikenTabChapters } from '../src/eiken/daimonCatalog';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { ChapterSelection } from '../src/components/ChapterSelection';
 
 /** Synthetic TEST fixtures only; not learning materials. */
 function fixture(grade:EikenGrade='eiken_3',round=1):WrittenExam {
@@ -147,5 +151,33 @@ describe('written booklets — same original for print and field practice, no ex
   const repeated=exams.map((exam,index)=>index===1?{...exam,items:exam.items.map((item,i)=>({...item,prompt:exams[0].items[i].prompt,passage:exams[0].items[i].passage}))}:exam);
   expect(()=>validateGradeSeries(repeated,'eiken_5')).toThrow('DUPLICATE_EXAM_CONTENT');
   for(const g of ['eiken_5','eiken_4','eiken_3','eiken_pre2','eiken_pre2plus','eiken_2','eiken_pre1'] as const)expect(()=>validateGradeSeries(WRITTEN_BOOKLETS.filter(b=>b.grade===g),g)).not.toThrow();
+ });
+ it('structures every grade into explicit 大問 cards with 15 rounds each instead of 45 flat buttons',()=>{
+  const expected:Record<string,string[]>={
+   eiken_5:['大問1:short:1-15','大問2:conversation:16-20','大問3:reorder:21-25'],
+   eiken_4:['大問1:short:1-15','大問2:conversation:16-20','大問3:reorder:21-25','大問4:reading:26-35'],
+   eiken_3:['大問1:short:1-15','大問2:conversation:16-20','大問3:reading:21-30'],
+   eiken_pre2:['大問1:short:1-15','大問2:conversation:16-20','大問3:cloze:21-22','大問4:reading:23-29'],
+   eiken_pre2plus:['大問1:short:1-17','大問2:cloze:18-23','大問3:reading:24-31'],
+   eiken_2:['大問1:short:1-17','大問2:cloze:18-23','大問3:reading:24-31'],
+   eiken_pre1:['大問1:short:1-18','大問2:cloze:19-24','大問3:reading:25-31'],
+  };
+  for(const [grade,sig] of Object.entries(expected)){
+   const specs=getDaimonSpecsForGrade(grade as EikenGrade);
+   expect(specs.map(s=>`${s.daimonLabel}:${s.section}:${s.startQuestion}-${s.endQuestion}`)).toEqual(sig);
+   for(const part of partsForGrade(grade as EikenGrade).filter(p=>p.section!=='listening')){
+    const {warmupChapters,daimonGroups}=partitionEikenTabChapters(grade as EikenGrade,part.chapters);
+    expect(warmupChapters).toHaveLength(1);
+    for(const group of daimonGroups){
+     expect(group.rounds.map(r=>r.round)).toEqual([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+     expect(group.rounds.map(r=>r.chapter.id)).toEqual(Array.from({length:15},(_,i)=>`${grade}_written_${String(i+1).padStart(2,'0')}_${group.spec.section}`));
+    }
+   }
+  }
+  const html=renderToStaticMarkup(createElement(ChapterSelection,{mode:'practice',subject:'eiken_5',rememberedGroup:'語彙・文法練習',onSelectChapter:()=>{},onBack:()=>{}}));
+  expect(html).toContain('大問1');expect(html).toContain('大問2');expect(html).toContain('大問3');
+  expect((html.match(/data-daimon-section=/g)||[])).toHaveLength(3);
+  // First 大問 opens with 15 round cells; collapsed 大問2/大問3 do not dump 30 more flat cards
+  expect((html.match(/class="eiken-round-cell"/g)||[])).toHaveLength(15);
  });
 });

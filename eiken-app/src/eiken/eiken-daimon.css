@@ -1,0 +1,451 @@
+/*
+ * 英検 級別練習「大問別演習（第1〜15回）」専用スタイル
+ * 共通の UnitCard / unit-select.css（baseline 579ファイル）には一切手を触れず、
+ * ホーム・単元選択と同じクリーム地・細い線・タップ領域44px以上・文字12px以上の原則を守る。
+ */
+
+.eiken-daimon-wrap {
+  --daimon-accent: #427a78;
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin-top: 2px;
+}
+
+.eiken-daimon-summary {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1.5px solid var(--mt-line, #e5dccc);
+  border-radius: 14px;
+  background: var(--mt-bg-sunken, #fbf6ea);
+  display: grid;
+  gap: 8px;
+}
+
+.eiken-daimon-summary-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
+.eiken-daimon-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--daimon-accent);
+  color: #fff;
+  font: 800 12px/1.3 var(--mt-font-body);
+  white-space: nowrap;
+}
+
+.eiken-daimon-summary-meta {
+  font: 700 12px/1.45 var(--mt-font-body);
+  color: var(--mt-ink-2, #4f5a66);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.eiken-daimon-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.eiken-daimon-pill {
+  box-sizing: border-box;
+  min-height: 44px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #dfd5c3;
+  border-radius: 11px;
+  background: #fffdf8;
+  color: var(--mt-ink, #2c3e50);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.eiken-daimon-pill:hover {
+  border-color: var(--daimon-accent);
+  background: #fff;
+}
+
+.eiken-daimon-pill[data-open='true'] {
+  border-color: var(--daimon-accent);
+  background: #fff;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--daimon-accent) 30%, #dfd5c3);
+}
+
+.eiken-daimon-pill strong {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--daimon-accent) 14%, #fff);
+  color: var(--daimon-accent);
+  font: 800 12px/1.3 var(--mt-font-body);
+}
+
+.eiken-daimon-pill span {
+  flex: 1;
+  min-width: 0;
+  font: 800 13px/1.3 var(--mt-font-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eiken-daimon-pill small {
+  flex-shrink: 0;
+  font: 700 12px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-3, #6e6d5b);
+  font-variant-numeric: tabular-nums;
+}
+
+.eiken-daimon-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.eiken-daimon-card {
+  --unit-accent: var(--daimon-accent);
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.eiken-daimon-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+.eiken-daimon-toggle {
+  flex: 1 1 240px;
+  min-width: 0;
+  min-height: 60px;
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mt-ink, #344451);
+  text-align: left;
+  cursor: pointer;
+}
+
+.eiken-daimon-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.eiken-daimon-badge {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--daimon-accent);
+  color: #fff;
+  font: 800 12px/1.25 var(--mt-font-body);
+}
+
+.eiken-daimon-title {
+  font: 800 16px/1.3 var(--mt-font-body);
+  color: var(--mt-ink, #2c3e50);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.eiken-daimon-qrange {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #e5dccc;
+  background: #fff;
+  color: #5b6673;
+  font: 700 12px/1.3 var(--mt-font-body);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.eiken-daimon-desc {
+  margin: 0;
+  font: 700 12px/1.45 var(--mt-font-body);
+  color: var(--mt-ink-3, #65707c);
+  overflow-wrap: anywhere;
+}
+
+.eiken-daimon-progress-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 2px;
+  min-width: 0;
+}
+
+.eiken-daimon-dots {
+  flex: 1 1 90px;
+  max-width: 195px;
+  min-width: 60px;
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.eiken-daimon-dots i {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: #e7dfd0;
+}
+
+.eiken-daimon-dots i[data-state='done'] {
+  background: var(--mt-done, #2e9a62);
+}
+
+.eiken-daimon-dots i[data-state='doing'] {
+  background: var(--mt-doing, #d9822b);
+}
+
+.eiken-daimon-dots i[data-next='true'] {
+  background: var(--daimon-accent);
+}
+
+.eiken-daimon-acc {
+  font: 700 12px/1.2 var(--mt-font-body);
+  color: #5a6573;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.eiken-daimon-open-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: 800 12px/1.2 var(--mt-font-body);
+  color: var(--daimon-accent);
+  white-space: nowrap;
+}
+
+.eiken-daimon-chev {
+  transition: transform 0.2s ease;
+}
+
+.eiken-daimon-card[data-expanded] .eiken-daimon-chev {
+  transform: rotate(180deg);
+}
+
+.eiken-daimon-primary {
+  margin-left: auto;
+}
+
+.eiken-daimon-panel {
+  box-sizing: border-box;
+  padding: 10px 12px 14px;
+  border-top: 1px dashed #e5dccc;
+  background: #fffcf4;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  min-width: 0;
+}
+
+.eiken-daimon-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+  font: 700 12px/1.4 var(--mt-font-body);
+  color: var(--mt-ink-3, #6b6a58);
+}
+
+.eiken-daimon-panel-head small {
+  font: 700 12px/1.3 var(--mt-font-body);
+  color: #7c7461;
+}
+
+.eiken-round-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+@media (max-width: 359px) {
+  .eiken-round-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 640px) {
+  .eiken-round-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+.eiken-round-cell {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eiken-round-btn {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 54px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1.5px solid #e6dcc8;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--mt-ink, #2c3e50);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.1s;
+}
+
+.eiken-round-btn:hover {
+  border-color: var(--daimon-accent);
+  background: #fffdf7;
+}
+
+.eiken-round-btn:active {
+  transform: translateY(1px);
+}
+
+.eiken-round-cell[data-status='done'] .eiken-round-btn {
+  border-color: #96d3b2;
+  background: #eefaf3;
+}
+
+.eiken-round-cell[data-status='doing'] .eiken-round-btn {
+  border-color: #ebd0a3;
+  background: #fffaf0;
+}
+
+.eiken-round-cell[data-recommended='true'] .eiken-round-btn {
+  border: 2px solid var(--daimon-accent);
+  background: color-mix(in srgb, var(--daimon-accent) 8%, #fff);
+}
+
+.eiken-round-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+}
+
+.eiken-round-num {
+  font: 800 13px/1.2 var(--mt-font-body);
+  color: var(--mt-ink, #2c3e50);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.eiken-round-rec {
+  font-style: normal;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--daimon-accent);
+  color: #fff;
+  font: 800 12px/1.2 var(--mt-font-body);
+  white-space: nowrap;
+}
+
+@media (max-width: 440px) {
+  .eiken-round-rec {
+    display: none;
+  }
+}
+
+.eiken-round-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+}
+
+.eiken-round-state {
+  font: 800 12px/1.2 var(--mt-font-body);
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eiken-round-state[data-status='done'] {
+  color: #1f6b3a;
+}
+
+.eiken-round-state[data-status='doing'] {
+  color: #b45d12;
+}
+
+.eiken-round-count {
+  flex-shrink: 0;
+  font: 700 12px/1.2 var(--mt-font-body);
+  color: #7c7461;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.eiken-round-reset {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid #e5dccc;
+  border-radius: 10px;
+  background: #fff;
+  color: #4f5a66;
+  font: 700 12px/1 var(--mt-font-body);
+  cursor: pointer;
+}
+
+.eiken-round-reset:hover {
+  background: #fdf6e8;
+}
+
+@media (max-width: 420px) {
+  .eiken-daimon-card-top {
+    padding: 10px 11px;
+  }
+  .eiken-daimon-primary {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+  .eiken-daimon-pills {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

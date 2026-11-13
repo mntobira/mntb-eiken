@@ -64,7 +64,7 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
       const stats = getSubjectStats(grade.id);
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'headphones',
-        description: '第1〜15回冊子連動の分野別練習（読解・語彙文法・リスニング）',
+        description: '大問別演習（第1〜15回冊子連動：読解・語彙文法）＋リスニング',
         meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
