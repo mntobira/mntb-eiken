@@ -179,7 +179,7 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
         </button>
         <div className="unit-head-title">
           <h2 style={{ color: theme.accent }}>{isEiken ? `${theme.label} 級別練習` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
-          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isEiken ? '分野別練習（第1〜12回冊子と共通）／本試験の通し模試ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
+          <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isEiken ? '分野別練習（第1〜15回冊子と共通）／本試験の通し模試ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
