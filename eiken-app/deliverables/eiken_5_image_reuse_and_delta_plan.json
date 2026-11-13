@@ -1,0 +1,2791 @@
+{
+  "totalSlots": 300,
+  "reusedCount": 258,
+  "newPromptCount": 42,
+  "items": [
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160934_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160946_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160952_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160958_1.png",
+      "reason": "冊子・ノート・紙類を指さす既存カウンター図と完全一致のため流用"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の帽子（キャップ）を見ている場面",
+      "whyNewJa": "台本が brown cap（キャップ帽）のため（既存図は財布／スマホ／本）",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a visor baseball cap resting in the center of the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162443_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161133_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161140_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161248_1.png",
+      "reason": "画用紙・クレヨン箱・筆・色鉛筆を描く既存美術室イラストと完全一致のため流用"
+    },
+    {
+      "round": 1,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161721_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161301_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161311_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161317_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161433_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161443_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161449_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161455_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161504_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161512_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 1,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r01_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161519_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161619_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161626_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161633_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "文房具店のカウンターの上の消しゴムを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が green eraser（消しゴム）を指さすため（既存図はノート冊子）",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small stationery shop counter pointing at a rectangular eraser on a small tray on the counter, blank shelves behind them.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の腕時計を見ている場面",
+      "whyNewJa": "台本が silver watch（腕時計）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a wristwatch with a blank round dial (NO numbers) resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161125_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161658_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161705_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161711_1.png",
+      "reason": "画用紙・クレヨン箱・筆・色鉛筆を描く既存美術室イラストと完全一致のため流用"
+    },
+    {
+      "round": 2,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161255_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161727_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161737_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161745_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161759_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161805_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161919_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161926_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161933_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 2,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r02_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161939_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162027_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162421_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162411_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "文房具店のカウンターの上の木製ものさしを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が wooden ruler（木のものさし）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small stationery shop counter pointing at a wooden straight ruler on the counter, blank shelves behind them.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162434_1.png",
+      "reason": "ローテーブル上の本・ノートを見る既存イラスト（3年目No.5）と完全一致のため流用"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161652_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162514_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162528_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の工作ばさみを見て数を話している場面",
+      "whyNewJa": "台本が pairs of scissors（はさみ）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable counting three pairs of craft scissors placed beside a lump of modeling clay on the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 3,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでストロー付きコップのジュースを手渡している場面",
+      "whyNewJa": "台本が cup of orange juice（コップのジュース）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a cup of juice with a drinking straw to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162643_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162722_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162817_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162920_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162941_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162957_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163020_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163043_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 3,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r03_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163056_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160934_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160946_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160952_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上のファスナー付きペンケース（筆箱）を指さして値段を尋ねている場面",
+      "whyNewJa": "台本が canvas pencil case（ペンケース）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small shop counter pointing at a zippered canvas pencil case on the counter, blank shelves behind them.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のニットマフラーを見ている場面",
+      "whyNewJa": "台本が woolen scarf（マフラー）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a folded knitted scarf with fringe resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162443_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161133_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161140_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の周りの木製スツール（丸椅子）を見て数を話している場面",
+      "whyNewJa": "台本が wooden stools（木製椅子）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing beside a school art-room worktable pointing at round wooden art stools arranged around the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 4,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでたたんだセーターを手渡している場面",
+      "whyNewJa": "台本が warm sweater（セーター）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a neatly folded warm knit sweater to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161433_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161443_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161449_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161455_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161504_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161512_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161519_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161301_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161311_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 4,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r04_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161317_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161619_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161626_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161633_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上の無地カレンダーを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が wall calendar（カレンダー）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small shop counter pointing at a blank grid wall calendar (purely empty grid squares, NO numbers or letters) on the counter.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のテニスバッグを見ている場面",
+      "whyNewJa": "台本が tennis bag（テニスバッグ）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a sports tennis bag with a racket handle sticking out resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161125_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161658_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161705_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の手拭きタオルを見て数を話している場面",
+      "whyNewJa": "台本が clean hand towels（手拭きタオル）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable looking at neatly folded small hand towels stacked on the corner of the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 5,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162545_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161745_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161759_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161805_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161919_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161926_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161933_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161939_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161727_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 5,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161737_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162027_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162421_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162411_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "書店のカウンターの上の絵はがきを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が picture postcard（絵はがき）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small bookshop counter pointing at a single blank picture postcard showing a tiny mountain-and-cloud line sketch (NO text) on the counter.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の折りたたみ傘を見ている場面",
+      "whyNewJa": "台本が folding umbrella（折りたたみ傘）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a neatly folded compact umbrella with a wrist strap resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161652_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162514_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162528_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の絵の具ボトルを見て数を話している場面",
+      "whyNewJa": "台本が bottles of paint（絵の具ボトル）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at blank plastic paint bottles (NO labels or text) and paint palettes on the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 6,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで小さなキャンディを手渡している場面",
+      "whyNewJa": "台本が lemon candy（キャンディ）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly offering a small twist-wrapped candy piece (NO text) in their palm to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162817_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162920_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162941_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162957_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163020_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163043_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163056_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162643_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162722_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 6,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160934_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160946_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160952_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "ギフト店のカウンターの上のキーホルダーを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が cute key chain（キーホルダー）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small gift shop counter pointing at a cute small animal-shaped charm keychain resting on the counter.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のカメラケースを見ている場面",
+      "whyNewJa": "台本が camera case（カメラケース）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a compact padded camera case with a shoulder strap resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162443_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161133_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161140_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の水入れ用コップを見て数を話している場面",
+      "whyNewJa": "台本が paper cups for water（紙コップ）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at plain white paper cups stacked on the table beside paintbrushes.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 7,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161255_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161455_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161504_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161512_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161519_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161301_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161311_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161317_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161433_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161443_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 7,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161449_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161619_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161626_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161633_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161640_1.png",
+      "reason": "冊子・ノート・紙類を指さす既存カウンター図と完全一致のため流用"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の麦わら帽子を見ている場面",
+      "whyNewJa": "台本が straw hat（麦わら帽子）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a wide-brimmed woven straw hat with a ribbon resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161125_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161658_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161705_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の消しゴムを見て数を話している場面",
+      "whyNewJa": "台本が pink erasers（消しゴム）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at several rectangular block erasers lined up on the table beside drawing paper (NO text on erasers).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 8,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで小さなチョコレートを手渡している場面",
+      "whyNewJa": "台本が small chocolate（チョコレート）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a small square piece of chocolate on a plain napkin (NO text) to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161919_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161926_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161933_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161939_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161727_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161737_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161745_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161759_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 8,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161805_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162027_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162421_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162411_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上のカラーペンセットの箱を指さして値段を尋ねている場面",
+      "whyNewJa": "台本が set of colored pens（色ペンセット）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a small shop counter pointing at an open flat box containing a neat row of six pens on the counter (NO labels).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のバイオリンケースを見ている場面",
+      "whyNewJa": "台本が violin case（バイオリンケース）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a contoured hard violin case with a handle resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161652_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162514_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162528_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161248_1.png",
+      "reason": "画用紙・クレヨン箱・筆・色鉛筆を描く既存美術室イラストと完全一致のため流用"
+    },
+    {
+      "round": 9,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで温かいお茶のマグカップを手渡している場面",
+      "whyNewJa": "台本が hot tea（温かいお茶）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a warm mug cup of tea (with tiny steam lines, NO text) to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162957_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163020_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163043_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163056_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162643_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162722_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162817_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162920_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 9,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162941_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160934_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160946_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160952_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160958_1.png",
+      "reason": "冊子・ノート・紙類を指さす既存カウンター図と完全一致のため流用"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のたたんだセーターを見ている場面",
+      "whyNewJa": "台本が warm sweater（セーター）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a neatly folded long-sleeve knit sweater resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162443_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161133_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161140_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のテープのロールを見て数を話している場面",
+      "whyNewJa": "台本が rolls of tape（テープ）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at circular rolls of craft masking tape resting on the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 10,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで手袋（軍手）を手渡している場面",
+      "whyNewJa": "台本が pair of clean gloves（手袋）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a clean pair of work gloves to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161519_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161301_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161311_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161317_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161433_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161443_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161449_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161455_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161504_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 10,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161512_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161619_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161626_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161633_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161640_1.png",
+      "reason": "冊子・ノート・紙類を指さす既存カウンター図と完全一致のため流用"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のランチバスケットを見ている場面",
+      "whyNewJa": "台本が lunch basket（お弁当バスケット）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a woven picnic lunch basket with a hinged lid resting on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161125_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161658_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161705_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162535_1.png",
+      "reason": "画用紙・クレヨン箱・筆・色鉛筆を描く既存美術室イラストと完全一致のため流用"
+    },
+    {
+      "round": 11,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161721_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161939_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161727_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161737_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161745_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161759_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161805_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161919_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161926_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 11,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161933_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162027_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162421_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162411_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "工作店のカウンターの上の液体のりボトルを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が bottle of glue（のりのボトル）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a craft store counter pointing at a small nozzle-tip bottle of craft glue standing on the counter (completely blank bottle, NO label or text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162434_1.png",
+      "reason": "ローテーブル上の本・ノートを見る既存イラスト（3年目No.5）と完全一致のため流用"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161652_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162514_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162528_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のスティックのりを見て数を話している場面",
+      "whyNewJa": "台本が glue sticks（スティックのり）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at small cylindrical glue sticks standing upright on the table (completely blank tubes, NO text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 12,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでハンドソープの小ボトルを手渡している場面",
+      "whyNewJa": "台本が hand soap（ハンドソープ）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a small blank pump bottle of hand soap (NO label or text) to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163056_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162643_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162722_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162817_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162920_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162941_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162957_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163020_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 12,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163043_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160934_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160946_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_160952_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "書店のカウンターの上の動物シールシートを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が animal sticker sheet（動物シール）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a bookstore counter pointing at a flat sticker sheet with simple cat, dog, and rabbit outlines on the counter (NO text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のミトン手袋を見ている場面",
+      "whyNewJa": "台本が pair of mittens（ミトン手袋）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a pair of knitted winter mittens placed side by side on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162443_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161133_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161140_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の工作トレイと折り紙を見て数を話している場面",
+      "whyNewJa": "台本が plastic trays（トレイ）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at shallow rectangular craft trays and blank square origami sheets on the table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 13,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで扇子を手渡している場面",
+      "whyNewJa": "台本が folding fan（扇子）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing an open plain white folding hand fan (sensu, NO text) to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161317_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161433_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161443_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161449_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161455_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161504_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161512_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161519_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161301_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 13,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161311_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161619_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161626_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161633_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161640_1.png",
+      "reason": "冊子・ノート・紙類を指さす既存カウンター図と完全一致のため流用"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の水筒を見ている場面",
+      "whyNewJa": "台本が water bottle（水筒）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a cylindrical sports water bottle standing in the center of the low table (NO text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip3/pasted_image_20261113_161125_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161658_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161705_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_09.png",
+      "mode": "generate",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のマーカーペンを見て数を話している場面",
+      "whyNewJa": "台本が black markers（マーカーペン）の数を尋ねるため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a school art-room worktable pointing at capped felt-tip markers lined up neatly on the table beside a blank map sheet (NO text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 14,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_10.png",
+      "mode": "generate",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでブドウが入った小かごを手渡している場面",
+      "whyNewJa": "台本が basket of grapes（ブドウのかご）を手渡すため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl at a wooden park bench under a tree; one student is kindly handing a small woven basket filled with bunches of grapes to the other student.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161737_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161745_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161759_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161805_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161919_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161926_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161933_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161939_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161727_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 14,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 1,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162027_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 2,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162421_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 3,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162411_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_04.png",
+      "mode": "generate",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上のクリアファイルを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が plastic file folder（クリアファイル）を指さすため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nTwo junior high school students at a stationery counter pointing at a thin L-shaped clear plastic file folder resting on the counter (NO text).\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_05.png",
+      "mode": "generate",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のメガネを見ている場面",
+      "whyNewJa": "台本が pair of glasses（眼鏡）のため",
+      "chatGptPrompt": "Create a simple black-and-white line drawing for a Japanese English-test app. Match the attached reference image's line weight, character proportions and shading style exactly.\n\nSTYLE\n- Monochrome line art only. White fill. Shading with hatching and thin parallel lines. No grey wash, no gradients, no blur, no gloss.\n- Uniform line width, like a 2.5px pen. All outlines closed.\n- Characters: 5 to 6 heads tall, simplified symbolic faces (dot eyes, small line mouth). Not resembling any real person.\n- Plain white background. Draw only the objects the scene needs.\n- ABSOLUTELY NO TEXT, NUMBERS, LETTERS OR SYMBOLS anywhere in the image. Signs, price tags, book covers, screens and labels must be BLANK.\n- One situation per image. The main action is centred and fills 60% or more of the frame. No borders, no frames, no captions.\n\nNEGATIVE\n- no colour, no photo, no 3D render, no anime style, no chibi, no watermark, no signature, no extra limbs, no text of any kind\n\nASPECT RATIO: 4:3\n\nSCENE SPECIFICATION (SUPPORT)\nA boy and a girl standing behind a low table in front of a living-room sofa, looking down at a pair of eyeglasses resting open on the low table.\nDo NOT visually reveal the spoken answer. Keep background minimal and clean."
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 6,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip4/pasted_image_20261113_161652_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 7,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162514_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 8,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162528_1.png",
+      "reason": "汎用状況イラストとして全回矛盾なく流用可能"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162535_1.png",
+      "reason": "画用紙・クレヨン箱・筆・色鉛筆を描く既存美術室イラストと完全一致のため流用"
+    },
+    {
+      "round": 15,
+      "part": "part1",
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162545_1.png",
+      "reason": "ボトル／たたんだタオル・シートを手渡す既存ベンチ図と完全一致のため流用"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 16,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_01.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162732_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 17,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_02.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162817_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 18,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_03.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162920_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 19,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_04.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162941_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 20,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_05.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162957_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 21,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_06.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163020_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 22,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_07.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163043_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 23,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_08.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_163056_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 24,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_09.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162643_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    },
+    {
+      "round": 15,
+      "part": "part3",
+      "questionNumber": 25,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part3_10.png",
+      "mode": "reuse",
+      "sourceLocal": "/tmp/g5_uploaded/zip5/pasted_image_20261113_162722_1.png",
+      "reason": "第3部共通10場面（既存3年分イラストを回次ローテーションで完全一致流用）"
+    }
+  ]
+}
