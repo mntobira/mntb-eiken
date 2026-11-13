@@ -62,19 +62,19 @@ export interface StudySubject {
 
 /** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
 export const STUDY_CATALOG: readonly StudySubject[] = [{
-  id: 'eiken', label: 'マナトビ英検', description: '5級〜準1級の分野別演習・通し模試・ライティング・英単語', icon: 'book',
+  id: 'eiken', label: 'マナトビ英検', description: '5級〜1級の分野別演習・通し模試・ライティング・英単語', icon: 'book',
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'book',
-        description: '語彙文法・読解・リスニング・通し模試',
+        description: grade.id === 'eiken_1' ? 'リスニング予想問題（全15回）・基礎演習' : '語彙文法・読解・リスニング・通し模試',
         meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
     }),
     {
-      id: 'eiken_mock', title: '一次筆記 通し模試', icon: 'briefcase', badge: 'NEW',
+      id: 'eiken_mock', title: '一次筆記 通し模試', icon: 'briefcase', badge: 'NEW', section: 'memorize',
       description: '目安時間タイマー付きで1回分をまとめて解き一括採点',
       meta: `7級・全${WRITTEN_BOOKLETS.length}回分`,
       action: { kind: 'mock' },
