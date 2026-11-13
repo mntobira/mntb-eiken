@@ -190,6 +190,11 @@
   .sc-eiken-list .sc-card { min-height: 54px; padding: 6px 8px; }
   .sc-page:has(.sc-eiken-list) .sc-head { min-height: 44px; }
 }
+@media (max-height: 600px) {
+  .sc-eiken-list { gap: 5px; padding-bottom: 2px; }
+  .sc-eiken-list .sc-card { min-height: 50px; padding: 5px 8px; }
+  .sc-eiken-list .sc-section { margin: 2px 2px 0; font-size: 12px; }
+}
 @media (max-width: 370px) {
   .sc-eiken-list .sc-icon { display: none; }
   .sc-eiken-list .sc-title strong { font-size: 13px; }

@@ -33,6 +33,7 @@ try {
     }
     await page.screenshot({ path: `qa-entry-${engine.name()}-${viewport.width}.png` });
     await list.locator('[data-study-card="eiken_pre1"]').click();
+    await page.getByRole('tab', { name: /リスニング練習/ }).click();
     await page.getByRole('button', { name: /第1回演習/ }).first().waitFor();
     await page.getByRole('button', { name: '設定画面へ移動', exact: true }).click();
     await page.getByRole('button', { name: 'Google アカウントで連携', exact: true }).waitFor();

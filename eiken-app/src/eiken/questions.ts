@@ -5,7 +5,7 @@ import { INTERMEDIATE_UNITS } from './materials/original-intermediate';
 import { BRIDGE_UNIT } from './materials/original-bridge';
 import { UPPER_UNIT } from './materials/original-upper';
 import { ADVANCED_UNIT } from './materials/original-advanced';
-import { bookletPracticeChapters } from './writtenPractice';
+import { bookletSectionChapters, getGradeDaimonSpecs } from './writtenPractice';
 import { TRANSLATIONS } from './materials/translations';
 import { EIKEN_GRADES, type EikenGrade } from './config';
 
@@ -69,25 +69,101 @@ export function partsForGrade(grade: EikenGrade): Part[] {
   if (!unit) return [];
   const questions = EIKEN_QUESTIONS.filter(q => q.grade === grade && q.published);
   const label = EIKEN_GRADES.find(item => item.id === grade)!.label;
-  const listening: Chapter = { id: `${grade}_listening_01`, title: 'リスニング練習', abstractTitle: 'リスニング練習', realTitle: 'リスニング練習', questionGroup: 'リスニング', topics: ['会話・説明の要点を聞き取る'], practiceProblems: questions.map(toProblem), miniTest: [], readCount: 2, marks: questions.length, speakers: '会話・説明' };
-  const vocabulary: Chapter = { id: `${grade}_vocabulary_01`, title: '語彙・文法練習', abstractTitle: '語彙・文法練習', realTitle: '語彙・文法練習', questionGroup: '語彙・文法', topics: [unit.focus], marks: unit.vocabulary.length, miniTest: [],
+  const daimonSpecs = getGradeDaimonSpecs(grade).filter(s => s.kind === 'choice');
+
+  const shortSpec = daimonSpecs.find(s => s.section === 'short')!;
+  const readingSpec = daimonSpecs.find(s => s.section === 'reading');
+
+  const listening: Chapter = {
+    id: `${grade}_listening_01`,
+    title: 'リスニング練習',
+    abstractTitle: 'リスニング練習',
+    realTitle: 'リスニング練習',
+    questionGroup: 'リスニング',
+    topics: ['会話・説明の要点を聞き取る'],
+    practiceProblems: questions.map(toProblem),
+    miniTest: [],
+    readCount: 2,
+    marks: questions.length,
+    speakers: '会話・説明',
+  };
+
+  const vocabularyIntro: Chapter = {
+    id: `${grade}_vocabulary_01`,
+    title: '基礎ウォームアップ（語彙・文法）',
+    abstractTitle: '基礎ウォームアップ（全2問）',
+    realTitle: shortSpec.tabTitle,
+    questionGroup: '語彙・文法',
+    topics: [unit.focus],
+    marks: unit.vocabulary.length,
+    miniTest: [],
     practiceProblems: unit.vocabulary.map((question, index): Problem => {
       const id = `${grade}_vocabulary_01_${index + 1}`;
-      return { id, title: question.skill, category: '語彙・文法', text: question.prompt,
-        subQuestions: [writtenSubQuestion(question, `${id}_answer`)], explanation: `根拠：${question.evidence}\n${question.reasons.map((reason, i) => `${i + 1}. ${question.choices[i]} — ${reason}`).join('\n')}`,
-        surroundingKnowledge: [question.evidence], deepDiveTopics: [] };
-    }) };
-  const reading: Chapter = { id: `${grade}_reading_01`, title: 'リーディング練習', abstractTitle: 'リーディング練習', realTitle: 'リーディング練習', questionGroup: 'リーディング', topics: [unit.theme], marks: unit.readings.reduce((n, block) => n + block.questions.length, 0), miniTest: [],
+      return {
+        id,
+        title: question.skill,
+        category: '語彙・文法',
+        text: question.prompt,
+        subQuestions: [writtenSubQuestion(question, `${id}_answer`)],
+        explanation: `根拠：${question.evidence}\n${question.reasons.map((reason, i) => `${i + 1}. ${question.choices[i]} — ${reason}`).join('\n')}`,
+        surroundingKnowledge: [question.evidence],
+        deepDiveTopics: [],
+      };
+    }),
+  };
+
+  const readingIntro: Chapter = {
+    id: `${grade}_reading_01`,
+    title: '基礎ウォームアップ（読解）',
+    abstractTitle: `基礎ウォームアップ（${unit.readings.length}本文・計${unit.readings.reduce((n, b) => n + b.questions.length, 0)}問）`,
+    realTitle: readingSpec ? readingSpec.tabTitle : '読解 基礎練習',
+    questionGroup: 'リーディング',
+    topics: [unit.theme],
+    marks: unit.readings.reduce((n, block) => n + block.questions.length, 0),
+    miniTest: [],
     practiceProblems: unit.readings.map((block, index): Problem => {
       const id = `${grade}_reading_01_${index + 1}`;
-      return { id, title: block.title, category: 'リーディング', text: `${block.title}\n\n${block.text}`,
+      return {
+        id,
+        title: block.title,
+        category: 'リーディング',
+        text: `${block.title}\n\n${block.text}`,
         subQuestions: block.questions.map((question, i) => writtenSubQuestion(question, `${id}_answer_${i + 1}`)),
         explanation: `【全文和訳】\n${TRANSLATIONS[unit.grade].readings[index]}\n\n${block.questions.map(q => `根拠：${q.evidence}\n${q.reasons[q.answer]}`).join('\n\n')}`,
-        surroundingKnowledge: [], deepDiveTopics: [] };
-    }) };
+        surroundingKnowledge: [],
+        deepDiveTopics: [],
+      };
+    }),
+  };
+
+  // 外枠の Part[] は共通契約どおり ['listening', 'reading', 'vocabulary'] の3要素を維持し、
+  // 内包する Chapter.realTitle を「大問1 短文の語句空所補充」等の大問別に分けることで大問別タブを生成する
+  const readingChapters: Chapter[] = [];
+  const vocabularyChapters: Chapter[] = [];
+
+  for (const spec of daimonSpecs) {
+    const bookletChapters = bookletSectionChapters(grade, spec.section, spec.tabTitle);
+    const chapters =
+      spec.section === 'short'
+        ? [...bookletChapters, vocabularyIntro]
+        : spec.section === 'reading'
+        ? [...bookletChapters, readingIntro]
+        : bookletChapters;
+    if (spec.section === 'cloze' || spec.section === 'reading') {
+      readingChapters.push(...chapters);
+    } else {
+      vocabularyChapters.push(...chapters);
+    }
+  }
+
+  // 5級は本番に長文読解が無いため、導入用の読解2本文を reading パートに入れる（全14本文・28問を完全保全）
+  if (!readingSpec) {
+    readingChapters.push(readingIntro);
+  }
+
   return [
-    { id: `${grade}_listening`, title: `${label} リスニング`, section: 'listening', chapters: [listening] },
-    { id: `${grade}_reading`, title: `${label} リーディング`, section: 'reading', chapters: [reading, ...bookletPracticeChapters(grade, 'reading')] },
-    { id: `${grade}_vocabulary`, title: `${label} 語彙・文法`, section: 'vocabulary', chapters: [vocabulary, ...bookletPracticeChapters(grade)] },
+    { id: `${grade}_listening`, title: `${label}｜リスニング練習`, section: 'listening', chapters: [listening] },
+    { id: `${grade}_reading`, title: `${label}｜リーディング練習`, section: 'reading', chapters: readingChapters },
+    { id: `${grade}_vocabulary`, title: `${label}｜語彙・文法練習`, section: 'vocabulary', chapters: vocabularyChapters },
   ];
 }

@@ -28,17 +28,16 @@ try {
     for (const grade of grades) {
       await page.locator('[data-home-practice]').click();
       await page.locator('[data-study-card="eiken_3"]').waitFor();
-      assert.equal(await page.locator('[data-study-card^="eiken_"]:not([data-study-card="eiken_writing"])').count(), 7);
+      assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 7);
       assert.equal(await page.locator('[data-study-card="eiken_1"]').count(), 0);
       await page.locator(`[data-study-card="${grade}"]`).click();
+      await page.getByRole('tab', { name: /リスニング練習/ }).click();
       await page.getByRole('button', { name: /第1回演習/ }).first().waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('eiken:v1:savedSelectedSubject')), grade);
       await page.getByRole('button', { name: /第1回演習/ }).first().click();
-      await page.getByRole('button', { name: '問題をはじめる', exact: true }).click();
       await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();
       // Question ids and range must survive a reload before answering.
       await page.reload();
-      await page.getByRole('button', { name: '問題をはじめる', exact: true }).click();
       await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('eiken:v1:savedSelectedChapterId')), `${grade}_listening_01`);
       const choices = page.getByRole('button').filter({ hasText: /^[1-4]/ });
@@ -57,7 +56,7 @@ try {
     // The bottom navigation retains the original catalog, now populated with grades.
     await page.getByRole('button', { name: '学習画面へ移動', exact: true }).click();
     await page.locator('[data-study-card="eiken_3"]').waitFor();
-    assert.equal(await page.locator('[data-study-card^="eiken_"]:not([data-study-card="eiken_writing"])').count(), 7);
+    assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 7);
     assert.equal(await page.locator('[data-study-card="english_listening"]').count(), 0);
     await page.locator('[data-study-card="english_vocabulary"]').click();
     await page.locator('[data-fd-range]').waitFor();

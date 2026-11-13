@@ -62,14 +62,14 @@ export interface StudySubject {
 
 /** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
 export const STUDY_CATALOG: readonly StudySubject[] = [{
-  id: 'eiken', label: 'マナトビ英検', description: '5級〜準1級の分野別演習・通し模試・ライティング・英単語', icon: 'book',
+  id: 'eiken', label: 'マナトビ英検', description: '5級〜準1級の大問別演習・通し模試・ライティング・英単語', icon: 'book',
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'book',
-        description: '語彙文法・読解・リスニング・通し模試',
-        meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
+        description: '大問別・リスニングの通し演習',
+        meta: `${stats.chapters}回・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
     }),

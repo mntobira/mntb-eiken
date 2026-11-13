@@ -122,6 +122,67 @@
   color: #ffffff;
 }
 
+.em-scope-row {
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.em-scope-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 6px;
+}
+
+.em-scope-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 46px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.em-scope-pill:hover {
+  border-color: #94a3b8;
+  background: #ffffff;
+}
+
+.em-scope-kicker {
+  font-size: 0.69rem;
+  font-weight: 800;
+  color: #0369a1;
+  line-height: 1.2;
+}
+
+.em-scope-pill strong {
+  font-size: 0.81rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #0f172a;
+}
+
+.em-scope-pill.is-active {
+  background: #1e3a5f;
+  border-color: #1e3a5f;
+  color: #ffffff;
+}
+
+.em-scope-pill.is-active .em-scope-kicker {
+  color: #bae6fd;
+}
+
+.em-scope-pill.is-active strong {
+  color: #ffffff;
+}
+
 .em-spec-bar {
   display: flex;
   align-items: center;
@@ -147,6 +208,7 @@
 
 .em-timer-toggle {
   display: inline-flex;
+  flex-wrap: wrap;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
   background: #f1f5f9;
@@ -157,6 +219,7 @@
 .em-timer-toggle button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   min-height: 34px;
   padding: 0 11px;
@@ -164,8 +227,9 @@
   border-radius: 8px;
   background: transparent;
   color: #475569;
-  font-size: 0.79rem;
+  font-size: 0.78rem;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
 }
 

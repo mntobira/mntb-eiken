@@ -120,6 +120,7 @@ export function scoreMockExam(
   exam: WrittenExam,
   answers: Record<string, number>,
   writing: Record<string, MockWritingEntry>,
+  sectionFilter?: WrittenSection | 'all',
 ): MockScoreSummary {
   let correct = 0;
   let total = 0;
@@ -128,7 +129,12 @@ export function scoreMockExam(
   let writingTotal = 0;
   const bySection = new Map<WrittenSection, SectionScoreBreakdown>();
 
-  for (const item of exam.items) {
+  const targetItems =
+    sectionFilter && sectionFilter !== 'all'
+      ? exam.items.filter(item => item.section === sectionFilter)
+      : exam.items;
+
+  for (const item of targetItems) {
     let entry = bySection.get(item.section);
     if (!entry) {
       entry = {
