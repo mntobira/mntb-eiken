@@ -456,7 +456,7 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         <header><h2 id="home-progress-title">学習状況・その他</h2><button type="button" onClick={() => progressDialog.current?.close()} autoFocus>閉じる</button></header>
         <div className="game-details-body arena-home-more"><p>連続学習 {streak}日 ／ {todayFormatted}</p><p>{EXAM_DATE_LABEL}まで {daysUntilExam}日</p>{schoolBrand && <p>{schoolBrand.schoolName}</p>}
           <div className="game-study-progress"><span>{subjectLabel} {solvedQuestions}/{totalQuestions}問</span><div role="progressbar" aria-label="学習進捗" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}><i style={{ width: `${progressPercent}%` }} /></div></div>
-          <details className="home-all-progress"><summary>リスニングの進捗を見る</summary>{subjectProgressDefs.map(def => <p key={def.id}>{def.label} {subjectProgress[def.id]?.solved ?? 0}/{subjectProgress[def.id]?.total ?? 0}問</p>)}</details>
+          <details className="home-all-progress"><summary>級別の進捗を見る</summary>{subjectProgressDefs.map(def => <p key={def.id}>{def.label} {subjectProgress[def.id]?.solved ?? 0}/{subjectProgress[def.id]?.total ?? 0}問</p>)}</details>
           <FeedbackButton screen="title" variant="text" label="ご意見・ご要望" /><FeedbackReplyInbox />
           {isGuest && !auth.currentUser && <GoogleLinkBanner variant="inline" dismissible />}
         </div>

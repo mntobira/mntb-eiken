@@ -599,8 +599,8 @@ function QuizBody({ mode, chapter, onFinish, onBack, onReturnToBattle, isGuest, 
   // Quiz は回（演習）を選ぶたびにマウントされるので、マウント時に
   // リスニングの回であれば説明ページから始める。化学などは従来どおり。
   useMountEffect(() => {
-    if (listeningTracks.length > 0) setShowingBriefing(true);
-    // 回のマウント時のみ（問の移動では再表示しない）
+    if (listeningTracks.length > 0 && !chapter.id.startsWith('eiken_')) setShowingBriefing(true);
+    // 回のマウント時のみ（英検リスニングは本番同様、事前説明画面を挟まず直接第1問＋音源を開く）
   });
 
   // 現在フォーカス中の設問オブジェクト（全形式対象）。

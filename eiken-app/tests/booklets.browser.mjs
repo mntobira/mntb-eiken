@@ -135,9 +135,11 @@ for (const selected of targets) {
           await page.locator('[data-home-practice]').click();
           await page.locator('[data-study-card="eiken_writing"]').click();
           await page.getByLabel('ライティングの級').selectOption(exam.grade);
-          for (const wItem of writingItems) {
-            const wTitle = `筆記 第${exam.round}回｜${wItem.section === 'email' ? 'Eメール返信' : wItem.section === 'summary' ? '英文要約' : '英作文（意見論述）'}`;
-            await page.getByRole('button', { name: new RegExp(`^${wTitle.replace(/[()（）]/g, '\\$&')}`) }).click();
+          await page.getByRole('listitem').filter({ hasText: `第${exam.round}回` }).first().click();
+          for (let wIdx = 0; wIdx < writingItems.length; wIdx++) {
+            const wItem = writingItems[wIdx];
+            const wKind = wItem.section === 'email' ? 'Eメール返信' : wItem.section === 'summary' ? '英文要約' : '英作文（意見論述）';
+            await page.getByRole('button', { name: new RegExp(`課題${wIdx + 1}：${wKind.replace(/[()（）]/g, '\\$&')}`) }).click();
             const sampleToggle = page.getByRole('button', { name: /参考解答・解説を見る/ });
             await sampleToggle.click();
             await page.waitForFunction((snippet) => document.body.innerText.includes(snippet), wItem.model.slice(0, 40));
