@@ -1,5 +1,6 @@
 import type { AudioTrack, Chapter, Problem, SubQuestion, TrackMaterial } from '../types/curriculum';
 import type { EikenGrade } from './config';
+import { LISTENING_IMAGE_URLS } from './listeningImages.generated';
 import {
   LISTENING_BLUEPRINTS,
   type ListeningAudioUnit,
@@ -56,7 +57,9 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
   const lastNo = unit.questions[unit.questions.length - 1].questionNumber;
   const qLabel = firstNo === lastNo ? `No.${firstNo}` : `No.${firstNo}–${lastNo}`;
 
-  const subQuestions: SubQuestion[] = unit.questions.map(q => {
+  const resolvedImageUrl = LISTENING_IMAGE_URLS[unit.audioId];
+
+  const subQuestions: SubQuestion[] = unit.questions.map((q, qIdx) => {
     const isReadAloud = q.choicePresentation === 'read-aloud';
     const optionTexts = isReadAloud
       ? q.choices.map((_, idx) => `選択肢 ${idx + 1}（音声で読み上げ）`)
@@ -72,6 +75,8 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
       options: q.choices.map((_, idx) => String(idx + 1)),
       optionTexts,
       correctAnswer: String(q.answer + 1),
+      imageUrl: qIdx === 0 ? resolvedImageUrl : undefined,
+      imageCaption: qIdx === 0 && unit.image ? `No.${q.questionNumber} イラスト（${unit.image.sceneSummaryJa}）` : undefined,
       skill: q.skill,
       explainJa: `${q.explanation}\n\n【選択肢の英文と理由】\n${choiceBreakdown}`,
       detailedExplanation: {
@@ -123,16 +128,18 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
         q.choices.map((c, idx) => `  ${idx + 1}. ${c} — ${q.distractorReasons[idx]}`).join('\n'),
     ),
     unit.image
-      ? `【図版設定（未生成時は場面説明を参照）】\n場面：${unit.image.sceneSummaryJa}\n予定パス：${unit.image.targetPath}`
+      ? resolvedImageUrl
+        ? `【イラスト場面】\n${unit.image.sceneSummaryJa}`
+        : `【図版設定（未生成時は場面説明を参照）】\n場面：${unit.image.sceneSummaryJa}\n予定パス：${unit.image.targetPath}`
       : '',
   ]
     .filter(Boolean)
     .join('\n\n');
 
   const promptHeader = unit.image
-    ? `【場面ガイド】${unit.image.sceneSummaryJa}\n` +
+    ? (resolvedImageUrl ? '' : `【場面ガイド】${unit.image.sceneSummaryJa}\n`) +
       (unit.questions[0].choicePresentation === 'read-aloud'
-        ? '音声を聞いて、最も適切な応答・説明を 1〜3 から選んでください。'
+        ? 'イラストを見ながら音声を聞いて、最も適切な応答・説明を 1〜3 から選んでください。'
         : unit.questions.map(q => `No.${q.questionNumber}: ${q.questionPrompt}`).join('\n'))
     : unit.questions[0].choicePresentation === 'read-aloud'
       ? '対話を聞いて、最後の質問や発話に対する最も適切な応答を 1〜3 から選んでください。'

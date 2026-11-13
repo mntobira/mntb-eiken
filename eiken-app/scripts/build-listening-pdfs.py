@@ -37,6 +37,10 @@ PDF_DIR.mkdir(parents=True, exist_ok=True)
 BOOKLETS_DATA = json.loads((DELIV / 'listening-booklets.json').read_text('utf-8'))
 AUDIO_DATA = json.loads((DELIV / 'eiken-elevenlabs-audio-prompts.json').read_text('utf-8'))
 IMAGE_DATA = json.loads((DELIV / 'eiken-chatgpt-image-prompts.json').read_text('utf-8'))
+RESOLVED_IMAGES_PATH = DELIV / 'listening_resolved_images.json'
+RESOLVED_IMAGES: dict[str, str] = (
+    json.loads(RESOLVED_IMAGES_PATH.read_text('utf-8')) if RESOLVED_IMAGES_PATH.exists() else {}
+)
 
 pdfmetrics.registerFont(TTFont('BookletJP', str(PUBLIC / 'fonts/booklet-noto-serif-jp.ttf')))
 LOGO_PATH = PUBLIC / 'brand/manatobi-logo-gray.png'
@@ -328,7 +332,14 @@ def build_question_and_explanation_booklets() -> list[dict]:
                 if unit.get('material'):
                     u_elems.extend(render_material_table(unit['material']))
                 elif unit.get('image'):
-                    u_elems.append(p(f'［図版枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))
+                    img_local = RESOLVED_IMAGES.get(unit['audioId'])
+                    if img_local and Path(img_local).exists():
+                        fig = RLImage(img_local, width=168, height=126)
+                        fig.hAlign = 'LEFT'
+                        u_elems.append(fig)
+                        u_elems.append(Spacer(1, 3))
+                    else:
+                        u_elems.append(p(f'［図版枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))
 
                 for q in unit['questions']:
                     if q['choicePresentation'] == 'read-aloud':

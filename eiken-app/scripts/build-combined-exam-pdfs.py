@@ -41,6 +41,10 @@ BUNDLE_DIR.mkdir(parents=True, exist_ok=True)
 
 WRITTEN_DATA = json.loads((DELIV / 'written-booklets.json').read_text('utf-8'))
 LISTENING_DATA = json.loads((DELIV / 'listening-booklets.json').read_text('utf-8'))
+RESOLVED_IMAGES_PATH = DELIV / 'listening_resolved_images.json'
+RESOLVED_IMAGES: dict[str, str] = (
+    json.loads(RESOLVED_IMAGES_PATH.read_text('utf-8')) if RESOLVED_IMAGES_PATH.exists() else {}
+)
 
 LOGO_PATH = PUBLIC / 'brand/manatobi-logo-gray.png'
 pdfmetrics.registerFont(TTFont('BookletJP', str(PUBLIC / 'fonts/booklet-noto-serif-jp.ttf')))
@@ -180,7 +184,14 @@ def build_listening_questions_bytes(glabel: str, rnd: int, l_exam: dict, l_bp: d
                 for nt in mat['notes']:
                     u_elems.append(p(f'* {nt}', 'meta'))
         elif unit.get('image'):
-            u_elems.append(p(f'［イラスト枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))
+            img_local = RESOLVED_IMAGES.get(unit['audioId'])
+            if img_local and Path(img_local).exists():
+                fig = RLImage(img_local, width=168, height=126)
+                fig.hAlign = 'LEFT'
+                u_elems.append(fig)
+                u_elems.append(Spacer(1, 3))
+            else:
+                u_elems.append(p(f'［イラスト枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))
 
         for q in unit['questions']:
             if q['choicePresentation'] == 'read-aloud':
