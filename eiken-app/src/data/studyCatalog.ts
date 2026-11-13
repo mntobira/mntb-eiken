@@ -10,6 +10,7 @@
 import { getSubjectStats } from './chapterIndex.generated';
 import { EIKEN_GRADES } from '../eiken/config';
 import { EIKEN_UNITS } from '../eiken/questions';
+import { WRITTEN_BOOKLETS } from '../eiken/materials/written-booklets';
 import { bookletWritingTasks } from '../eiken/writtenPractice';
 import { isSubjectEnabled } from '../config/features';
 import { VOCABULARY_COUNT } from './listeningVocabularyMeta.generated';
@@ -20,7 +21,8 @@ export type StudyAction =
   | { kind: 'foundation'; tab: 'words' | 'grammar' | 'more' } // 既存の固めるページの各タブ
   | { kind: 'vocabQuiz' }                         // 英単語の4択演習（2026-10-01）
   | { kind: 'reading' }
-  | { kind: 'writing' };                         // 英文解釈（内容一致の4択）2026-10-21
+  | { kind: 'writing' }                           // 英検ライティング練習
+  | { kind: 'mock' };                             // 一次筆記 通し模試モード
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe' | 'briefcase';
 
@@ -36,9 +38,9 @@ export interface StudyContent {
   primary?: boolean;
   /**
    * 並べる場所（2026-10-01 夜）。
-   *   'practice' … 問題を解くもの（リスニング・英文法・英単語の4択）。単元と同じ列に並べる
-   *   'memorize' … 覚えるための暗記帳（英単語帳）。問題とは混ぜず、最初から別の枠に置く
-   *   'spotlight' … とびら君の吹き出しの右に置く小さな入口（2026-10-28 TOEIC）。カードの列には並べない
+   *   'practice' … 問題を解くもの（級別カード・通し模試・ライティング）
+   *   'memorize' … 覚えるための暗記帳（英単語帳）
+   *   'spotlight' … とびら君の吹き出しの右に置く小さな入口
    * 省略は 'practice'。
    */
   section?: 'practice' | 'memorize' | 'spotlight';
@@ -60,18 +62,29 @@ export interface StudySubject {
 
 /** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
 export const STUDY_CATALOG: readonly StudySubject[] = [{
-  id: 'eiken', label: '英検', description: '級別の読む・聞く・語彙文法', icon: 'headphones',
+  id: 'eiken', label: 'マナトビ英検', description: '5級〜1級の分野別演習・通し模試・ライティング・英単語', icon: 'book',
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
       return {
-        id: grade.id, title: grade.label, primary: true, icon: 'headphones',
-        description: 'リーディング・リスニング・語彙文法を練習',
+        id: grade.id, title: grade.label, primary: true, icon: 'book',
+        description: grade.id === 'eiken_1' ? 'リスニング予想問題（全15回）・基礎演習' : '語彙文法・読解・リスニング・通し模試',
         meta: `${stats.chapters}単元・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
     }),
-    { id: 'eiken_writing', title: '英検ライティング', icon: 'pen', description: '3級〜準1級の返信・意見・要約。下書き保存と自己点検', meta: `5級別・${EIKEN_UNITS.reduce((n, unit) => n + unit.writing.length, 0) + bookletWritingTasks().length}課題`, action: { kind: 'writing' } },
+    {
+      id: 'eiken_mock', title: '一次筆記 通し模試', icon: 'briefcase', badge: 'NEW', section: 'memorize',
+      description: '目安時間タイマー付きで1回分をまとめて解き一括採点',
+      meta: `7級・全${WRITTEN_BOOKLETS.length}回分`,
+      action: { kind: 'mock' },
+    },
+    {
+      id: 'eiken_writing', title: '英検ライティング', icon: 'pen', section: 'memorize',
+      description: '3級〜準1級の返信・意見・要約。下書き保存と自己点検',
+      meta: `5級別・${EIKEN_UNITS.reduce((n, unit) => n + unit.writing.length, 0) + bookletWritingTasks().length}課題`,
+      action: { kind: 'writing' },
+    },
     {
       id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
       description: '5級〜準1級の重点語・例文・意味を級別に学ぶ',

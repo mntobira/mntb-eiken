@@ -344,10 +344,25 @@ describe('written booklets — same original for print, field practice, and writ
     }
   });
 
-  it('keeps timers, submitted attempts and a whole-exam AppState out of the app', () => {
-    expect(existsSync('src/components/WrittenExamRunner.tsx')).toBe(false);
+  it('scores full mock exams accurately while keeping writtenExamCore pure', () => {
     expect(readFileSync('src/eiken/writtenExamCore.ts', 'utf8')).not.toMatch(/WrittenAttempt|startWrittenAttempt|deadlineAt/);
-    expect(readFileSync('src/appState.ts', 'utf8')).not.toMatch(/writtenExam|written-exam/);
+    expect(readFileSync('src/appState.ts', 'utf8')).toContain("'mock'");
+    const exam = WRITTEN_BOOKLETS.find((b) => b.id === 'eiken_3_written_02')!;
+    const allCorrectAnswers = Object.fromEntries(
+      exam.items.filter((i) => i.kind === 'choice').map((i) => [i.id, i.answer!]),
+    );
+    const writingEntries = Object.fromEntries(
+      exam.items.filter((i) => i.kind === 'writing').map((i) => [i.id, { text: i.model!, checked: [0, 1, 2, 3] }]),
+    );
+    return import('../src/eiken/mockProgress').then(({ scoreMockExam, parseMockState }) => {
+      const perfect = scoreMockExam(exam, allCorrectAnswers, writingEntries);
+      expect(perfect.correct).toBe(30);
+      expect(perfect.total).toBe(30);
+      expect(perfect.accuracyPct).toBe(100);
+      expect(perfect.writingDone).toBe(2);
+      expect(perfect.writingTotal).toBe(2);
+      expect(parseMockState('invalid-json').sessions).toEqual({});
+    });
   });
 
   it('requires 15 distinct complete rounds rather than relabelled copies', () => {

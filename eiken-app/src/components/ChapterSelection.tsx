@@ -57,9 +57,11 @@ interface ChapterSelectionProps {
    * （第1問A・第1問B …）。各単元のページには「第N回演習」のボタンを並べる。
    */
   subject?: SubjectKey;
+  /** 英検の級別画面から、その級の「一次筆記 通し模試」を直接開く */
+  onOpenMock?: () => void;
 }
 
-export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'english_listening', rememberedGroup, onGroupChange, backLabel = '戻る' }: ChapterSelectionProps) {
+export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'english_listening', rememberedGroup, onGroupChange, backLabel = '戻る', onOpenMock }: ChapterSelectionProps) {
   // 科目ごとに画面の作りが変わる箇所だけフラグにしている。
   const isEiken = subject.startsWith('eiken_');
   // 2026-10-28 TOEIC Part 5 も「第N回」のカードで並べる（英語リスニングと同じ回一覧）
@@ -181,6 +183,16 @@ export function ChapterSelection({ mode, onSelectChapter, onBack, subject = 'eng
           <h2 style={{ color: theme.accent }}>{isEiken ? `${theme.label} 級別練習` : isGrammar ? '英文法' : isToeic ? 'TOEIC' : theme.label}</h2>
           <p>{mode === 'mini_test' ? '小テスト' : isListening ? '会話・説明文の重点練習／本試験1回分ではありません' : isToeic ? (toeicTabs ? toeicSub : '1回30問・4択（短文穴埋め）') : isGrammar ? '単元別の4択演習' : '単元を選ぶ'}</p>
         </div>
+        {isEiken && onOpenMock && (
+          <button
+            type="button"
+            onClick={onOpenMock}
+            className="shrink-0 rounded-xl border border-[#1e3a5f]/25 bg-[#1e3a5f] px-3 py-2 text-xs font-extrabold text-white shadow-xs transition hover:bg-[#162c49] cursor-pointer"
+            data-chapter-open-mock
+          >
+            通し模試へ
+          </button>
+        )}
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />
       </header>
 
