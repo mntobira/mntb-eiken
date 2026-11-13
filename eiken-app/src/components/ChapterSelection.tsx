@@ -30,6 +30,7 @@ import { getChapterGroups, getGrammarPartGroups, collectAudioSets, splitTabTitle
 import type { EikenGrade } from '../eiken/config';
 import { EIKEN_UNITS } from '../eiken/questions';
 import { bookletWritingTasks, getGradeDaimonSpecs } from '../eiken/writtenPractice';
+import { getGradeListeningPartSpecs } from '../eiken/listeningPractice';
 import { emptyWriting, parseWriting, wordCount, writingKey } from '../eiken/writingProgress';
 
 interface ChapterSelectionProps {
@@ -56,6 +57,10 @@ function splitEikenTabTitle(title: string, index: number): { kicker: string; lab
   const daimonMatch = title.match(/^(大問\d+)\s*(.*)$/);
   if (daimonMatch) {
     return { kicker: daimonMatch[1], label: daimonMatch[2] || title };
+  }
+  const listeningPartMatch = title.match(/^(リスニング第\d+部)\s*(.*)$/);
+  if (listeningPartMatch) {
+    return { kicker: listeningPartMatch[1], label: listeningPartMatch[2] || title };
   }
   if (title === 'リスニング練習') {
     return { kicker: 'リスニング', label: title };
@@ -131,8 +136,9 @@ export function ChapterSelection({
     if (!isEiken) return base;
     const grade = subject as EikenGrade;
     const allSpecs = getGradeDaimonSpecs(grade);
+    const allListeningSpecs = getGradeListeningPartSpecs(grade);
 
-    // 各グループの partTitle も大問ごとの明確な案内文に整え、大問1 → 大問2 → … → 読解基礎 → リスニング の本番順に並べる
+    // 各グループの partTitle も大問・部ごとの明確な案内文に整え、大問1..N → 読解基礎 → リスニング第1部..第4部 の本番順に並べる
     const enrichedChoice = base.map(g => {
       const spec = allSpecs.find(s => s.tabTitle === g.title);
       if (spec) {
@@ -140,6 +146,14 @@ export function ChapterSelection({
         return {
           ...g,
           partTitle: `${theme.label}｜${spec.tabTitle}（1回${spec.countPerRound}問・全${roundCount}回収録）`,
+        };
+      }
+      const lSpec = allListeningSpecs.find(s => s.tabTitle === g.title);
+      if (lSpec) {
+        const roundCount = g.chapters.filter(c => /_listening_r\d+_/.test(c.id)).length;
+        return {
+          ...g,
+          partTitle: `${theme.label}｜${lSpec.tabTitle}（1回${lSpec.questionCount}問・全${roundCount}回収録）`,
         };
       }
       if (g.title === '読解 基礎練習') {
@@ -156,7 +170,9 @@ export function ChapterSelection({
       const m = title.match(/^大問(\d+)/);
       if (m) return Number(m[1]);
       if (title === '読解 基礎練習') return 80;
-      if (title === 'リスニング練習') return 90;
+      const lm = title.match(/^リスニング第(\d+)部/);
+      if (lm) return 100 + Number(lm[1]);
+      if (title === 'リスニング練習') return 190;
       return 50;
     };
     return combined.sort((a, b) => orderWeight(a.title) - orderWeight(b.title));
@@ -198,8 +214,10 @@ export function ChapterSelection({
 
   const activeGroup = groups.find(group => group.title === activeGroupTitle) || groups[0];
   const activeWritingGroup = writingDaimonGroups.find(g => g.title === activeGroup?.title);
-  const isListening = isEiken && activeGroup?.chapters.some(chapter => chapter.id.includes('_listening_')) === true;
-  const isRounds = isListening || isToeic;
+  const isEikenListeningGroup =
+    isEiken && activeGroup?.chapters.some(chapter => chapter.id.includes('_listening_')) === true;
+  const isListening = false;
+  const isRounds = isToeic;
   const toeicTabs = isToeic && groups.length > 1;
   const toeicSub = activeGroup?.title === 'Part 7'
     ? 'Part 7 読解・1回7セット24問・4択'
@@ -223,13 +241,17 @@ export function ChapterSelection({
   const unitSections = useMemo(() => {
     const chapters = activeGroup?.chapters ?? [];
     if (isEiken) {
-      const booklet = chapters.filter(c => /_written_\d+_/.test(c.id));
-      const warmup = chapters.filter(c => !/_written_\d+_/.test(c.id));
+      const isRoundChapter = (c: Chapter) => /_(written_\d+|listening_r\d+)_/.test(c.id);
+      const booklet = chapters.filter(isRoundChapter);
+      const warmup = chapters.filter(c => !isRoundChapter(c));
+      const hasListeningRounds = booklet.some(c => c.id.includes('_listening_r'));
       const out: { key: string | null; label: string | null; chapters: Chapter[] }[] = [];
       if (booklet.length > 0) {
         out.push({
           key: 'eiken:booklet',
-          label: '回別 大問通し演習（印刷冊子・通し模試と共通）',
+          label: hasListeningRounds
+            ? '回別 リスニング部別通し演習（予想問題 全15回）'
+            : '回別 大問通し演習（印刷冊子・通し模試と共通）',
           chapters: booklet,
         });
       }
@@ -271,10 +293,10 @@ export function ChapterSelection({
           <p>
             {mode === 'mini_test'
               ? '小テスト'
-              : isListening
-              ? '会話・説明文の重点練習／本試験1回分ではありません'
+              : isEikenListeningGroup
+              ? '本番のリスニング各部（第1部・第2部…）ごとに第1回〜第15回を通しで演習できます'
               : isEiken
-              ? '本番の大問ごとに第1回〜順番に通して演習できます'
+              ? '本番の大問・リスニング部ごとに第1回〜順番に通して演習できます'
               : isToeic
               ? toeicTabs
                 ? toeicSub
@@ -314,7 +336,11 @@ export function ChapterSelection({
               aria-label="章を選択"
               className={`flex touch-pan-x snap-x snap-mandatory gap-1.5 overflow-x-auto overscroll-x-contain px-0.5 pb-2 [scrollbar-width:thin] sm:grid sm:overflow-x-visible sm:overscroll-auto ${
                 isEiken
-                  ? groups.length >= 7
+                  ? groups.length >= 9
+                    ? 'sm:grid-cols-3 lg:!grid lg:!grid-cols-5'
+                    : groups.length === 8
+                    ? 'sm:grid-cols-4 lg:!grid lg:!grid-cols-4'
+                    : groups.length === 7
                     ? 'sm:grid-cols-4 lg:!grid lg:!grid-cols-7'
                     : groups.length === 6
                     ? 'sm:grid-cols-3 lg:!grid lg:!grid-cols-6'
@@ -334,7 +360,7 @@ export function ChapterSelection({
                   : isEiken
                   ? (() => {
                       const sp = splitEikenTabTitle(group.title, index);
-                      const roundCount = group.chapters.filter(c => /_written_\d+_/.test(c.id)).length;
+                      const roundCount = group.chapters.filter(c => /_(written_\d+|listening_r\d+)_/.test(c.id)).length;
                       return {
                         kicker: roundCount > 0 ? `${sp.kicker}・${roundCount}回` : sp.kicker,
                         label: sp.label,
@@ -618,7 +644,11 @@ export function ChapterSelection({
                 })}
               </div>
             ) : (
-              <div className={`chapter-route-list unit-card-list ${isEiken ? 'xl:!grid-cols-2' : ''}`}>
+              <>
+                {isEikenListeningGroup && (
+                  <ListeningTechniqueCard chapterId={`${subject}_listening_01`} />
+                )}
+                <div className={`chapter-route-list unit-card-list ${isEiken ? 'xl:!grid-cols-2' : ''}`}>
                 {orderedChapters.map((chapter, routeIndex) => {
                   const questions = mode === 'mini_test' ? chapter.miniTest || [] : chapter.practiceProblems || [];
                   const hasQuestions = questions.length > 0;
@@ -636,7 +666,7 @@ export function ChapterSelection({
                       !!safeGetItem(quizRunKey(chapter.id, mode)) ||
                       Object.keys(safeParseJson<object>(safeGetItem(quizAnswersKey(chapter.id, mode)), {}) ?? {})
                         .length > 0);
-                  const audioSets = isListening || isGrammar ? collectAudioSets(chapter) : [];
+                  const audioSets = isEikenListeningGroup || isGrammar ? collectAudioSets(chapter) : [];
                   const solvedCount = questions.filter(q => solvedMap[problemKey(chapter.id, q.id)]).length;
                   const stat = unitStats[chapter.id];
                   const stage = stageRecords[stageKey(chapter.id)];
@@ -687,7 +717,13 @@ export function ChapterSelection({
                           title={chapter.abstractTitle}
                           topics={chapter.topics}
                           questionCount={questions.length}
-                          countLabel={isEiken ? `この大問 全${totalSubQuestions}問を通して演習` : undefined}
+                          countLabel={
+                            isEiken
+                              ? isEikenListeningGroup
+                                ? `この部 全${totalSubQuestions}問を通して演習`
+                                : `この大問 全${totalSubQuestions}問を通して演習`
+                              : undefined
+                          }
                           status={status}
                           accuracy={accuracyOf(stat)}
                           perfects={isGrammar ? undefined : stage?.p ?? 0}
@@ -831,10 +867,11 @@ export function ChapterSelection({
                     </React.Fragment>
                   );
                 })}
-              </div>
+                </div>
+              </>
             )}
 
-            {(isListening || isGrammar) && (
+            {(isEikenListeningGroup || isGrammar) && (
               <AnimatePresence initial={false}>
                 {(() => {
                   const sets = activeGroup.chapters.flatMap(c => collectAudioSets(c));

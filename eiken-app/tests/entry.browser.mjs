@@ -21,7 +21,7 @@ try {
     const list = page.locator('.sc-eiken-list');
     await list.waitFor();
     const gradeCards = list.locator('[data-content-kind="units"] [data-study-card]');
-    assert.equal(await gradeCards.count(), 7);
+    assert.equal(await gradeCards.count(), 8);
     const geometry = await list.evaluate(element => ({ width: element.clientWidth, scrollWidth: element.scrollWidth, height: element.clientHeight, scrollHeight: element.scrollHeight }));
     assert.ok(geometry.scrollWidth <= geometry.width + 1, JSON.stringify({ viewport, geometry }));
     assert.ok(geometry.scrollHeight <= geometry.height + 1, JSON.stringify({ viewport, geometry }));
@@ -33,13 +33,13 @@ try {
     }
     await page.screenshot({ path: `qa-entry-${engine.name()}-${viewport.width}.png` });
     await list.locator('[data-study-card="eiken_pre1"]').click();
-    await page.getByRole('tab', { name: /リスニング練習/ }).click();
-    await page.getByRole('button', { name: /第1回演習/ }).first().waitFor();
+    await page.getByRole('tab', { name: /リスニング第1部/ }).click();
+    await page.locator('[data-unit-id="eiken_pre1_listening_r01_part1"]').waitFor();
     await page.getByRole('button', { name: '設定画面へ移動', exact: true }).click();
     await page.getByRole('button', { name: 'Google アカウントで連携', exact: true }).waitFor();
     assert.equal(await page.getByRole('button', { name: /Apple/ }).count(), 0);
     assert.deepEqual(errors, []);
-    console.log(`PASS ${engine.name()} ${viewport.width}x${viewport.height}: all seven grades without scrolling, explicit Eiken countdown, Google-only login/settings`);
+    console.log(`PASS ${engine.name()} ${viewport.width}x${viewport.height}: all eight grades without scrolling, explicit Eiken countdown, Google-only login/settings`);
     await context.close();
   }
 } finally { await browser.close(); }

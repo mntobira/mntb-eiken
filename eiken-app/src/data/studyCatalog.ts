@@ -62,20 +62,20 @@ export interface StudySubject {
 
 /** 共通のカタログUIを使う。大学入試・TOEICの教材への入口は登録しない。 */
 export const STUDY_CATALOG: readonly StudySubject[] = [{
-  id: 'eiken', label: 'マナトビ英検', description: '5級〜準1級の大問別演習・通し模試・ライティング・英単語', icon: 'book',
+  id: 'eiken', label: 'マナトビ英検', description: '5級〜1級の大問別・部別演習・通し模試・ライティング・英単語', icon: 'book',
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'book',
-        description: '大問別・リスニングの通し演習',
+        description: grade.id === 'eiken_1' ? 'リスニング第1〜4部（各15回）の通し演習' : '筆記大問別・リスニング部別の通し演習',
         meta: `${stats.chapters}回・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
     }),
     {
-      id: 'eiken_mock', title: '一次筆記 通し模試', icon: 'briefcase', badge: 'NEW',
-      description: '目安時間タイマー付きで1回分をまとめて解き一括採点',
+      id: 'eiken_mock', title: '一次筆記 通し演習', icon: 'briefcase', badge: 'NEW', section: 'memorize',
+      description: '全大問フル模試も大問1〜6別の通し演習もタイマー・一括採点対応',
       meta: `7級・全${WRITTEN_BOOKLETS.length}回分`,
       action: { kind: 'mock' },
     },

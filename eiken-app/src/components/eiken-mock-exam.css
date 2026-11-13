@@ -147,7 +147,7 @@
   color: #334155;
   text-align: left;
   cursor: pointer;
-  transition: all 0.14s ease;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
 }
 
 .em-scope-pill:hover {
@@ -169,7 +169,8 @@
   color: #0f172a;
 }
 
-.em-scope-pill.is-active {
+.em-scope-pill.is-active,
+.em-scope-pill.is-active:hover {
   background: #1e3a5f;
   border-color: #1e3a5f;
   color: #ffffff;

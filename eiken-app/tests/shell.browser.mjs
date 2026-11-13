@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 
 // Run against an already-built local preview. Never signs in or writes to cloud services.
 const origin = process.env.EIKEN_TEST_ORIGIN || 'http://localhost:3000';
-const grades = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'];
+const grades = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'];
 const browser = await chromium.launch({ args: ['--no-sandbox'] });
 let flows = 0;
 try {
@@ -28,25 +28,32 @@ try {
     for (const grade of grades) {
       await page.locator('[data-home-practice]').click();
       await page.locator('[data-study-card="eiken_3"]').waitFor();
-      assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 7);
-      assert.equal(await page.locator('[data-study-card="eiken_1"]').count(), 0);
+      assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 8);
+      assert.equal(await page.locator('[data-study-card="eiken_1"]').count(), 1);
       await page.locator(`[data-study-card="${grade}"]`).click();
-      await page.getByRole('tab', { name: /リスニング練習/ }).click();
-      await page.getByRole('button', { name: /第1回演習/ }).first().waitFor();
+      await page.getByRole('tab', { name: /リスニング第1部/ }).click();
+      const warmupCard = page.locator(`[data-unit-id="${grade}_listening_01"]`);
+      await warmupCard.waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('eiken:v1:savedSelectedSubject')), grade);
-      await page.getByRole('button', { name: /第1回演習/ }).first().click();
+      await warmupCard.locator('.unit-card-primary').click();
       await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();
       // Question ids and range must survive a reload before answering.
       await page.reload();
       await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('eiken:v1:savedSelectedChapterId')), `${grade}_listening_01`);
-      const choices = page.getByRole('button').filter({ hasText: /^[1-4]/ });
-      assert.ok(await choices.count() >= 3);
-      await choices.first().click();
-      await page.getByRole('button', { name: '解答と解説を見る', exact: true }).click();
-      await page.getByRole('button', { name: '結果を見る', exact: true }).waitFor();
-      assert.match(await page.locator('body').innerText(), /和訳/);
-      await page.getByRole('button', { name: '結果を見る', exact: true }).click();
+      for (let qStep = 0; qStep < 2; qStep += 1) {
+        const choices = page.getByRole('button').filter({ hasText: /^[1-4]/ });
+        assert.ok(await choices.count() >= 3);
+        await choices.first().click();
+        await page.getByRole('button', { name: '解答と解説を見る', exact: true }).click();
+        assert.match(await page.locator('body').innerText(), /和訳/);
+        if (qStep === 0) {
+          await page.getByRole('button', { name: '次の問題へ', exact: true }).click();
+        } else {
+          await page.getByRole('button', { name: '結果を見る', exact: true }).waitFor();
+          await page.getByRole('button', { name: '結果を見る', exact: true }).click();
+        }
+      }
       // Finish through the actual UI; automation is used only to return to the next case.
       await page.waitForFunction(() => localStorage.getItem('eiken:v1:savedAppState') === 'explanation');
       await page.evaluate(() => window.__SET_APP_STATE__('home'));
@@ -56,7 +63,7 @@ try {
     // The bottom navigation retains the original catalog, now populated with grades.
     await page.getByRole('button', { name: '学習画面へ移動', exact: true }).click();
     await page.locator('[data-study-card="eiken_3"]').waitFor();
-    assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 7);
+    assert.equal(await page.locator('[data-content-kind="units"] [data-study-card]').count(), 8);
     assert.equal(await page.locator('[data-study-card="english_listening"]').count(), 0);
     await page.locator('[data-study-card="english_vocabulary"]').click();
     await page.locator('[data-fd-range]').waitFor();

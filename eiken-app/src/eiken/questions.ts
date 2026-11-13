@@ -6,6 +6,9 @@ import { BRIDGE_UNIT } from './materials/original-bridge';
 import { UPPER_UNIT } from './materials/original-upper';
 import { ADVANCED_UNIT } from './materials/original-advanced';
 import { bookletSectionChapters, getGradeDaimonSpecs } from './writtenPractice';
+import { getGradeListeningPartSpecs, listeningPartChapters } from './listeningPractice';
+import { ALL_LISTENING_EXAMS } from './materials/listening-booklets';
+import { GRADE_1_LISTENING_EXAMS } from './materials/listening-g1';
 import { TRANSLATIONS } from './materials/translations';
 import { EIKEN_GRADES, type EikenGrade } from './config';
 
@@ -21,17 +24,49 @@ export interface EikenQuestion {
 }
 export const EIKEN_UNITS = [...FOUNDATION_UNITS, ...INTERMEDIATE_UNITS, BRIDGE_UNIT, UPPER_UNIT, ADVANCED_UNIT];
 const gradeMap: Record<string, EikenGrade> = { '5': 'eiken_5', '4': 'eiken_4', '3': 'eiken_3', 'pre-2': 'eiken_pre2', 'pre-2-plus': 'eiken_pre2plus', '2': 'eiken_2', 'pre-1': 'eiken_pre1' };
-export const EIKEN_QUESTIONS: EikenQuestion[] = EIKEN_UNITS.flatMap((unit, difficulty) => unit.listenings.map((block, index) => ({
-  id: `${gradeMap[unit.grade]}_listening_01_${index + 1}`, examType: 'eiken' as const, grade: gradeMap[unit.grade],
-  section: block.script.length > 1 ? 'dialogue' as const : 'narration' as const,
-  questionNumber: index + 1, title: block.title, instruction: block.question.prompt,
-  audioUrl: null, transcript: block.script.join('\n'), translation: TRANSLATIONS[unit.grade].listenings[index],
-  choices: [...block.question.choices], correctAnswer: block.question.answer,
-  explanation: block.question.reasons[block.question.answer], reasons: [...block.question.reasons], evidence: block.question.evidence,
-  difficulty: Math.min(5, Math.ceil((difficulty + 1) * 5 / 7)), tags: [block.question.skill], published: true,
-  createdAt: '2026-11-08T00:00:00.000Z', updatedAt: '2026-11-08T00:00:00.000Z',
-  playback: { readCount: 2 as const, replayAllowed: true, source: 'browser-speech' as const }, origin: 'manatobi-original' as const,
-})));
+export const EIKEN_QUESTIONS: EikenQuestion[] = [
+  ...EIKEN_UNITS.flatMap((unit, difficulty) => unit.listenings.map((block, index) => ({
+    id: `${gradeMap[unit.grade]}_listening_01_${index + 1}`, examType: 'eiken' as const, grade: gradeMap[unit.grade],
+    section: block.script.length > 1 ? 'dialogue' as const : 'narration' as const,
+    questionNumber: index + 1, title: block.title, instruction: block.question.prompt,
+    audioUrl: null, transcript: block.script.join('\n'), translation: TRANSLATIONS[unit.grade].listenings[index],
+    choices: [...block.question.choices], correctAnswer: block.question.answer,
+    explanation: block.question.reasons[block.question.answer], reasons: [...block.question.reasons], evidence: block.question.evidence,
+    difficulty: Math.min(5, Math.ceil((difficulty + 1) * 5 / 7)), tags: [block.question.skill], published: true,
+    createdAt: '2026-11-08T00:00:00.000Z', updatedAt: '2026-11-08T00:00:00.000Z',
+    playback: { readCount: 2 as const, replayAllowed: true, source: 'browser-speech' as const }, origin: 'manatobi-original' as const,
+  }))),
+  ...GRADE_1_LISTENING_EXAMS[0].units.slice(0, 2).map((unit, index): EikenQuestion => {
+    const q = unit.questions[0];
+    const dialogLines = unit.turns
+      .filter(t => t.roleLabel !== 'Narrator')
+      .map((t, ti) => `${ti % 2 === 0 ? 'A' : 'B'}: ${t.text}`);
+    return {
+      id: `eiken_1_listening_01_${index + 1}`,
+      examType: 'eiken',
+      grade: 'eiken_1',
+      section: 'dialogue',
+      questionNumber: index + 1,
+      title: `1級 対話演習 ${index + 1}`,
+      instruction: q.questionPrompt,
+      audioUrl: null,
+      transcript: dialogLines.join('\n'),
+      translation: unit.translation,
+      choices: [...q.choices],
+      correctAnswer: q.answer,
+      explanation: q.explanation,
+      reasons: [...q.distractorReasons],
+      evidence: q.evidence,
+      difficulty: 5,
+      tags: [q.skill],
+      published: true,
+      createdAt: '2026-11-12T00:00:00.000Z',
+      updatedAt: '2026-11-12T00:00:00.000Z',
+      playback: { readCount: 1, replayAllowed: true, source: 'browser-speech' },
+      origin: 'manatobi-original',
+    };
+  }),
+];
 export function validateQuestion(question: EikenQuestion) {
   if (question.examType !== 'eiken' || !EIKEN_GRADES.some(grade => grade.id === question.grade)) throw new Error('英検教材以外は登録できません。');
   if (!question.id.startsWith(question.grade + '_') || question.choices.length < 3 || question.choices.length > 4 || question.correctAnswer < 0 || question.correctAnswer >= question.choices.length) throw new Error('問題の識別子または選択肢が不正です。');
@@ -66,32 +101,53 @@ function writtenSubQuestion(question: OriginalQuestion, id: string) {
 }
 export function partsForGrade(grade: EikenGrade): Part[] {
   const unit = EIKEN_UNITS.find(unit => gradeMap[unit.grade] === grade);
-  if (!unit) return [];
   const questions = EIKEN_QUESTIONS.filter(q => q.grade === grade && q.published);
   const label = EIKEN_GRADES.find(item => item.id === grade)!.label;
-  const daimonSpecs = getGradeDaimonSpecs(grade).filter(s => s.kind === 'choice');
+  const listeningSpecs = getGradeListeningPartSpecs(grade);
+  const firstListeningSpec = listeningSpecs[0]!;
 
-  const shortSpec = daimonSpecs.find(s => s.section === 'short')!;
-  const readingSpec = daimonSpecs.find(s => s.section === 'reading');
-
-  const listening: Chapter = {
+  const listeningIntro: Chapter = {
     id: `${grade}_listening_01`,
-    title: 'リスニング練習',
-    abstractTitle: 'リスニング練習',
-    realTitle: 'リスニング練習',
+    title: '基礎ウォームアップ（リスニング）',
+    abstractTitle: `リスニング練習（基礎ウォームアップ・全${questions.length}問）`,
+    realTitle: firstListeningSpec ? firstListeningSpec.tabTitle : 'リスニング練習',
     questionGroup: 'リスニング',
     topics: ['会話・説明の要点を聞き取る'],
     practiceProblems: questions.map(toProblem),
     miniTest: [],
-    readCount: 2,
+    readCount: grade === 'eiken_1' ? 1 : 2,
     marks: questions.length,
     speakers: '会話・説明',
   };
 
+  // リスニングも本番の第1部・第2部・第3部（1級は第4部）ごとに第1回〜第15回を昇順で整理する
+  const listeningChapters: Chapter[] = [];
+  for (const lSpec of listeningSpecs) {
+    const partRounds = listeningPartChapters(ALL_LISTENING_EXAMS, grade, lSpec.partId, lSpec.tabTitle);
+    if (lSpec.partNo === 1) {
+      listeningChapters.push(...partRounds, listeningIntro);
+    } else {
+      listeningChapters.push(...partRounds);
+    }
+  }
+
+  // 1級など筆記単元が未配置の級は、リスニング第1〜4部タブで構成する
+  if (!unit) {
+    return [
+      { id: `${grade}_listening`, title: `${label}｜リスニング練習`, section: 'listening', chapters: listeningChapters },
+      { id: `${grade}_reading`, title: `${label}｜リーディング練習`, section: 'reading', chapters: [] },
+      { id: `${grade}_vocabulary`, title: `${label}｜語彙・文法練習`, section: 'vocabulary', chapters: [] },
+    ];
+  }
+
+  const daimonSpecs = getGradeDaimonSpecs(grade).filter(s => s.kind === 'choice');
+  const shortSpec = daimonSpecs.find(s => s.section === 'short')!;
+  const readingSpec = daimonSpecs.find(s => s.section === 'reading');
+
   const vocabularyIntro: Chapter = {
     id: `${grade}_vocabulary_01`,
     title: '基礎ウォームアップ（語彙・文法）',
-    abstractTitle: '基礎ウォームアップ（全2問）',
+    abstractTitle: `語彙・文法練習（基礎ウォームアップ・全${unit.vocabulary.length}問）`,
     realTitle: shortSpec.tabTitle,
     questionGroup: '語彙・文法',
     topics: [unit.focus],
@@ -115,7 +171,7 @@ export function partsForGrade(grade: EikenGrade): Part[] {
   const readingIntro: Chapter = {
     id: `${grade}_reading_01`,
     title: '基礎ウォームアップ（読解）',
-    abstractTitle: `基礎ウォームアップ（${unit.readings.length}本文・計${unit.readings.reduce((n, b) => n + b.questions.length, 0)}問）`,
+    abstractTitle: `長文読解練習（基礎ウォームアップ・${unit.readings.length}本文・計${unit.readings.reduce((n, b) => n + b.questions.length, 0)}問）`,
     realTitle: readingSpec ? readingSpec.tabTitle : '読解 基礎練習',
     questionGroup: 'リーディング',
     topics: [unit.theme],
@@ -137,7 +193,7 @@ export function partsForGrade(grade: EikenGrade): Part[] {
   };
 
   // 外枠の Part[] は共通契約どおり ['listening', 'reading', 'vocabulary'] の3要素を維持し、
-  // 内包する Chapter.realTitle を「大問1 短文の語句空所補充」等の大問別に分けることで大問別タブを生成する
+  // 内包する Chapter.realTitle を「大問1..N」「リスニング第1部..第4部」に分けることで本番構成どおりのタブを生成する
   const readingChapters: Chapter[] = [];
   const vocabularyChapters: Chapter[] = [];
 
@@ -162,7 +218,7 @@ export function partsForGrade(grade: EikenGrade): Part[] {
   }
 
   return [
-    { id: `${grade}_listening`, title: `${label}｜リスニング練習`, section: 'listening', chapters: [listening] },
+    { id: `${grade}_listening`, title: `${label}｜リスニング練習`, section: 'listening', chapters: listeningChapters },
     { id: `${grade}_reading`, title: `${label}｜リーディング練習`, section: 'reading', chapters: readingChapters },
     { id: `${grade}_vocabulary`, title: `${label}｜語彙・文法練習`, section: 'vocabulary', chapters: vocabularyChapters },
   ];

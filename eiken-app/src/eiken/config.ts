@@ -8,7 +8,7 @@ export const EIKEN_GRADES = [
   { id: 'eiken_pre2plus', label: '英検準2級プラス', shortLabel: '準2級プラス', available: true },
   { id: 'eiken_2', label: '英検2級', shortLabel: '2級', available: true },
   { id: 'eiken_pre1', label: '英検準1級', shortLabel: '準1級', available: true },
-  { id: 'eiken_1', label: '英検1級', shortLabel: '1級', available: false },
+  { id: 'eiken_1', label: '英検1級', shortLabel: '1級', available: true },
 ] as const;
 export type EikenGrade = typeof EIKEN_GRADES[number]['id'];
 export function isEikenGrade(value: unknown): value is EikenGrade {
