@@ -40,17 +40,17 @@ describe('written booklets — same original for print and field practice, no ex
  });
  it('checks every real ordering permutation, completed sentence and first/third pair',()=>{
   expect(WRITTEN_BOOKLETS.map(exam=>[exam.grade,exam.round,exam.items.length])).toEqual([
-   ['eiken_5',1,25],['eiken_5',2,25],['eiken_5',3,25],['eiken_5',4,25],['eiken_5',5,25],['eiken_5',6,25],
-   ['eiken_4',1,35],['eiken_4',2,35],['eiken_4',3,35],['eiken_4',4,35],['eiken_4',5,35],['eiken_4',6,35],
-   ['eiken_3',1,30],['eiken_3',2,30],['eiken_3',3,30],['eiken_3',4,30],['eiken_3',5,30],['eiken_3',6,30],
-   ['eiken_pre2',1,29],['eiken_pre2',2,29],['eiken_pre2',3,29],['eiken_pre2',4,29],['eiken_pre2',5,29],['eiken_pre2',6,29],
-   ['eiken_pre2plus',1,31],['eiken_pre2plus',2,31],['eiken_pre2plus',3,31],['eiken_pre2plus',4,31],['eiken_pre2plus',5,31],['eiken_pre2plus',6,31],
-   ['eiken_2',1,31],['eiken_2',2,31],['eiken_2',3,31],['eiken_2',4,31],['eiken_2',5,31],['eiken_2',6,31],
-   ['eiken_pre1',1,31],['eiken_pre1',2,31],['eiken_pre1',3,31],['eiken_pre1',4,31],['eiken_pre1',5,31],['eiken_pre1',6,31]
+   ['eiken_5',1,25],['eiken_5',2,25],['eiken_5',3,25],['eiken_5',4,25],['eiken_5',5,25],['eiken_5',6,25],['eiken_5',7,25],['eiken_5',8,25],['eiken_5',9,25],
+   ['eiken_4',1,35],['eiken_4',2,35],['eiken_4',3,35],['eiken_4',4,35],['eiken_4',5,35],['eiken_4',6,35],['eiken_4',7,35],['eiken_4',8,35],['eiken_4',9,35],
+   ['eiken_3',1,30],['eiken_3',2,30],['eiken_3',3,30],['eiken_3',4,30],['eiken_3',5,30],['eiken_3',6,30],['eiken_3',7,30],['eiken_3',8,30],['eiken_3',9,30],
+   ['eiken_pre2',1,29],['eiken_pre2',2,29],['eiken_pre2',3,29],['eiken_pre2',4,29],['eiken_pre2',5,29],['eiken_pre2',6,29],['eiken_pre2',7,29],['eiken_pre2',8,29],['eiken_pre2',9,29],
+   ['eiken_pre2plus',1,31],['eiken_pre2plus',2,31],['eiken_pre2plus',3,31],['eiken_pre2plus',4,31],['eiken_pre2plus',5,31],['eiken_pre2plus',6,31],['eiken_pre2plus',7,31],['eiken_pre2plus',8,31],['eiken_pre2plus',9,31],
+   ['eiken_2',1,31],['eiken_2',2,31],['eiken_2',3,31],['eiken_2',4,31],['eiken_2',5,31],['eiken_2',6,31],['eiken_2',7,31],['eiken_2',8,31],['eiken_2',9,31],
+   ['eiken_pre1',1,31],['eiken_pre1',2,31],['eiken_pre1',3,31],['eiken_pre1',4,31],['eiken_pre1',5,31],['eiken_pre1',6,31],['eiken_pre1',7,31],['eiken_pre1',8,31],['eiken_pre1',9,31]
   ]);
-  expect(WRITTEN_BOOKLETS.reduce((n,exam)=>n+exam.items.length,0)).toBe(1272);
+  expect(WRITTEN_BOOKLETS.reduce((n,exam)=>n+exam.items.length,0)).toBe(1908);
   for(const booklet of WRITTEN_BOOKLETS){
-   validateWrittenExam(booklet);expect([1,2,3,4,5,6]).toContain(booklet.round);
+   validateWrittenExam(booklet);expect([1,2,3,4,5,6,7,8,9]).toContain(booklet.round);
    for(const item of booklet.items.filter(i=>i.section==='reorder')){
     expect(item.choices![item.answer!]).toBe(`${item.orderAnswer![0]}－${item.orderAnswer![2]}`);
     expect(item.completedSentence!.replace(/[.?]$/,'')).toBe(`${item.orderPrefix} ${item.orderAnswer!.map(n=>item.orderTokens![n-1]).join(' ')}`);
@@ -73,9 +73,9 @@ describe('written booklets — same original for print and field practice, no ex
  it('matches every field-practice answer and generated PDF audit to the same original',()=>{
   const manifest=JSON.parse(readFileSync('deliverables/written-booklets.json','utf8'));
   expect(manifest.booklets).toEqual(WRITTEN_BOOKLETS);
-  expect(manifest.progress).toMatchObject({target:105,completed:42,remaining:63,questions:1272,writingIncluded:false,listeningIncluded:false});
+  expect(manifest.progress).toMatchObject({target:105,completed:63,remaining:42,questions:1908,writingIncluded:false,listeningIncluded:false});
   expect(manifest.progress.grades).toHaveLength(7);
-  for(const row of manifest.progress.grades)expect(row).toMatchObject({target:15,completed:6,rounds:[1,2,3,4,5,6]});
+  for(const row of manifest.progress.grades)expect(row).toMatchObject({target:15,completed:9,rounds:[1,2,3,4,5,6,7,8,9]});
   const sourceHash=createHash('sha256').update(JSON.stringify(WRITTEN_BOOKLETS)).digest('hex');
   expect(manifest.sourceHash).toBe(sourceHash);
   const reports=JSON.parse(readFileSync('deliverables/written-pdf-validation.json','utf8'));
