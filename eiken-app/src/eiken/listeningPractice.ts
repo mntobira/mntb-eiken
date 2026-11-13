@@ -28,7 +28,7 @@ function roleToTurnWho(roleLabel: string, speaker: string): string {
   return roleLabel;
 }
 
-function buildTrackMaterial(unit: ListeningAudioUnit): TrackMaterial | undefined {
+function buildTrackMaterial(unit: ListeningAudioUnit, resolvedImageUrl?: string): TrackMaterial | undefined {
   if (!unit.material) return undefined;
   const sections: NonNullable<TrackMaterial['sections']> = [
     { heading: 'Situation', rows: [unit.material.situation] },
@@ -47,6 +47,9 @@ function buildTrackMaterial(unit: ListeningAudioUnit): TrackMaterial | undefined
             rows: unit.material.rows.map(r => [...r]),
           }
         : undefined,
+    images: resolvedImageUrl
+      ? [{ src: resolvedImageUrl, caption: unit.image?.sceneSummaryJa || unit.material.title }]
+      : undefined,
   };
 }
 
@@ -112,7 +115,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
     audioUrl: undefined,
     script,
     turns,
-    material: buildTrackMaterial(unit),
+    material: buildTrackMaterial(unit, resolvedImageUrl),
     translation: unit.translation,
     keyPhrases: unit.questions.map(q => ({
       phrase: q.evidence,
