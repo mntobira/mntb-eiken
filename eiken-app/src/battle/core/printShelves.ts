@@ -1,17 +1,40 @@
 import type { GachaPrintDef } from '../../data/gachaPrints.generated';
 
 /**
- * PDF の棚（2026-11-04 ご要望「ショップの PDF があふれているので分野ごとに整理（地方ごとなど）」）。
- *   ショップの「PDF」・マイPDF で、種類のチップの下に棚のチップを出して絞り込む。
- *   大学別の予想問題は地方ごとの棚に分ける。棚が決まらない PDF は「その他」。
- *   ★新しい大学の予想問題を足したら UNIV_REGION に1行足す★（tests/printShelves.test.ts が見張る）
+ * PDF の棚（英検版向けに種類別・級帯別に整理）。
+ *   ショップの「PDF」・マイPDF・ガチャの「提供割合 › コレクション › 学習プリント」で共通利用し、
+ *   138冊すべてのPDF景品を種類ごとに一目で絞り込めるようにする。
  */
 export type PrintShelfId =
-  | 'kyotsu' | 'hokkaido_tohoku' | 'kanto_chubu' | 'kinki' | 'chugoku_shikoku' | 'kyushu_okinawa'
-  | 'book' | 'english' | 'chemistry' | 'math' | 'joho' | 'science' | 'trend' | 'other';
+  | 'eiken_written_basic'
+  | 'eiken_written_upper'
+  | 'eiken_wordbook'
+  | 'eiken_drill'
+  | 'eiken_writing'
+  | 'eiken_guide'
+  | 'kyotsu'
+  | 'hokkaido_tohoku'
+  | 'kanto_chubu'
+  | 'kinki'
+  | 'chugoku_shikoku'
+  | 'kyushu_okinawa'
+  | 'book'
+  | 'english'
+  | 'chemistry'
+  | 'math'
+  | 'joho'
+  | 'science'
+  | 'trend'
+  | 'other';
 
-/** 並び順もこの順（共通テスト → 大学別（北から） → 本 → 教科 → 出題傾向） */
+/** 並び順：英検の冊子（基礎級・上位級）→ 単語ノート → 短文スピード演習 → ライティング → 解法ガイド */
 export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
+  { id: 'eiken_written_basic', label: '冊子 5級〜準2級' },
+  { id: 'eiken_written_upper', label: '冊子 準2プラス〜準1級' },
+  { id: 'eiken_wordbook', label: '重点語・例文ノート' },
+  { id: 'eiken_drill', label: '大問1 スピード演習' },
+  { id: 'eiken_writing', label: 'ライティング実戦' },
+  { id: 'eiken_guide', label: '解法・時間配分ガイド' },
   { id: 'kyotsu', label: '共通テスト予想' },
   { id: 'hokkaido_tohoku', label: '2次 北海道・東北' },
   { id: 'kanto_chubu', label: '2次 関東・中部' },
@@ -19,7 +42,7 @@ export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
   { id: 'chugoku_shikoku', label: '2次 中国・四国' },
   { id: 'kyushu_okinawa', label: '2次 九州・沖縄' },
   { id: 'book', label: '完全版の本' },
-  { id: 'english', label: '英検' },
+  { id: 'english', label: '英検その他' },
   { id: 'chemistry', label: '化学' },
   { id: 'math', label: '数学' },
   { id: 'joho', label: '情報' },
@@ -56,7 +79,18 @@ export function univOfPrint(id: string): string | null {
 }
 
 export function printShelfOf(p: GachaPrintDef): PrintShelfId {
-  if (p.subject.startsWith('eiken_')) return 'english';
+  if (p.subject.startsWith('eiken_')) {
+    if (p.id.includes('_written_')) {
+      return ['eiken_pre2plus', 'eiken_2', 'eiken_pre1'].includes(p.subject)
+        ? 'eiken_written_upper'
+        : 'eiken_written_basic';
+    }
+    if (p.id.startsWith('print_eiken_wordbook')) return 'eiken_wordbook';
+    if (p.id.startsWith('print_eiken_drill_')) return 'eiken_drill';
+    if (p.id.startsWith('print_eiken_writing_')) return 'eiken_writing';
+    if (p.id.startsWith('print_eiken_guide_') || p.category === '出題傾向') return 'eiken_guide';
+    return 'english';
+  }
   if (p.id.startsWith('print_lr_kyotsu')) return 'kyotsu';
   const univ = univOfPrint(p.id);
   if (univ) return UNIV_REGION[univ] ?? 'other';

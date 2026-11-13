@@ -2,7 +2,10 @@ import { writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { WRITTEN_BOOKLETS } from '../src/eiken/materials/written-booklets';
 import { WRITTEN_BLUEPRINTS, validateWrittenExam } from '../src/eiken/writtenExamCore';
+import { EIKEN_UNITS } from '../src/eiken/questions';
 WRITTEN_BOOKLETS.forEach(exam=>validateWrittenExam(exam));
+const gradeIds=['eiken_5','eiken_4','eiken_3','eiken_pre2','eiken_pre2plus','eiken_2','eiken_pre1'] as const;
+writeFileSync('deliverables/eiken-writing-tasks.json',JSON.stringify(EIKEN_UNITS.map((u,i)=>({grade:gradeIds[i],theme:u.theme,focus:u.focus,writing:u.writing})),null,2)+'\n');
 const source=JSON.stringify(WRITTEN_BOOKLETS);
 writeFileSync('deliverables/written-booklets.json',JSON.stringify({
  sourceHash:createHash('sha256').update(source).digest('hex'),

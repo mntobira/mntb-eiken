@@ -25,72 +25,365 @@ export interface GachaPrintDef {
 export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
   {
     "id": "print_eiken_wordbook_5",
-    "label": "英検5級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検5級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_5",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_5.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_5.webp",
     "pages": 5,
-    "kb": 75
+    "kb": 77,
+    "description": "英検5級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_5",
+    "label": "英検5級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_5",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_5.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_5.webp",
+    "pages": 5,
+    "kb": 81,
+    "description": "英検5級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_4",
-    "label": "英検4級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検4級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_4",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_4.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_4.webp",
     "pages": 5,
-    "kb": 84
+    "kb": 85,
+    "description": "英検4級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_4",
+    "label": "英検4級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_4",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_4.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_4.webp",
+    "pages": 5,
+    "kb": 92,
+    "description": "英検4級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_3",
-    "label": "英検3級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検3級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_3",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_3.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_3.webp",
     "pages": 5,
-    "kb": 91
+    "kb": 93,
+    "description": "英検3級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_3",
+    "label": "英検3級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_3",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_3.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_3.webp",
+    "pages": 5,
+    "kb": 93,
+    "description": "英検3級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_pre2",
-    "label": "英検準2級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検準2級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_pre2",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_pre2.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_pre2.webp",
     "pages": 5,
-    "kb": 99
+    "kb": 101,
+    "description": "英検準2級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_pre2",
+    "label": "英検準2級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_pre2",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_pre2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_pre2.webp",
+    "pages": 5,
+    "kb": 105,
+    "description": "英検準2級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_pre2plus",
-    "label": "英検準2級プラス 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検準2級プラス 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_pre2plus",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_pre2plus.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_pre2plus.webp",
     "pages": 5,
-    "kb": 113
+    "kb": 114,
+    "description": "英検準2級プラスのアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_pre2plus",
+    "label": "英検準2級プラス 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_pre2plus",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_pre2plus.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_pre2plus.webp",
+    "pages": 5,
+    "kb": 107,
+    "description": "英検準2級プラスのアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_2",
-    "label": "英検2級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検2級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_2",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_2.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_2.webp",
     "pages": 5,
-    "kb": 109
+    "kb": 111,
+    "description": "英検2級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_2",
+    "label": "英検2級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_2",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_2.webp",
+    "pages": 5,
+    "kb": 105,
+    "description": "英検2級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
     "id": "print_eiken_wordbook_pre1",
-    "label": "英検準1級 重点語・例文ノート（30語・確認テスト）",
+    "label": "英検準1級 重点語・例文ノート①（基本1〜30語・確認テスト）",
     "subject": "eiken_pre1",
     "category": "単語テスト",
     "file": "/prints/print_eiken_wordbook_pre1.pdf",
     "thumb": "/prints/thumbs/print_eiken_wordbook_pre1.webp",
     "pages": 5,
-    "kb": 114
+    "kb": 117,
+    "description": "英検準1級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_pre1",
+    "label": "英検準1級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_pre1",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_pre1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_pre1.webp",
+    "pages": 5,
+    "kb": 114,
+    "description": "英検準1級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_drill_short_5",
+    "label": "英検5級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_5",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_5.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_5.webp",
+    "pages": 4,
+    "kb": 77,
+    "description": "英検5級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_4",
+    "label": "英検4級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_4",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_4.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_4.webp",
+    "pages": 4,
+    "kb": 80,
+    "description": "英検4級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_3",
+    "label": "英検3級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_3",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_3.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_3.webp",
+    "pages": 4,
+    "kb": 91,
+    "description": "英検3級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_pre2",
+    "label": "英検準2級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_pre2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_pre2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_pre2.webp",
+    "pages": 4,
+    "kb": 98,
+    "description": "英検準2級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_pre2plus",
+    "label": "英検準2級プラス 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_pre2plus",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_pre2plus.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_pre2plus.webp",
+    "pages": 4,
+    "kb": 115,
+    "description": "英検準2級プラスの大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_2",
+    "label": "英検2級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_2.webp",
+    "pages": 4,
+    "kb": 123,
+    "description": "英検2級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_pre1",
+    "label": "英検準1級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_pre1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_pre1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_pre1.webp",
+    "pages": 4,
+    "kb": 146,
+    "description": "英検準1級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_guide_5",
+    "label": "英検5級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_5",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_5.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_5.webp",
+    "pages": 4,
+    "kb": 91,
+    "description": "英検5級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_4",
+    "label": "英検4級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_4",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_4.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_4.webp",
+    "pages": 4,
+    "kb": 100,
+    "description": "英検4級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_3",
+    "label": "英検3級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_3",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_3.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_3.webp",
+    "pages": 4,
+    "kb": 98,
+    "description": "英検3級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_pre2",
+    "label": "英検準2級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_pre2",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_pre2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_pre2.webp",
+    "pages": 4,
+    "kb": 100,
+    "description": "英検準2級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_pre2plus",
+    "label": "英検準2級プラス 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_pre2plus",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_pre2plus.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_pre2plus.webp",
+    "pages": 4,
+    "kb": 104,
+    "description": "英検準2級プラスの大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_2",
+    "label": "英検2級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_2",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_2.webp",
+    "pages": 4,
+    "kb": 103,
+    "description": "英検2級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_guide_pre1",
+    "label": "英検準1級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_pre1",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_pre1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_pre1.webp",
+    "pages": 4,
+    "kb": 111,
+    "description": "英検準1級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
+    "id": "print_eiken_writing_3",
+    "label": "英検3級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_3",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_3.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_3.webp",
+    "pages": 4,
+    "kb": 75,
+    "description": "英検3級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
+  },
+  {
+    "id": "print_eiken_writing_pre2",
+    "label": "英検準2級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_pre2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_pre2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_pre2.webp",
+    "pages": 4,
+    "kb": 83,
+    "description": "英検準2級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
+  },
+  {
+    "id": "print_eiken_writing_pre2plus",
+    "label": "英検準2級プラス ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_pre2plus",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_pre2plus.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_pre2plus.webp",
+    "pages": 4,
+    "kb": 75,
+    "description": "英検準2級プラスのライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
+  },
+  {
+    "id": "print_eiken_writing_2",
+    "label": "英検2級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_2.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_2.webp",
+    "pages": 4,
+    "kb": 79,
+    "description": "英検2級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
+  },
+  {
+    "id": "print_eiken_writing_pre1",
+    "label": "英検準1級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_pre1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_pre1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_pre1.webp",
+    "pages": 4,
+    "kb": 92,
+    "description": "英検準1級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
   }
 ];
