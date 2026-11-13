@@ -1,30 +1,37 @@
 import { WRITTEN_5_R2, WRITTEN_5_R3 } from './reading-round-five';
 import { WRITTEN_5_R4, WRITTEN_5_R5, WRITTEN_5_R6 } from './reading-round-five-s1';
 import { WRITTEN_5_R7, WRITTEN_5_R8, WRITTEN_5_R9 } from './reading-round-five-s2';
+import { WRITTEN_5_R10, WRITTEN_5_R11, WRITTEN_5_R12 } from './reading-round-five-s3';
 import { READING_4 } from './reading-round-foundation';
 import { READING_4_R2, READING_4_R3 } from './reading-round-foundation-more';
 import { READING_4_R4, READING_4_R5, READING_4_R6 } from './reading-round-foundation-s1';
 import { READING_4_R7, READING_4_R8, READING_4_R9 } from './reading-round-foundation-s2';
+import { READING_4_R10, READING_4_R11, READING_4_R12 } from './reading-round-foundation-s3';
 import { READING_3 } from './reading-round-three';
 import { READING_3_R2, READING_3_R3 } from './reading-round-three-more';
 import { READING_3_R4, READING_3_R5, READING_3_R6 } from './reading-round-three-s1';
 import { READING_3_R7, READING_3_R8, READING_3_R9 } from './reading-round-three-s2';
+import { READING_3_R10, READING_3_R11, READING_3_R12 } from './reading-round-three-s3';
 import { READING_PRE2 } from './reading-round-pre-two';
 import { READING_PRE2_R2, READING_PRE2_R3 } from './reading-round-pre-two-more';
 import { READING_PRE2_R4, READING_PRE2_R5, READING_PRE2_R6 } from './reading-round-pre-two-s1';
 import { READING_PRE2_R7, READING_PRE2_R8, READING_PRE2_R9 } from './reading-round-pre-two-s2';
+import { READING_PRE2_R10, READING_PRE2_R11, READING_PRE2_R12 } from './reading-round-pre-two-s3';
 import { READING_PLUS } from './reading-round-bridge';
 import { READING_PLUS_R2, READING_PLUS_R3 } from './reading-round-bridge-more';
 import { READING_PLUS_R4, READING_PLUS_R5, READING_PLUS_R6 } from './reading-round-bridge-s1';
 import { READING_PLUS_R7, READING_PLUS_R8, READING_PLUS_R9 } from './reading-round-bridge-s2';
+import { READING_PLUS_R10, READING_PLUS_R11, READING_PLUS_R12 } from './reading-round-bridge-s3';
 import { READING_2 } from './reading-round-two';
 import { READING_2_R2, READING_2_R3 } from './reading-round-two-more';
 import { READING_2_R4, READING_2_R5, READING_2_R6 } from './reading-round-two-s1';
 import { READING_2_R7, READING_2_R8, READING_2_R9 } from './reading-round-two-s2';
+import { READING_2_R10, READING_2_R11, READING_2_R12 } from './reading-round-two-s3';
 import { READING_PRE1 } from './reading-round-pre-one';
 import { READING_PRE1_R2, READING_PRE1_R3 } from './reading-round-pre-one-more';
 import { READING_PRE1_R4, READING_PRE1_R5, READING_PRE1_R6 } from './reading-round-pre-one-s1';
 import { READING_PRE1_R7, READING_PRE1_R8, READING_PRE1_R9 } from './reading-round-pre-one-s2';
+import { READING_PRE1_R10, READING_PRE1_R11, READING_PRE1_R12 } from './reading-round-pre-one-s3';
 import { validateWrittenExam, type WrittenExam, type WrittenItem } from '../writtenExamCore';
 
 const id='eiken_5_written_01';
@@ -66,5 +73,5 @@ export const WRITTEN_BOOKLETS:readonly WrittenExam[]=[{
   order(24,'あなたはどうやって学校へ行きますか。','How',['get','you','to school','do'],[4,2,1,3],['2－1','4－3','4－1','1－2'],2,'How do you get to school?','How＋do＋主語＋動詞で手段を尋ねる。1番目は④do、3番目は①get。'),
   order(25,'その本をこの机の上に置いてください。','Please',['the book','this desk','on','put'],[4,1,3,2],['4－3','1－2','3－4','4－2'],0,'Please put the book on this desk.','put＋物＋場所で「物をある場所に置く」。on this deskは「この机の上に」。1番目は④put、3番目は③on。'),
  ]
-},WRITTEN_5_R2,WRITTEN_5_R3,WRITTEN_5_R4,WRITTEN_5_R5,WRITTEN_5_R6,WRITTEN_5_R7,WRITTEN_5_R8,WRITTEN_5_R9,READING_4,READING_4_R2,READING_4_R3,READING_4_R4,READING_4_R5,READING_4_R6,READING_4_R7,READING_4_R8,READING_4_R9,READING_3,READING_3_R2,READING_3_R3,READING_3_R4,READING_3_R5,READING_3_R6,READING_3_R7,READING_3_R8,READING_3_R9,READING_PRE2,READING_PRE2_R2,READING_PRE2_R3,READING_PRE2_R4,READING_PRE2_R5,READING_PRE2_R6,READING_PRE2_R7,READING_PRE2_R8,READING_PRE2_R9,READING_PLUS,READING_PLUS_R2,READING_PLUS_R3,READING_PLUS_R4,READING_PLUS_R5,READING_PLUS_R6,READING_PLUS_R7,READING_PLUS_R8,READING_PLUS_R9,READING_2,READING_2_R2,READING_2_R3,READING_2_R4,READING_2_R5,READING_2_R6,READING_2_R7,READING_2_R8,READING_2_R9,READING_PRE1,READING_PRE1_R2,READING_PRE1_R3,READING_PRE1_R4,READING_PRE1_R5,READING_PRE1_R6,READING_PRE1_R7,READING_PRE1_R8,READING_PRE1_R9];
+},WRITTEN_5_R2,WRITTEN_5_R3,WRITTEN_5_R4,WRITTEN_5_R5,WRITTEN_5_R6,WRITTEN_5_R7,WRITTEN_5_R8,WRITTEN_5_R9,WRITTEN_5_R10,WRITTEN_5_R11,WRITTEN_5_R12,READING_4,READING_4_R2,READING_4_R3,READING_4_R4,READING_4_R5,READING_4_R6,READING_4_R7,READING_4_R8,READING_4_R9,READING_4_R10,READING_4_R11,READING_4_R12,READING_3,READING_3_R2,READING_3_R3,READING_3_R4,READING_3_R5,READING_3_R6,READING_3_R7,READING_3_R8,READING_3_R9,READING_3_R10,READING_3_R11,READING_3_R12,READING_PRE2,READING_PRE2_R2,READING_PRE2_R3,READING_PRE2_R4,READING_PRE2_R5,READING_PRE2_R6,READING_PRE2_R7,READING_PRE2_R8,READING_PRE2_R9,READING_PRE2_R10,READING_PRE2_R11,READING_PRE2_R12,READING_PLUS,READING_PLUS_R2,READING_PLUS_R3,READING_PLUS_R4,READING_PLUS_R5,READING_PLUS_R6,READING_PLUS_R7,READING_PLUS_R8,READING_PLUS_R9,READING_PLUS_R10,READING_PLUS_R11,READING_PLUS_R12,READING_2,READING_2_R2,READING_2_R3,READING_2_R4,READING_2_R5,READING_2_R6,READING_2_R7,READING_2_R8,READING_2_R9,READING_2_R10,READING_2_R11,READING_2_R12,READING_PRE1,READING_PRE1_R2,READING_PRE1_R3,READING_PRE1_R4,READING_PRE1_R5,READING_PRE1_R6,READING_PRE1_R7,READING_PRE1_R8,READING_PRE1_R9,READING_PRE1_R10,READING_PRE1_R11,READING_PRE1_R12];
 WRITTEN_BOOKLETS.forEach(booklet=>validateWrittenExam(booklet));

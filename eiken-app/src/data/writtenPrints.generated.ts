@@ -308,6 +308,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
     ]
   },
   {
+    "id": "print_eiken_5_written_10",
+    "label": "英検5級 筆記 第10回（25問・問題／解答用紙／解説）",
+    "subject": "eiken_5",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_5_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_5_written_10.webp",
+    "pages": 16,
+    "kb": 234,
+    "description": "筆記1回分・25問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_10_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_10_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_10_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_5_written_11",
+    "label": "英検5級 筆記 第11回（25問・問題／解答用紙／解説）",
+    "subject": "eiken_5",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_5_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_5_written_11.webp",
+    "pages": 16,
+    "kb": 243,
+    "description": "筆記1回分・25問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_11_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_11_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_11_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_5_written_12",
+    "label": "英検5級 筆記 第12回（25問・問題／解答用紙／解説）",
+    "subject": "eiken_5",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_5_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_5_written_12.webp",
+    "pages": 16,
+    "kb": 238,
+    "description": "筆記1回分・25問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_5_written_12_questions.pdf",
+        "pages": 5,
+        "start": 1,
+        "end": 5
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_5_written_12_answers.pdf",
+        "pages": 1,
+        "start": 6,
+        "end": 6
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_5_written_12_explanations.pdf",
+        "pages": 10,
+        "start": 7,
+        "end": 16
+      }
+    ]
+  },
+  {
     "id": "print_eiken_4_written_01",
     "label": "英検4級 リーディング 第1回（35問・問題／解答用紙／解説）",
     "subject": "eiken_4",
@@ -607,6 +709,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
       {
         "label": "解答・解説",
         "file": "/prints/print_eiken_4_written_09_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_4_written_10",
+    "label": "英検4級 リーディング 第10回（35問・問題／解答用紙／解説）",
+    "subject": "eiken_4",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_4_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_4_written_10.webp",
+    "pages": 27,
+    "kb": 314,
+    "description": "リーディング1回分・35問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_10_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_10_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_10_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_4_written_11",
+    "label": "英検4級 リーディング 第11回（35問・問題／解答用紙／解説）",
+    "subject": "eiken_4",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_4_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_4_written_11.webp",
+    "pages": 27,
+    "kb": 307,
+    "description": "リーディング1回分・35問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_11_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_11_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_11_explanations.pdf",
+        "pages": 15,
+        "start": 13,
+        "end": 27
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_4_written_12",
+    "label": "英検4級 リーディング 第12回（35問・問題／解答用紙／解説）",
+    "subject": "eiken_4",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_4_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_4_written_12.webp",
+    "pages": 27,
+    "kb": 316,
+    "description": "リーディング1回分・35問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_4_written_12_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_4_written_12_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_4_written_12_explanations.pdf",
         "pages": 15,
         "start": 13,
         "end": 27
@@ -920,6 +1124,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
     ]
   },
   {
+    "id": "print_eiken_3_written_10",
+    "label": "英検3級 リーディング 第10回（30問・問題／解答用紙／解説）",
+    "subject": "eiken_3",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_3_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_3_written_10.webp",
+    "pages": 23,
+    "kb": 299,
+    "description": "リーディング1回分・30問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_10_questions.pdf",
+        "pages": 8,
+        "start": 1,
+        "end": 8
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_10_answers.pdf",
+        "pages": 1,
+        "start": 9,
+        "end": 9
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_10_explanations.pdf",
+        "pages": 14,
+        "start": 10,
+        "end": 23
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_3_written_11",
+    "label": "英検3級 リーディング 第11回（30問・問題／解答用紙／解説）",
+    "subject": "eiken_3",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_3_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_3_written_11.webp",
+    "pages": 23,
+    "kb": 315,
+    "description": "リーディング1回分・30問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_11_questions.pdf",
+        "pages": 8,
+        "start": 1,
+        "end": 8
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_11_answers.pdf",
+        "pages": 1,
+        "start": 9,
+        "end": 9
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_11_explanations.pdf",
+        "pages": 14,
+        "start": 10,
+        "end": 23
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_3_written_12",
+    "label": "英検3級 リーディング 第12回（30問・問題／解答用紙／解説）",
+    "subject": "eiken_3",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_3_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_3_written_12.webp",
+    "pages": 24,
+    "kb": 314,
+    "description": "リーディング1回分・30問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_3_written_12_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_3_written_12_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_3_written_12_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ]
+  },
+  {
     "id": "print_eiken_pre2_written_01",
     "label": "英検準2級 リーディング 第1回（29問・問題／解答用紙／解説）",
     "subject": "eiken_pre2",
@@ -1219,6 +1525,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
       {
         "label": "解答・解説",
         "file": "/prints/print_eiken_pre2_written_09_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre2_written_10",
+    "label": "英検準2級 リーディング 第10回（29問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2_written_10.webp",
+    "pages": 24,
+    "kb": 337,
+    "description": "リーディング1回分・29問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_10_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_10_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_10_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre2_written_11",
+    "label": "英検準2級 リーディング 第11回（29問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2_written_11.webp",
+    "pages": 24,
+    "kb": 343,
+    "description": "リーディング1回分・29問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_11_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_11_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_11_explanations.pdf",
+        "pages": 14,
+        "start": 11,
+        "end": 24
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre2_written_12",
+    "label": "英検準2級 リーディング 第12回（29問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2_written_12.webp",
+    "pages": 24,
+    "kb": 345,
+    "description": "リーディング1回分・29問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2_written_12_questions.pdf",
+        "pages": 9,
+        "start": 1,
+        "end": 9
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2_written_12_answers.pdf",
+        "pages": 1,
+        "start": 10,
+        "end": 10
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2_written_12_explanations.pdf",
         "pages": 14,
         "start": 11,
         "end": 24
@@ -1532,6 +1940,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
     ]
   },
   {
+    "id": "print_eiken_pre2plus_written_10",
+    "label": "英検準2級プラス リーディング 第10回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2plus",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2plus_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2plus_written_10.webp",
+    "pages": 29,
+    "kb": 365,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_10_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_10_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_10_explanations.pdf",
+        "pages": 17,
+        "start": 13,
+        "end": 29
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre2plus_written_11",
+    "label": "英検準2級プラス リーディング 第11回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2plus",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2plus_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2plus_written_11.webp",
+    "pages": 30,
+    "kb": 373,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_11_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_11_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_11_explanations.pdf",
+        "pages": 18,
+        "start": 13,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre2plus_written_12",
+    "label": "英検準2級プラス リーディング 第12回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre2plus",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre2plus_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre2plus_written_12.webp",
+    "pages": 29,
+    "kb": 383,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre2plus_written_12_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre2plus_written_12_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre2plus_written_12_explanations.pdf",
+        "pages": 17,
+        "start": 13,
+        "end": 29
+      }
+    ]
+  },
+  {
     "id": "print_eiken_2_written_01",
     "label": "英検2級 リーディング 第1回（31問・問題／解答用紙／解説）",
     "subject": "eiken_2",
@@ -1834,6 +2344,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
         "pages": 18,
         "start": 14,
         "end": 31
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_2_written_10",
+    "label": "英検2級 リーディング 第10回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_2_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_2_written_10.webp",
+    "pages": 31,
+    "kb": 392,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_10_questions.pdf",
+        "pages": 12,
+        "start": 1,
+        "end": 12
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_10_answers.pdf",
+        "pages": 1,
+        "start": 13,
+        "end": 13
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_10_explanations.pdf",
+        "pages": 18,
+        "start": 14,
+        "end": 31
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_2_written_11",
+    "label": "英検2級 リーディング 第11回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_2_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_2_written_11.webp",
+    "pages": 30,
+    "kb": 395,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_11_questions.pdf",
+        "pages": 11,
+        "start": 1,
+        "end": 11
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_11_answers.pdf",
+        "pages": 1,
+        "start": 12,
+        "end": 12
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_11_explanations.pdf",
+        "pages": 18,
+        "start": 13,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_2_written_12",
+    "label": "英検2級 リーディング 第12回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_2",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_2_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_2_written_12.webp",
+    "pages": 32,
+    "kb": 385,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_2_written_12_questions.pdf",
+        "pages": 12,
+        "start": 1,
+        "end": 12
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_2_written_12_answers.pdf",
+        "pages": 1,
+        "start": 13,
+        "end": 13
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_2_written_12_explanations.pdf",
+        "pages": 19,
+        "start": 14,
+        "end": 32
       }
     ]
   },
@@ -2142,6 +2754,108 @@ export const WRITTEN_PRINTS: readonly GachaPrintDef[] = [
         "end": 30
       }
     ]
+  },
+  {
+    "id": "print_eiken_pre1_written_10",
+    "label": "英検準1級 リーディング 第10回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre1_written_10.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre1_written_10.webp",
+    "pages": 30,
+    "kb": 435,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_10_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_10_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_10_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre1_written_11",
+    "label": "英検準1級 リーディング 第11回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre1_written_11.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre1_written_11.webp",
+    "pages": 30,
+    "kb": 439,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_11_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_11_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_11_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ]
+  },
+  {
+    "id": "print_eiken_pre1_written_12",
+    "label": "英検準1級 リーディング 第12回（31問・問題／解答用紙／解説）",
+    "subject": "eiken_pre1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_pre1_written_12.pdf",
+    "thumb": "/prints/thumbs/print_eiken_pre1_written_12.webp",
+    "pages": 30,
+    "kb": 431,
+    "description": "リーディング1回分・31問。問題・解答用紙・解説を分離して印刷できます。リスニング・英作文は含みません。同じ原本をアプリの分野別練習で利用できます。外部難度校正は未実施。",
+    "variants": [
+      {
+        "label": "問題冊子",
+        "file": "/prints/print_eiken_pre1_written_12_questions.pdf",
+        "pages": 10,
+        "start": 1,
+        "end": 10
+      },
+      {
+        "label": "解答用紙",
+        "file": "/prints/print_eiken_pre1_written_12_answers.pdf",
+        "pages": 1,
+        "start": 11,
+        "end": 11
+      },
+      {
+        "label": "解答・解説",
+        "file": "/prints/print_eiken_pre1_written_12_explanations.pdf",
+        "pages": 19,
+        "start": 12,
+        "end": 30
+      }
+    ]
   }
 ];
 export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
@@ -2190,6 +2904,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_5_written_09_p2.webp",
     "/prints/previews/print_eiken_5_written_09_p8.webp"
   ],
+  "print_eiken_5_written_10": [
+    "/prints/previews/print_eiken_5_written_10_p1.webp",
+    "/prints/previews/print_eiken_5_written_10_p2.webp",
+    "/prints/previews/print_eiken_5_written_10_p8.webp"
+  ],
+  "print_eiken_5_written_11": [
+    "/prints/previews/print_eiken_5_written_11_p1.webp",
+    "/prints/previews/print_eiken_5_written_11_p2.webp",
+    "/prints/previews/print_eiken_5_written_11_p8.webp"
+  ],
+  "print_eiken_5_written_12": [
+    "/prints/previews/print_eiken_5_written_12_p1.webp",
+    "/prints/previews/print_eiken_5_written_12_p2.webp",
+    "/prints/previews/print_eiken_5_written_12_p8.webp"
+  ],
   "print_eiken_4_written_01": [
     "/prints/previews/print_eiken_4_written_01_p1.webp",
     "/prints/previews/print_eiken_4_written_01_p2.webp",
@@ -2234,6 +2963,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_4_written_09_p1.webp",
     "/prints/previews/print_eiken_4_written_09_p2.webp",
     "/prints/previews/print_eiken_4_written_09_p14.webp"
+  ],
+  "print_eiken_4_written_10": [
+    "/prints/previews/print_eiken_4_written_10_p1.webp",
+    "/prints/previews/print_eiken_4_written_10_p2.webp",
+    "/prints/previews/print_eiken_4_written_10_p14.webp"
+  ],
+  "print_eiken_4_written_11": [
+    "/prints/previews/print_eiken_4_written_11_p1.webp",
+    "/prints/previews/print_eiken_4_written_11_p2.webp",
+    "/prints/previews/print_eiken_4_written_11_p14.webp"
+  ],
+  "print_eiken_4_written_12": [
+    "/prints/previews/print_eiken_4_written_12_p1.webp",
+    "/prints/previews/print_eiken_4_written_12_p2.webp",
+    "/prints/previews/print_eiken_4_written_12_p14.webp"
   ],
   "print_eiken_3_written_01": [
     "/prints/previews/print_eiken_3_written_01_p1.webp",
@@ -2280,6 +3024,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_3_written_09_p2.webp",
     "/prints/previews/print_eiken_3_written_09_p12.webp"
   ],
+  "print_eiken_3_written_10": [
+    "/prints/previews/print_eiken_3_written_10_p1.webp",
+    "/prints/previews/print_eiken_3_written_10_p2.webp",
+    "/prints/previews/print_eiken_3_written_10_p11.webp"
+  ],
+  "print_eiken_3_written_11": [
+    "/prints/previews/print_eiken_3_written_11_p1.webp",
+    "/prints/previews/print_eiken_3_written_11_p2.webp",
+    "/prints/previews/print_eiken_3_written_11_p11.webp"
+  ],
+  "print_eiken_3_written_12": [
+    "/prints/previews/print_eiken_3_written_12_p1.webp",
+    "/prints/previews/print_eiken_3_written_12_p2.webp",
+    "/prints/previews/print_eiken_3_written_12_p12.webp"
+  ],
   "print_eiken_pre2_written_01": [
     "/prints/previews/print_eiken_pre2_written_01_p1.webp",
     "/prints/previews/print_eiken_pre2_written_01_p2.webp",
@@ -2324,6 +3083,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_pre2_written_09_p1.webp",
     "/prints/previews/print_eiken_pre2_written_09_p2.webp",
     "/prints/previews/print_eiken_pre2_written_09_p12.webp"
+  ],
+  "print_eiken_pre2_written_10": [
+    "/prints/previews/print_eiken_pre2_written_10_p1.webp",
+    "/prints/previews/print_eiken_pre2_written_10_p2.webp",
+    "/prints/previews/print_eiken_pre2_written_10_p12.webp"
+  ],
+  "print_eiken_pre2_written_11": [
+    "/prints/previews/print_eiken_pre2_written_11_p1.webp",
+    "/prints/previews/print_eiken_pre2_written_11_p2.webp",
+    "/prints/previews/print_eiken_pre2_written_11_p12.webp"
+  ],
+  "print_eiken_pre2_written_12": [
+    "/prints/previews/print_eiken_pre2_written_12_p1.webp",
+    "/prints/previews/print_eiken_pre2_written_12_p2.webp",
+    "/prints/previews/print_eiken_pre2_written_12_p12.webp"
   ],
   "print_eiken_pre2plus_written_01": [
     "/prints/previews/print_eiken_pre2plus_written_01_p1.webp",
@@ -2370,6 +3144,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_pre2plus_written_09_p2.webp",
     "/prints/previews/print_eiken_pre2plus_written_09_p14.webp"
   ],
+  "print_eiken_pre2plus_written_10": [
+    "/prints/previews/print_eiken_pre2plus_written_10_p1.webp",
+    "/prints/previews/print_eiken_pre2plus_written_10_p2.webp",
+    "/prints/previews/print_eiken_pre2plus_written_10_p14.webp"
+  ],
+  "print_eiken_pre2plus_written_11": [
+    "/prints/previews/print_eiken_pre2plus_written_11_p1.webp",
+    "/prints/previews/print_eiken_pre2plus_written_11_p2.webp",
+    "/prints/previews/print_eiken_pre2plus_written_11_p14.webp"
+  ],
+  "print_eiken_pre2plus_written_12": [
+    "/prints/previews/print_eiken_pre2plus_written_12_p1.webp",
+    "/prints/previews/print_eiken_pre2plus_written_12_p2.webp",
+    "/prints/previews/print_eiken_pre2plus_written_12_p14.webp"
+  ],
   "print_eiken_2_written_01": [
     "/prints/previews/print_eiken_2_written_01_p1.webp",
     "/prints/previews/print_eiken_2_written_01_p2.webp",
@@ -2415,6 +3204,21 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_2_written_09_p2.webp",
     "/prints/previews/print_eiken_2_written_09_p15.webp"
   ],
+  "print_eiken_2_written_10": [
+    "/prints/previews/print_eiken_2_written_10_p1.webp",
+    "/prints/previews/print_eiken_2_written_10_p2.webp",
+    "/prints/previews/print_eiken_2_written_10_p15.webp"
+  ],
+  "print_eiken_2_written_11": [
+    "/prints/previews/print_eiken_2_written_11_p1.webp",
+    "/prints/previews/print_eiken_2_written_11_p2.webp",
+    "/prints/previews/print_eiken_2_written_11_p14.webp"
+  ],
+  "print_eiken_2_written_12": [
+    "/prints/previews/print_eiken_2_written_12_p1.webp",
+    "/prints/previews/print_eiken_2_written_12_p2.webp",
+    "/prints/previews/print_eiken_2_written_12_p15.webp"
+  ],
   "print_eiken_pre1_written_01": [
     "/prints/previews/print_eiken_pre1_written_01_p1.webp",
     "/prints/previews/print_eiken_pre1_written_01_p2.webp",
@@ -2459,5 +3263,20 @@ export const WRITTEN_PREVIEWS: Readonly<Record<string, readonly string[]>> = {
     "/prints/previews/print_eiken_pre1_written_09_p1.webp",
     "/prints/previews/print_eiken_pre1_written_09_p2.webp",
     "/prints/previews/print_eiken_pre1_written_09_p13.webp"
+  ],
+  "print_eiken_pre1_written_10": [
+    "/prints/previews/print_eiken_pre1_written_10_p1.webp",
+    "/prints/previews/print_eiken_pre1_written_10_p2.webp",
+    "/prints/previews/print_eiken_pre1_written_10_p13.webp"
+  ],
+  "print_eiken_pre1_written_11": [
+    "/prints/previews/print_eiken_pre1_written_11_p1.webp",
+    "/prints/previews/print_eiken_pre1_written_11_p2.webp",
+    "/prints/previews/print_eiken_pre1_written_11_p13.webp"
+  ],
+  "print_eiken_pre1_written_12": [
+    "/prints/previews/print_eiken_pre1_written_12_p1.webp",
+    "/prints/previews/print_eiken_pre1_written_12_p2.webp",
+    "/prints/previews/print_eiken_pre1_written_12_p13.webp"
   ]
 };
