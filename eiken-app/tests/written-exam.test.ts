@@ -11,7 +11,7 @@ import {
 } from '../src/eiken/writtenExamCore';
 import { GRADE_AUTHORING_SPECS, buildPrimaryBundleRef } from '../src/eiken/writtenAuthoringSpec';
 import { WRITTEN_BOOKLETS } from '../src/eiken/materials/written-booklets';
-import { bookletWritingTasks } from '../src/eiken/writtenPractice';
+import { bookletSectionChapters, bookletWritingTasks, getGradeDaimonSpecs } from '../src/eiken/writtenPractice';
 import { EIKEN_WRITING_TASKS } from '../src/components/EikenWriting';
 import { createHash } from 'node:crypto';
 import { partsForGrade } from '../src/eiken/questions';
@@ -362,7 +362,52 @@ describe('written booklets — same original for print, field practice, and writ
       expect(perfect.writingDone).toBe(2);
       expect(perfect.writingTotal).toBe(2);
       expect(parseMockState('invalid-json').sessions).toEqual({});
+
+      // Scoped per-daimon scoring (大問1 short = 15Q, 大問2 conversation = 5Q, 大問4 email = 1 writing)
+      const shortOnly = scoreMockExam(exam, allCorrectAnswers, writingEntries, 'short');
+      expect(shortOnly.total).toBe(15);
+      expect(shortOnly.correct).toBe(15);
+      expect(shortOnly.writingTotal).toBe(0);
+
+      const convOnly = scoreMockExam(exam, allCorrectAnswers, writingEntries, 'conversation');
+      expect(convOnly.total).toBe(5);
+      expect(convOnly.correct).toBe(5);
+
+      const emailOnly = scoreMockExam(exam, allCorrectAnswers, writingEntries, 'email');
+      expect(emailOnly.total).toBe(0);
+      expect(emailOnly.writingTotal).toBe(1);
+      expect(emailOnly.writingDone).toBe(1);
     });
+  });
+
+  it('organizes every grade into official Daimon 1..N tabs with ascending round order', () => {
+    expect(getGradeDaimonSpecs('eiken_3').map((s) => [s.daimonNo, s.section, s.kind])).toEqual([
+      [1, 'short', 'choice'],
+      [2, 'conversation', 'choice'],
+      [3, 'reading', 'choice'],
+      [4, 'email', 'writing'],
+      [5, 'essay', 'writing'],
+    ]);
+    expect(getGradeDaimonSpecs('eiken_pre2').map((s) => [s.daimonNo, s.section, s.kind])).toEqual([
+      [1, 'short', 'choice'],
+      [2, 'conversation', 'choice'],
+      [3, 'cloze', 'choice'],
+      [4, 'reading', 'choice'],
+      [5, 'email', 'writing'],
+      [6, 'essay', 'writing'],
+    ]);
+    expect(getGradeDaimonSpecs('eiken_2').map((s) => [s.daimonNo, s.section, s.kind])).toEqual([
+      [1, 'short', 'choice'],
+      [2, 'cloze', 'choice'],
+      [3, 'reading', 'choice'],
+      [4, 'summary', 'writing'],
+      [5, 'essay', 'writing'],
+    ]);
+    const g3Short = bookletSectionChapters('eiken_3', 'short', '大問1 短文の語句空所補充');
+    expect(g3Short).toHaveLength(15);
+    expect(g3Short.map((c) => c.id)).toEqual(
+      Array.from({ length: 15 }, (_, i) => `eiken_3_written_${String(i + 1).padStart(2, '0')}_short`),
+    );
   });
 
   it('requires 15 distinct complete rounds rather than relabelled copies', () => {

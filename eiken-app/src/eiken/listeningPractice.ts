@@ -199,6 +199,78 @@ export function listeningBookletChapters(
     });
 }
 
+export interface GradeListeningPartSpec {
+  partId: ListeningPartId;
+  partNo: number;
+  tabTitle: string;
+  shortLabel: string;
+  questionCount: number;
+  audioUnitCount: number;
+}
+
+/** 級ごとの本番リスニング部構成（第1部〜第3部／1級は第4部）を LISTENING_BLUEPRINTS から一意に導出 */
+export function getGradeListeningPartSpecs(grade: EikenGrade): GradeListeningPartSpec[] {
+  const blueprint = LISTENING_BLUEPRINTS[grade];
+  if (!blueprint) return [];
+  return blueprint.parts.map((part, idx) => {
+    const partNo = idx + 1;
+    const shortLabel = part.label.replace(/^第\d+部\s*/, '');
+    return {
+      partId: part.id,
+      partNo,
+      tabTitle: `リスニング第${partNo}部 ${shortLabel}`,
+      shortLabel,
+      questionCount: part.questionCount,
+      audioUnitCount: part.audioUnitCount,
+    };
+  });
+}
+
+/**
+ * 特定のリスニング部（part1〜part4）だけを第1回〜第15回の昇順で並べた Chapter 配列を返す。
+ * 筆記の `bookletSectionChapters` と完全に同じ「01. 第1回 → 15. 第15回」構造を実現する。
+ */
+export function listeningPartChapters(
+  exams: readonly ListeningExamRound[],
+  grade: EikenGrade,
+  partId: ListeningPartId,
+  realTitle: string,
+): Chapter[] {
+  const blueprint = LISTENING_BLUEPRINTS[grade];
+  const partSpec = blueprint.parts.find(p => p.id === partId);
+  if (!partSpec) return [];
+
+  return exams
+    .filter(exam => exam.grade === grade && exam.review === 'approved')
+    .sort((a, b) => a.round - b.round)
+    .flatMap((exam): Chapter[] => {
+      const units = exam.units.filter(u => u.part === partId);
+      if (!units.length) return [];
+      const problems = units.map(unit => listeningUnitToProblem(exam, unit));
+      const marks = problems.reduce((sum, p) => sum + p.subQuestions.length, 0);
+      const fullTitle = `リスニング 第${exam.round}回｜${partSpec.label}`;
+      const shortCardTitle =
+        partSpec.questionsPerAudio > 1
+          ? `第${exam.round}回（${units.length}音源・計${marks}問）`
+          : `第${exam.round}回（全${marks}問）`;
+      return [
+        {
+          id: `${exam.id}_${partId}`,
+          title: fullTitle,
+          abstractTitle: shortCardTitle,
+          realTitle,
+          questionGroup: 'リスニング',
+          topics: [`${exam.theme}（${exam.scene}）`],
+          practiceProblems: problems,
+          miniTest: [],
+          readCount: partSpec.readCount,
+          marks,
+          speakers: 'M1・F1・F2' + (grade === 'eiken_1' ? '・M2' : ''),
+        },
+      ];
+    });
+}
+
 export function filterUnitsByPart(exam: ListeningExamRound, part: ListeningPartId): readonly ListeningAudioUnit[] {
   return exam.units.filter(u => u.part === part);
 }

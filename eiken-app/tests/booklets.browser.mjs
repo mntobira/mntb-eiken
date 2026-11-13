@@ -11,7 +11,7 @@ const labels = {
   conversation: '会話文の空所補充',
   reorder: '語句整序',
   cloze: '長文の語句空所補充',
-  reading: '読解',
+  reading: '長文の内容一致選択',
 };
 const gradeLabels = {
   eiken_5: '英検5級',
@@ -82,14 +82,11 @@ for (const selected of targets) {
           await page.locator('[data-home-practice]').click();
           await page.locator(`[data-study-card="${exam.grade}"]`).click();
           await page
-            .getByRole('tab', { name: section === 'reading' || section === 'cloze' ? /リーディング/ : /語彙・文法/ })
+            .getByRole('tab', { name: new RegExp(labels[section]) })
             .first()
             .click();
-          const kindLabel = exam.scope === 'reading' ? 'リーディング' : '筆記';
           await page
-            .locator('.unit-card')
-            .filter({ hasText: `${kindLabel} 第${exam.round}回｜${labels[section]}` })
-            .locator('.unit-card-primary')
+            .locator(`[data-unit-id="${exam.id}_${section}"] .unit-card-primary`)
             .click();
           for (const group of groups) {
             await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();

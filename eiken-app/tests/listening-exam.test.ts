@@ -37,11 +37,17 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       const listeningPart = partsForGrade(grade.id).find(p => p.section === 'listening');
       expect(listeningPart).toBeTruthy();
       const roundChapters = listeningPart!.chapters.filter(c => c.id.includes('_listening_r'));
-      expect(roundChapters).toHaveLength(15);
-      for (const ch of roundChapters) {
-        expect(ch.marks).toBe(bp.totalQuestions);
-        expect(ch.practiceProblems).toHaveLength(bp.totalAudioFiles);
+      expect(roundChapters).toHaveLength(15 * bp.parts.length);
+      for (const pSpec of bp.parts) {
+        const partChs = roundChapters.filter(c => c.id.endsWith(`_${pSpec.id}`));
+        expect(partChs).toHaveLength(15);
+        for (const ch of partChs) {
+          expect(ch.marks).toBe(pSpec.questionCount);
+          expect(ch.practiceProblems).toHaveLength(pSpec.audioUnitCount);
+        }
       }
+      expect(roundChapters.reduce((sum, ch) => sum + ch.marks, 0)).toBe(bp.totalQuestions * 15);
+      expect(roundChapters.reduce((sum, ch) => sum + ch.practiceProblems.length, 0)).toBe(bp.totalAudioFiles * 15);
     }
 
     expect(totalQuestions).toBe(3465);
