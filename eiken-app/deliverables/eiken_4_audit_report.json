@@ -1,0 +1,1213 @@
+{
+  "totalSlots": 150,
+  "directMatched": 139,
+  "repairedWithExistingZipImage": 5,
+  "retakeNeededCount": 6,
+  "items": [
+    {
+      "round": 1,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r01_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "学校の廊下で箱を持っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r01_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r01_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r01_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r01_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r01_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r01_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r01_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r01_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 1,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r01_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r02_part1_01.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "体育館の入口前で荷物を持っている",
+      "note": "台本は「体育館のドアを開けておいてほしい（hold the gym door open）」だが、画像が廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+    },
+    {
+      "round": 2,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r02_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r02_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r02_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r02_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r02_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r02_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r02_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r02_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 2,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r02_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r03_part1_01.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "ラジオのある居間で本を開いている",
+      "note": "台本は「居間のラジオの音量を下げてほしい（turn down the radio volume）」だが、画像が学校廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+    },
+    {
+      "round": 3,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r03_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r03_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r03_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r03_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r03_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r03_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r03_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r03_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 3,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r03_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r04_part1_01.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "教室の机でノートを見ている",
+      "note": "台本は「緑の蛍光ペンを貸してほしい（lend me your green highlighter）」だが、画像が廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+    },
+    {
+      "round": 4,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r04_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r04_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r04_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r04_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r04_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r04_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r04_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r04_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 4,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r04_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r05_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "食卓でスープ皿の前に座っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r05_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r05_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r05_part1_04.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本は「なぜ机の下を探しているの？（Why are you looking under the desk?）」だが、画像が昇降口の下駄箱前で立ち話する図になっているため取り直し推奨"
+    },
+    {
+      "round": 5,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r05_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r05_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r05_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r05_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r05_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 5,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r05_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r06_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "駅のコンコースで切符を持っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r06_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r06_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r06_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r06_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r06_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r06_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r06_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r06_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 6,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r06_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r07_part1_01.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "教室の壁の前で大きな白地図を持っている",
+      "note": "台本は「教室の壁地図を掛けるのを手伝ってほしい（help me hang this wall map）」だが、画像が廊下で本を持って話す図になっているため取り直し推奨"
+    },
+    {
+      "round": 7,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r07_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r07_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r07_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r07_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r07_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r07_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r07_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r07_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 7,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r07_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r08_part1_01.png",
+      "status": "retake_needed",
+      "sceneSummaryJa": "公園の花壇の前でカメラを差し出している",
+      "note": "台本は「花壇の前で写真を撮ってほしい（take a photo of us here）」だが、画像が学校廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+    },
+    {
+      "round": 8,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r08_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r08_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r08_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r08_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r08_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r08_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r08_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r08_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 8,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r08_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r09_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "日差しの入る教室の窓際に立っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r09_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r09_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r09_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r09_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r09_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r09_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r09_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r09_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 9,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r09_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r10_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "噴水近くのベンチのそばに立っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r10_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r10_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r10_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r10_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r10_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r10_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r10_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r10_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 10,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r10_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r11_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "駐輪場で自転車の横に立っている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r11_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r11_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r11_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r11_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r11_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r11_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r11_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r11_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 11,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r11_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r12_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "英語教室で開いた本を指さしている",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r12_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r12_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r12_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r12_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r12_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r12_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r12_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r12_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 12,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r12_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r13_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "体育館の床でボールとかごのそばにいる",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r13_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r13_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r13_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r13_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r13_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r13_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r13_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r13_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 13,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r13_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r14_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "小雨の昇降口で傘を差している",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r14_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r14_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r14_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r14_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r14_part1_06.png",
+      "status": "ok",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r14_part1_07.png",
+      "status": "ok",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r14_part1_08.png",
+      "status": "ok",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r14_part1_09.png",
+      "status": "ok",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 14,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r14_part1_10.png",
+      "status": "ok",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 1,
+      "file": "eiken_4_listening_r15_part1_01.png",
+      "status": "ok",
+      "sceneSummaryJa": "待合室のベンチ横でスーツケースのそばにいる",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 2,
+      "file": "eiken_4_listening_r15_part1_02.png",
+      "status": "ok",
+      "sceneSummaryJa": "中庭のベンチ近くで思い出話をしている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 3,
+      "file": "eiken_4_listening_r15_part1_03.png",
+      "status": "ok",
+      "sceneSummaryJa": "食堂のテーブルを挟んで2人が話している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 4,
+      "file": "eiken_4_listening_r15_part1_04.png",
+      "status": "ok",
+      "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 5,
+      "file": "eiken_4_listening_r15_part1_05.png",
+      "status": "ok",
+      "sceneSummaryJa": "机の前でメモを取りながら質問している補助イラスト",
+      "note": "台本・場面ともに一致（文字混入なし）"
+    },
+    {
+      "round": 15,
+      "questionNumber": 6,
+      "file": "eiken_4_listening_r15_part1_06.png",
+      "status": "repaired_by_r14_reuse",
+      "replacedWith": "eiken_4_listening_r14_part1_06.png",
+      "sceneSummaryJa": "電話の受話器を持って話している補助イラスト",
+      "note": "ZIP同梱R15-06は図書返却図だったため、台本（電話応対）と完全一致する同ZIP内のR14-06（電話図）を適用"
+    },
+    {
+      "round": 15,
+      "questionNumber": 7,
+      "file": "eiken_4_listening_r15_part1_07.png",
+      "status": "repaired_by_r14_reuse",
+      "replacedWith": "eiken_4_listening_r14_part1_07.png",
+      "sceneSummaryJa": "教室の机の間で少し頭を下げて謝っている補助イラスト",
+      "note": "ZIP同梱R15-07は凧揚げ図だったため、台本（ロッカーに辞書を忘れて謝る）と完全一致する同ZIP内のR14-07（教室で謝る図）を適用"
+    },
+    {
+      "round": 15,
+      "questionNumber": 8,
+      "file": "eiken_4_listening_r15_part1_08.png",
+      "status": "repaired_by_r14_reuse",
+      "replacedWith": "eiken_4_listening_r14_part1_08.png",
+      "sceneSummaryJa": "掲示板の近くでアイデアを話し合っている補助イラスト",
+      "note": "ZIP同梱R15-08は台所配膳図だったため、台本（掲示板前でひまわりの種まきを提案）と完全一致する同ZIP内のR14-08（掲示板前で相談図）を適用"
+    },
+    {
+      "round": 15,
+      "questionNumber": 9,
+      "file": "eiken_4_listening_r15_part1_09.png",
+      "status": "repaired_by_r14_reuse",
+      "replacedWith": "eiken_4_listening_r14_part1_09.png",
+      "sceneSummaryJa": "玄関で靴を履いて出かけようとしている補助イラスト",
+      "note": "ZIP同梱R15-09はベランダ水やり図だったため、台本（外出前の玄関でスカーフを持参するか相談）と完全一致する同ZIP内のR14-09（玄関外出図）を適用"
+    },
+    {
+      "round": 15,
+      "questionNumber": 10,
+      "file": "eiken_4_listening_r15_part1_10.png",
+      "status": "repaired_by_r14_reuse",
+      "replacedWith": "eiken_4_listening_r14_part1_10.png",
+      "sceneSummaryJa": "街角の歩道で道を尋ねている補助イラスト",
+      "note": "ZIP同梱R15-10は駅窓口図だったため、台本（街角で展望台への道を尋ねる）と完全一致する同ZIP内のR14-10（街角道案内図）を適用"
+    }
+  ]
+}

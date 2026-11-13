@@ -1,0 +1,264 @@
+{
+  "totalSlots": 300,
+  "reusedSlots": 258,
+  "generatedDeltaSlots": 10,
+  "remainingDeltaSlots": 32,
+  "remainingItems": [
+    {
+      "round": 5,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上の無地カレンダーを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が wall calendar（カレンダー）を指さすため"
+    },
+    {
+      "round": 5,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のテニスバッグを見ている場面",
+      "whyNewJa": "台本が tennis bag（テニスバッグ）のため"
+    },
+    {
+      "round": 5,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の手拭きタオルを見て数を話している場面",
+      "whyNewJa": "台本が clean hand towels（手拭きタオル）の数を尋ねるため"
+    },
+    {
+      "round": 6,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "書店のカウンターの上の絵はがきを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が picture postcard（絵はがき）を指さすため"
+    },
+    {
+      "round": 6,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の折りたたみ傘を見ている場面",
+      "whyNewJa": "台本が folding umbrella（折りたたみ傘）のため"
+    },
+    {
+      "round": 6,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の絵の具ボトルを見て数を話している場面",
+      "whyNewJa": "台本が bottles of paint（絵の具ボトル）の数を尋ねるため"
+    },
+    {
+      "round": 6,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r06_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで小さなキャンディを手渡している場面",
+      "whyNewJa": "台本が lemon candy（キャンディ）を手渡すため"
+    },
+    {
+      "round": 7,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "ギフト店のカウンターの上のキーホルダーを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が cute key chain（キーホルダー）を指さすため"
+    },
+    {
+      "round": 7,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のカメラケースを見ている場面",
+      "whyNewJa": "台本が camera case（カメラケース）のため"
+    },
+    {
+      "round": 7,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r07_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の水入れ用コップを見て数を話している場面",
+      "whyNewJa": "台本が paper cups for water（紙コップ）の数を尋ねるため"
+    },
+    {
+      "round": 8,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の麦わら帽子を見ている場面",
+      "whyNewJa": "台本が straw hat（麦わら帽子）のため"
+    },
+    {
+      "round": 8,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の消しゴムを見て数を話している場面",
+      "whyNewJa": "台本が pink erasers（消しゴム）の数を尋ねるため"
+    },
+    {
+      "round": 8,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r08_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで小さなチョコレートを手渡している場面",
+      "whyNewJa": "台本が small chocolate（チョコレート）を手渡すため"
+    },
+    {
+      "round": 9,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上のカラーペンセットの箱を指さして値段を尋ねている場面",
+      "whyNewJa": "台本が set of colored pens（色ペンセット）を指さすため"
+    },
+    {
+      "round": 9,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のバイオリンケースを見ている場面",
+      "whyNewJa": "台本が violin case（バイオリンケース）のため"
+    },
+    {
+      "round": 9,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r09_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで温かいお茶のマグカップを手渡している場面",
+      "whyNewJa": "台本が hot tea（温かいお茶）を手渡すため"
+    },
+    {
+      "round": 10,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のたたんだセーターを見ている場面",
+      "whyNewJa": "台本が warm sweater（セーター）のため"
+    },
+    {
+      "round": 10,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のテープのロールを見て数を話している場面",
+      "whyNewJa": "台本が rolls of tape（テープ）の数を尋ねるため"
+    },
+    {
+      "round": 10,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r10_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで手袋（軍手）を手渡している場面",
+      "whyNewJa": "台本が pair of clean gloves（手袋）を手渡すため"
+    },
+    {
+      "round": 11,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r11_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のランチバスケットを見ている場面",
+      "whyNewJa": "台本が lunch basket（お弁当バスケット）のため"
+    },
+    {
+      "round": 12,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "工作店のカウンターの上の液体のりボトルを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が bottle of glue（のりのボトル）を指さすため"
+    },
+    {
+      "round": 12,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のスティックのりを見て数を話している場面",
+      "whyNewJa": "台本が glue sticks（スティックのり）の数を尋ねるため"
+    },
+    {
+      "round": 12,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r12_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでハンドソープの小ボトルを手渡している場面",
+      "whyNewJa": "台本が hand soap（ハンドソープ）を手渡すため"
+    },
+    {
+      "round": 13,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "書店のカウンターの上の動物シールシートを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が animal sticker sheet（動物シール）を指さすため"
+    },
+    {
+      "round": 13,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のミトン手袋を見ている場面",
+      "whyNewJa": "台本が pair of mittens（ミトン手袋）のため"
+    },
+    {
+      "round": 13,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上の工作トレイと折り紙を見て数を話している場面",
+      "whyNewJa": "台本が plastic trays（トレイ）の数を尋ねるため"
+    },
+    {
+      "round": 13,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r13_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチで扇子を手渡している場面",
+      "whyNewJa": "台本が folding fan（扇子）を手渡すため"
+    },
+    {
+      "round": 14,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上の水筒を見ている場面",
+      "whyNewJa": "台本が water bottle（水筒）のため"
+    },
+    {
+      "round": 14,
+      "questionNumber": 9,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_09.png",
+      "category": "art",
+      "sceneSummaryJa": "美術室の机の上のマーカーペンを見て数を話している場面",
+      "whyNewJa": "台本が black markers（マーカーペン）の数を尋ねるため"
+    },
+    {
+      "round": 14,
+      "questionNumber": 10,
+      "targetPath": "/eiken_images/eiken_5_listening_r14_part1_10.png",
+      "category": "bench",
+      "sceneSummaryJa": "公園のベンチでブドウが入った小かごを手渡している場面",
+      "whyNewJa": "台本が basket of grapes（ブドウのかご）を手渡すため"
+    },
+    {
+      "round": 15,
+      "questionNumber": 4,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_04.png",
+      "category": "store",
+      "sceneSummaryJa": "店のカウンターの上のクリアファイルを指さして値段を尋ねている場面",
+      "whyNewJa": "台本が plastic file folder（クリアファイル）を指さすため"
+    },
+    {
+      "round": 15,
+      "questionNumber": 5,
+      "targetPath": "/eiken_images/eiken_5_listening_r15_part1_05.png",
+      "category": "living",
+      "sceneSummaryJa": "リビングのローテーブルの上のメガネを見ている場面",
+      "whyNewJa": "台本が pair of glasses（眼鏡）のため"
+    }
+  ]
+}
