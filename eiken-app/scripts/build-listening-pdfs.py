@@ -26,6 +26,7 @@ from reportlab.platypus import (
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from PIL import Image as PILImage
 import pymupdf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +52,15 @@ def brand_logo() -> RLImage:
     logo = RLImage(str(LOGO_PATH), width=132, height=42)
     logo.hAlign = 'RIGHT'
     return logo
+
+
+def make_rl_image(img_path: str, max_w: float, max_h: float) -> RLImage:
+    with PILImage.open(img_path) as im:
+        iw, ih = im.size
+    scale = min(max_w / max(1, iw), max_h / max(1, ih))
+    fig = RLImage(img_path, width=iw * scale, height=ih * scale)
+    fig.hAlign = 'LEFT'
+    return fig
 
 STYLES = {
     'cover_kicker': ParagraphStyle('cover_kicker', fontName='BookletJP', fontSize=10, leading=15, textColor=colors.HexColor('#1f5f66'), spaceAfter=8),
@@ -329,14 +339,15 @@ def build_question_and_explanation_booklets() -> list[dict]:
             story.append(p('【問題セクション】', 'h2'))
             for unit in exam['units']:
                 u_elems = []
+                img_local = RESOLVED_IMAGES.get(unit['audioId'])
                 if unit.get('material'):
+                    if img_local and Path(img_local).exists():
+                        u_elems.append(make_rl_image(img_local, 240, 52))
+                        u_elems.append(Spacer(1, 2))
                     u_elems.extend(render_material_table(unit['material']))
                 elif unit.get('image'):
-                    img_local = RESOLVED_IMAGES.get(unit['audioId'])
                     if img_local and Path(img_local).exists():
-                        fig = RLImage(img_local, width=168, height=126)
-                        fig.hAlign = 'LEFT'
-                        u_elems.append(fig)
+                        u_elems.append(make_rl_image(img_local, 168, 126))
                         u_elems.append(Spacer(1, 3))
                     else:
                         u_elems.append(p(f'［図版枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))

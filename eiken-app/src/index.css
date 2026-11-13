@@ -168,6 +168,17 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 .connection-check.is-compact { font-size: 11px; }
 .arena-connection-help > .connection-check { margin-top: 4px; }
 
+/* 英検 準1級・1級 第3部（Real-Life形式：比較表＋ヘッダー図版バナー併用時）で英文Situation/Notesが自然に折り返し、表と図版が両方1画面で見やすく収まるようにする */
+[data-listening-material] > p > span.whitespace-nowrap { white-space: normal; }
+[data-listening-material] [data-material-figures] { max-height: 112px; flex: 0 0 auto; }
+@media (max-width: 767px) {
+  [data-listening-material] table { font-size: 12.5px; line-height: 1.28; }
+  [data-listening-material] th,
+  [data-listening-material] td { min-width: 0 !important; padding: 4px 6px !important; overflow-wrap: anywhere; }
+  [data-listening-material] [data-material-figures] { min-height: 64px !important; max-height: 76px; }
+}
+
+
 /* D: two focused rows below Practice/Battle; sharp artwork at rest. */
 .game-home .home-review-rush { display:grid; grid-template-columns:1fr 1fr; gap:8px; flex-shrink:0; }
 .game-home .home-review-rush > button { min-width:0; min-height:56px; margin:0; position:relative; display:flex; align-items:center; justify-content:center; gap:6px; padding:6px; border-radius:16px; font-size:12px; }
@@ -270,3 +281,8 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 .friend-code-row-inline .friend-code-send { width: auto; min-height: 52px; flex-shrink: 0; padding: 0 12px; }
 @media (max-width: 374px) { .friend-code-row-inline .friend-code-send { padding: 0 9px; } .friend-own-code { padding-inline: 6px; letter-spacing: 0; } .friend-own-copy-text { display: none; } }
 @media (max-width: 340px) { .friend-own-label { display: none; } }
+
+/* 英検 準1級・1級 Real-Life形式（資料テーブル＋ヘッダー図版バナー併用時）の表示調整 */
+[data-listening-material] > p > span.whitespace-nowrap { white-space: normal; }
+[data-listening-material] [data-material-figures] { max-height: 112px; flex: 0 0 104px; }
+
