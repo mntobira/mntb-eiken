@@ -1,5 +1,5 @@
-import {question as q,passage as p,readingRound} from './reading-authoring';
-export const READING_PRE2=readingRound('eiken_pre2',[
+import {question as q,passage as p,emailWriting,essayWriting,writtenRound} from './reading-authoring';
+export const READING_PRE2=writtenRound('eiken_pre2',1,[
  q(['The train was delayed, but we (     ) reached the hotel before midnight.',['eventually','recently','immediately','regularly'],0,'遅延したものの最終的に到着したのでeventually。',['eventuallyは最終的に。遅延後の結果を表す。','recentlyは最近。遅延から到着への展開でない。','immediatelyは直ちに。遅れた状況と合わない。','regularlyは定期的に。1回の到着でない。'],'列車は遅れましたが、最終的に深夜前にホテルへ着きました。']),
  q(['The company offers free training to help new employees (     ) their skills.',['divide','develop','deliver','describe'],1,'研修で技能を向上させるのでdevelop。',['divideは分割する。技能向上の意味でない。','develop skillsで技能を伸ばす。','deliverは配達する。','describeは説明する。研修の目的は向上。'],'会社は新入社員の技能向上のため無料研修を提供しています。']),
  q(['The museum does not allow visitors (     ) photographs in this room.',['taking','take','to take','taken'],2,'allow＋人＋to不定詞。',['allow visitors takingとはしない。','原形の前にtoが必要。','allow visitors to takeで撮影を許可する。','takenは過去分詞で接続できない。'],'博物館はこの部屋での来訪者の写真撮影を許可していません。']),
@@ -32,4 +32,24 @@ export const READING_PRE2=readingRound('eiken_pre2',[
  ['Why were the interviews divided into short sections?',['The audio players could hold only one story.','The residents refused to record long interviews.','Visitors preferred to choose stories and move at their own pace.','Written descriptions had to be removed.'],2,'全インタビューでなく、自分の速度で興味のある話を聞きたかった。',['機器容量の制約でない。','住民の拒否でない。','own speedとchoose only the storiesが根拠。','文章は残す方針。'],'インタビューを短く区切った理由は何ですか。'],
  ['Why did the museum compare residents\' stories with old records?',['To decide which residents should pay an entrance fee.','To prove that photographs were unnecessary.','To avoid including stories about ordinary objects.','To check details that people might remember incorrectly.'],3,'個人の記憶は必ずしも正確でないため検証した。',['入館料の決定でない。','写真の価値を否定していない。','日常の物こそ対象。','memories are not always exactが根拠。'],'体験談を古い記録と照合した理由は何ですか。'],
  ['What pleased the director most?',['Visitors became more curious about everyday life in the past.','All visitors listened to every recording.','The museum no longer needed staff.','Only older residents contributed stories.'],0,'滞在時間より、新しい質問が生まれたことを喜んだ。',['asking new questionsについてmore pleasedとある。','全録音を聞いたとはない。','職員不要とはない。','若い人の話も加える計画。'],'館長が最も喜んだことは何ですか。']]),
-]);
+ emailWriting(
+  'rp2-writing-email',
+  'E-mail from Clara',
+  `Hi!\nNext month, I am going to join __a weekend cooking class__ at our community center. I am excited because I rarely cook at home. How often do you cook for your family, and what dish do you like making?\nBest wishes,\nClara`,
+  `こんにちは！来月、地域の公民館で週末の料理教室に参加する予定です。家ではめったに料理をしないので楽しみにしています。あなたはどのくらいの頻度で家族のために料理をしますか。また、どんな料理を作るのが好きですか。クララより`,
+  `海外の友人Claraから届いたEメールを読み、Claraからの質問に答えるとともに、下線部についてあなたが知りたいことを2つ質問する返信メールを英語で書きなさい。（目安語数：40〜50語）`,
+  [40,50],
+  `Hi Clara, I cook for my family once a week on Sundays, and I enjoy making vegetable curry. Your cooking class sounds great! What kind of dishes will you learn to make first? Also, how many people are in each group?`,
+  `こんにちは、クララ。私は毎週日曜日に週1回家族のために料理をしていて、野菜カレーを作るのが好きです。料理教室はとても素敵ですね！最初にどんな種類の料理を習いますか。また、1つのグループは何人ですか。`,
+  `相手の質問（頻度：once a week on Sundays／好きな料理：vegetable curry）に明確に答えた上で、下線部の料理教室について「最初に習う料理」と「1班の人数」の2つを自然な疑問文で尋ねています。`,
+  ['相手からの質問（料理の頻度・作るのが好きな料理）に答えた','下線部（週末の料理教室）に関する具体的な質問を2つ書いた','疑問文の語順・時制・冠詞が正確である','40〜50語の目安に収まっている']
+ ),
+ essayWriting(
+  `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think it is a good idea for high school students to study at a cafe?`,
+  [50,60],
+  `I think it is a good idea for high school students to study at a cafe. First, a quiet change of environment helps them concentrate better than staying in their bedrooms all day. Second, there are fewer distractions such as television or video games at home, so they can finish their homework efficiently.`,
+  `私は高校生がカフェで勉強するのはよい考えだと思います。第一に、静かに環境を変えることで、一日中自分の部屋にいるよりも集中しやすくなります。第二に、家にあるテレビやテレビゲームのような気を散らすものが少ないため、効率よく宿題を終えられます。`,
+  `冒頭で賛成の立場を明示し、First（環境変化による集中力の維持）とSecond（家庭内の誘惑からの切り離しによる効率化）の2つの異なる理由を因果関係とともに展開しています。`,
+  ['QUESTIONに対する賛成・反対の立場を冒頭で明示した','異なる2つの理由をFirst / Second等で整理して述べた','理由を支える具体的な説明を添えた','50〜60語の目安に収まっている']
+ ),
+],'original-written-20261111-r1');

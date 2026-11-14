@@ -1,5 +1,5 @@
-import {question as q,passage as p,readingRound} from './reading-authoring';
-export const READING_2=readingRound('eiken_2',[
+import {question as q,passage as p,summaryWriting,essayWriting,writtenRound} from './reading-authoring';
+export const READING_2=writtenRound('eiken_2',1,[
  q(['The factory installed new filters to reduce the amount of harmful gas it (     ) into the air.',['emits','inherits','reserves','approves'],0,'工場がガスを大気へ排出するのでemits。',['emitは排出する。','inheritは相続する。','reserveは予約・確保する。','approveは承認する。'],'工場は有害ガスの大気への排出量を減らすため新しいフィルターを設置しました。']),
  q(['The journalist refused to publish the story until she could (     ) the facts.',['involve','verify','occupy','resist'],1,'掲載前に事実を検証するのでverify。',['involveは関与させる。','verifyは真偽を確かめる。','occupyは占有する。','resistは抵抗する。'],'記者は事実を検証できるまで記事を発表しませんでした。']),
  q(['Several firms are (     ) for the contract, so each is trying to offer the best price.',['recovering','apologizing','competing','consisting'],2,'契約を得るために複数社が競争している。',['recoverは回復する。','apologizeは謝罪する。','compete forは〜を得ようと競争する。','consistは構成されるで通常ofと使う。'],'複数の企業が契約を争い、それぞれ最良の価格を出そうとしています。']),
@@ -35,4 +35,24 @@ export const READING_2=readingRound('eiken_2',[
  ['Why did the town change its public meetings?',['Residents had asked for more technical language.','The model had been damaged during a flood.','The original format had excluded some nearby residents in practice.','Officials wanted to avoid questions about safety.'],2,'勤務時間中と難しい説明で、必要な近隣住民が参加しにくかった。',['むしろ説明を理解しやすく変えた。','模型破損はない。','参加障壁を減らす変更だった。','安全への要望にも対応するため。'],'住民会合を変更した理由は何ですか。'],
  ['How did officials respond after the severe storm?',['They announced that no further maintenance was necessary.','They closed the park permanently because water entered it.','They denied that cleaning had caused any difficulty.','They distinguished intended flooding from a maintenance problem that needed improvement.'],3,'想定内の浸水は失敗でなく、清掃の遅れは改善対象と分けた。',['管理計画を改定した。','閉鎖は清掃のための一時的なもの。','時間超過は認めている。','保護機能と実務上の課題を区別した。'],'大雨後の行政の対応はどうでしたか。'],
  ['Which statement best expresses the article\'s conclusion?',['Successful adaptation requires design, maintenance, participation, and honest explanation of functions.','A floodable park is useful only when it contains no visitors.','Technical structures make public understanding unnecessary.','Projects serving more than one purpose should always be rejected.'],0,'設計、維持、利用者の理解、多目的性の正確な説明が結論。',['最後の段落の主要要素を統合する。','日常の住民への価値を認めている。','理解も重要と明記。','多目的性自体は否定していない。'],'本文の結論に最も近いものはどれですか。']]),
-]);
+ summaryWriting(
+  'r2-writing-summary',
+  'Rethinking Nighttime Park Lighting',
+  `Many cities keep public parks brightly lit throughout the night. Strong white lights help pedestrians see walking paths clearly, give evening commuters a greater sense of security, and deter criminal behavior.\n\nIn recent years, however, researchers have pointed out the drawbacks of excessive nighttime lighting. Leaving powerful lamps on until morning consumes large amounts of electricity. In addition, artificial glare disrupts nocturnal insects and confuses migrating birds that rely on natural darkness.\n\nTo address these concerns without sacrificing public safety, several municipalities have redesigned their lighting systems. They now install shields that direct light downward onto paths and use motion sensors to dim lamps when nobody is nearby, protecting local ecosystems while saving energy.`,
+  `多くの都市では公共の公園を一晩中明るく照らしている。強い白色光は歩行者が歩道をはっきりと見られるようにし、夜間の通行人に安心感を与え、犯罪行為を抑止する。\nしかし近年、研究者たちは過度な夜間照明の欠点を指摘している。強力な街灯を朝まで点灯し続けることは大量の電力を消費する。さらに人工的なまぶしさは夜行性の昆虫に悪影響を与え、自然の暗闇に頼る渡り鳥を混乱させる。\n公共の安全を損なわずにこれらの懸念へ対処するため、複数の自治体が照明設備を再設計している。光を歩道へ下向きに絞るカバーを取り付け、近くに人がいないときは人感センサーで減光することで、電力を節約しつつ地域の生態系を守っている。`,
+  `以下の英文を読んで、その内容を英語で要約し、解答欄に記入しなさい。本文にない自分の意見は加えないこと。（目安語数：45〜55語）`,
+  [45,55],
+  `Bright park lighting at night helps pedestrians walk safely and prevents crime. However, excessive illumination consumes substantial electricity and harms nocturnal insects and migrating birds. Consequently, several cities now use downward-facing shields and motion sensors to conserve energy and protect wildlife while maintaining public safety.`,
+  `夜間の明るい公園照明は歩行者の安全な通行を助け犯罪を防ぐ。しかし過度な照明は大量の電力を消費し、夜行性の昆虫や渡り鳥に害を与える。そのため複数の都市では現在、下向きカバーと人感センサーを用い、公共の安全を保ちながら節電と野生生物の保護を図っている。`,
+  `第1段落の利点（歩行者の安全・防犯）、第2段落の課題（電力消費と昆虫・渡り鳥への悪影響）、第3段落の解決策（下向き遮光カバーと人感センサーによる安全・節電・生態系保護の両立）を45語で端的にまとめています。`,
+  ['夜間照明の利点（歩行者の安全・防犯）を簡潔に示した','過度な照明の欠点（電力消費・野生生物への悪影響）を含めた','自治体の改善策（下向き照明・人感センサー）と効果を結んだ','原文の表現を適切に言い換え45〜55語の目安に収めた']
+ ),
+ essayWriting(
+  `次のTOPICについて、あなたの意見とその理由を2つ書きなさい。POINTSは理由を書く際の参考として自由に用いてかまいません。（目安語数：80〜100語）\nTOPIC: Some people say that companies should encourage employees to take longer summer vacations. What do you think about that?\nPOINTS:\n• Health\n• Productivity\n• Teamwork`,
+  [80,100],
+  `I agree that companies should encourage employees to take longer summer vacations.\nFirst, extended rest protects workers' physical and mental health. Working continuously under heavy pressure often leads to exhaustion, whereas spending a full week away from office duties allows employees to recover completely.\nSecond, longer vacations can improve workplace productivity and teamwork. When employees return refreshed, they concentrate better and generate creative ideas. Moreover, sharing duties while colleagues are away helps teams organize tasks more systematically.\nTherefore, promoting longer summer holidays benefits both employees and companies.`,
+  `私は企業が従業員により長い夏季休暇を取るよう促すべきだという意見に賛成です。\n第一に、まとまった休養は働く人の心身の健康を守ります。強い重圧の下で働き続けると疲労につながりやすいですが、職場の業務から丸1週間離れることで完全に回復できます。\n第二に、長期休暇は職場の生産性とチームワークを高められます。リフレッシュして復帰すれば集中力が増し創造的な発想が生まれます。さらに同僚の不在中に業務を分担することで、チームはより体系的に仕事を整理できるようになります。\nしたがって、長い夏休みの推進は従業員と企業の双方に利益をもたらします。`,
+  `序論（賛成表明）→本論1（Health：継続勤務による疲労の防止と心身の回復）→本論2（Productivity / Teamwork：復帰後の集中力・創造性向上と業務分担の整理）→結論の4段落構成で87語にまとめています。`,
+  ['序論・本論（理由2つ）・結論の明確な段落構成で書いた','2つの理由が互いに重複せず具体的に展開されている','適切な接続表現（First, whereas, Moreover, Therefore等）を用いた','80〜100語の目安に収まっている']
+ ),
+],'original-written-20261111-r1');

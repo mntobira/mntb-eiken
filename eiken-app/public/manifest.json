@@ -1,7 +1,7 @@
 {
-  "name": "マナトビ 英検リスニング",
+  "name": "マナトビ英検",
   "short_name": "マナトビ英検",
-  "description": "英検の級別重点練習・解説・復習。",
+  "description": "英検5級〜準1級の一次筆記・模試・リスニング・ライティング・英単語練習。",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -1,5 +1,5 @@
-import { question as q, passage as p, reorder as o, readingRound } from './reading-authoring';
-export const READING_4 = readingRound('eiken_4',[
+import { question as q, passage as p, reorder as o, writtenRound } from './reading-authoring';
+export const READING_4 = writtenRound('eiken_4',1,[
  q(['I missed the bus, so I had to (     ) for the next one.',['wait','paint','sell','break'],0,'次のバスを待つのでwait for。',['wait forで「〜を待つ」。','paintは塗る。バスを待つ意味ではない。','sellは売る。次のバスは売らない。','breakは壊す。移動の状況と合わない。'],'バスに乗り遅れたので、次のバスを待たなければなりませんでした。']),
  q(['We (     ) a new science teacher last April.',['meet','meets','met','meeting'],2,'last Aprilは過去。meetの過去形metを使う。',['meetは現在形。','meetsは現在形の3人称単数。','metはmeetの過去形。','meetingだけでは述語にならない。'],'私たちは去年の4月に新しい理科の先生に会いました。']),
  q(['A: Is this coat yours?\nB: No. It is (     ). He left it here.',['mine','hers','ours','his'],3,'Heが指す男性の持ち物なのでhis。',['mineは私のもの。','hersは彼女のもの。','oursは私たちのもの。','hisは彼のもの。Heと対応する。'],'A：このコートはあなたのですか。B：いいえ、彼のです。彼がここに置いていきました。']),
@@ -38,4 +38,4 @@ export const READING_4 = readingRound('eiken_4',[
  ['Who told Ren about the bakery?',['His grandmother.','A child at the pond.','People at the shops.','A visitor at the station.'],2,'店の人に話を聞き、庭とパン屋を教えてもらった。',['祖母は池への道を知らない側。','池の子どもではない。','people at the shopsが情報源。','駅の来訪者とはない。'],'誰がパン屋について教えましたか。'],
  ['Why did Ren use large letters?',['To help his grandmother read the map.','To make the map look like a library book.','To hide the pictures of the pond.','To write the names in another language.'],0,'祖母には小さい字が読みにくかったため。',['because節で理由が明示される。','図書館の本に似せるためでない。','絵は描いてあり、隠していない。','外国語を書く目的ではない。'],'レンが大きな字を使った理由は何ですか。'],
  ['What can people do at the library now?',['Buy Ren\'s bicycle.','Get Ren\'s map without paying.','Meet Ren\'s grandmother every day.','Join a swimming class.'],1,'take a free map from the libraryが根拠。',['自転車は販売していない。','free mapなので無料でもらえる。','祖母が毎日いるとはない。','水泳教室は登場しない。'],'今、図書館で何ができますか。']]),
-]);
+],'original-written-20261111-r1');

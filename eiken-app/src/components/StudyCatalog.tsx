@@ -115,9 +115,9 @@ export function StudyCatalog({ subjectId, onSubject, onContent, onBack, progress
                   progress={c.progressSubject ? progressOf?.(c.progressSubject) : undefined}
                   onClick={() => onContent(c)} />
               </div>)}
-              {/* ★暗記帳は問題とは別の枠に置く（2026-10-01 夜）★ */}
+              {/* ★暗記帳・重点記述は級カードとは別の2列セクションに置く★ */}
               {subject.contents.some(c => c.section === 'memorize') && <>
-                <h2 className="sc-section" role="presentation" data-study-section="memorize">覚える</h2>
+                <h2 className="sc-section" role="presentation" data-study-section="memorize">{subject.id === 'eiken' ? '書く・覚える' : '覚える'}</h2>
                 {subject.contents.filter(c => c.section === 'memorize').map(c => <div role="listitem" key={c.id} data-content-kind={c.action.kind}>
                   <StudyCard dataId={c.id} icon={c.icon} title={c.title} description={c.description} meta={c.meta}
                     badge={lastContentId === c.id ? '前回' : c.badge} onClick={() => onContent(c)} />

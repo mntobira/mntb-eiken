@@ -1,5 +1,5 @@
-import {question as q,passage as p,readingRound} from './reading-authoring';
-export const READING_3=readingRound('eiken_3',[
+import {question as q,passage as p,emailWriting,essayWriting,writtenRound} from './reading-authoring';
+export const READING_3=writtenRound('eiken_3',1,[
  q(['The guide gave us some useful (     ) about places to eat near the hotel.',['information','inventions','medicines','invitations'],0,'食事場所についての役立つ情報なのでinformation。',['informationは情報。about以下が内容を示す。','inventionsは発明品。飲食店の案内に合わない。','medicinesは薬。食事場所の情報とは異なる。','invitationsは招待状。案内情報でない。'],'ガイドはホテル近くの食事場所について役立つ情報をくれました。']),
  q(['I have (     ) seen snow before, so I am excited about our winter trip.',['ever','never','often','already'],1,'初めての経験への期待なのでnever seen。',['everは通常疑問文などで経験を尋ねる。','never seenで一度も見たことがない。','oftenは何度も見ていることになる。','alreadyはすでに見たという意味で未経験の文脈に合わない。'],'雪を一度も見たことがないので冬の旅行を楽しみにしています。']),
  q(['The bridge (     ) by local workers about fifty years ago.',['builds','building','was built','has built'],2,'橋は建てられた側。過去の受動態was built。',['橋が何かを建てる能動形になる。','buildingだけでは述語にならない。','byで行為者を示す過去の受動態。','has builtは能動の現在完了。'],'その橋は約50年前に地元の作業員によって建てられました。']),
@@ -33,4 +33,24 @@ export const READING_3=readingRound('eiken_3',[
  ['What did Grace help Oliver understand?',['Old objects are always easy to repair.','Libraries should stop lending books.','Repairing is useful only for saving money.','Repairing objects can reduce waste.'],3,'修理は捨てられるごみの量を減らせると説明した。',['すべて簡単とは述べていない。','貸出中止の話でない。','金銭以外に環境面の利点がある。','reduce the amount of rubbishに対応。'],'グレースが理解を助けたことは何ですか。'],
  ['How was Oliver different at the second workshop?',['He wanted to learn how to identify the trouble.','He refused to use tools.','He expected the repair to take only a minute.','He asked Grace to buy a new lamp.'],0,'修理そのものの代行でなく、問題の調べ方を尋ねた。',['discover the problemと一致。','道具を拒否していない。','短時間で済むことを求めていない。','買い替え依頼でない。'],'2回目の講習会での変化は何ですか。'],
  ['What does Oliver do at workshops now?',['Repair every object that visitors bring.','Assist with preparation and welcome visitors.','Make posters instead of helping visitors.','Give away new headphones to children.'],1,'会場の準備や来訪者への説明をする。',['すべて修理する知識はないと明記。','prepare the room、welcome visitorsと一致。','ポスターを作る仕事とはない。','新品の配布ではない。'],'現在、講習会で何をしていますか。']]),
-]);
+ emailWriting(
+  'r3-writing-email',
+  'E-mail from Ben',
+  `Hi,\nThank you for your e-mail.\nI heard that you went to the new skating rink near North Station yesterday! I have some questions for you. __How long did you skate there?__ __And who did you go with?__\nYour friend,\nBen`,
+  `こんにちは。Eメールをありがとう。昨日、北駅の近くの新しいスケートリンクへ行ったそうですね！いくつか質問があります。そこでどのくらいの時間滑りましたか。また、誰と一緒にそこへ行きましたか。あなたの友人、ベンより`,
+  `外国人の友達（Ben）から以下のEメールを受け取りました。Eメールを読み、それに対する返信メールを英文で書きなさい。返信メールの中で、友達（Ben）からの2つの質問（下線部）に対応する内容を、あなた自身で自由に考えて答えなさい。（目安語数：15〜25語）`,
+  [15,25],
+  `I skated there for about two hours. I went to the rink with my older cousin, and we had fun.`,
+  `私はそこで約2時間滑りました。年上のいとこと一緒にそのリンクへ行き、とても楽しかったです。`,
+  `友達からの2つの下線質問（①どのくらいの時間滑ったか：for about two hours、②誰と行ったか：with my older cousin）の両方に20語で自然に答えています（返信枠に印字済みの挨拶・結びを除いた本文語数）。`,
+  ['友達からの1つ目の質問（滑った時間）に明確に答えた','友達からの2つ目の質問（一緒に行った相手）に明確に答えた','過去形を用いて主語と動詞の整った英文で書いた','返信本文が15〜25語の目安に収まっている']
+ ),
+ essayWriting(
+  `次のQUESTIONについて、あなたの考えとその理由を2つ英文で書きなさい。（目安語数：25〜35語）\nQUESTION: Which season do you like better, spring or autumn?`,
+  [25,35],
+  `I like autumn better than spring. First, the weather is cool and comfortable for playing sports outside. Second, I enjoy eating delicious autumn foods such as sweet potatoes and chestnuts.`,
+  `私は春より秋のほうが好きです。第一に、気候が涼しく外でスポーツをするのに快適だからです。第二に、サツマイモや栗などのおいしい秋の食べ物を食べるのが楽しいからです。`,
+  `最初に春と秋のどちらが好きかを明示し、First（気候と運動のしやすさ）・Second（旬の食事の楽しみ）の2つの異なる理由をつなぎ語とともに述べています。`,
+  ['春と秋のどちらが好きか最初に明示した','異なる理由をFirst / Secondなどで2つ書いた','主語と動詞を備えた完全な英文で表現した','25〜35語の目安に収まっている']
+ ),
+],'original-written-20261111-r1');

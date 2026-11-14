@@ -1,5 +1,5 @@
-import {question as q,passage as p,readingRound} from './reading-authoring';
-export const READING_PLUS=readingRound('eiken_pre2plus',[
+import {question as q,passage as p,summaryWriting,essayWriting,writtenRound} from './reading-authoring';
+export const READING_PLUS=writtenRound('eiken_pre2plus',1,[
  q(['The new sports hall can (     ) up to eight hundred spectators.',['accommodate','complain','withdraw','interrupt'],0,'建物が人数を収容するのでaccommodate。',['accommodateは収容する。','complainは不平を言う。','withdrawは撤退する。','interruptは中断する。'],'新しい体育館は最大800人の観客を収容できます。']),
  q(['The hotel apologized for the (     ) caused by the broken elevator.',['permission','inconvenience','confidence','distribution'],1,'故障による不便を謝罪する。',['permissionは許可。','inconvenienceは不便・迷惑。','confidenceは自信。','distributionは分配。'],'ホテルはエレベーター故障による不便を謝罪しました。']),
  q(['The researcher repeated the experiment to make sure the results were (     ).',['generous','temporary','accurate','remote'],2,'実験結果の正確さを確かめる。',['generousは気前のよい。','temporaryは一時的な。','accurateは正確な。','remoteは遠い・遠隔の。'],'研究者は結果が正確か確認するため実験を繰り返しました。']),
@@ -35,4 +35,24 @@ export const READING_PLUS=readingRound('eiken_pre2plus',[
  ['Why did the leader add a checking stage?',['Some entries duplicated trees or identified them incorrectly.','The city had decided to stop recording tree locations.','The mobile form could not accept photographs.','Officials wanted volunteers to replace all specialists.'],0,'重複記録や違う木の写真を修正するため。',['初期記録の具体的問題に対応する。','位置情報の収集は継続。','写真は登録されている。','専門家は確認に参加している。'],'確認段階を追加した理由は何ですか。'],
  ['How did the shared record improve planning?',['It removed the need to explain decisions.','It reduced dependence on how many requests an area made.','It guaranteed that every street would receive new trees.','It allowed the city to ignore damaged trees.'],1,'要望の件数に左右されず地域を比較できた。',['受け入れない理由の説明は必要。','従来の声の偏りを補った。','植樹には制約がある。','傷んだ木を無視する制度でない。'],'共有記録はどのように計画を改善しましたか。'],
  ['What is the main message of the final paragraph?',['A large number of entries always proves success.','Public participation makes professional checks unnecessary.','Useful records require continued checking, updating, and practical use.','Collecting data should be completed only once.'],2,'収集に加え点検・更新・利用が必要という結論。',['件数だけで判断しないと説明済み。','専門家の確認は継続する。','最終段落の三つの要件をまとめる。','毎月再確認している。'],'最終段落の主旨は何ですか。']]),
-]);
+ summaryWriting(
+  'rplus-writing-summary',
+  'Sharing School Stationery',
+  `Many students buy notebooks, pens, and folders at the start of the school year and later find they have more than they need. To make good use of these items, one high school placed a sharing shelf near the library.\n\nStudents can leave unused stationery on the shelf and take items for free when they run out. This helps families save money and reduces the amount of usable paper and plastic thrown away.\n\nHowever, some people left broken pens or torn notebooks at first, making the shelf messy. Student volunteers now check the shelf every Friday so everyone can use it comfortably.`,
+  `多くの生徒は新学期にノートやペン、ファイルを買うが、後で必要以上に持っていることに気づく。これらを有効活用するため、ある高校は図書室の近くに共有棚を設置した。\n生徒は未使用の文房具を棚に置き、足りなくなったときに無料で受け取れる。これにより家庭の出費が抑えられ、使える紙やプラスチックが捨てられる量も減る。\nしかし当初は壊れたペンや破れたノートを置く人もおり、棚が乱雑になった。現在は生徒ボランティアが毎週金曜日に棚を点検し、誰もが気持ちよく使えるようにしている。`,
+  `以下の英文を読んで、その内容を英語で要約し、解答欄に記入しなさい。本文にない自分の意見は加えないこと。（目安語数：25〜35語）`,
+  [25,35],
+  `A high school set up a shelf for sharing extra stationery, saving money and reducing waste. Because broken items were sometimes left there, student volunteers now inspect the shelf weekly.`,
+  `ある高校が余った文房具を共有する棚を設置し、出費の節約とごみ削減につなげた。壊れた物が置かれることもあったため、現在は生徒ボランティアが毎週棚を点検している。`,
+  `第1・2段落の「余った文房具の共有棚の設置と節約・ごみ削減の利点」と、第3段落の「破損品混入という課題と毎週のボランティア点検による解決」を30語で過不足なく統合しています。`,
+  ['導入された仕組み（文房具の共有棚）と利点（節約・ごみ削減）を含めた','生じた問題（壊れた品の混入）と改善策（毎週の点検）を含めた','原文の表現をそのまま丸写しせず適切に言い換えた','本文にない自分の意見を加えず25〜35語に収めた']
+ ),
+ essayWriting(
+  `次のQUESTIONについて、あなたの意見とその理由を2つ英文で書きなさい。（目安語数：50〜60語）\nQUESTION: Do you think more towns should hold outdoor markets on weekends?`,
+  [50,60],
+  `I think more towns should hold outdoor markets on weekends. First, residents can buy fresh vegetables directly from local farmers and learn how their food is grown. Second, weekend markets attract visitors to town centers, which supports nearby small shops and gives neighbors a lively place to talk with one another.`,
+  `私はより多くの町が週末に屋外マーケットを開くべきだと思います。第一に、住民は地元の農家から直接新鮮な野菜を購入でき、食べ物がどのように育てられているか学べます。第二に、週末の市場は町の中心部に訪問者を呼び込み、近くの小さな店を支えるとともに近隣住民が語り合う活気ある場を生みます。`,
+  `賛成の立場を明確に示し、①生産者からの直接購入と食への理解、②中心市街地の小規模店舗支援と住民交流という2つの異なる視点から49〜55語帯（50語ちょうど前後）で論理的に述べています。`,
+  ['週末の屋外マーケット開催への賛否を明確に述べた','生産者・消費者面と地域経済・交流面など異なる理由を2つ挙げた','接続語を用いて文と文のつながりを明確にした','50〜60語の目安に収まっている']
+ ),
+],'original-written-20261111-r1');

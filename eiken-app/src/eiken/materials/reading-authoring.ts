@@ -10,6 +10,19 @@ export function reorder(japanese:string,prefix:string,tokens:[string,string,stri
  const sentence=`${prefix} ${order.map(n=>tokens[n-1]).join(' ')}${questionStart.test(prefix)?'?':'.'}`;
  return {...question([`${japanese}\n${prefix} ( ____ / ____ / ____ / ____ )${sentence.at(-1)}\n1番目・3番目の語句番号の組を選んでください。`,pairs,answer,explanation,pairs.map((pair,i)=>i===answer?`正しい語順の1番目・3番目は${pair}。`:`${pair}は完成文の1番目・3番目と一致しない。`) as [string,string,string,string],japanese],'reorder'),orderTokens:tokens,orderAnswer:order,orderPrefix:prefix,completedSentence:sentence};
 }
+export function emailWriting(key:string,title:string,emailText:string,emailTranslation:string,prompt:string,wordRange:[number,number],model:string,modelTranslation:string,explanation:string,rubric:[string,string,string,string]):WrittenItem{
+ return {id:'pending',section:'email',kind:'writing',prompt,passage:{id:key,title,text:emailText,translation:emailTranslation,format:'email'},wordRange,model,translation:modelTranslation,explanation,rubric:[...rubric]};
+}
+export function summaryWriting(key:string,title:string,articleText:string,articleTranslation:string,prompt:string,wordRange:[number,number],model:string,modelTranslation:string,explanation:string,rubric:[string,string,string,string]):WrittenItem{
+ return {id:'pending',section:'summary',kind:'writing',prompt,passage:{id:key,title,text:articleText,translation:articleTranslation,format:'article'},wordRange,model,translation:modelTranslation,explanation,rubric:[...rubric]};
+}
+export function essayWriting(prompt:string,wordRange:[number,number],model:string,modelTranslation:string,explanation:string,rubric:[string,string,string,string]):WrittenItem{
+ return {id:'pending',section:'essay',kind:'writing',prompt,wordRange,model,translation:modelTranslation,explanation,rubric:[...rubric]};
+}
+export function writtenRound(grade:EikenGrade,round:number,items:WrittenItem[],revision='original-written-20261111-r2'):WrittenExam{
+ const id=`${grade}_written_${String(round).padStart(2,'0')}`;
+ return {id,grade,round,revision,origin:'manatobi-original',review:'approved',items:items.map((item,index)=>({...item,id:`${id}_q${String(index+1).padStart(2,'0')}`}))};
+}
 export function readingRound(grade:EikenGrade,items:WrittenItem[],round=1,scope:'reading'|null='reading'):WrittenExam{
  const id=`${grade}_written_${String(round).padStart(2,'0')}`;
  const revision=round===1?'original-reading-20261111-r1':scope?`original-reading-20261112-r${round}`:`original-20261112-r${round}`;

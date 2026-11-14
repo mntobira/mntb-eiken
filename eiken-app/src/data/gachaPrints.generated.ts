@@ -185,7 +185,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_5.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_5.webp",
     "pages": 4,
-    "kb": 77,
+    "kb": 78,
     "description": "英検5級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
@@ -196,7 +196,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_4.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_4.webp",
     "pages": 4,
-    "kb": 80,
+    "kb": 81,
     "description": "英検4級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
@@ -207,7 +207,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_3.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_3.webp",
     "pages": 4,
-    "kb": 91,
+    "kb": 97,
     "description": "英検3級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
@@ -218,7 +218,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_pre2.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_pre2.webp",
     "pages": 4,
-    "kb": 98,
+    "kb": 99,
     "description": "英検準2級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
@@ -229,7 +229,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_pre2plus.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_pre2plus.webp",
     "pages": 4,
-    "kb": 115,
+    "kb": 117,
     "description": "英検準2級プラスの大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
@@ -240,7 +240,7 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "file": "/prints/print_eiken_drill_short_2.pdf",
     "thumb": "/prints/thumbs/print_eiken_drill_short_2.webp",
     "pages": 4,
-    "kb": 123,
+    "kb": 127,
     "description": "英検2級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {

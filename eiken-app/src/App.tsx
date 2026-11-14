@@ -34,6 +34,7 @@ import { ModeSelection } from './components/ModeSelection';
  */
 const StudyCatalog = React.lazy(() => import('./components/StudyCatalog').then(m => ({ default: m.StudyCatalog })));
 const EikenWriting = React.lazy(() => import('./components/EikenWriting').then(module => ({ default: module.EikenWriting })));
+const EikenMockExam = React.lazy(() => import('./components/EikenMockExam').then(module => ({ default: module.EikenMockExam })));
 const FoundationPage = React.lazy(() =>
   import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
 );
@@ -197,6 +198,9 @@ export default function App() {
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });
   const [chapterGroups, setChapterGroups] = useState<Record<string, string>>({});
   const [battleActive, setBattleActive] = useState(false);
+  const [mockRunning, setMockRunning] = useState(false);
+  const [writingInitialTaskKey, setWritingInitialTaskKey] = useState<string | null>(null);
+  const [writingBackTo, setWritingBackTo] = useState<'study' | 'chapters'>('study');
   const [growthPage, setGrowthPage] = useState<GrowthPage>('overview');
   // 対戦 → 演習 → 対戦に戻る導線とスクロール位置は hooks/useBattleReturn.ts
   const { battleReturnActive, setBattleReturnActive, battleScrollRef, returnToBattle, rememberBattleScroll } = useBattleReturn(appState, setAppState);
@@ -208,7 +212,7 @@ export default function App() {
     setAppState(next);
   };
   // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
-  useStudyTimeTracker(appState === 'quiz' || appState === 'explanation', appState);
+  useStudyTimeTracker(appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning), appState);
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -310,7 +314,8 @@ export default function App() {
   const openStudyContent = (content: import('./data/studyCatalog').StudyContent) => {
     setStudyLastContent(content.id);
     safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
-    if (content.action.kind === 'writing') { setAppState('writing'); return; }
+    if (content.action.kind === 'writing') { setWritingInitialTaskKey(null); setWritingBackTo('study'); setAppState('writing'); return; }
+    if (content.action.kind === 'mock') { setAppState('mock'); return; }
     if (content.action.kind === 'units') {
       if (isSubjectId(content.action.subject)) openSubjectUnits(content.action.subject, 'study');
       return;
@@ -382,7 +387,7 @@ export default function App() {
    *    ここでは画面を移すだけなので書きかけの答えは失われない。
    *    （単元に入り直せば「続きから」再開できる）
    */
-  const idleResetEnabled = appState !== 'home' && appState !== 'onboarding' && appState !== 'battle';
+  const idleResetEnabled = appState !== 'home' && appState !== 'onboarding' && appState !== 'battle' && !(appState === 'mock' && mockRunning);
 
   useIdleReset({
     enabled: idleResetEnabled,
@@ -661,6 +666,8 @@ export default function App() {
                   mode={appMode as 'mini_test' | 'practice'}
                   onChangeSubject={handleChangeStudySubject}
                   onSelectChapter={handleSelectChapter}
+                  onOpenMock={() => setAppState('mock')}
+                  onOpenWriting={(taskKey) => { setWritingInitialTaskKey(taskKey); setWritingBackTo('chapters'); setAppState('writing'); }}
                   onBack={() => setAppState(chaptersBackTo === 'study' ? 'study' : chaptersBackTo === 'foundation' ? 'foundation' : studyEntry(selectedSubject) === 'chapters' ? 'home' : 'mode_selection')}
                   backLabel={chaptersBackTo === 'study' ? '演習' : chaptersBackTo === 'foundation' ? '固める' : studyEntry(selectedSubject) === 'chapters' ? 'ホーム' : '学習モード'}
                   rememberedGroup={chapterGroups[selectedSubject]}
@@ -726,7 +733,8 @@ export default function App() {
                 progressOf={(subject) => studyProgressOf(subject)}
               />
             </React.Suspense>}
-            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} /></React.Suspense>}
+            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} /></React.Suspense>}
+            {appState === 'mock' && <React.Suspense fallback={<ScreenLoading />}><EikenMockExam key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} onRunningChange={setMockRunning} /></React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
               <FoundationPage key={auth.currentUser?.uid || 'guest'}
                 tab={foundationTab}
@@ -755,7 +763,7 @@ export default function App() {
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
             {/* ★対戦中（試合が始まってから終わるまで）は下ナビを出さない（2026-10-01）★ 問題と絵を1画面に入れるため。
                  「対戦をやめる」は対戦画面の中にある。結果画面ではナビが戻る。 */}
-            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && (
+            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
               /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
                  高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
               <BottomNavigation
