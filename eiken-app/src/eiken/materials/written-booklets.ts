@@ -1,11 +1,17 @@
-import { READING_4 } from './reading-round-foundation';
-import { READING_3 } from './reading-round-three';
-import { READING_PRE2 } from './reading-round-pre-two';
-import { READING_PLUS } from './reading-round-bridge';
-import { READING_2 } from './reading-round-two';
-import { READING_PRE1 } from './reading-round-pre-one';
 import { WRITTEN_5_R2 } from './written-round2-five';
+import { WRITTEN_5_R3 } from './reading-round-five';
+import { WRITTEN_5_R4, WRITTEN_5_R5, WRITTEN_5_R6 } from './reading-round-five-s1';
+import { WRITTEN_5_R7, WRITTEN_5_R8, WRITTEN_5_R9 } from './reading-round-five-s2';
+import { WRITTEN_5_R10, WRITTEN_5_R11, WRITTEN_5_R12 } from './reading-round-five-s3';
+import { WRITTEN_5_R13, WRITTEN_5_R14, WRITTEN_5_R15 } from './reading-round-five-s4';
+import { READING_4 } from './reading-round-foundation';
 import { WRITTEN_4_R2 } from './written-round2-four';
+import { READING_4_R3 } from './reading-round-foundation-more';
+import { READING_4_R4, READING_4_R5, READING_4_R6 } from './reading-round-foundation-s1';
+import { READING_4_R7, READING_4_R8, READING_4_R9 } from './reading-round-foundation-s2';
+import { READING_4_R10, READING_4_R11, READING_4_R12 } from './reading-round-foundation-s3';
+import { READING_4_R13, READING_4_R14, READING_4_R15 } from './reading-round-foundation-s4';
+import { READING_3 } from './reading-round-three';
 import { WRITTEN_3_R2 } from './written-round2-three';
 import { WRITTEN_3_R3 } from './written-round3-three';
 import { WRITTEN_3_R4 } from './written-round4-three';
@@ -20,12 +26,34 @@ import { WRITTEN_3_R12 } from './written-round12-three';
 import { WRITTEN_3_R13 } from './written-round13-three';
 import { WRITTEN_3_R14 } from './written-round14-three';
 import { WRITTEN_3_R15 } from './written-round15-three';
+import { READING_PRE2 } from './reading-round-pre-two';
 import { WRITTEN_PRE2_R2 } from './written-round2-pre-two';
 import { WRITTEN_PRE2_R3 } from './written-round3-pre-two';
+import { READING_PRE2_R4, READING_PRE2_R5, READING_PRE2_R6 } from './reading-round-pre-two-s1';
+import { READING_PRE2_R7, READING_PRE2_R8, READING_PRE2_R9 } from './reading-round-pre-two-s2';
+import { READING_PRE2_R10, READING_PRE2_R11, READING_PRE2_R12 } from './reading-round-pre-two-s3';
+import { READING_PRE2_R13, READING_PRE2_R14, READING_PRE2_R15 } from './reading-round-pre-two-s4';
+import { READING_PLUS } from './reading-round-bridge';
 import { WRITTEN_PLUS_R2 } from './written-round2-bridge';
+import { READING_PLUS_R3 } from './reading-round-bridge-more';
+import { READING_PLUS_R4, READING_PLUS_R5, READING_PLUS_R6 } from './reading-round-bridge-s1';
+import { READING_PLUS_R7, READING_PLUS_R8, READING_PLUS_R9 } from './reading-round-bridge-s2';
+import { READING_PLUS_R10, READING_PLUS_R11, READING_PLUS_R12 } from './reading-round-bridge-s3';
+import { READING_PLUS_R13, READING_PLUS_R14, READING_PLUS_R15 } from './reading-round-bridge-s4';
+import { READING_2 } from './reading-round-two';
 import { WRITTEN_2_R2 } from './written-round2-two';
 import { WRITTEN_2_R3 } from './written-round3-two';
+import { READING_2_R4, READING_2_R5, READING_2_R6 } from './reading-round-two-s1';
+import { READING_2_R7, READING_2_R8, READING_2_R9 } from './reading-round-two-s2';
+import { READING_2_R10, READING_2_R11, READING_2_R12 } from './reading-round-two-s3';
+import { READING_2_R13, READING_2_R14, READING_2_R15 } from './reading-round-two-s4';
+import { READING_PRE1 } from './reading-round-pre-one';
 import { WRITTEN_PRE1_R2 } from './written-round2-pre-one';
+import { READING_PRE1_R3 } from './reading-round-pre-one-more';
+import { READING_PRE1_R4, READING_PRE1_R5, READING_PRE1_R6 } from './reading-round-pre-one-s1';
+import { READING_PRE1_R7, READING_PRE1_R8, READING_PRE1_R9 } from './reading-round-pre-one-s2';
+import { READING_PRE1_R10, READING_PRE1_R11, READING_PRE1_R12 } from './reading-round-pre-one-s3';
+import { READING_PRE1_R13, READING_PRE1_R14, READING_PRE1_R15 } from './reading-round-pre-one-s4';
 import { validateReleasedBooklets, type WrittenExam, type WrittenItem } from '../writtenExamCore';
 
 const id='eiken_5_written_01';
@@ -35,7 +63,7 @@ const order=(number:number,japanese:string,prefix:string,tokens:string[],answerO
  orderTokens:tokens,orderAnswer:answerOrder,orderPrefix:prefix,completedSentence:sentence,
 });
 
-/** Independently authored complete written round. NOT a source-text substitution of a past paper.
+/** Independently authored written/reading rounds. NOT a source-text substitution of a past paper.
  * Review='approved' means internal authoring/answer consistency review, NOT external calibration.
  * Five-grade format: 15 short blanks + 5 conversations + 5 four-chunk ordering items (25 min).
  */
@@ -68,33 +96,12 @@ export const WRITTEN_BOOKLETS:readonly WrittenExam[]=[{
   order(25,'その本をこの机の上に置いてください。','Please',['the book','this desk','on','put'],[4,1,3,2],['4－3','1－2','3－4','4－2'],0,'Please put the book on this desk.','put＋物＋場所で「物をある場所に置く」。on this deskは「この机の上に」。1番目は④put、3番目は③on。'),
  ]
 },
-WRITTEN_5_R2,
-READING_4,
-WRITTEN_4_R2,
-READING_3,
-WRITTEN_3_R2,
-WRITTEN_3_R3,
-WRITTEN_3_R4,
-WRITTEN_3_R5,
-WRITTEN_3_R6,
-WRITTEN_3_R7,
-WRITTEN_3_R8,
-WRITTEN_3_R9,
-WRITTEN_3_R10,
-WRITTEN_3_R11,
-WRITTEN_3_R12,
-WRITTEN_3_R13,
-WRITTEN_3_R14,
-WRITTEN_3_R15,
-READING_PRE2,
-WRITTEN_PRE2_R2,
-WRITTEN_PRE2_R3,
-READING_PLUS,
-WRITTEN_PLUS_R2,
-READING_2,
-WRITTEN_2_R2,
-WRITTEN_2_R3,
-READING_PRE1,
-WRITTEN_PRE1_R2,
+WRITTEN_5_R2, WRITTEN_5_R3, WRITTEN_5_R4, WRITTEN_5_R5, WRITTEN_5_R6, WRITTEN_5_R7, WRITTEN_5_R8, WRITTEN_5_R9, WRITTEN_5_R10, WRITTEN_5_R11, WRITTEN_5_R12, WRITTEN_5_R13, WRITTEN_5_R14, WRITTEN_5_R15,
+READING_4, WRITTEN_4_R2, READING_4_R3, READING_4_R4, READING_4_R5, READING_4_R6, READING_4_R7, READING_4_R8, READING_4_R9, READING_4_R10, READING_4_R11, READING_4_R12, READING_4_R13, READING_4_R14, READING_4_R15,
+READING_3, WRITTEN_3_R2, WRITTEN_3_R3, WRITTEN_3_R4, WRITTEN_3_R5, WRITTEN_3_R6, WRITTEN_3_R7, WRITTEN_3_R8, WRITTEN_3_R9, WRITTEN_3_R10, WRITTEN_3_R11, WRITTEN_3_R12, WRITTEN_3_R13, WRITTEN_3_R14, WRITTEN_3_R15,
+READING_PRE2, WRITTEN_PRE2_R2, WRITTEN_PRE2_R3, READING_PRE2_R4, READING_PRE2_R5, READING_PRE2_R6, READING_PRE2_R7, READING_PRE2_R8, READING_PRE2_R9, READING_PRE2_R10, READING_PRE2_R11, READING_PRE2_R12, READING_PRE2_R13, READING_PRE2_R14, READING_PRE2_R15,
+READING_PLUS, WRITTEN_PLUS_R2, READING_PLUS_R3, READING_PLUS_R4, READING_PLUS_R5, READING_PLUS_R6, READING_PLUS_R7, READING_PLUS_R8, READING_PLUS_R9, READING_PLUS_R10, READING_PLUS_R11, READING_PLUS_R12, READING_PLUS_R13, READING_PLUS_R14, READING_PLUS_R15,
+READING_2, WRITTEN_2_R2, WRITTEN_2_R3, READING_2_R4, READING_2_R5, READING_2_R6, READING_2_R7, READING_2_R8, READING_2_R9, READING_2_R10, READING_2_R11, READING_2_R12, READING_2_R13, READING_2_R14, READING_2_R15,
+READING_PRE1, WRITTEN_PRE1_R2, READING_PRE1_R3, READING_PRE1_R4, READING_PRE1_R5, READING_PRE1_R6, READING_PRE1_R7, READING_PRE1_R8, READING_PRE1_R9, READING_PRE1_R10, READING_PRE1_R11, READING_PRE1_R12, READING_PRE1_R13, READING_PRE1_R14, READING_PRE1_R15,
 ];
 validateReleasedBooklets(WRITTEN_BOOKLETS);

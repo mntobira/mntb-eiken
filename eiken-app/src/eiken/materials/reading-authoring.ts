@@ -6,7 +6,8 @@ export function passage(key:string,title:string,text:string,translation:string,f
  return specs.map(spec=>({...question(spec,section),passage:{id:key,title,text,translation,format}}));
 }
 export function reorder(japanese:string,prefix:string,tokens:[string,string,string,string],order:[number,number,number,number],pairs:[string,string,string,string],answer:number,explanation:string):WrittenItem{
- const sentence=`${prefix} ${order.map(n=>tokens[n-1]).join(' ')}${prefix.match(/^(How|What|When|Where|Who|Why|Which|Do|Does|Did|Can|Is|Are)/)?'?':'.'}`;
+ const questionStart=/^(How|What|When|Where|Who|Which|Why|Do|Does|Did|Is|Are|Was|Were|Can|Could|Will|Would|May|Shall|Have|Has)\b/;
+ const sentence=`${prefix} ${order.map(n=>tokens[n-1]).join(' ')}${questionStart.test(prefix)?'?':'.'}`;
  return {...question([`${japanese}\n${prefix} ( ____ / ____ / ____ / ____ )${sentence.at(-1)}\n1番目・3番目の語句番号の組を選んでください。`,pairs,answer,explanation,pairs.map((pair,i)=>i===answer?`正しい語順の1番目・3番目は${pair}。`:`${pair}は完成文の1番目・3番目と一致しない。`) as [string,string,string,string],japanese],'reorder'),orderTokens:tokens,orderAnswer:order,orderPrefix:prefix,completedSentence:sentence};
 }
 export function emailWriting(key:string,title:string,emailText:string,emailTranslation:string,prompt:string,wordRange:[number,number],model:string,modelTranslation:string,explanation:string,rubric:[string,string,string,string]):WrittenItem{
@@ -22,7 +23,8 @@ export function writtenRound(grade:EikenGrade,round:number,items:WrittenItem[],r
  const id=`${grade}_written_${String(round).padStart(2,'0')}`;
  return {id,grade,round,revision,origin:'manatobi-original',review:'approved',items:items.map((item,index)=>({...item,id:`${id}_q${String(index+1).padStart(2,'0')}`}))};
 }
-export function readingRound(grade:EikenGrade,items:WrittenItem[],round=1):WrittenExam{
+export function readingRound(grade:EikenGrade,items:WrittenItem[],round=1,scope:'reading'|null='reading'):WrittenExam{
  const id=`${grade}_written_${String(round).padStart(2,'0')}`;
- return {id,grade,round,scope:'reading',revision:'original-reading-20261111-r1',origin:'manatobi-original',review:'approved',items:items.map((item,index)=>({...item,id:`${id}_q${String(index+1).padStart(2,'0')}`}))};
+ const revision=round===1?'original-reading-20261111-r1':scope?`original-reading-20261112-r${round}`:`original-20261112-r${round}`;
+ return {id,grade,round,...(scope?{scope}:{}),revision,origin:'manatobi-original',review:'approved',items:items.map((item,index)=>({...item,id:`${id}_q${String(index+1).padStart(2,'0')}`}))};
 }

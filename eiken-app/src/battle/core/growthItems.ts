@@ -354,6 +354,29 @@ export const ITEMS: readonly ItemDef[] = [
   { id: 'frame_niji_ink', kind: 'frame', gacha: true, rarity: 'N', label: '墨のフレーム', value: '#3A3A3A', unlock: { gacha: true } },
   { id: 'frame_niji_sakura', kind: 'frame', gacha: true, rarity: 'R', label: 'サクラサクフレーム', value: '#F28AB2', pattern: 'sparkle', unlock: { gacha: true } },
   { id: 'frame_niji_midnight', kind: 'frame', gacha: true, rarity: 'SR', label: '深夜の追い込みフレーム', value: '#2B2D55', pattern: 'stars', unlock: { gacha: true } },
+  // ── 2026-11-13 英検テーマ追加装飾（とびらコレクション＆がんばる自習室の着せ替え増量）──
+  // とびらコレクション（基礎〜中級プール）向け
+  { id: 'hat_eiken_leaf_cap', kind: 'hat', gacha: true, rarity: 'N', label: 'わかばキャップ（5級・4級）', value: 'cap:#2D9CDB', unlock: { gacha: true } },
+  { id: 'hat_eiken_clover_ribbon', kind: 'hat', gacha: true, rarity: 'R', label: '合格クローバーのリボン', value: 'ribbon:#2A9D8F', unlock: { gacha: true } },
+  { id: 'hat_eiken_star_tiara', kind: 'hat', gacha: true, rarity: 'SR', label: 'スター合格ティアラ', value: 'tiara:#4D96FF', unlock: { gacha: true } },
+  { id: 'glasses_eiken_mint', kind: 'glasses', gacha: true, rarity: 'N', label: 'ミントの読書メガネ', value: 'round:#2A9D8F', unlock: { gacha: true } },
+  { id: 'glasses_eiken_detective', kind: 'glasses', gacha: true, rarity: 'R', label: '文脈さがしの片メガネ', value: 'monocle:#3D5A80', unlock: { gacha: true } },
+  { id: 'cheek_eiken_cherry', kind: 'cheek', gacha: true, rarity: 'N', label: '合格さくらほっぺ', value: 'heart:#F28AB2', unlock: { gacha: true } },
+  { id: 'aura_eiken_melody', kind: 'aura', gacha: true, rarity: 'R', label: 'リスニングの風（ミント）', value: 'notes:#2A9D8F', unlock: { gacha: true } },
+  { id: 'aura_eiken_rainbow_abc', kind: 'aura', gacha: true, rarity: 'SR', label: '黄金のABCオーラ', value: 'abc:#E0A800', unlock: { gacha: true } },
+  { id: 'frame_eiken_teal', kind: 'frame', gacha: true, rarity: 'R', label: 'マナトビ・ティール枠', value: '#2A9D8F', pattern: 'double', unlock: { gacha: true } },
+  { id: 'frame_eiken_victory', kind: 'frame', gacha: true, rarity: 'SR', label: '一次突破のゴールド枠', value: '#D4A017', pattern: 'rays', unlock: { gacha: true } },
+  // がんばる自習室（上位級プール限定：NIJI_NEW_ITEM_IDS）向け
+  { id: 'hat_eiken_scholar_beret', kind: 'hat', gacha: true, rarity: 'R', label: '英文読解のベレー帽', value: 'beret:#1D3557', unlock: { gacha: true } },
+  { id: 'hat_eiken_pass_crown', kind: 'hat', gacha: true, rarity: 'SR', label: '英検マスターの王冠', value: 'crown:#D4A017', unlock: { gacha: true } },
+  { id: 'glasses_eiken_reader', kind: 'glasses', gacha: true, rarity: 'N', label: '長文精読スクエア眼鏡', value: 'square:#264653', unlock: { gacha: true } },
+  { id: 'glasses_eiken_gold', kind: 'glasses', gacha: true, rarity: 'R', label: '自習室の金縁メガネ', value: 'round:#B8860B', unlock: { gacha: true } },
+  { id: 'cheek_eiken_focus', kind: 'cheek', gacha: true, rarity: 'R', label: '集中のきらりペイント', value: 'sparkle:#4D96FF', unlock: { gacha: true } },
+  { id: 'aura_eiken_english', kind: 'aura', gacha: true, rarity: 'R', label: 'アカデミックABCオーラ', value: 'abc:#1D3557', unlock: { gacha: true } },
+  { id: 'aura_eiken_pass_stars', kind: 'aura', gacha: true, rarity: 'SR', label: '合格一番星のオーラ', value: 'stars:#F4C430', unlock: { gacha: true } },
+  { id: 'frame_eiken_navy', kind: 'frame', gacha: true, rarity: 'R', label: 'アカデミック・ネイビー枠', value: '#1D3557', pattern: 'grid', unlock: { gacha: true } },
+  { id: 'frame_eiken_royal', kind: 'frame', gacha: true, rarity: 'SR', label: 'ロイヤル・イングリッシュ枠', value: '#5A4FCF', pattern: 'double', unlock: { gacha: true } },
+  { id: 'comp_eiken_study_owl', kind: 'companion', gacha: true, rarity: 'SR', label: 'お供：カギノスケ（自習室のルビー）', value: 'key_ruby', unlock: { gacha: true } },
   // ── LR（2次試験ガチャ）：国公立2次 英語 予想問題（書き下ろし・過去問ではない。一覧は nijiMockPrints.ts）──
   ...NIJI_MOCK_PRINTS.map((p): ItemDef => ({ id: p.id, kind: 'print', gacha: true, rarity: 'LR', label: p.label, value: p.file, unlock: { gacha: true } })),
   // ── LR（2次試験ガチャ）：大学別 英語 予想問題（北大・東北大・弘前大・岩手大・秋田大・山形大・福島大・宇都宮大・群馬大・神戸大・阪大・立命館。問題／解答・解説が別冊。一覧は hokudai/tohoku/hirosaki/iwate/akita/yamagata/fukushima/utsunomiya/gunma/kobe/osaka/ritsuMockPrints.ts）──

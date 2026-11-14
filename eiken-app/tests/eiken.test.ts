@@ -291,11 +291,15 @@ describe('Release content completeness', () => {
       for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
     }
     expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(29);
-    expect(GACHA_PRINTS).toHaveLength(36);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook2_'))).toHaveLength(7);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_drill_short_'))).toHaveLength(7);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_guide_'))).toHaveLength(7);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_writing_'))).toHaveLength(5);
+    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(105);
+    expect(GACHA_PRINTS).toHaveLength(138);
     for (const print of GACHA_PRINTS) {
       expect(print.subject).toMatch(/^eiken_/);
-      expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : 5);
+      expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : print.id.startsWith('print_eiken_wordbook') ? 5 : 4);
       expect(readFileSync(`public${print.file}`).subarray(0, 4).toString()).toBe('%PDF');
       expect(existsSync(`public${print.thumb}`)).toBe(true);
       expect(GACHA_PREVIEWS[print.id].every(path => existsSync(`public${path}`))).toBe(true);

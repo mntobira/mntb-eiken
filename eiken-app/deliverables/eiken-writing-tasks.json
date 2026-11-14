@@ -1,0 +1,194 @@
+[
+  {
+    "grade": "eiken_5",
+    "theme": "小さな工作室の一日",
+    "focus": "現在形・場所・時刻を、短い情報から取り出す",
+    "writing": []
+  },
+  {
+    "grade": "eiken_4",
+    "theme": "町の小さな活動に参加する",
+    "focus": "予定の変更・出来事の順序・理由を読み分ける",
+    "writing": []
+  },
+  {
+    "grade": "eiken_3",
+    "theme": "町の情報を、伝わる形に変える",
+    "focus": "目的・条件・理由を捉え、自分の説明につなぐ",
+    "writing": [
+      {
+        "id": "email",
+        "title": "短いメールへの返信",
+        "instruction": "友人からのメールに英語で返信してください。好きな活動を一つ選び、その理由と持って行く物を伝えてください。",
+        "source": "Our class can make a photo guide or a sound guide for new students. Which would you like to make? Why? What will you bring?",
+        "target": "この練習の目安：25〜40語。公式試験の語数指定ではありません。",
+        "model": "I would like to make a sound guide because new students can listen while they walk. I will bring my small recorder. We can record short messages near each room.",
+        "commentary": "活動の選択・理由・持参物の3点に答えています。will bringはこれからの予定です。",
+        "checklist": [
+          "どちらの活動か明示した",
+          "becauseなどで理由を述べた",
+          "持って行く物を書いた",
+          "主語と動詞を含む文で書いた"
+        ]
+      },
+      {
+        "id": "opinion",
+        "title": "身近なことについて意見を書く",
+        "instruction": "Do you think students should help make information guides for their schools? Give your opinion and two reasons.",
+        "target": "練習目安：40〜60語。賛否のどちらも可。",
+        "model": "I think students should help make school guides. First, they know which places are difficult for new students to find. Their advice can be useful. Second, making a guide gives students a chance to work together. They can learn how to explain things clearly.",
+        "commentary": "新入生への実用性と、作り手の学びを別の理由として挙げています。同じ理由の言い換えを二つ並べないようにします。",
+        "checklist": [
+          "賛成か反対か示した",
+          "異なる理由を二つ述べた",
+          "理由を少し具体化した",
+          "意味が通る文とつなぎ語を使った"
+        ]
+      }
+    ]
+  },
+  {
+    "grade": "eiken_pre2",
+    "theme": "使いやすい仕組みを考える",
+    "focus": "制約・因果関係・改善前後の違いを捉える",
+    "writing": [
+      {
+        "id": "email",
+        "title": "相手の提案に答えるメール",
+        "instruction": "次のメールに返信してください。提案への返答と理由を書き、活動に必要な情報を尋ねる質問を二つ加えてください。",
+        "source": "We are planning a repair afternoon at the community centre. Would you rather help at the welcome desk or prepare the room? Please let me know.",
+        "target": "練習目安：45〜65語。",
+        "model": "I would rather help at the welcome desk because I enjoy talking to new people. I can also explain where visitors should leave their items. What time should volunteers arrive? Will we have a list of the people who have booked? I would like to read it before the event.",
+        "commentary": "役割を一つ選び、理由を示した上で、集合時刻と予約者リストを質問しています。質問を無関係な世間話にしないことが大切です。",
+        "checklist": [
+          "役割を選んで理由を書いた",
+          "場面に合う質問を二つ書いた",
+          "質問に疑問文の語順を使った",
+          "丁寧で一貫した文体にした"
+        ]
+      },
+      {
+        "id": "opinion",
+        "title": "地域の仕組みについて意見を書く",
+        "instruction": "Should neighbourhood centres lend useful equipment to local residents? State your opinion and support it with two reasons.",
+        "target": "練習目安：65〜85語。",
+        "model": "I think neighbourhood centres should lend useful equipment. First, some items are expensive but are needed only a few times a year. Sharing them allows residents to finish small projects without spending too much. Second, a lending service can bring people together. For example, volunteers can explain safe ways to use the equipment. However, the centre should check returned items carefully so that the next person can borrow them safely.",
+        "commentary": "経済的利点と人とのつながりを区別し、安全面の条件も添えています。条件は主張を否定せず、実行方法を具体化するものです。",
+        "checklist": [
+          "主張と二つの理由が一致している",
+          "一つ以上の具体例を挙げた",
+          "理由同士が重複していない",
+          "接続表現と文法を見直した"
+        ]
+      }
+    ]
+  },
+  {
+    "grade": "eiken_pre2plus",
+    "theme": "便利さと参加のしやすさを両立する",
+    "focus": "筆者の留保・参加条件・複数の視点を読み取る",
+    "writing": [
+      {
+        "id": "summary",
+        "title": "要点をまとめる",
+        "instruction": "次の英文を読み、利点と課題の両方を含む英語の要約を書いてください。本文にない自分の意見は加えないでください。",
+        "source": "Some community groups record meetings and share the videos with members who cannot attend. Recordings allow members to follow discussions at a convenient time and check details they may have missed. However, watching a long video can be difficult for people with limited free time. They may also be unable to ask questions when the original discussion takes place. To make the recordings more useful, one group now adds a short list of topics with the time at which each discussion begins. It also accepts questions for a week after a meeting. The group says recordings should support participation, not simply create more material for members to watch.",
+        "target": "練習目安：40〜55語。",
+        "model": "Meeting recordings help absent members follow discussions and review details. However, long videos take time, and viewers cannot ask questions immediately. One group therefore provides topic timestamps and allows later questions, aiming to make recordings support participation rather than merely increase the material available.",
+        "commentary": "録画の利点、時間と即時質問の課題、改善策をまとめています。タイムスタンプのような細部は、何を改善するかと結びつけて残します。",
+        "checklist": [
+          "主題と利点を含めた",
+          "課題も省略しなかった",
+          "改善策を短くまとめた",
+          "原文にない評価や意見を足していない"
+        ]
+      },
+      {
+        "id": "opinion",
+        "title": "条件を意識した意見表現",
+        "instruction": "Should local groups offer both online and in-person ways to participate? Explain your opinion with two reasons.",
+        "target": "練習目安：80〜100語。",
+        "model": "Local groups should offer both options when they have enough support. First, online participation can include people whose jobs or family duties prevent them from travelling to meetings. Their ideas may otherwise be lost. Second, meeting in person can help members build trust through informal conversations. Keeping this option matters to people who find digital tools difficult. However, organisers need a clear way to share questions between both groups. Without it, online members may be able to watch but not genuinely join the discussion.",
+        "commentary": "オンラインと対面の別々の価値を述べ、視聴できるだけでは参加にならないという実施条件を示しています。",
+        "checklist": [
+          "立場を明示した",
+          "二つの異なる理由を展開した",
+          "条件と主張が矛盾していない",
+          "具体例が理由の説明になっている"
+        ]
+      }
+    ]
+  },
+  {
+    "grade": "eiken_2",
+    "theme": "数字の向こうにある利用者の行動",
+    "focus": "指標の限界・実証の範囲・代替説明を考える",
+    "writing": [
+      {
+        "id": "summary",
+        "title": "因果関係を保った要約",
+        "instruction": "次の英文を英語で要約してください。導入された仕組み、その利点、問題、対応の関係を残してください。",
+        "source": "Several offices have begun using shared desks instead of assigning one desk to each employee. Because many employees work from home on some days, shared desks can reduce the amount of office space a company needs. They may also encourage employees from different teams to meet. However, workers sometimes spend time searching for a suitable desk, and those who need specialised equipment may find the system difficult. One company introduced a reservation system and kept a small number of permanently assigned desks for employees with particular needs. It also asked staff whether the arrangements helped them do their work. The company found that simply counting empty desks was not enough to decide whether the new system was successful.",
+        "target": "練習目安：50〜65語。",
+        "model": "Shared desks can save office space and encourage contact between teams, but employees may struggle to find suitable workspaces or equipment. One company responded with reservations and some assigned desks. It also sought staff feedback, recognising that the number of empty desks alone could not show whether the system supported employees’ work.",
+        "commentary": "省スペース・交流という利点と、場所・機材の問題を対にし、予約等の対応と評価の見直しを残しています。",
+        "checklist": [
+          "主題と利点を含めた",
+          "問題と対応の因果を保った",
+          "単なる数字では不十分という結論を残した",
+          "意見・本文にない断定を加えなかった"
+        ]
+      },
+      {
+        "id": "opinion",
+        "title": "効率と利用しやすさを論じる",
+        "instruction": "Should public services keep non-digital options even when online systems are cheaper to operate? Support your view with two reasons.",
+        "target": "練習目安：100〜130語。",
+        "model": "Public services should retain non-digital options, even if online systems cost less to operate. First, access to essential services should not depend entirely on digital skills or equipment. An inexpensive website offers little value to a resident who cannot use it to request urgent assistance. Second, alternative channels can reveal problems that online completion rates hide. Staff speaking to residents may discover confusing instructions or situations the standard form does not cover. This information can improve the digital service as well. Maintaining alternatives does involve costs, so services should monitor demand and organise support carefully. However, efficiency should include successfully meeting people’s needs, not merely reducing the cost of each recorded transaction.",
+        "commentary": "公平なアクセスと、改善に役立つ情報という二つの理由を展開しています。コストへの反論を認めたうえで、効率の定義を主張に結びつけています。",
+        "checklist": [
+          "立場が一貫している",
+          "理由を二つ具体的に展開した",
+          "費用などの反論にも触れた",
+          "結論が本文の理由から導かれている"
+        ]
+      }
+    ]
+  },
+  {
+    "grade": "eiken_pre1",
+    "theme": "測定・証拠・説明責任",
+    "focus": "論証の前提、指標による誘因、適用範囲を吟味する",
+    "writing": [
+      {
+        "id": "summary",
+        "title": "論証の構造を保つ要約",
+        "instruction": "次の英文の論点・利点・問題・提案を英語で要約してください。本文が留保している点を断定に変えないでください。",
+        "source": "Public research funders increasingly ask scientists to state in advance how their work might benefit society. Supporters argue that such statements encourage researchers to consider potential users and make public spending easier to justify. The requirement may also help identify opportunities for collaboration beyond universities. Critics, however, point out that valuable discoveries can arise from questions whose practical significance is initially unclear. If funding decisions depend too heavily on confident predictions, applicants may exaggerate likely benefits or avoid uncertain but important investigations. One funding body has therefore introduced different expectations for different kinds of projects. Applied projects must describe plausible users and routes to implementation, while exploratory projects are assessed more strongly on the significance of their questions and the quality of their methods. Both types must explain how results will be shared. The funder stresses that this arrangement does not remove uncertainty or guarantee future impact. It is intended to make accountability sensitive to the character of the research rather than treating every project as if its eventual use could be specified in advance.",
+        "target": "練習目安：65〜85語。公式試験の語数指定ではありません。",
+        "model": "Requiring researchers to predict social benefits can encourage collaboration and accountability, but may disadvantage exploratory work or encourage exaggerated claims. One funder therefore distinguishes applied from exploratory projects, assessing the former’s likely users and implementation plans and the latter’s questions and methods. Both must share results. This approach does not guarantee impact; it aims to match accountability to different kinds of research rather than demand equally precise forecasts from all projects.",
+        "commentary": "説明責任という利点と、探索的研究が不利になる問題を両方残します。新制度の保証範囲を広げず、研究の種類に合わせる狙いで結びます。",
+        "checklist": [
+          "支持・批判の両方を歪めず示した",
+          "制度変更の理由と内容を結びつけた",
+          "mayとguaranteeの違いを保った",
+          "原文にない評価を加えず自分の文で統合した"
+        ]
+      },
+      {
+        "id": "opinion",
+        "title": "評価制度について論じる",
+        "instruction": "Should public organisations rely mainly on numerical targets when evaluating their services? Develop an argument with two distinct reasons and address a possible objection.",
+        "target": "練習目安：140〜170語。",
+        "model": "Public organisations should use numerical targets, but should not rely on them as their main evidence of service quality. First, easily measured outputs do not always capture the outcomes residents need. A rapid acknowledgement, for example, can satisfy a response target without providing useful assistance. Giving that number excessive weight may encourage staff to prioritise recorded speed over resolving complex problems. Second, a single measure can conceal differences between groups. A high average completion rate may coexist with serious barriers for residents whose circumstances do not fit a standard process. Critics may argue that broader assessments are costly and vulnerable to selective storytelling. This concern is valid, but it supports careful evaluation design rather than exclusive reliance on numbers. Organisations can combine consistent questions, sampled user feedback and transparent reporting of limitations. Such an approach preserves comparability while making it harder for a convenient indicator to stand in for the purpose of the service.",
+        "commentary": "目的の代理指標になる危険と、集計値が格差を隠す危険を区別しています。反論を認め、標準質問・標本調査・限界の開示という実行可能な応答につなげています。",
+        "checklist": [
+          "問いに正面から答える立場を置いた",
+          "二つの理由を区別して十分に展開した",
+          "反論に応答し主張を補強した",
+          "過剰な一般化を避け論理と語彙を点検した"
+        ]
+      }
+    ]
+  }
+]
