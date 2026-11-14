@@ -1,33 +1,10 @@
 {
   "totalSlots": 300,
+  "mappedSlots": 271,
   "reusedSlots": 258,
-  "generatedDeltaSlots": 10,
-  "remainingDeltaSlots": 32,
+  "generatedDeltaSlots": 13,
+  "remainingDeltaSlots": 29,
   "remainingItems": [
-    {
-      "round": 5,
-      "questionNumber": 4,
-      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_04.png",
-      "category": "store",
-      "sceneSummaryJa": "店のカウンターの上の無地カレンダーを指さして値段を尋ねている場面",
-      "whyNewJa": "台本が wall calendar（カレンダー）を指さすため"
-    },
-    {
-      "round": 5,
-      "questionNumber": 5,
-      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_05.png",
-      "category": "living",
-      "sceneSummaryJa": "リビングのローテーブルの上のテニスバッグを見ている場面",
-      "whyNewJa": "台本が tennis bag（テニスバッグ）のため"
-    },
-    {
-      "round": 5,
-      "questionNumber": 9,
-      "targetPath": "/eiken_images/eiken_5_listening_r05_part1_09.png",
-      "category": "art",
-      "sceneSummaryJa": "美術室の机の上の手拭きタオルを見て数を話している場面",
-      "whyNewJa": "台本が clean hand towels（手拭きタオル）の数を尋ねるため"
-    },
     {
       "round": 6,
       "questionNumber": 4,
