@@ -16,106 +16,106 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
       },
       {
         "id": "eiken_5_listening_r01",
-        "title": "リスニング 第1回｜家族",
-        "abstractTitle": "リスニング 第1回｜家族",
+        "title": "リスニング 第1回｜家族 【専用音声・イラスト完備】",
+        "abstractTitle": "リスニング 第1回｜家族 【専用音声・イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r02",
-        "title": "リスニング 第2回｜友達",
-        "abstractTitle": "リスニング 第2回｜友達",
+        "title": "リスニング 第2回｜友達 【専用音声・イラスト完備】",
+        "abstractTitle": "リスニング 第2回｜友達 【専用音声・イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r03",
-        "title": "リスニング 第3回｜学校",
-        "abstractTitle": "リスニング 第3回｜学校",
+        "title": "リスニング 第3回｜学校 【専用音声・イラスト完備】",
+        "abstractTitle": "リスニング 第3回｜学校 【専用音声・イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r04",
-        "title": "リスニング 第4回｜趣味",
-        "abstractTitle": "リスニング 第4回｜趣味",
+        "title": "リスニング 第4回｜趣味 【専用音声・イラスト完備】",
+        "abstractTitle": "リスニング 第4回｜趣味 【専用音声・イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r05",
-        "title": "リスニング 第5回｜旅行",
-        "abstractTitle": "リスニング 第5回｜旅行",
+        "title": "リスニング 第5回｜旅行 【専用音声・イラスト完備】",
+        "abstractTitle": "リスニング 第5回｜旅行 【専用音声・イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r06",
-        "title": "リスニング 第6回｜買い物",
-        "abstractTitle": "リスニング 第6回｜買い物",
+        "title": "リスニング 第6回｜買い物 【専用音声・イラスト16/20】",
+        "abstractTitle": "リスニング 第6回｜買い物 【専用音声・イラスト16/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r07",
-        "title": "リスニング 第7回｜スポーツ",
-        "abstractTitle": "リスニング 第7回｜スポーツ",
+        "title": "リスニング 第7回｜スポーツ 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第7回｜スポーツ 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r08",
-        "title": "リスニング 第8回｜映画",
-        "abstractTitle": "リスニング 第8回｜映画",
+        "title": "リスニング 第8回｜映画 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第8回｜映画 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r09",
-        "title": "リスニング 第9回｜音楽",
-        "abstractTitle": "リスニング 第9回｜音楽",
+        "title": "リスニング 第9回｜音楽 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第9回｜音楽 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r10",
-        "title": "リスニング 第10回｜食事",
-        "abstractTitle": "リスニング 第10回｜食事",
+        "title": "リスニング 第10回｜食事 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第10回｜食事 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r11",
-        "title": "リスニング 第11回｜天気",
-        "abstractTitle": "リスニング 第11回｜天気",
+        "title": "リスニング 第11回｜天気 【専用音声・イラスト19/20】",
+        "abstractTitle": "リスニング 第11回｜天気 【専用音声・イラスト19/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r12",
-        "title": "リスニング 第12回｜道案内",
-        "abstractTitle": "リスニング 第12回｜道案内",
+        "title": "リスニング 第12回｜道案内 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第12回｜道案内 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r13",
-        "title": "リスニング 第13回｜自己紹介",
-        "abstractTitle": "リスニング 第13回｜自己紹介",
+        "title": "リスニング 第13回｜自己紹介 【専用音声・イラスト16/20】",
+        "abstractTitle": "リスニング 第13回｜自己紹介 【専用音声・イラスト16/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r14",
-        "title": "リスニング 第14回｜休日の予定",
-        "abstractTitle": "リスニング 第14回｜休日の予定",
+        "title": "リスニング 第14回｜休日の予定 【専用音声・イラスト17/20】",
+        "abstractTitle": "リスニング 第14回｜休日の予定 【専用音声・イラスト17/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
       {
         "id": "eiken_5_listening_r15",
-        "title": "リスニング 第15回｜近況報告",
-        "abstractTitle": "リスニング 第15回｜近況報告",
+        "title": "リスニング 第15回｜近況報告 【専用音声・イラスト18/20】",
+        "abstractTitle": "リスニング 第15回｜近況報告 【専用音声・イラスト18/20】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 25
       },
@@ -190,106 +190,106 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
       },
       {
         "id": "eiken_4_listening_r01",
-        "title": "リスニング 第1回｜家族",
-        "abstractTitle": "リスニング 第1回｜家族",
+        "title": "リスニング 第1回｜家族 【イラスト完備】",
+        "abstractTitle": "リスニング 第1回｜家族 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r02",
-        "title": "リスニング 第2回｜友達",
-        "abstractTitle": "リスニング 第2回｜友達",
+        "title": "リスニング 第2回｜友達 【イラスト完備】",
+        "abstractTitle": "リスニング 第2回｜友達 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r03",
-        "title": "リスニング 第3回｜学校",
-        "abstractTitle": "リスニング 第3回｜学校",
+        "title": "リスニング 第3回｜学校 【イラスト完備】",
+        "abstractTitle": "リスニング 第3回｜学校 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r04",
-        "title": "リスニング 第4回｜趣味",
-        "abstractTitle": "リスニング 第4回｜趣味",
+        "title": "リスニング 第4回｜趣味 【イラスト完備】",
+        "abstractTitle": "リスニング 第4回｜趣味 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r05",
-        "title": "リスニング 第5回｜旅行",
-        "abstractTitle": "リスニング 第5回｜旅行",
+        "title": "リスニング 第5回｜旅行 【イラスト完備】",
+        "abstractTitle": "リスニング 第5回｜旅行 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r06",
-        "title": "リスニング 第6回｜買い物",
-        "abstractTitle": "リスニング 第6回｜買い物",
+        "title": "リスニング 第6回｜買い物 【イラスト完備】",
+        "abstractTitle": "リスニング 第6回｜買い物 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r07",
-        "title": "リスニング 第7回｜スポーツ",
-        "abstractTitle": "リスニング 第7回｜スポーツ",
+        "title": "リスニング 第7回｜スポーツ 【イラスト完備】",
+        "abstractTitle": "リスニング 第7回｜スポーツ 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r08",
-        "title": "リスニング 第8回｜映画",
-        "abstractTitle": "リスニング 第8回｜映画",
+        "title": "リスニング 第8回｜映画 【イラスト完備】",
+        "abstractTitle": "リスニング 第8回｜映画 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r09",
-        "title": "リスニング 第9回｜音楽",
-        "abstractTitle": "リスニング 第9回｜音楽",
+        "title": "リスニング 第9回｜音楽 【イラスト完備】",
+        "abstractTitle": "リスニング 第9回｜音楽 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r10",
-        "title": "リスニング 第10回｜食事",
-        "abstractTitle": "リスニング 第10回｜食事",
+        "title": "リスニング 第10回｜食事 【イラスト完備】",
+        "abstractTitle": "リスニング 第10回｜食事 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r11",
-        "title": "リスニング 第11回｜天気",
-        "abstractTitle": "リスニング 第11回｜天気",
+        "title": "リスニング 第11回｜天気 【イラスト完備】",
+        "abstractTitle": "リスニング 第11回｜天気 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r12",
-        "title": "リスニング 第12回｜道案内",
-        "abstractTitle": "リスニング 第12回｜道案内",
+        "title": "リスニング 第12回｜道案内 【イラスト完備】",
+        "abstractTitle": "リスニング 第12回｜道案内 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r13",
-        "title": "リスニング 第13回｜自己紹介",
-        "abstractTitle": "リスニング 第13回｜自己紹介",
+        "title": "リスニング 第13回｜自己紹介 【イラスト完備】",
+        "abstractTitle": "リスニング 第13回｜自己紹介 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r14",
-        "title": "リスニング 第14回｜近況報告",
-        "abstractTitle": "リスニング 第14回｜近況報告",
+        "title": "リスニング 第14回｜近況報告 【イラスト完備】",
+        "abstractTitle": "リスニング 第14回｜近況報告 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },
       {
         "id": "eiken_4_listening_r15",
-        "title": "リスニング 第15回｜海外の文化",
-        "abstractTitle": "リスニング 第15回｜海外の文化",
+        "title": "リスニング 第15回｜海外の文化 【イラスト完備】",
+        "abstractTitle": "リスニング 第15回｜海外の文化 【イラスト完備】",
         "realTitle": "リスニング予想問題（全15回）",
         "problemCount": 30
       },

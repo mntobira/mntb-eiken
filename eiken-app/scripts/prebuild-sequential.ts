@@ -129,6 +129,24 @@ buildSync({
 aliasMap['katex'] = katexOut;
 console.log('[seq-vendor] Prebundled katex -> katex-prebundled.mjs');
 
+// Prebundle motion/react into a single ESM file (eliminates ~280 framer-motion/motion-dom Rollup modules)
+const motionEntry = resolve(CACHE_DIR, '_motion-react-entry.js');
+const motionOut = resolve(CACHE_DIR, 'motion-react-prebundled.mjs');
+writeFileSync(motionEntry, `export * from 'motion/react';\n`);
+buildSync({
+  entryPoints: [motionEntry],
+  outfile: motionOut,
+  bundle: true,
+  format: 'esm',
+  platform: 'browser',
+  target: 'es2022',
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
+  minify: true,
+  treeShaking: true,
+});
+aliasMap['motion/react'] = motionOut;
+console.log('[seq-vendor] Prebundled motion/react -> motion-react-prebundled.mjs');
+
 // --- Step 1C: 重い教材データモジュールを1本ずつ別プロセスでシリアライズ ---
 const TARGETS: ReadonlyArray<{ key: string; importPath: string; exports: readonly string[] }> = [
   { key: 'listening-g5', importPath: './src/eiken/materials/listening-g5.ts', exports: ['GRADE_5_LISTENING_EXAMS'] },
