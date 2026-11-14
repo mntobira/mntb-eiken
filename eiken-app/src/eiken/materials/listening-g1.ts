@@ -59,7 +59,7 @@ function buildG1Part3Unit(examId: string, round: number, u: number): ListeningAu
         spoken,
         docTypeEn: 'postdoctoral research grant eligibility matrix',
         iconHintEn: 'a small microscope icon and a document seal icon',
-        summaryJa: '博士研究員向け助成金トラック比較表（学位取得後年数・海外共同受入・設備上限額）の白紙枠レイアウト',
+        summaryJa: '博士研究員向け助成金トラック比較表（学位取得後年数・海外共同受入・設備上限額）',
         ja: betaFrozen
           ? `博士取得後4年・海外研との共同所属・15,000ドル超の機器購入必須。Track Betaは今秋募集停止となったが、細則により海外公的研究機関との共同所属者はTrack Deltaの機器上限が22,000ドルに引き上げられるため、Track Delta＋様式7で申請する。`
           : `今期はTrack Deltaの上限緩和特例が一時停止され10,000ドル上限のままなので条件に届かず、学位後6年以内・海外共同可・上限20,000ドルのTrack BetaをPortal Code Twoで申請する。`,
@@ -116,7 +116,7 @@ function buildG1Part3Unit(examId: string, round: number, u: number): ListeningAu
         spoken,
         docTypeEn: 'commercial arbitration procedure schedule',
         iconHintEn: 'a small balance scale icon and a gavel icon',
-        summaryJa: '国際商事仲裁センターの申立手続比較表（請求上限・裁定日数・合議体人数と言語）の白紙枠レイアウト',
+        summaryJa: '国際商事仲裁センターの申立手続比較表（請求上限・裁定日数・合議体人数と言語）',
         ja: expSuspended
           ? `180万ドル・90日以内・仲裁人3名・日英二言語必須。Expedited Commercialは130日に延びて90日要件を超過するため、公認通訳の共同選任で二言語対応・75日裁定が可能なMaritime Specialを選ぶ。`
           : `Maritime Specialの通訳特例は一般供給契約には廃止となった一方、Expedited Commercialは増員により85日以内・上限250万ドル・3名合議・二言語対応が維持されているためSchedule Eで申し立てる。`,
@@ -173,7 +173,7 @@ function buildG1Part3Unit(examId: string, round: number, u: number): ListeningAu
         spoken,
         docTypeEn: 'hospital diagnostic imaging referral protocol table',
         iconHintEn: 'a small medical cross icon and a clock icon',
-        summaryJa: '大学病院画像診断部門の紹介予約表（ペースメーカー対応・造影剤管理・読影所要時間）の白紙枠レイアウト',
+        summaryJa: '大学病院画像診断部門の紹介予約表（ペースメーカー対応・造影剤管理・読影所要時間）',
         ja: cardiacTechOff
           ? `水曜午前の時点で、今日と木曜はペースメーカー技師が不在でSuite 2・3は不可のため、技師調整不要・造影対応・6時間報告のSuite 4をコード9で予約する。`
           : `Suite 4は金曜午後まで造影不可だが、Suite 2は本日午後に技師と放射線科医が揃い24時間報告で木曜午後に結果が出るためコード4で予約する。`,
@@ -230,7 +230,7 @@ function buildG1Part3Unit(examId: string, round: number, u: number): ListeningAu
         spoken,
         docTypeEn: 'industrial exhibition hall specification table',
         iconHintEn: 'a small gear icon and a lightning bolt icon',
-        summaryJa: '精密機器展示会の出展ゾーン仕様表（床耐荷重・電源規格・圧縮空気配管）の白紙枠レイアウト',
+        summaryJa: '精密機器展示会の出展ゾーン仕様表（床耐荷重・電源規格・圧縮空気配管）',
         ja: eastSoldOut
           ? `開幕45日前でHall Eastは完売したが、30日前期限より前なので耐荷重2,000kg・圧縮空気完備のHall West通路1番区画＋変圧器申請フォームTで全要件を満たせる。`
           : `開幕18日前のためHall Westの仮設400V変圧器申請は締切済みだが、キャンセルで空きが出たHall East（耐荷重2,500kg・三相400V・圧縮空気常設）をDesk Bで確保できる。`,
@@ -287,7 +287,7 @@ function buildG1Part3Unit(examId: string, round: number, u: number): ListeningAu
         spoken,
         docTypeEn: 'accredited environmental testing laboratory comparison chart',
         iconHintEn: 'a small flask icon and a water droplet icon',
-        summaryJa: '公認水質分析機関の比較表（ISO認定範囲・報告営業日数・週末冷蔵回収）の白紙枠レイアウト',
+        summaryJa: '公認水質分析機関の比較表（ISO認定範囲・報告営業日数・週末冷蔵回収）',
         ja: aquaOffline
           ? `AquaMetricsは再認定検査でPFAS受付停止中だが、EnviroTraceはExpress Couriers Zone 3併用で土曜冷蔵回収＋5営業日報告が可能なためコード6で契約する。`
           : `提携便の週末運休でEnviroTraceは平日持込のみとなったが、AquaMetricsが通常稼働しており重金属＋PFAS・4営業日・土日冷蔵回収をすべて満たすためPortal Oneで契約する。`,

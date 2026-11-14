@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 // 教科ごとの parts は data/allChapters.ts から引く
 // （以前はこのファイルで6教科ぶんを個別に import していた）
 import { type SubjectKey } from '../data/allChapters';
-import { ChevronRight, ArrowLeft, X, Headphones, PenLine, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, ArrowLeft, X, Headphones, PenLine, Play, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { DoorMascot } from './DoorMascot';
 import { subjectTheme } from '../data/subjectTheme';
@@ -23,7 +23,7 @@ import { buildUnitSections } from '../data/unitSections';
 import { UnitCard } from './UnitCard';
 import { ListeningTechniqueCard } from './ListeningTechniqueCard';
 import './unit-select.css';
-import { accuracyOf, readUnitStats } from '../utils/unitStats';
+import { accuracyOf, readUnitStats, stripCircledNumber, UNIT_STATUS_LABEL } from '../utils/unitStats';
 import { STAGE_CLEAR_PERFECTS, isStageCleared, readStageRecords, stageKey } from '../utils/stageRecords';
 import { safeGetItem, safeLocalStorage, safeParseJson } from '../utils/safeLocalStorage';
 import { getChapterGroups, getGrammarPartGroups, collectAudioSets, splitTabTitle } from '../utils/chapterGroups';
@@ -69,6 +69,15 @@ function splitEikenTabTitle(title: string, index: number): { kicker: string; lab
     return { kicker: '基礎準備', label: title };
   }
   return splitTabTitle(title, index);
+}
+
+function splitEikenRoundTitle(rawTitle: string): { main: string; sub: string | null } {
+  const clean = stripCircledNumber(rawTitle);
+  const match = clean.match(/^(.+?)(（.+）)$/);
+  if (match) {
+    return { main: match[1].trim(), sub: match[2] };
+  }
+  return { main: clean, sub: null };
 }
 
 const EIKEN_GRADE_ORDER = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const;
@@ -454,21 +463,27 @@ export function ChapterSelection({
                     const reviewed = Boolean(draft?.reviewed);
                     const words = draft?.text ? wordCount(draft.text) : 0;
                     const number = String(idx + 1).padStart(2, '0');
+                    const cardState = reviewed ? 'done' : words > 0 ? 'doing' : 'todo';
+                    const openTask = () => onOpenWriting?.(wTask.key);
                     return (
                       <article
                         key={wTask.key}
-                        className="unit-card"
-                        data-status={reviewed ? 'done' : words > 0 ? 'doing' : 'todo'}
+                        className="unit-card eiken-round-card"
+                        data-status={cardState}
+                        data-eiken-state={cardState}
                         data-writing-round-card={wTask.key}
+                        onClick={openTask}
                         style={theme.accent ? ({ '--unit-accent': theme.accent } as React.CSSProperties) : undefined}
                       >
                         <div className="unit-card-row">
-                          <div className="unit-card-main" style={{ cursor: 'default' }}>
+                          <div className="unit-card-main">
                             <span className="unit-card-title">
-                              <b>{number}.</b> 第{wTask.round}回（{activeWritingGroup.label}）
+                              <b>{number}.</b>{' '}
+                              <span className="eiken-round-name">第{wTask.round}回</span>
+                              <span className="eiken-round-sub">（{activeWritingGroup.label}）</span>
                             </span>
                             <span className="unit-card-meta">
-                              <span className="mt-status" data-status={reviewed ? 'done' : words > 0 ? 'doing' : 'todo'}>
+                              <span className="mt-status" data-status={cardState}>
                                 {reviewed ? '点検済' : words > 0 ? `下書き ${words}語` : '未着手'}
                               </span>
                               <span className="unit-card-acc">{wTask.target.replace(/（.*）/, '')}</span>
@@ -477,10 +492,18 @@ export function ChapterSelection({
                           <button
                             type="button"
                             className="unit-card-primary"
-                            onClick={() => onOpenWriting?.(wTask.key)}
+                            data-action-state={cardState}
+                            onClick={e => {
+                              e.stopPropagation();
+                              openTask();
+                            }}
                           >
-                            {reviewed ? <CheckCircle2 size={15} aria-hidden="true" /> : <PenLine size={15} aria-hidden="true" />}
-                            {words > 0 ? '続きを書く' : '演習開始'}
+                            {reviewed ? (
+                              <RotateCcw size={11} aria-hidden="true" />
+                            ) : (
+                              <PenLine size={11} aria-hidden="true" />
+                            )}
+                            <span>{reviewed ? 'もう一度' : words > 0 ? '続きから' : '演習開始'}</span>
                           </button>
                         </div>
                       </article>
@@ -498,20 +521,25 @@ export function ChapterSelection({
                         const reviewed = Boolean(draft?.reviewed);
                         const words = draft?.text ? wordCount(draft.text) : 0;
                         const number = String(activeWritingGroup.writingTasks.roundTasks.length + bIdx + 1).padStart(2, '0');
+                        const cardState = reviewed ? 'done' : words > 0 ? 'doing' : 'todo';
+                        const openBasicTask = () => onOpenWriting?.(bTask.key);
                         return (
                           <article
                             key={bTask.key}
-                            className="unit-card"
-                            data-status={reviewed ? 'done' : words > 0 ? 'doing' : 'todo'}
+                            className="unit-card eiken-round-card"
+                            data-status={cardState}
+                            data-eiken-state={cardState}
+                            onClick={openBasicTask}
                             style={theme.accent ? ({ '--unit-accent': theme.accent } as React.CSSProperties) : undefined}
                           >
                             <div className="unit-card-row">
-                              <div className="unit-card-main" style={{ cursor: 'default' }}>
+                              <div className="unit-card-main">
                                 <span className="unit-card-title">
-                                  <b>{number}.</b> 基礎練習：{bTask.title}
+                                  <b>{number}.</b>{' '}
+                                  <span className="eiken-round-name">基礎練習：{bTask.title}</span>
                                 </span>
                                 <span className="unit-card-meta">
-                                  <span className="mt-status" data-status={reviewed ? 'done' : words > 0 ? 'doing' : 'todo'}>
+                                  <span className="mt-status" data-status={cardState}>
                                     {reviewed ? '点検済' : words > 0 ? `下書き ${words}語` : '未着手'}
                                   </span>
                                   <span className="unit-card-acc truncate max-w-[16rem]">
@@ -522,10 +550,18 @@ export function ChapterSelection({
                               <button
                                 type="button"
                                 className="unit-card-primary"
-                                onClick={() => onOpenWriting?.(bTask.key)}
+                                data-action-state={cardState}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  openBasicTask();
+                                }}
                               >
-                                <PenLine size={15} aria-hidden="true" />
-                                {words > 0 ? '続きを書く' : '演習開始'}
+                                {reviewed ? (
+                                  <RotateCcw size={11} aria-hidden="true" />
+                                ) : (
+                                  <PenLine size={11} aria-hidden="true" />
+                                )}
+                                <span>{reviewed ? 'もう一度' : words > 0 ? '続きから' : '演習開始'}</span>
                               </button>
                             </div>
                           </article>
@@ -712,6 +748,109 @@ export function ChapterSelection({
                     <React.Fragment key={chapter.id}>
                       {stageHeading}
                       <div data-unit-id={chapter.id} data-unit-full-title={chapter.title}>
+                        {isEiken ? (() => {
+                          const cardIndex = chapterNumberById.get(chapter.id) ?? routeIndex;
+                          const number = String(cardIndex + 1).padStart(2, '0');
+                          const { main: mainTitle, sub: subTitle } = splitEikenRoundTitle(chapter.abstractTitle);
+                          const accuracy = accuracyOf(stat);
+                          const perfects = stage?.p ?? 0;
+                          const isCompletedOnce =
+                            !hasSavedProgress &&
+                            (status === 'done' || Boolean(stat) || Boolean(stage) || solvedCount > 0);
+                          const actionState: 'todo' | 'doing' | 'done' = hasSavedProgress
+                            ? 'doing'
+                            : isCompletedOnce
+                            ? 'done'
+                            : 'todo';
+                          const actionLabel = hasSavedProgress
+                            ? '続きから'
+                            : isCompletedOnce
+                            ? 'もう一度'
+                            : '通しで解く';
+                          const handleLaunch = () => {
+                            if (!hasQuestions) return;
+                            if (hasSavedProgress) {
+                              onSelectChapter(chapter.id, savedIndex, true);
+                            } else {
+                              onSelectChapter(chapter.id, 0, false);
+                            }
+                          };
+                          const audioOpen = audioSets.length > 0 && openAudioSetId === audioSets[0].id;
+
+                          return (
+                            <article
+                              className="unit-card eiken-round-card"
+                              data-status={status}
+                              data-eiken-state={actionState}
+                              data-empty={!hasQuestions || undefined}
+                              onClick={hasQuestions ? handleLaunch : undefined}
+                              style={theme.accent ? ({ '--unit-accent': theme.accent } as React.CSSProperties) : undefined}
+                            >
+                              <div className="unit-card-row">
+                                <div className="unit-card-main">
+                                  <span className="unit-card-title">
+                                    <b>{number}.</b>{' '}
+                                    <span className="eiken-round-name">{mainTitle}</span>
+                                    {subTitle && <span className="eiken-round-sub">{subTitle}</span>}
+                                  </span>
+                                  <span className="unit-card-meta">
+                                    <span className="mt-status" data-status={status}>
+                                      {!hasQuestions
+                                        ? '準備中'
+                                        : status === 'doing'
+                                        ? hasSavedProgress && perfects === 0 && !stat
+                                          ? '進行中'
+                                          : `満点 ${perfects}/${STAGE_CLEAR_PERFECTS}`
+                                        : UNIT_STATUS_LABEL[status]}
+                                    </span>
+                                    <span className="mt-meter unit-card-meter" data-status={status} aria-hidden="true">
+                                      <i style={{ width: `${accuracy ?? 0}%` }} />
+                                    </span>
+                                    <span className="unit-card-acc">
+                                      {accuracy === null ? '正答率 —' : `正答率 ${accuracy}%`}
+                                    </span>
+                                  </span>
+                                </div>
+
+                                <div className="eiken-round-actions">
+                                  {audioSets.length > 0 && (
+                                    <button
+                                      type="button"
+                                      className="eiken-round-audio"
+                                      aria-pressed={audioOpen}
+                                      aria-label={`${mainTitle} の復習用音源を聞く`}
+                                      title="復習用の音源を聞く（問題を解かずに音声だけ再生）"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        setOpenAudioSetId(audioOpen ? null : audioSets[0].id);
+                                      }}
+                                    >
+                                      <Headphones size={12} aria-hidden="true" />
+                                    </button>
+                                  )}
+                                  {hasQuestions && (
+                                    <button
+                                      type="button"
+                                      className="unit-card-primary"
+                                      data-action-state={actionState}
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        handleLaunch();
+                                      }}
+                                    >
+                                      {actionState === 'done' ? (
+                                        <RotateCcw size={11} aria-hidden="true" />
+                                      ) : (
+                                        <Play size={11} aria-hidden="true" />
+                                      )}
+                                      <span>{actionLabel}</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        })() : (
                         <UnitCard
                           index={chapterNumberById.get(chapter.id) ?? routeIndex}
                           title={chapter.abstractTitle}
@@ -863,6 +1002,7 @@ export function ChapterSelection({
                             </div>
                           )}
                         </UnitCard>
+                        )}
                       </div>
                     </React.Fragment>
                   );

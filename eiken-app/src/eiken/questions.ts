@@ -85,7 +85,7 @@ export function toProblem(q: EikenQuestion): Problem {
     ...q, category: q.section === 'dialogue' ? '会話の聞き取り' : q.section === 'response' ? '短い応答' : '説明文の聞き取り',
     text: q.instruction, readCount: q.playback.readCount, playOnce: !q.playback.replayAllowed, stepwise: true,
     subQuestions: [{ id: subId, label: q.instruction, type: 'multiple_choice', options: q.choices.map((_, i) => String(i + 1)), optionTexts: q.choices, correctAnswer: String(q.correctAnswer + 1), skill: q.tags[0], explainJa: q.explanation, detailedExplanation: { theme: q.tags[0], difficulty: q.difficulty, steps: [q.evidence, q.explanation] }, distractors: q.reasons.map((why, no) => ({ no: no + 1, why })) }],
-    audioTracks: [{ subId, label: `問${q.questionNumber}`, hint: '音声を聞いて答えを選んでください。', audioUrl: q.audioUrl || undefined, script: `${q.transcript}\nQuestion. ${q.instruction}`, turns: [...turns, { who: '', text: `Question. ${q.instruction}` }], translation: q.translation, keyPhrases: [{ phrase: q.evidence, meaning: q.explanation }] }],
+    audioTracks: [{ subId, label: `問${q.questionNumber}`, hint: undefined, audioUrl: q.audioUrl || undefined, script: `${q.transcript}\nQuestion. ${q.instruction}`, turns: [...turns, { who: '', text: `Question. ${q.instruction}` }], translation: q.translation, keyPhrases: [{ phrase: q.evidence, meaning: q.explanation }] }],
     surroundingKnowledge: [], deepDiveTopics: [],
   };
 }

@@ -48,7 +48,7 @@ function buildTrackMaterial(unit: ListeningAudioUnit, resolvedImageUrl?: string)
           }
         : undefined,
     images: resolvedImageUrl
-      ? [{ src: resolvedImageUrl, caption: unit.image?.sceneSummaryJa || unit.material.title }]
+      ? [{ src: resolvedImageUrl, caption: unit.material.title }]
       : undefined,
   };
 }
@@ -64,22 +64,20 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
 
   const subQuestions: SubQuestion[] = unit.questions.map((q, qIdx) => {
     const isReadAloud = q.choicePresentation === 'read-aloud';
-    const optionTexts = isReadAloud
-      ? q.choices.map((_, idx) => `選択肢 ${idx + 1}（音声で読み上げ）`)
-      : [...q.choices];
+    const optionTexts = isReadAloud ? undefined : [...q.choices];
     const choiceBreakdown = q.choices
       .map((text, idx) => `${idx + 1}. ${text} — ${q.distractorReasons[idx]}`)
       .join('\n');
 
     return {
       id: `${q.id}_answer`,
-      label: isReadAloud ? `No.${q.questionNumber}（音声の選択肢 1〜${q.choices.length} から選ぶ）` : q.questionPrompt,
+      label: isReadAloud ? `No.${q.questionNumber}` : q.questionPrompt,
       type: 'multiple_choice',
       options: q.choices.map((_, idx) => String(idx + 1)),
       optionTexts,
       correctAnswer: String(q.answer + 1),
       imageUrl: qIdx === 0 ? resolvedImageUrl : undefined,
-      imageCaption: qIdx === 0 && unit.image ? `No.${q.questionNumber} イラスト（${unit.image.sceneSummaryJa}）` : undefined,
+      imageCaption: undefined,
       skill: q.skill,
       explainJa: `${q.explanation}\n\n【選択肢の英文と理由】\n${choiceBreakdown}`,
       detailedExplanation: {
@@ -107,10 +105,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
     subId: subQuestions[0].id,
     subIds: subQuestions.length > 1 ? subQuestions.map(s => s.id) : undefined,
     label: qLabel,
-    hint:
-      unit.readCount === 2
-        ? '音声は2回流れます（現在はブラウザ読み上げフォールバック／ElevenLabs音源配置後は録音再生）。'
-        : '音声は1回のみ流れます。聞き終えてから解答してください。',
+    hint: undefined,
     // 実ファイル配備前は undefined にしてブラウザ読み上げフォールバックを有効化する
     audioUrl: undefined,
     script,
@@ -130,22 +125,13 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
         `【No.${q.questionNumber} 正答：${q.answer + 1}】${q.questionPrompt}\n根拠：${q.evidence}\n解説：${q.explanation}\n` +
         q.choices.map((c, idx) => `  ${idx + 1}. ${c} — ${q.distractorReasons[idx]}`).join('\n'),
     ),
-    unit.image
-      ? resolvedImageUrl
-        ? `【イラスト場面】\n${unit.image.sceneSummaryJa}`
-        : `【図版設定（未生成時は場面説明を参照）】\n場面：${unit.image.sceneSummaryJa}\n予定パス：${unit.image.targetPath}`
-      : '',
   ]
     .filter(Boolean)
     .join('\n\n');
 
-  const promptHeader = unit.image
-    ? (resolvedImageUrl ? '' : `【場面ガイド】${unit.image.sceneSummaryJa}\n`) +
-      (unit.questions[0].choicePresentation === 'read-aloud'
-        ? 'イラストを見ながら音声を聞いて、最も適切な応答・説明を 1〜3 から選んでください。'
-        : unit.questions.map(q => `No.${q.questionNumber}: ${q.questionPrompt}`).join('\n'))
-    : unit.questions[0].choicePresentation === 'read-aloud'
-      ? '対話を聞いて、最後の質問や発話に対する最も適切な応答を 1〜3 から選んでください。'
+  const promptHeader =
+    unit.questions[0].choicePresentation === 'read-aloud'
+      ? qLabel
       : unit.questions.map(q => `No.${q.questionNumber}: ${q.questionPrompt}`).join('\n');
 
   return {
