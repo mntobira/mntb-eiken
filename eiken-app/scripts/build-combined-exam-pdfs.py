@@ -31,6 +31,7 @@ from reportlab.platypus import (
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from PIL import Image as PILImage
 import pymupdf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +67,15 @@ STYLES = {
 def p(text: str, style: str = 'jp') -> Paragraph:
     safe = escape(str(text)).replace('\n', '<br/>')
     return Paragraph(safe, STYLES[style])
+
+
+def make_rl_image(img_path: str, max_w: float, max_h: float) -> RLImage:
+    with PILImage.open(img_path) as im:
+        iw, ih = im.size
+    scale = min(max_w / max(1, iw), max_h / max(1, ih))
+    fig = RLImage(img_path, width=iw * scale, height=ih * scale)
+    fig.hAlign = 'LEFT'
+    return fig
 
 
 def render_story_bytes(story: list, header_left: str) -> bytes:
@@ -166,8 +176,12 @@ def build_listening_questions_bytes(glabel: str, rnd: int, l_exam: dict, l_bp: d
             cur_part = unit['part']
             story.append(p(f'■ {part_labels[cur_part]}（音声は{unit["readCount"]}回流れます）', 'h2'))
         u_elems = []
+        img_local = RESOLVED_IMAGES.get(unit['audioId'])
         if unit.get('material'):
             mat = unit['material']
+            if img_local and Path(img_local).exists():
+                u_elems.append(make_rl_image(img_local, 240, 52))
+                u_elems.append(Spacer(1, 2))
             u_elems.append(p(f'【印刷資料】{mat["title"]}', 'jp'))
             u_elems.append(p(f'Situation: {mat["situation"]}', 'en'))
             if mat.get('headers') and mat.get('rows'):
@@ -184,11 +198,8 @@ def build_listening_questions_bytes(glabel: str, rnd: int, l_exam: dict, l_bp: d
                 for nt in mat['notes']:
                     u_elems.append(p(f'* {nt}', 'meta'))
         elif unit.get('image'):
-            img_local = RESOLVED_IMAGES.get(unit['audioId'])
             if img_local and Path(img_local).exists():
-                fig = RLImage(img_local, width=168, height=126)
-                fig.hAlign = 'LEFT'
-                u_elems.append(fig)
+                u_elems.append(make_rl_image(img_local, 168, 126))
                 u_elems.append(Spacer(1, 3))
             else:
                 u_elems.append(p(f'［イラスト枠：{unit["image"]["targetPath"]}｜場面：{unit["image"]["sceneSummaryJa"]}］', 'meta'))

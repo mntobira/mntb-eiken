@@ -189,10 +189,38 @@
   .sc-eiken-list .sc-progress { margin-left: auto; }
   .sc-eiken-list .sc-progress b { font-size: 12px; }
 }
+@media (max-width: 759px) {
+  /* スマホでは6カラムグリッドを使って上段8級＝2列×4段（span 3）、下段3枚＝3列×1段（span 2）に整列し端数ゼロ・全5段に収める */
+  .sc-eiken-list {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .sc-eiken-list > [data-content-kind="units"] {
+    grid-column: span 3;
+  }
+  .sc-eiken-list > [data-content-kind="mock"],
+  .sc-eiken-list > [data-content-kind="writing"],
+  .sc-eiken-list > [data-content-kind="foundation"] {
+    grid-column: span 2;
+  }
+  .sc-eiken-list > [data-content-kind="mock"] .sc-icon,
+  .sc-eiken-list > [data-content-kind="writing"] .sc-icon,
+  .sc-eiken-list > [data-content-kind="foundation"] .sc-icon {
+    display: none;
+  }
+}
 @media (max-height: 700px) {
-  .sc-eiken-list { gap: 6px; }
-  .sc-eiken-list .sc-card { min-height: 54px; padding: 6px 8px; }
-  .sc-page:has(.sc-eiken-list) .sc-head { min-height: 44px; }
+  .sc-eiken-list { gap: 5px; }
+  .sc-eiken-list .sc-card { min-height: 48px; padding: 5px 8px; }
+  .sc-page:has(.sc-eiken-list) .sc-head { min-height: 42px; }
+  .sc-eiken-list .sc-section { margin: 2px 2px 0; font-size: 12px; }
+}
+@media (max-height: 600px) {
+  .sc-eiken-list { gap: 4px; padding: 1px 2px 2px; }
+  .sc-eiken-list .sc-card { min-height: 45px; padding: 4px 7px; border-radius: 12px; }
+  .sc-eiken-list .sc-title strong { font-size: 12.5px; line-height: 1.15; }
+  .sc-eiken-list .sc-meta small { font-size: 10.5px; line-height: 1.15; }
+  .sc-eiken-list .sc-progress { display: none; }
+  .sc-eiken-list .sc-section { margin: 1px 2px 0; font-size: 11px; line-height: 1.15; }
 }
 @media (max-width: 370px) {
   .sc-eiken-list .sc-icon { display: none; }

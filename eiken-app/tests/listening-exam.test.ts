@@ -39,17 +39,23 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       const listeningPart = partsForGrade(grade.id).find(p => p.section === 'listening');
       expect(listeningPart).toBeTruthy();
       const roundChapters = listeningPart!.chapters.filter(c => c.id.includes('_listening_r'));
-      expect(roundChapters).toHaveLength(15);
-      for (const ch of roundChapters) {
-        expect(ch.marks).toBe(bp.totalQuestions);
-        expect(ch.practiceProblems).toHaveLength(bp.totalAudioFiles);
-        for (const p of ch.practiceProblems) {
-          expect(p.explanation).not.toContain('予定パス');
-          for (const tr of p.audioTracks ?? []) {
-            expect(tr.hint ?? '').not.toContain('ElevenLabs');
+      expect(roundChapters).toHaveLength(15 * bp.parts.length);
+      for (const pSpec of bp.parts) {
+        const partChs = roundChapters.filter(c => c.id.endsWith(`_${pSpec.id}`));
+        expect(partChs).toHaveLength(15);
+        for (const ch of partChs) {
+          expect(ch.marks).toBe(pSpec.questionCount);
+          expect(ch.practiceProblems).toHaveLength(pSpec.audioUnitCount);
+          for (const p of ch.practiceProblems) {
+            expect(p.explanation).not.toContain('予定パス');
+            for (const tr of p.audioTracks ?? []) {
+              expect(tr.hint ?? '').not.toContain('ElevenLabs');
+            }
           }
         }
       }
+      expect(roundChapters.reduce((sum, ch) => sum + ch.marks, 0)).toBe(bp.totalQuestions * 15);
+      expect(roundChapters.reduce((sum, ch) => sum + ch.practiceProblems.length, 0)).toBe(bp.totalAudioFiles * 15);
     }
 
     expect(totalQuestions).toBe(3465);
@@ -57,7 +63,7 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
     expect(totalImages).toBe(750);
   });
 
-  it('integrates 375/375 Grade 5 MP3 audio files, 150/150 Grade 4 illustrations, and 271/300 Grade 5 illustrations', () => {
+  it('integrates 375/375 Grade 5 MP3 audio files and 721/750 illustrations across Grades 5, 4, 3, Pre-1, and 1', () => {
     // Audio check (Grade 5: all 375/375 MP3s)
     const g5AudioKeys = Object.keys(LISTENING_AUDIO_URLS).filter(k => k.startsWith('eiken_5_'));
     expect(g5AudioKeys).toHaveLength(375);
@@ -66,42 +72,40 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       expect(existsSync(`public${audioUrl}`)).toBe(true);
     }
 
-    // Illustration check (Grade 4: 150/150, Grade 5: 271+/300)
-    const g4ImgKeys = Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_4_'));
-    const g5ImgKeys = Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_5_'));
-    expect(g4ImgKeys).toHaveLength(150);
-    expect(g5ImgKeys.length).toBeGreaterThanOrEqual(271);
+    // Illustration check (Grade 4: 150/150, Grade 3: 150/150, Pre-1: 75/75, Grade 1: 75/75, Grade 5: 271+/300)
+    expect(Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_4_'))).toHaveLength(150);
+    expect(Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_3_'))).toHaveLength(150);
+    expect(Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_pre1_'))).toHaveLength(75);
+    expect(Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_1_'))).toHaveLength(75);
+    expect(Object.keys(LISTENING_IMAGE_URLS).filter(k => k.startsWith('eiken_5_')).length).toBeGreaterThanOrEqual(271);
 
     for (const webUrl of Object.values(LISTENING_IMAGE_URLS)) {
       expect(webUrl.startsWith('/eiken_images/')).toBe(true);
       expect(existsSync(`public${webUrl}`)).toBe(true);
     }
 
-    const g4Chapters = partsForGrade('eiken_4')
+    const g4Part1Chapters = partsForGrade('eiken_4')
       .find(p => p.section === 'listening')!
-      .chapters.filter(c => c.id.includes('_listening_r'));
-    for (const ch of g4Chapters) {
-      expect(ch.title).toContain('イラスト完備');
-      const withImg = ch.practiceProblems.filter(p => Boolean(p.subQuestions[0]?.imageUrl));
-      expect(withImg).toHaveLength(10);
-      for (const p of withImg) {
+      .chapters.filter(c => c.id.endsWith('_part1'));
+    expect(g4Part1Chapters).toHaveLength(15);
+    for (const ch of g4Part1Chapters) {
+      expect(ch.abstractTitle).toContain('イラスト完備');
+      expect(ch.practiceProblems).toHaveLength(10);
+      for (const p of ch.practiceProblems) {
+        expect(Boolean(p.subQuestions[0]?.imageUrl)).toBe(true);
         expect(p.subQuestions[0].optionTexts).toEqual(['音声の選択肢 1', '音声の選択肢 2', '音声の選択肢 3']);
       }
     }
 
-    const g5Chapters = partsForGrade('eiken_5')
+    const g5ListeningChapters = partsForGrade('eiken_5')
       .find(p => p.section === 'listening')!
       .chapters.filter(c => c.id.includes('_listening_r'));
-    for (const ch of g5Chapters) {
-      expect(ch.title).toContain('専用音声');
+    expect(g5ListeningChapters).toHaveLength(45);
+    for (const ch of g5ListeningChapters) {
+      expect(ch.abstractTitle).toContain('専用音声');
       for (const p of ch.practiceProblems) {
         expect(p.audioTracks?.[0]?.audioUrl).toMatch(/^\/eiken_audio\/eiken_5\/eiken_5_listening_r\d+_part[123]_\d+\.mp3$/);
       }
-    }
-    for (const ch of g5Chapters.slice(0, 5)) {
-      expect(ch.title).toContain('イラスト完備');
-      const withImg = ch.practiceProblems.filter(p => Boolean(p.subQuestions[0]?.imageUrl));
-      expect(withImg).toHaveLength(20);
     }
   });
 

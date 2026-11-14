@@ -31,7 +31,7 @@ function roleToTurnWho(roleLabel: string, speaker: string): string {
   return roleLabel;
 }
 
-function buildTrackMaterial(unit: ListeningAudioUnit): TrackMaterial | undefined {
+function buildTrackMaterial(unit: ListeningAudioUnit, resolvedImageUrl?: string): TrackMaterial | undefined {
   if (!unit.material) return undefined;
   const sections: NonNullable<TrackMaterial['sections']> = [
     { heading: 'Situation', rows: [unit.material.situation] },
@@ -50,6 +50,9 @@ function buildTrackMaterial(unit: ListeningAudioUnit): TrackMaterial | undefined
             rows: unit.material.rows.map(r => [...r]),
           }
         : undefined,
+    images: resolvedImageUrl
+      ? [{ src: resolvedImageUrl, caption: unit.image?.sceneSummaryJa || unit.material.title }]
+      : undefined,
   };
 }
 
@@ -135,7 +138,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
     audioUrl: resolvedAudioUrl || undefined,
     script,
     turns,
-    material: buildTrackMaterial(unit),
+    material: buildTrackMaterial(unit, resolvedImageUrl),
     translation: unit.translation,
     keyPhrases: unit.questions.map(q => ({
       phrase: q.evidence,
@@ -241,6 +244,91 @@ export function listeningBookletChapters(
         marks,
         speakers: 'M1・F1・F2' + (grade === 'eiken_1' ? '・M2' : ''),
       };
+    });
+}
+
+export interface GradeListeningPartSpec {
+  partId: ListeningPartId;
+  partNo: number;
+  tabTitle: string;
+  shortLabel: string;
+  questionCount: number;
+  audioUnitCount: number;
+}
+
+/** 級ごとの本番リスニング部構成（第1部〜第3部／1級は第4部）を LISTENING_BLUEPRINTS から一意に導出 */
+export function getGradeListeningPartSpecs(grade: EikenGrade): GradeListeningPartSpec[] {
+  const blueprint = LISTENING_BLUEPRINTS[grade];
+  if (!blueprint) return [];
+  return blueprint.parts.map((part, idx) => {
+    const partNo = idx + 1;
+    const shortLabel = part.label.replace(/^第\d+部\s*/, '');
+    return {
+      partId: part.id,
+      partNo,
+      tabTitle: `リスニング第${partNo}部 ${shortLabel}`,
+      shortLabel,
+      questionCount: part.questionCount,
+      audioUnitCount: part.audioUnitCount,
+    };
+  });
+}
+
+/**
+ * 特定のリスニング部（part1〜part4）だけを第1回〜第15回の昇順で並べた Chapter 配列を返す。
+ * 筆記の `bookletSectionChapters` と完全に同じ「01. 第1回 → 15. 第15回」構造を実現する。
+ */
+export function listeningPartChapters(
+  exams: readonly ListeningExamRound[],
+  grade: EikenGrade,
+  partId: ListeningPartId,
+  realTitle: string,
+): Chapter[] {
+  const blueprint = LISTENING_BLUEPRINTS[grade];
+  const partSpec = blueprint.parts.find(p => p.id === partId);
+  if (!partSpec) return [];
+
+  return exams
+    .filter(exam => exam.grade === grade && exam.review === 'approved')
+    .sort((a, b) => a.round - b.round)
+    .flatMap((exam): Chapter[] => {
+      const units = exam.units.filter(u => u.part === partId);
+      if (!units.length) return [];
+      const problems = units.map(unit => listeningUnitToProblem(exam, unit));
+      const marks = problems.reduce((sum, p) => sum + p.subQuestions.length, 0);
+      const imageUnits = units.filter(u => Boolean(u.image));
+      const resolvedImageCount = imageUnits.filter(u => Boolean(LISTENING_IMAGE_URLS[u.audioId])).length;
+      const resolvedAudioCount = units.filter(u => Boolean(LISTENING_AUDIO_URLS[u.audioId])).length;
+
+      const badges: string[] = [];
+      if (resolvedAudioCount === units.length) badges.push('専用音声');
+      if (imageUnits.length > 0 && resolvedImageCount === imageUnits.length) {
+        badges.push('イラスト完備');
+      } else if (imageUnits.length > 0 && resolvedImageCount > 0) {
+        badges.push(`イラスト${resolvedImageCount}/${imageUnits.length}`);
+      }
+      const badgeSuffix = badges.length > 0 ? ` 【${badges.join('・')}】` : '';
+
+      const fullTitle = `リスニング 第${exam.round}回｜${partSpec.label}${badgeSuffix}`;
+      const shortCardTitle =
+        partSpec.questionsPerAudio > 1
+          ? `第${exam.round}回（${units.length}音源・計${marks}問）${badgeSuffix}`
+          : `第${exam.round}回（全${marks}問）${badgeSuffix}`;
+      return [
+        {
+          id: `${exam.id}_${partId}`,
+          title: fullTitle,
+          abstractTitle: shortCardTitle,
+          realTitle,
+          questionGroup: 'リスニング',
+          topics: [`${exam.theme}（${exam.scene}）`],
+          practiceProblems: problems,
+          miniTest: [],
+          readCount: partSpec.readCount,
+          marks,
+          speakers: 'M1・F1・F2' + (grade === 'eiken_1' ? '・M2' : ''),
+        },
+      ];
     });
 }
 

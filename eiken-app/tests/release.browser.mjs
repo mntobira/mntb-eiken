@@ -49,8 +49,15 @@ for (const engine of engines) {
           console.log(`  ${grade} ${section}`);
           await page.locator('[data-home-practice]').click();
           await page.locator(`[data-study-card="${grade}"]`).click();
-          await page.getByRole('tab', { name: new RegExp(section) }).first().click();
-          await page.locator('.unit-card-primary').first().click();
+          const tabPattern =
+            section === 'リーディング'
+              ? grade === 'eiken_5'
+                ? /読解 基礎練習/
+                : /長文の内容一致選択/
+              : /短文の語句空所補充/;
+          await page.getByRole('tab', { name: tabPattern }).first().click();
+          const unitId = `${grade}_${section === 'リーディング' ? 'reading' : 'vocabulary'}_01`;
+          await page.locator(`[data-unit-id="${unitId}"] .unit-card-primary`).click();
           await page.getByRole('button', { name: '解答と解説を見る', exact: true }).waitFor();
           assert.equal(await page.getByRole('button', { name: '問題をはじめる', exact: true }).count(), 0, 'Written questions must not have a listening briefing');
           const source = await page.locator('body').innerText();
