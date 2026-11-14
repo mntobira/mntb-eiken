@@ -1110,7 +1110,7 @@ function buildGrade5Round(round: number): ListeningExamRound {
     const audioId = `${examId}_part1_${String(u).padStart(2, '0')}`;
     const image = buildSupportImageSpec(
       audioId,
-      `${seed.placeJa}で2人が${seed.actionJa}補助イラスト`,
+      `${seed.placeJa}で2人が${seed.actionJa}場面`,
       'two junior high school students (one boy and one girl)',
       seed.placeEn,
       seed.actionEn,
@@ -1124,7 +1124,7 @@ function buildGrade5Round(round: number): ListeningExamRound {
         unitIndex: u,
         readCount: 2,
         turns,
-        translation: `${sp1.roleLabel === 'Man' ? '男性' : '女性'}：${built.line1Ja}\n${sp2.roleLabel === 'Woman' ? '女性' : '男性'}：${built.line2Ja}\n（選択肢1〜3が読み上げられる）`,
+        translation: `${sp1.roleLabel === 'Man' ? '男性' : '女性'}：${built.line1Ja}\n${sp2.roleLabel === 'Woman' ? '女性' : '男性'}：${built.line2Ja}`,
         image,
         questions: [qItem],
       }),

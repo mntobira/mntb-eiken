@@ -45,7 +45,7 @@ export function getGradeDaimonSpecs(grade: EikenGrade): GradeDaimonSpec[] {
 function subQuestion(exam: WrittenExam, item: WrittenItem): SubQuestion {
   return {
     id: `${item.id}_answer`,
-    label: `問${exam.items.indexOf(item) + 1}（第${exam.round}回冊子と共通）${item.passage ? ' ' + item.prompt : ''}`,
+    label: `問${exam.items.indexOf(item) + 1}${item.passage ? ' ' + item.prompt : ''}`,
     type: 'multiple_choice',
     options: ['1', '2', '3', '4'],
     optionTexts: [...item.choices!],
@@ -175,7 +175,7 @@ export function bookletWritingTasks(): BookletWritingEntry[] {
           title: `筆記 第${exam.round}回｜${WRITTEN_SECTION_LABELS[item.section]}`,
           instruction: item.prompt,
           source: item.passage ? `${item.passage.title}\n\n${item.passage.text}` : undefined,
-          target: `目安語数：${item.wordRange![0]}〜${item.wordRange![1]}語（印刷用冊子 第${exam.round}回と共通課題）`,
+          target: `目安語数：${item.wordRange![0]}〜${item.wordRange![1]}語`,
           model: item.model!,
           modelTranslation: item.translation!,
           commentary: [

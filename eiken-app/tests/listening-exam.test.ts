@@ -89,11 +89,11 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       .chapters.filter(c => c.id.endsWith('_part1'));
     expect(g4Part1Chapters).toHaveLength(15);
     for (const ch of g4Part1Chapters) {
-      expect(ch.abstractTitle).toContain('イラスト完備');
+      expect(ch.abstractTitle).toMatch(/^第\d+回（全10問）$/);
       expect(ch.practiceProblems).toHaveLength(10);
       for (const p of ch.practiceProblems) {
         expect(Boolean(p.subQuestions[0]?.imageUrl)).toBe(true);
-        expect(p.subQuestions[0].optionTexts).toEqual(['音声の選択肢 1', '音声の選択肢 2', '音声の選択肢 3']);
+        expect(p.subQuestions[0].optionTexts).toBeUndefined();
       }
     }
 
@@ -102,7 +102,7 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       .chapters.filter(c => c.id.includes('_listening_r'));
     expect(g5ListeningChapters).toHaveLength(45);
     for (const ch of g5ListeningChapters) {
-      expect(ch.abstractTitle).toContain('専用音声');
+      expect(ch.abstractTitle).toMatch(/^第\d+回（全\d+問）$/);
       for (const p of ch.practiceProblems) {
         expect(p.audioTracks?.[0]?.audioUrl).toMatch(/^\/eiken_audio\/eiken_5\/eiken_5_listening_r\d+_part[123]_\d+\.mp3$/);
         // Japanese translation for Grade 5 must be natural Japanese without untranslated multi-word English leftovers

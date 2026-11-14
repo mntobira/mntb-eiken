@@ -252,10 +252,27 @@ describe('Release content completeness', () => {
         for (const problem of chapter.practiceProblems) {
           expect(ids.has(problem.id)).toBe(false); ids.add(problem.id);
           for (const question of problem.subQuestions) {
-            expect([3, 4]).toContain(question.optionTexts?.length);
-            expect(question.optionTexts![Number(question.correctAnswer) - 1]).toBeTruthy();
-            expect(question.distractors).toHaveLength(question.optionTexts!.length);
+            expect([3, 4]).toContain(question.options?.length);
+            if (question.optionTexts) {
+              expect(question.optionTexts).toHaveLength(question.options.length);
+              expect(question.optionTexts[Number(question.correctAnswer) - 1]).toBeTruthy();
+              for (const optText of question.optionTexts) {
+                expect(optText).not.toMatch(/音声で読み上げ/);
+              }
+            }
+            expect(question.imageCaption).toBeUndefined();
+            expect(question.label ?? '').not.toMatch(/音声の選択肢|冊子と共通|補助イラスト/);
+            expect(question.distractors).toHaveLength(question.options.length);
             expect(question.explainJa).toBeTruthy();
+          }
+          expect(problem.text).not.toMatch(/補助イラスト|場面ガイド|音声で読み上げ|冊子と共通/);
+          expect(problem.explanation ?? '').not.toMatch(/補助イラスト|図版設定|予定パス/);
+          for (const track of problem.audioTracks ?? []) {
+            expect(track.hint ?? '').not.toMatch(/フォールバック|ElevenLabs|音声を聞いて答えを選んでください/);
+            expect(track.translation ?? '').not.toMatch(/読み上げられる/);
+            for (const img of track.material?.images ?? []) {
+              expect(img.caption ?? '').not.toMatch(/補助イラスト|白紙枠/);
+            }
           }
           if (chapter.questionGroup === 'リーディング') {
             readings++; marks += problem.subQuestions.length;

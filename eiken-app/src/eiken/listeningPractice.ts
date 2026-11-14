@@ -51,7 +51,7 @@ function buildTrackMaterial(unit: ListeningAudioUnit, resolvedImageUrl?: string)
           }
         : undefined,
     images: resolvedImageUrl
-      ? [{ src: resolvedImageUrl, caption: unit.image?.sceneSummaryJa || unit.material.title }]
+      ? [{ src: resolvedImageUrl, caption: unit.material.title }]
       : undefined,
   };
 }
@@ -69,39 +69,28 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
 
   const subQuestions: SubQuestion[] = unit.questions.map((q, qIdx) => {
     const isReadAloud = q.choicePresentation === 'read-aloud';
-    // 読み上げ選択肢は解答中の画面に英文を出さず「音声の選択肢 1〜3」の簡潔な1行ボタンにする。
-    // （既存テスト eiken.test.ts の optionTexts 長さ規約 [3, 4] も完全に維持する。）
-    const optionTexts = isReadAloud
-      ? q.choices.map((_, idx) => `音声の選択肢 ${idx + 1}`)
-      : [...q.choices];
-
     const choiceBreakdown = q.choices
       .map((text, idx) => `${idx + 1}. ${text} — ${q.distractorReasons[idx]}`)
       .join('\n');
 
-    const questionLabel = isReadAloud
-      ? hasVisibleIllustration
-        ? `問${q.questionNumber} イラストを見て最も適切な番号を選ぶ`
-        : unit.image && qIdx === 0
-          ? `問${q.questionNumber} 【場面】${unit.image.sceneSummaryJa}（音声の 1〜${q.choices.length} から選ぶ）`
-          : `問${q.questionNumber} 対話の最後の応答として最も適切な番号を選ぶ`
-      : `問${q.questionNumber} ${q.questionPrompt}`;
-
+    // Grade 5 Part 3 units whose illustration has not yet been generated need printed choices so the question remains solvable.
     const isScenePictureOnly =
       isReadAloud && exam.grade === 'eiken_5' && unit.part === 'part3' && !hasVisibleIllustration && Boolean(unit.image);
-    const effectiveOptionTexts = isScenePictureOnly
-      ? [...q.choices]
-      : optionTexts;
+    const effectiveOptionTexts = isReadAloud
+      ? isScenePictureOnly
+        ? [...q.choices]
+        : undefined
+      : [...q.choices];
 
     return {
       id: `${q.id}_answer`,
-      label: questionLabel,
+      label: isReadAloud ? `No.${q.questionNumber}` : q.questionPrompt,
       type: 'multiple_choice',
       options: q.choices.map((_, idx) => String(idx + 1)),
       optionTexts: effectiveOptionTexts,
       correctAnswer: String(q.answer + 1),
       imageUrl: qIdx === 0 ? resolvedImageUrl : undefined,
-      imageCaption: qIdx === 0 && unit.image ? `No.${q.questionNumber}（${unit.image.sceneSummaryJa}）` : undefined,
+      imageCaption: undefined,
       skill: q.skill,
       explainJa: `${q.explanation}\n\n【選択肢の英文と理由】\n${choiceBreakdown}`,
       detailedExplanation: {
@@ -137,10 +126,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
     subId: subQuestions[0].id,
     subIds: subQuestions.length > 1 ? subQuestions.map(s => s.id) : undefined,
     label: qLabel,
-    hint:
-      unit.readCount === 2
-        ? '本番と同じく音声は2回流れます。最後まで聞いて最も適切な番号を選んでください。'
-        : '音声は1回のみ流れます。設問のポイントを意識して聞き取りましょう。',
+    hint: undefined,
     audioUrl: resolvedAudioUrl || undefined,
     script,
     turns,
@@ -159,18 +145,13 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
         `【No.${q.questionNumber} 正答：${q.answer + 1}】${q.questionPrompt}\n根拠：${q.evidence}\n解説：${q.explanation}\n` +
         q.choices.map((c, idx) => `  ${idx + 1}. ${c} — ${q.distractorReasons[idx]}`).join('\n'),
     ),
-    unit.image ? `【イラスト場面】\n${unit.image.sceneSummaryJa}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');
 
-  const promptHeader = unit.image
-    ? (resolvedImageUrl ? '' : `【場面】${unit.image.sceneSummaryJa}\n`) +
-      (unit.questions[0].choicePresentation === 'read-aloud'
-        ? 'イラストを見ながら音声を聞いて、最も適切な応答・説明を選んでください。'
-        : unit.questions.map(q => `No.${q.questionNumber}: ${q.questionPrompt}`).join('\n'))
-    : unit.questions[0].choicePresentation === 'read-aloud'
-      ? '対話を聞いて、最後の質問や発話に対する最も適切な応答を選んでください。'
+  const promptHeader =
+    unit.questions[0].choicePresentation === 'read-aloud'
+      ? qLabel
       : unit.questions.map(q => `No.${q.questionNumber}: ${q.questionPrompt}`).join('\n');
 
   return {
@@ -306,20 +287,11 @@ export function listeningPartChapters(
       const resolvedImageCount = imageUnits.filter(u => Boolean(LISTENING_IMAGE_URLS[u.audioId])).length;
       const resolvedAudioCount = units.filter(u => Boolean(LISTENING_AUDIO_URLS[u.audioId])).length;
 
-      const badges: string[] = [];
-      if (resolvedAudioCount === units.length) badges.push('専用音声');
-      if (imageUnits.length > 0 && resolvedImageCount === imageUnits.length) {
-        badges.push('イラスト完備');
-      } else if (imageUnits.length > 0 && resolvedImageCount > 0) {
-        badges.push(`イラスト${resolvedImageCount}/${imageUnits.length}`);
-      }
-      const badgeSuffix = badges.length > 0 ? ` 【${badges.join('・')}】` : '';
-
-      const fullTitle = `リスニング 第${exam.round}回｜${partSpec.label}${badgeSuffix}`;
+      const fullTitle = `リスニング 第${exam.round}回｜${partSpec.label}`;
       const shortCardTitle =
         partSpec.questionsPerAudio > 1
-          ? `第${exam.round}回（${units.length}音源・計${marks}問）${badgeSuffix}`
-          : `第${exam.round}回（全${marks}問）${badgeSuffix}`;
+          ? `第${exam.round}回（${units.length}音源・計${marks}問）`
+          : `第${exam.round}回（全${marks}問）`;
       return [
         {
           id: `${exam.id}_${partId}`,

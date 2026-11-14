@@ -787,7 +787,7 @@ function buildPre1Part3Unit(examId: string, round: number, u: number): Listening
         spoken,
         docTypeEn: 'archive room comparison schedule',
         iconHintEn: 'a small book icon and a clock icon',
-        summaryJa: '大学特別資料室の閲覧室比較表（時間帯・PC可否・会話可否）の白紙枠レイアウト',
+        summaryJa: '大学特別資料室の閲覧室比較表（時間帯・PC可否・会話可否）',
         ja: cClosed
           ? `18〜19時に2人でノートPCを使い小声で相談したい状況。印刷表では本来Room Cが条件に合うが、放送で本日17時以降Room Cが空調修理で閉鎖され、代わりにRoom Dが19時まで1時間延長されると案内されているため、Room Dを選んで2番カウンターで学生証認証を受けるのが正解。`
           : `18〜19時に2人でノートPCを使い小声で相談したい状況。放送でRoom Dは17時以降客員教員専用と案内される一方、Room Cは通常どおり利用可能で19時までPC・相談とも可のため、Room Cを予約して1番カウンターでパスを受け取るのが正解。`,
@@ -844,7 +844,7 @@ function buildPre1Part3Unit(examId: string, round: number, u: number): Listening
         spoken,
         docTypeEn: 'airport transfer timetable chart',
         iconHintEn: 'a small bus icon and a suitcase icon',
-        summaryJa: '国際学会参加者向け空港アクセス比較表（出発時刻・到着時刻・大型筒持込可否）の白紙枠レイアウト',
+        summaryJa: '国際学会参加者向け空港アクセス比較表（出発時刻・到着時刻・大型筒持込可否）',
         ja: coachFull
           ? `14:20着・ポスター筒2本携行・15:30前到着・精算用領収書必須という条件。14:35のExpress Coach Blueは道路工事で運休となったため、14:40発・15:20着・筒2本可・車内端末で領収書発行可のShuttle Van Green（6番乗り場）を選ぶ。`
           : `14:20着・ポスター筒2本・15:30前着・領収書必須という条件。Shuttle Van Greenは領収書プリンター故障で発行不可のため、通常運行し下部トランクに筒を積め券売機で公式領収書が出るExpress Coach Blue（3番乗り場）を選ぶ。`,
@@ -901,7 +901,7 @@ function buildPre1Part3Unit(examId: string, round: number, u: number): Listening
         spoken,
         docTypeEn: 'corporate training course table',
         iconHintEn: 'a small clipboard icon and a checkmark icon',
-        summaryJa: '社内研修講座の一覧表（対象階層・単位数・受講料・割引注記）の白紙枠レイアウト',
+        summaryJa: '社内研修講座の一覧表（対象階層・単位数・受講料・割引注記）',
         ja: pm101Full
           ? `1年目社員・4単位以上・予算上限120ドルの条件。PM-101は満席締切となったが、30ドル割引コードが1年目社員に適用されPM-108が140ドル→110ドルになるため、PM-108をフォームBで申し込むのが正解。`
           : `1年目社員・4単位以上・上限120ドルの条件。30ドル割引コードは期限切れのためPM-108は140ドルのままで予算超過となるが、PM-101（95ドル・4単位・全社員対象）に3席空きが出たためフォームAで申し込むのが正解。`,
@@ -958,7 +958,7 @@ function buildPre1Part3Unit(examId: string, round: number, u: number): Listening
         spoken,
         docTypeEn: 'medical checkup package schedule',
         iconHintEn: 'a small stethoscope icon and a calendar icon',
-        summaryJa: '健康診断パッケージ比較表（実施曜日・絶食要否・視力聴力検査の有無）の白紙枠レイアウト',
+        summaryJa: '健康診断パッケージ比較表（実施曜日・絶食要否・視力聴力検査の有無）',
         ja: stdBooked
           ? `来週水曜午前・視力＆聴力必須・前夜絶食不可の条件。Standard Careは水曜満枠だが、当日はナースステーション2が開いておりQuick Screenに聴力検査を追加でき絶食も不要なため、Quick Screen＋聴力追加を選ぶ。`
           : `来週水曜午前・視力＆聴力必須・絶食不可の条件。水曜はナースステーション2が機器校正で閉鎖されQuick Screenへの聴力追加は不可だが、Standard Careに4枠空きがあるためそれを選ぶ。`,
@@ -1015,7 +1015,7 @@ function buildPre1Part3Unit(examId: string, round: number, u: number): Listening
         spoken,
         docTypeEn: 'museum group tour eligibility chart',
         iconHintEn: 'a small anchor icon and an accessibility ramp icon',
-        summaryJa: '海洋博物館の団体ツアープラン比較表（定員・バリアフリー対応・英語ガイド有無）の白紙枠レイアウト',
+        summaryJa: '海洋博物館の団体ツアープラン比較表（定員・バリアフリー対応・英語ガイド有無）',
         ja: heritagePaused
           ? `土曜・高校生18人・車椅子1名（バリアフリー必須）・英語ガイド希望。Harbor Heritageはエレベーター保守で土曜は段差なしルート休止だが、Navigator Hallに土曜は英語ガイド2名が配置され2班分割で20人までバリアフリー案内が可能なためそちらを選ぶ。`
           : `土曜・18人・バリアフリー必須・英語ガイド希望。Navigator Hallは土曜の英語ガイドが1名のみで16人以上の分割受入が不可だが、Harbor Heritage（25人まで・バリアフリー・土日英語対応）が通常催行されるためそちらを選ぶ。`,

@@ -72,6 +72,7 @@ export default defineConfig(({ mode, command }) => {
     },
     define: { __KIT_BUILD__: JSON.stringify('英検版 2026-11-08') },
     build: {
+      target: 'esnext',
       copyPublicDir: false,
       minify: false,
       cssMinify: false,

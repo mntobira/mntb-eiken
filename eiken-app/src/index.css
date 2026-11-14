@@ -286,3 +286,173 @@ html[data-wallpaper] .home-lobby-lines { display: none; }
 [data-listening-material] > p > span.whitespace-nowrap { white-space: normal; }
 [data-listening-material] [data-material-figures] { max-height: 112px; flex: 0 0 104px; }
 
+/* 英検 大問別演習の回一覧カード：
+ * 1) 主役＝回の名前（第1回〜） → 2) 進捗・正答率 → 3) 控えめな操作目印ボタン（従来の約70%サイズ）
+ * カード全体クリック開始に対応し、未着手／続きから／完了済み（もう一度）で強弱を付ける */
+.unit-card.eiken-round-card {
+  cursor: pointer;
+  transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease, transform 0.12s ease;
+}
+.unit-card.eiken-round-card[data-empty] {
+  cursor: default;
+}
+.unit-card.eiken-round-card:not([data-empty]):hover {
+  border-color: color-mix(in srgb, var(--unit-accent) 48%, #d9d0be);
+  background: #fffffb;
+}
+.unit-card.eiken-round-card:not([data-empty]):active {
+  transform: translateY(1px);
+}
+/* 進行中（続きから）：今やるべき回に自然と目が行くよう薄い塗りと枠線で穏やかに強調 */
+.unit-card.eiken-round-card[data-eiken-state="doing"] {
+  border-color: color-mix(in srgb, var(--unit-accent) 55%, #d6cfc0);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--unit-accent) 6%, #fffdf5) 0%, #fffdf6 75%);
+}
+/* 完了済み：落ち着いた控えめな見た目 */
+.unit-card.eiken-round-card[data-eiken-state="done"] {
+  background: #fdfbf3;
+  border-color: #e2dfd4;
+  box-shadow: 0 1px 0 #ede6d6;
+}
+
+.eiken-round-card .unit-card-row {
+  min-height: 76px;
+  padding: 9px 12px 9px 14px;
+  gap: 10px;
+}
+.eiken-round-card .unit-card-main {
+  cursor: inherit;
+  min-height: 56px;
+  gap: 7px;
+}
+/* 1番目：回の名前（第1回〜）を最優先でくっきり見せる */
+.eiken-round-card .unit-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #243342;
+}
+.eiken-round-card .eiken-round-name {
+  color: #1f2e3d;
+  font-weight: 800;
+}
+.eiken-round-card .eiken-round-sub {
+  margin-left: 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b7683;
+}
+/* 2番目：進捗・正答率を読みやすく整列 */
+.eiken-round-card .unit-card-meta {
+  gap: 9px;
+}
+.eiken-round-card .unit-card-meter {
+  max-width: 112px;
+  height: 5px;
+}
+.eiken-round-card .unit-card-acc {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #465362;
+}
+
+/* 3番目：補助的な目印としての控えめボタン（高さ44px→30px、横幅も約70%に縮小） */
+.eiken-round-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.eiken-round-audio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid #dfd7c6;
+  background: transparent;
+  color: #64727f;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.eiken-round-audio:hover,
+.eiken-round-audio[aria-pressed="true"] {
+  border-color: var(--unit-accent);
+  background: color-mix(in srgb, var(--unit-accent) 12%, #fff);
+  color: color-mix(in srgb, var(--unit-accent) 85%, #12332f);
+}
+
+.eiken-round-card .unit-card-primary {
+  min-height: 30px;
+  height: 30px;
+  padding: 0 9px;
+  gap: 3px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--unit-accent) 44%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--unit-accent) 88%, #1d3b37);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.eiken-round-card .unit-card-primary svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.eiken-round-card:not([data-empty]):hover .unit-card-primary[data-action-state="todo"] {
+  background: color-mix(in srgb, var(--unit-accent) 7%, transparent);
+  border-color: color-mix(in srgb, var(--unit-accent) 65%, transparent);
+}
+.eiken-round-card .unit-card-primary:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* 状態別の強弱：
+ * - todo（未着手）：上の既定値（細いブランド緑の線＋透明背景）
+ * - doing（続きから）：薄い塗りでやや強調
+ * - done（完了済み・もう一度）：さらに控えめな落ち着いた枠線・文字 */
+.eiken-round-card .unit-card-primary[data-action-state="doing"] {
+  border-color: color-mix(in srgb, var(--unit-accent) 72%, #1f5c54);
+  background: color-mix(in srgb, var(--unit-accent) 14%, #ffffff);
+  color: color-mix(in srgb, var(--unit-accent) 92%, #0f3833);
+  font-weight: 800;
+}
+.eiken-round-card:not([data-empty]):hover .unit-card-primary[data-action-state="doing"] {
+  background: color-mix(in srgb, var(--unit-accent) 20%, #ffffff);
+}
+
+.eiken-round-card .unit-card-primary[data-action-state="done"] {
+  border-color: #d8d2c4;
+  background: transparent;
+  color: #7c776b;
+  font-weight: 600;
+}
+.eiken-round-card:not([data-empty]):hover .unit-card-primary[data-action-state="done"] {
+  border-color: #beb6a4;
+  background: rgba(124, 119, 107, 0.06);
+  color: #5c574d;
+}
+
+@media (max-width: 380px) {
+  .eiken-round-card .unit-card-row {
+    padding-inline: 11px 9px;
+    gap: 7px;
+  }
+  .eiken-round-card .unit-card-title {
+    font-size: 14.5px;
+  }
+  .eiken-round-card .eiken-round-sub {
+    font-size: 11.5px;
+  }
+  .eiken-round-card .unit-card-primary {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+}
+
