@@ -4,22 +4,100 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {...W
   "print_eiken_wordbook_5": [
     "/prints/previews/print_eiken_wordbook_5_p1.webp"
   ],
+  "print_eiken_wordbook2_5": [
+    "/prints/previews/print_eiken_wordbook2_5_p1.webp"
+  ],
   "print_eiken_wordbook_4": [
     "/prints/previews/print_eiken_wordbook_4_p1.webp"
+  ],
+  "print_eiken_wordbook2_4": [
+    "/prints/previews/print_eiken_wordbook2_4_p1.webp"
   ],
   "print_eiken_wordbook_3": [
     "/prints/previews/print_eiken_wordbook_3_p1.webp"
   ],
+  "print_eiken_wordbook2_3": [
+    "/prints/previews/print_eiken_wordbook2_3_p1.webp"
+  ],
   "print_eiken_wordbook_pre2": [
     "/prints/previews/print_eiken_wordbook_pre2_p1.webp"
+  ],
+  "print_eiken_wordbook2_pre2": [
+    "/prints/previews/print_eiken_wordbook2_pre2_p1.webp"
   ],
   "print_eiken_wordbook_pre2plus": [
     "/prints/previews/print_eiken_wordbook_pre2plus_p1.webp"
   ],
+  "print_eiken_wordbook2_pre2plus": [
+    "/prints/previews/print_eiken_wordbook2_pre2plus_p1.webp"
+  ],
   "print_eiken_wordbook_2": [
     "/prints/previews/print_eiken_wordbook_2_p1.webp"
   ],
+  "print_eiken_wordbook2_2": [
+    "/prints/previews/print_eiken_wordbook2_2_p1.webp"
+  ],
   "print_eiken_wordbook_pre1": [
     "/prints/previews/print_eiken_wordbook_pre1_p1.webp"
+  ],
+  "print_eiken_wordbook2_pre1": [
+    "/prints/previews/print_eiken_wordbook2_pre1_p1.webp"
+  ],
+  "print_eiken_drill_short_5": [
+    "/prints/previews/print_eiken_drill_short_5_p1.webp"
+  ],
+  "print_eiken_drill_short_4": [
+    "/prints/previews/print_eiken_drill_short_4_p1.webp"
+  ],
+  "print_eiken_drill_short_3": [
+    "/prints/previews/print_eiken_drill_short_3_p1.webp"
+  ],
+  "print_eiken_drill_short_pre2": [
+    "/prints/previews/print_eiken_drill_short_pre2_p1.webp"
+  ],
+  "print_eiken_drill_short_pre2plus": [
+    "/prints/previews/print_eiken_drill_short_pre2plus_p1.webp"
+  ],
+  "print_eiken_drill_short_2": [
+    "/prints/previews/print_eiken_drill_short_2_p1.webp"
+  ],
+  "print_eiken_drill_short_pre1": [
+    "/prints/previews/print_eiken_drill_short_pre1_p1.webp"
+  ],
+  "print_eiken_guide_5": [
+    "/prints/previews/print_eiken_guide_5_p1.webp"
+  ],
+  "print_eiken_guide_4": [
+    "/prints/previews/print_eiken_guide_4_p1.webp"
+  ],
+  "print_eiken_guide_3": [
+    "/prints/previews/print_eiken_guide_3_p1.webp"
+  ],
+  "print_eiken_guide_pre2": [
+    "/prints/previews/print_eiken_guide_pre2_p1.webp"
+  ],
+  "print_eiken_guide_pre2plus": [
+    "/prints/previews/print_eiken_guide_pre2plus_p1.webp"
+  ],
+  "print_eiken_guide_2": [
+    "/prints/previews/print_eiken_guide_2_p1.webp"
+  ],
+  "print_eiken_guide_pre1": [
+    "/prints/previews/print_eiken_guide_pre1_p1.webp"
+  ],
+  "print_eiken_writing_3": [
+    "/prints/previews/print_eiken_writing_3_p1.webp"
+  ],
+  "print_eiken_writing_pre2": [
+    "/prints/previews/print_eiken_writing_pre2_p1.webp"
+  ],
+  "print_eiken_writing_pre2plus": [
+    "/prints/previews/print_eiken_writing_pre2plus_p1.webp"
+  ],
+  "print_eiken_writing_2": [
+    "/prints/previews/print_eiken_writing_2_p1.webp"
+  ],
+  "print_eiken_writing_pre1": [
+    "/prints/previews/print_eiken_writing_pre1_p1.webp"
   ]
 };

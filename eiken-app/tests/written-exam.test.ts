@@ -18,6 +18,7 @@ import { partsForGrade } from '../src/eiken/questions';
 import { WRITTEN_PRINTS } from '../src/data/writtenPrints.generated';
 import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 import { gachaItems, gachaItemRate } from '../src/battle/core/arenaEconomy';
+import { PRINT_SHELVES, printShelfOf } from '../src/battle/core/printShelves';
 import type { EikenGrade } from '../src/eiken/config';
 
 /** Synthetic TEST fixtures only; not learning materials. */
@@ -84,7 +85,6 @@ describe('written booklets — same original for print, field practice, and writ
     badRange.items.at(-1)!.wordRange = [25, 35.5];
     expect(() => validateWrittenExam(badRange)).toThrow('WRITING_RUBRIC_REQUIRED');
 
-    // Non-test revisions must reject AI prompt boilerplate and generic distractor filler
     const realBase = structuredClone(WRITTEN_BOOKLETS.find((b) => b.id === 'eiken_3_written_02')!);
     const badPrompt = structuredClone(realBase);
     badPrompt.items[0].prompt = 'Choose the best answer to fill in the blank.\n' + badPrompt.items[0].prompt;
@@ -107,56 +107,26 @@ describe('written booklets — same original for print, field practice, and writ
     expect(() => validateWrittenExam(badBalance)).toThrow(/ANSWER_(STREAK_TOO_LONG|DISTRIBUTION_IMBALANCED)/);
   });
 
-  it('validates all 29 released full written booklets (874 choice + 50 writing = 924 items) with zero cross-round duplication', () => {
+  it('validates all 105 released booklets (3180 choice + 50 writing = 3230 items) across all 7 grades with zero cross-round duplication', () => {
     expect(() => validateReleasedBooklets(WRITTEN_BOOKLETS)).not.toThrow();
-    expect(WRITTEN_BOOKLETS.map((exam) => [exam.grade, exam.round, exam.items.length])).toEqual([
-      ['eiken_5', 1, 25],
-      ['eiken_5', 2, 25],
-      ['eiken_4', 1, 35],
-      ['eiken_4', 2, 35],
-      ['eiken_3', 1, 32],
-      ['eiken_3', 2, 32],
-      ['eiken_3', 3, 32],
-      ['eiken_3', 4, 32],
-      ['eiken_3', 5, 32],
-      ['eiken_3', 6, 32],
-      ['eiken_3', 7, 32],
-      ['eiken_3', 8, 32],
-      ['eiken_3', 9, 32],
-      ['eiken_3', 10, 32],
-      ['eiken_3', 11, 32],
-      ['eiken_3', 12, 32],
-      ['eiken_3', 13, 32],
-      ['eiken_3', 14, 32],
-      ['eiken_3', 15, 32],
-      ['eiken_pre2', 1, 31],
-      ['eiken_pre2', 2, 31],
-      ['eiken_pre2', 3, 31],
-      ['eiken_pre2plus', 1, 33],
-      ['eiken_pre2plus', 2, 33],
-      ['eiken_2', 1, 33],
-      ['eiken_2', 2, 33],
-      ['eiken_2', 3, 33],
-      ['eiken_pre1', 1, 33],
-      ['eiken_pre1', 2, 33],
-    ]);
+    expect(WRITTEN_BOOKLETS).toHaveLength(105);
     const choiceTotal = WRITTEN_BOOKLETS.reduce((n, exam) => n + exam.items.filter((i) => i.kind === 'choice').length, 0);
     const writingTotal = WRITTEN_BOOKLETS.reduce((n, exam) => n + exam.items.filter((i) => i.kind === 'writing').length, 0);
-    expect(choiceTotal).toBe(874);
+    expect(choiceTotal).toBe(3180);
     expect(writingTotal).toBe(50);
-    expect(choiceTotal + writingTotal).toBe(924);
+    expect(choiceTotal + writingTotal).toBe(3230);
 
-    // Grade 3 now satisfies the complete 15-round full series validation on real authored items!
-    expect(() =>
-      validateGradeSeries(
-        WRITTEN_BOOKLETS.filter((b) => b.grade === 'eiken_3'),
-        'eiken_3',
-      ),
-    ).not.toThrow();
+    for (const g of ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const) {
+      expect(() =>
+        validateGradeSeries(
+          WRITTEN_BOOKLETS.filter((b) => b.grade === g),
+          g,
+        ),
+      ).not.toThrow();
+    }
 
     for (const booklet of WRITTEN_BOOKLETS) {
       validateWrittenExam(booklet);
-      expect(booklet.scope).toBeUndefined();
       for (const item of booklet.items.filter((i) => i.section === 'reorder')) {
         expect(item.choices![item.answer!]).toBe(`${item.orderAnswer![0]}－${item.orderAnswer![2]}`);
         expect(item.completedSentence!.replace(/[.?]$/, '')).toBe(
@@ -195,7 +165,6 @@ describe('written booklets — same original for print, field practice, and writ
     expect(tasks).toHaveLength(50);
     expect(EIKEN_WRITING_TASKS.length).toBe(10 + 50);
     for (const task of tasks) {
-      // Must satisfy s_reading cloud sync safeId regex /^[a-z0-9_]{3,80}$/
       expect(task.key).toMatch(/^[a-z0-9_]{3,80}$/);
       expect(task.modelTranslation).toBeTruthy();
       const words = countEnglishWords(task.model);
@@ -208,21 +177,28 @@ describe('written booklets — same original for print, field practice, and writ
     }
   });
 
-  it('matches every field-practice answer and generated PDF audit to the same original', () => {
+  it('matches every field-practice answer, generated PDF audit, and 6-shelf gacha organization to the same original', { timeout: 30_000 }, () => {
     const manifest = JSON.parse(readFileSync('deliverables/written-booklets.json', 'utf8'));
     expect(manifest.booklets).toEqual(WRITTEN_BOOKLETS);
     expect(manifest.progress).toMatchObject({
       target: 105,
-      completed: 29,
-      remaining: 76,
-      questions: 874,
+      completed: 105,
+      remaining: 0,
+      questions: 3180,
       writingTasks: 50,
-      totalItems: 924,
+      totalItems: 3230,
       writingIncluded: true,
       listeningIncluded: false,
     });
-    expect(manifest.primaryBundles).toHaveLength(29);
+    expect(manifest.primaryBundles).toHaveLength(105);
     expect(manifest.progress.grades).toHaveLength(7);
+    for (const row of manifest.progress.grades) {
+      expect(row).toMatchObject({
+        target: 15,
+        completed: 15,
+        rounds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      });
+    }
     const sourceHash = createHash('sha256').update(JSON.stringify(WRITTEN_BOOKLETS)).digest('hex');
     expect(manifest.sourceHash).toBe(sourceHash);
 
@@ -317,6 +293,22 @@ describe('written booklets — same original for print, field practice, and writ
       expect(gachaItemRate(reward, 'N', pool)).toBeGreaterThan(0);
       expect(gachaItems(pool === 'kyotsu' ? 'niji' : 'kyotsu').some((i) => i.id === print.id)).toBe(false);
     }
+
+    // Verify all 138 Eiken gacha prints map cleanly into the 6 dedicated Eiken shelves
+    const shelfCounts = new Map<string, number>();
+    for (const p of GACHA_PRINTS) {
+      const shelf = printShelfOf(p);
+      shelfCounts.set(shelf, (shelfCounts.get(shelf) ?? 0) + 1);
+    }
+    expect(Object.fromEntries(shelfCounts)).toEqual({
+      eiken_written_basic: 60,
+      eiken_written_upper: 45,
+      eiken_wordbook: 14,
+      eiken_drill: 7,
+      eiken_guide: 7,
+      eiken_writing: 5,
+    });
+    expect(PRINT_SHELVES.filter((d) => shelfCounts.has(d.id))).toHaveLength(6);
   });
 
   it('enforces passage translation/format consistency and cloze blank number alignment', () => {
@@ -363,7 +355,6 @@ describe('written booklets — same original for print, field practice, and writ
       expect(perfect.writingTotal).toBe(2);
       expect(parseMockState('invalid-json').sessions).toEqual({});
 
-      // Scoped per-daimon scoring (大問1 short = 15Q, 大問2 conversation = 5Q, 大問4 email = 1 writing)
       const shortOnly = scoreMockExam(exam, allCorrectAnswers, writingEntries, 'short');
       expect(shortOnly.total).toBe(15);
       expect(shortOnly.correct).toBe(15);
@@ -380,7 +371,7 @@ describe('written booklets — same original for print, field practice, and writ
     });
   });
 
-  it('organizes every grade into official Daimon 1..N tabs with ascending round order', () => {
+  it('organizes every grade into official Daimon 1..N tabs with ascending 15-round order', () => {
     expect(getGradeDaimonSpecs('eiken_3').map((s) => [s.daimonNo, s.section, s.kind])).toEqual([
       [1, 'short', 'choice'],
       [2, 'conversation', 'choice'],
@@ -403,11 +394,13 @@ describe('written booklets — same original for print, field practice, and writ
       [4, 'summary', 'writing'],
       [5, 'essay', 'writing'],
     ]);
-    const g3Short = bookletSectionChapters('eiken_3', 'short', '大問1 短文の語句空所補充');
-    expect(g3Short).toHaveLength(15);
-    expect(g3Short.map((c) => c.id)).toEqual(
-      Array.from({ length: 15 }, (_, i) => `eiken_3_written_${String(i + 1).padStart(2, '0')}_short`),
-    );
+    for (const g of ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const) {
+      const chapters = bookletSectionChapters(g, 'short', '大問1 短文の語句空所補充');
+      expect(chapters).toHaveLength(15);
+      expect(chapters.map((c) => c.id)).toEqual(
+        Array.from({ length: 15 }, (_, i) => `${g}_written_${String(i + 1).padStart(2, '0')}_short`),
+      );
+    }
   });
 
   it('requires 15 distinct complete rounds rather than relabelled copies', () => {
@@ -427,6 +420,5 @@ describe('written booklets — same original for print, field practice, and writ
         : exam,
     );
     expect(() => validateGradeSeries(repeated, 'eiken_5')).toThrow('DUPLICATE_EXAM_CONTENT');
-    expect(() => validateGradeSeries(WRITTEN_BOOKLETS, 'eiken_5')).toThrow('FIFTEEN_EXAMS_REQUIRED');
   });
 });

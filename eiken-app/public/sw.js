@@ -11,12 +11,12 @@
  *   - Range リクエスト（音声のシーク）はキャッシュしない（206 を保存すると壊れる）。
  */
 // デプロイ済みアセットを確実に取り直すため、UI更新時は世代を上げる。
-const VERSION = 'eiken-written-20261113a';
+const VERSION = 'eiken-listening-audio-20261114a';
 /** 画面（HTML）の取得をこれ以上待たない（電波が弱いとき白い画面のまま待ち続けないため） */
 const NAV_TIMEOUT_MS = 8000;
 const SHELL = `manatobi-eiken-shell-${VERSION}`;
 const RUNTIME = `manatobi-eiken-runtime-${VERSION}`;
-const RUNTIME_MAX_ENTRIES = 300;
+const RUNTIME_MAX_ENTRIES = 600;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

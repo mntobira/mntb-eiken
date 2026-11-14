@@ -12,7 +12,7 @@ export default defineConfig(({ mode, command }) => {
     name: 'eiken-isolated-assets',
     transform(code, id) {
       if (base === '/' || !id.includes('/src/') || !/\.(tsx?|css)$/.test(id)) return;
-      return code.replace(/(["'`])\/(brand|mascots|icons|sfx|eiken_audio)\//g, `$1${base}$2/`);
+      return code.replace(/(["'`])\/(brand|mascots|icons|sfx|eiken_audio|eiken_images)\//g, `$1${base}$2/`);
     },
     generateBundle(_, bundle) {
       const modules = Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []);

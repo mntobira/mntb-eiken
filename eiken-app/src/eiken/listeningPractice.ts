@@ -87,12 +87,18 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
           : `問${q.questionNumber} 対話の最後の応答として最も適切な番号を選ぶ`
       : `問${q.questionNumber} ${q.questionPrompt}`;
 
+    const isScenePictureOnly =
+      isReadAloud && exam.grade === 'eiken_5' && unit.part === 'part3' && !hasVisibleIllustration && Boolean(unit.image);
+    const effectiveOptionTexts = isScenePictureOnly
+      ? [...q.choices]
+      : optionTexts;
+
     return {
       id: `${q.id}_answer`,
       label: questionLabel,
       type: 'multiple_choice',
       options: q.choices.map((_, idx) => String(idx + 1)),
-      optionTexts,
+      optionTexts: effectiveOptionTexts,
       correctAnswer: String(q.answer + 1),
       imageUrl: qIdx === 0 ? resolvedImageUrl : undefined,
       imageCaption: qIdx === 0 && unit.image ? `No.${q.questionNumber}（${unit.image.sceneSummaryJa}）` : undefined,

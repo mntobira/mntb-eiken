@@ -105,6 +105,8 @@ describe('Eiken Listening 120-Round Mock Exam Bank', () => {
       expect(ch.abstractTitle).toContain('専用音声');
       for (const p of ch.practiceProblems) {
         expect(p.audioTracks?.[0]?.audioUrl).toMatch(/^\/eiken_audio\/eiken_5\/eiken_5_listening_r\d+_part[123]_\d+\.mp3$/);
+        // Japanese translation for Grade 5 must be natural Japanese without untranslated multi-word English leftovers
+        expect(p.audioTracks?.[0]?.translation ?? '').not.toMatch(/[a-z]{3,}\s+[a-z]{3,}/i);
       }
     }
   });

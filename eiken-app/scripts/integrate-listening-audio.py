@@ -114,7 +114,7 @@ if mismatches:
     raise SystemExit(f'Found {len(mismatches)} audio mapping mismatches: {mismatches[:3]}')
 
 
-def transcode_one(item: tuple[str, str, Path, Path]) -> tuple[str, str, int]:
+def transcode_one(item: tuple[str, str, Path, Path]) -> tuple[str, str, int, float]:
     aid, grade, src, dst = item
     if not dst.exists() or dst.stat().st_size < 1000:
         subprocess.run(
@@ -138,16 +138,44 @@ def transcode_one(item: tuple[str, str, Path, Path]) -> tuple[str, str, int]:
             ],
             check=True,
         )
-    return aid, f'/eiken_audio/{grade}/{aid}.mp3', dst.stat().st_size
+    probe = subprocess.check_output(
+        [
+            'ffprobe',
+            '-v',
+            'error',
+            '-show_entries',
+            'format=duration:stream=codec_name,sample_rate,channels',
+            '-of',
+            'json',
+            str(dst),
+        ],
+        text=True,
+    )
+    info = json.loads(probe)
+    dur = float(info['format']['duration'])
+    st = info['streams'][0]
+    if st.get('codec_name') != 'mp3' or int(st.get('sample_rate', 0)) != 24000 or int(st.get('channels', 0)) != 1:
+        raise RuntimeError(f'Audio stream spec mismatch on {dst}: {st}')
+    if dur < 4.0 or dur > 240.0:
+        raise RuntimeError(f'Abnormal audio duration on {dst}: {dur:.2f}s')
+    return aid, f'/eiken_audio/{grade}/{aid}.mp3', dst.stat().st_size, dur
 
 
 audio_url_map: dict[str, str] = {}
 total_bytes = 0
+durations_by_grade: dict[str, list[float]] = {}
 
 with ThreadPoolExecutor(max_workers=4) as pool:
-    for aid, web_url, sz in pool.map(transcode_one, jobs):
+    for aid, web_url, sz, dur in pool.map(transcode_one, jobs):
         audio_url_map[aid] = web_url
         total_bytes += sz
+        g = expected_units[aid]['grade']
+        durations_by_grade.setdefault(g, []).append(dur)
+
+for g, durs in durations_by_grade.items():
+    audit_by_grade[g]['minDurationSec'] = round(min(durs), 2)
+    audit_by_grade[g]['maxDurationSec'] = round(max(durs), 2)
+    audit_by_grade[g]['avgDurationSec'] = round(sum(durs) / len(durs), 2)
 
 summary_parts = [
     f"{g}: {st['integratedUnits']}/{st['expectedUnits']}"

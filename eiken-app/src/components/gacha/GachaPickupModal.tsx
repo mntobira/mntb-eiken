@@ -26,7 +26,7 @@ export function GachaPickupModal({ dialog, items, progress, pool = DEFAULT_GACHA
       <button type="button" autoFocus onClick={() => dialog.current?.close()}>閉じる</button>
     </header>
     <div className="game-details-body gacha-pickup">
-      <p className="gacha-pickup-lead">今週の注目の着せ替えです。注目表示による排出率の上昇はありません。割合は通常の1回抽選の値です。</p>
+      <p className="gacha-pickup-lead">今週の注目のPDF教材・着せ替えです。注目表示による排出率の上昇はありません。割合は通常の1回抽選の値です。</p>
       <p>{def.lrNote}</p>
       {list.map(item => <section key={item.id} className="gacha-pickup-item" data-gacha-pickup-item={item.id}>
         <ItemArt item={item} progress={progress} size={64} />

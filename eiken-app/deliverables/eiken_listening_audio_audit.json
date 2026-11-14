@@ -31,7 +31,10 @@
       "expectedUnits": 375,
       "integratedUnits": 375,
       "csvVerifiedUnits": 375,
-      "mismatches": 0
+      "mismatches": 0,
+      "minDurationSec": 15.1,
+      "maxDurationSec": 42.02,
+      "avgDurationSec": 23.67
     },
     "eiken_pre1": {
       "expectedUnits": 345,

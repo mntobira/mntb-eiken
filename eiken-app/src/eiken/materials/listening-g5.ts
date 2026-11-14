@@ -203,27 +203,27 @@ const G5_PART1_SEEDS: readonly G5Part1Seed[] = [
     actionJa: 'カウンターの上の商品を指さしている',
     build: (r) => {
       const items = [
-        ['Star Stationery', 'blue notebook', '青いノート', 'two hundred yen', '200円'],
-        ['Maple Shop', 'green eraser', '緑の消しゴム', 'one hundred yen', '100円'],
-        ['Sunny Corner', 'wooden ruler', '木の定規', 'one hundred fifty yen', '150円'],
-        ['Rainbow Mart', 'canvas pencil case', '布の筆箱', 'six hundred yen', '600円'],
-        ['Hillside Store', 'wall calendar', '壁掛けカレンダー', 'four hundred yen', '400円'],
-        ['Clover Books', 'picture postcard', '絵はがき', 'eighty yen', '80円'],
-        ['Smile Gift Shop', 'cute key chain', 'キーホルダー', 'three hundred yen', '300円'],
-        ['River Stationery', 'thick sketchbook', '厚いスケッチブック', 'five hundred yen', '500円'],
-        ['Forest Shop', 'set of colored pens', 'カラーペンセット', 'seven hundred yen', '700円'],
-        ['Harbor Store', 'pocket dictionary', 'ポケット辞書', 'nine hundred yen', '900円'],
-        ['Cherry Paper Shop', 'pack of letter paper', '便せんパック', 'two hundred fifty yen', '250円'],
-        ['Town Craft Store', 'bottle of glue', 'のりのボトル', 'one hundred twenty yen', '120円'],
-        ['Sky Bookstore', 'animal sticker sheet', '動物シールシート', 'ninety yen', '90円'],
-        ['Breeze Shop', 'small memo pad', '小さなメモ帳', 'one hundred eighty yen', '180円'],
-        ['Acorn Market', 'plastic file folder', 'クリアファイル', 'one hundred ten yen', '110円'],
+        ['Star Stationery', 'スター文房具店', 'blue notebook', '青いノート', 'two hundred yen', '200円'],
+        ['Maple Shop', 'メイプルショップ', 'green eraser', '緑の消しゴム', 'one hundred yen', '100円'],
+        ['Sunny Corner', 'サニーコーナー', 'wooden ruler', '木の定規', 'one hundred fifty yen', '150円'],
+        ['Rainbow Mart', 'レインボーマート', 'canvas pencil case', '布の筆箱', 'six hundred yen', '600円'],
+        ['Hillside Store', 'ヒルサイドストア', 'wall calendar', '壁掛けカレンダー', 'four hundred yen', '400円'],
+        ['Clover Books', 'クローバー書店', 'picture postcard', '絵はがき', 'eighty yen', '80円'],
+        ['Smile Gift Shop', 'スマイルギフト店', 'cute key chain', 'キーホルダー', 'three hundred yen', '300円'],
+        ['River Stationery', 'リバー文具店', 'thick sketchbook', '厚いスケッチブック', 'five hundred yen', '500円'],
+        ['Forest Shop', 'フォレストショップ', 'set of colored pens', 'カラーペンセット', 'seven hundred yen', '700円'],
+        ['Harbor Store', 'ハーバーストア', 'pocket dictionary', 'ポケット辞書', 'nine hundred yen', '900円'],
+        ['Cherry Paper Shop', 'チェリー紙店', 'pack of letter paper', '便せんパック', 'two hundred fifty yen', '250円'],
+        ['Town Craft Store', 'タウンクラフト店', 'bottle of glue', 'のりのボトル', 'one hundred twenty yen', '120円'],
+        ['Sky Bookstore', 'スカイ書店', 'animal sticker sheet', '動物シールシート', 'ninety yen', '90円'],
+        ['Breeze Shop', 'ブリーズショップ', 'small memo pad', '小さなメモ帳', 'one hundred eighty yen', '180円'],
+        ['Acorn Market', 'エイコーンマーケット', 'plastic file folder', 'クリアファイル', 'one hundred ten yen', '110円'],
       ];
-      const [shopEn, itEn, itJa, priceEn, priceJa] = items[r - 1];
+      const [shopEn, shopJa, itEn, itJa, priceEn, priceJa] = items[r - 1];
       return {
         line1: `Welcome to ${shopEn}. May I help you today?`,
         line2: `Yes, please. How much is this ${itEn}?`,
-        line1Ja: `${shopEn}へようこそ。いらっしゃいませ。`,
+        line1Ja: `${shopJa}へようこそ。いらっしゃいませ。`,
         line2Ja: `はい、お願いします。この${itJa}はいくらですか。`,
         correct: `It is ${priceEn}.`,
         correctReason: `How much is ...? で値段を尋ねられているので「${priceJa}です」と値段を答えている。`,
@@ -584,6 +584,12 @@ function buildG5Part2Unit(examId: string, round: number, unitIndex: number): Lis
         ['painting', 'history', 'music', 'English', 'science', '歴史'],
       ];
       const [askSub, ans, w1, w2, w3, ansJa] = items[round - 1];
+      const askSubJaMap: Record<string, string> = {
+        math: '算数・数学', English: '英語', history: '歴史', science: '理科', music: '音楽',
+        art: '美術', cooking: '料理', tennis: 'テニス', drama: '演劇', chorus: '合唱',
+        soccer: 'サッカー', swimming: '水泳', reading: '読書', gardening: '園芸', painting: '絵画',
+      };
+      const askSubJa = askSubJaMap[askSub] ?? askSub;
       const turns: DialogueTurn[] = [
         { ...sp1, text: `Hey ${listenerName}, is ${askSub} your favorite class at school?` },
         { ...sp2, text: `I like ${askSub}, but my favorite class is ${ans}. We have it today!` },
@@ -592,7 +598,7 @@ function buildG5Part2Unit(examId: string, round: number, unitIndex: number): Lis
       ];
       return {
         turns,
-        translation: `${sp1.roleLabel === 'Man' ? '男の子' : '女の子'}：ねえ${listenerName}、学校で一番好きな授業は${askSub}？\n${sp2.roleLabel === 'Woman' ? '女の子' : '男の子'}：それも好きだけど、一番好きな授業は${ansJa}だよ。今日あるんだ！\n${sp1.roleLabel === 'Man' ? '男の子' : '女の子'}：へえ、ぼくも好きだよ。\n質問：一番好きな授業は何ですか。`,
+        translation: `${sp1.roleLabel === 'Man' ? '男の子' : '女の子'}：ねえ${listenerName}、学校で一番好きな授業は${askSubJa}？\n${sp2.roleLabel === 'Woman' ? '女の子' : '男の子'}：それも好きだけど、一番好きな授業は${ansJa}だよ。今日あるんだ！\n${sp1.roleLabel === 'Man' ? '男の子' : '女の子'}：へえ、ぼくも好きだよ。\n質問：一番好きな授業は何ですか。`,
         questionPrompt: `What is ${whoPoss} favorite class?`,
         correct: ans[0].toUpperCase() + ans.slice(1) + '.',
         correctReason: `my favorite class is ${ans}（一番好きな授業は${ansJa}）と明言している。`,
@@ -661,23 +667,23 @@ function buildG5Part2Unit(examId: string, round: number, unitIndex: number): Lis
     // unit 4: イベント開始時刻（15回別）
     () => {
       const shows = [
-        ['puppet show', 'two thirty', 'three thirty', 'four o\'clock', 'five fifteen', '人形劇', '3時30分'],
-        ['piano concert', 'one o\'clock', 'one forty', 'two twenty', 'three ten', 'ピアノコンサート', '1時40分'],
-        ['cooking lesson', 'ten o\'clock', 'ten thirty', 'eleven fifteen', 'twelve o\'clock', '料理教室', '10時30分'],
-        ['magic show', 'two o\'clock', 'two forty-five', 'three twenty', 'four ten', 'マジックショー', '2時45分'],
-        ['dolphin show', 'eleven o\'clock', 'eleven thirty', 'one fifteen', 'two o\'clock', 'イルカショー', '11時30分'],
-        ['flower workshop', 'nine thirty', 'ten fifteen', 'eleven o\'clock', 'one thirty', 'フラワー教室', '10時15分'],
-        ['story hour', 'three o\'clock', 'three twenty', 'four o\'clock', 'four thirty', 'おはなし会', '3時20分'],
-        ['dance recital', 'four o\'clock', 'four thirty', 'five fifteen', 'six o\'clock', 'ダンス発表会', '4時30分'],
-        ['science movie', 'one thirty', 'two ten', 'three o\'clock', 'three forty', '科学映画', '2時10分'],
-        ['guitar lesson', 'five o\'clock', 'five twenty', 'six o\'clock', 'six thirty', 'ギターレッスン', '5時20分'],
-        ['stamp rally', 'nine o\'clock', 'nine forty', 'ten thirty', 'eleven ten', 'スタンプラリー', '9時40分'],
-        ['balloon event', 'twelve thirty', 'one fifteen', 'two o\'clock', 'two fifty', 'バルーンイベント', '1時15分'],
-        ['starry sky talk', 'six o\'clock', 'six thirty', 'seven fifteen', 'eight o\'clock', '星空のお話', '6時30分'],
-        ['tennis clinic', 'eight thirty', 'nine ten', 'ten o\'clock', 'ten forty', 'テニス教室', '9時10分'],
-        ['choir concert', 'two fifteen', 'three o\'clock', 'three forty-five', 'four thirty', '合唱コンサート', '3時ちょうど'],
+        ['puppet show', 'two thirty', 'three thirty', 'four o\'clock', 'five fifteen', '人形劇', '2時30分', '3時30分'],
+        ['piano concert', 'one o\'clock', 'one forty', 'two twenty', 'three ten', 'ピアノコンサート', '1時ちょうど', '1時40分'],
+        ['cooking lesson', 'ten o\'clock', 'ten thirty', 'eleven fifteen', 'twelve o\'clock', '料理教室', '10時ちょうど', '10時30分'],
+        ['magic show', 'two o\'clock', 'two forty-five', 'three twenty', 'four ten', 'マジックショー', '2時ちょうど', '2時45分'],
+        ['dolphin show', 'eleven o\'clock', 'eleven thirty', 'one fifteen', 'two o\'clock', 'イルカショー', '11時ちょうど', '11時30分'],
+        ['flower workshop', 'nine thirty', 'ten fifteen', 'eleven o\'clock', 'one thirty', 'フラワー教室', '9時30分', '10時15分'],
+        ['story hour', 'three o\'clock', 'three twenty', 'four o\'clock', 'four thirty', 'おはなし会', '3時ちょうど', '3時20分'],
+        ['dance recital', 'four o\'clock', 'four thirty', 'five fifteen', 'six o\'clock', 'ダンス発表会', '4時ちょうど', '4時30分'],
+        ['science movie', 'one thirty', 'two ten', 'three o\'clock', 'three forty', '科学映画', '1時30分', '2時10分'],
+        ['guitar lesson', 'five o\'clock', 'five twenty', 'six o\'clock', 'six thirty', 'ギターレッスン', '5時ちょうど', '5時20分'],
+        ['stamp rally', 'nine o\'clock', 'nine forty', 'ten thirty', 'eleven ten', 'スタンプラリー', '9時ちょうど', '9時40分'],
+        ['balloon event', 'twelve thirty', 'one fifteen', 'two o\'clock', 'two fifty', 'バルーンイベント', '12時30分', '1時15分'],
+        ['starry sky talk', 'six o\'clock', 'six thirty', 'seven fifteen', 'eight o\'clock', '星空のお話', '6時ちょうど', '6時30分'],
+        ['tennis clinic', 'eight thirty', 'nine ten', 'ten o\'clock', 'ten forty', 'テニス教室', '8時30分', '9時10分'],
+        ['choir concert', 'two fifteen', 'three o\'clock', 'three forty-five', 'four thirty', '合唱コンサート', '2時15分', '3時ちょうど'],
       ];
-      const [showEn, wrongFirst, ans, w2, w3, showJa, ansJa] = shows[round - 1];
+      const [showEn, wrongFirst, ans, w2, w3, showJa, wrongFirstJa, ansJa] = shows[round - 1];
       const turns: DialogueTurn[] = [
         { ...sp1, text: `Excuse me, does the ${showEn} begin at ${wrongFirst} today?` },
         { ...sp2, text: `No, not today. It begins at ${ans} in Room Two.` },
@@ -686,7 +692,7 @@ function buildG5Part2Unit(examId: string, round: number, unitIndex: number): Lis
       ];
       return {
         turns,
-        translation: `${sp1.roleLabel === 'Man' ? '男性' : '女性'}：すみません、今日の${showJa}は${wrongFirst}に始まりますか？\n${sp2.roleLabel === 'Woman' ? '女性' : '男性'}：いいえ、今日は違います。2番ルームで${ansJa}に始まります。\n${sp1.roleLabel === 'Man' ? '男性' : '女性'}：わかりました。教えてくれてありがとうございます。\n質問：今日の${showJa}は何時に始まりますか。`,
+        translation: `${sp1.roleLabel === 'Man' ? '男性' : '女性'}：すみません、今日の${showJa}は${wrongFirstJa}に始まりますか？\n${sp2.roleLabel === 'Woman' ? '女性' : '男性'}：いいえ、今日は違います。2番ルームで${ansJa}に始まります。\n${sp1.roleLabel === 'Man' ? '男性' : '女性'}：わかりました。教えてくれてありがとうございます。\n質問：今日の${showJa}は何時に始まりますか。`,
         questionPrompt: `What time does the ${showEn} begin today?`,
         correct: `At ${ans}.`,
         correctReason: `No, not today と否定したあとに It begins at ${ans}（${ansJa}開始）と正しい時刻を言っている。`,
