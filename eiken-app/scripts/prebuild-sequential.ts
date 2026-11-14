@@ -60,63 +60,144 @@ buildSync({
 });
 console.log(`[seq-vendor] Prebundled ${lucideSpecifiers.size} used lucide-react icons -> lucide-prebundled.mjs`);
 
-// --- Step 1B: firebase 各サブパッケージも1本ずつ順番に esbuild で単一ESM化 ---
-const FIREBASE_PKGS = [
-  'firebase/app',
-  'firebase/auth',
-  'firebase/firestore',
-] as const;
-
 const aliasMap: Record<string, string> = {
   'lucide-react': lucideOut,
 };
 
-for (const pkg of FIREBASE_PKGS) {
-  const safeName = pkg.replace(/\//g, '__');
-  const entryFile = resolve(CACHE_DIR, `_${safeName}-entry.js`);
-  const outFile = resolve(CACHE_DIR, `${safeName}.mjs`);
-  writeFileSync(entryFile, `export * from '${pkg}';\n`);
-  buildSync({
-    entryPoints: [entryFile],
-    outfile: outFile,
-    bundle: true,
-    format: 'esm',
-    platform: 'browser',
-    target: 'es2022',
-    minify: true,
-    treeShaking: true,
-  });
-  aliasMap[pkg] = outFile;
-  console.log(`[seq-vendor] Prebundled ${pkg} -> ${safeName}.mjs`);
-}
+// Prebundle exact used Firebase symbols into ONE shared browser ESM (eliminates ~280 @firebase/* Rollup modules + 1.14MB common.esm.js!)
+const firebaseSharedEntry = resolve(CACHE_DIR, '_firebase-shared-entry.js');
+const firebaseSharedOut = resolve(CACHE_DIR, 'firebase-shared.mjs');
+const fbAppSymbols = ['initializeApp', 'getApps'] as const;
+const fbAuthSymbols = [
+  'EmailAuthProvider',
+  'FacebookAuthProvider',
+  'GithubAuthProvider',
+  'GoogleAuthProvider',
+  'OAuthCredential',
+  'OAuthProvider',
+  'RecaptchaVerifier',
+  'TwitterAuthProvider',
+  'applyActionCode',
+  'browserLocalPersistence',
+  'browserPopupRedirectResolver',
+  'browserSessionPersistence',
+  'confirmPasswordReset',
+  'connectAuthEmulator',
+  'createUserWithEmailAndPassword',
+  'deleteUser',
+  'fetchSignInMethodsForEmail',
+  'getAdditionalUserInfo',
+  'getAuth',
+  'getRedirectResult',
+  'inMemoryPersistence',
+  'indexedDBLocalPersistence',
+  'initializeAuth',
+  'isSignInWithEmailLink',
+  'linkWithCredential',
+  'linkWithPhoneNumber',
+  'linkWithPopup',
+  'linkWithRedirect',
+  'onAuthStateChanged',
+  'reload',
+  'revokeAccessToken',
+  'sendEmailVerification',
+  'sendPasswordResetEmail',
+  'sendSignInLinkToEmail',
+  'setPersistence',
+  'signInAnonymously',
+  'signInWithCredential',
+  'signInWithCustomToken',
+  'signInWithEmailAndPassword',
+  'signInWithEmailLink',
+  'signInWithPhoneNumber',
+  'signInWithPopup',
+  'signInWithRedirect',
+  'signOut',
+  'unlink',
+  'updateEmail',
+  'updatePassword',
+  'updateProfile',
+  'verifyBeforeUpdateEmail',
+] as const;
+const fbFirestoreSymbols = [
+  'getFirestore',
+  'initializeFirestore',
+  'connectFirestoreEmulator',
+  'disableNetwork',
+  'collection',
+  'collectionGroup',
+  'deleteDoc',
+  'doc',
+  'getDoc',
+  'runTransaction',
+  'serverTimestamp',
+  'getDocs',
+  'limit',
+  'orderBy',
+  'query',
+  'setDoc',
+  'deleteField',
+  'onSnapshot',
+  'updateDoc',
+  'where',
+  'getDocsFromServer',
+  'startAfter',
+  'Timestamp',
+  'writeBatch',
+  'addDoc',
+  'documentId',
+] as const;
+const fbFunctionsSymbols = ['getFunctions', 'httpsCallable', 'connectFunctionsEmulator'] as const;
 
-// Note: firebase/app singleton sharing — keep firebase/* sharing the same firebase/app instance!
-// Re-bundle firebase/auth and firebase/firestore with `external: ['firebase/app']` so they share the exact same app registry!
-for (const pkg of ['firebase/auth', 'firebase/firestore'] as const) {
+writeFileSync(
+  firebaseSharedEntry,
+  [
+    `import { ${fbAppSymbols.join(', ')} } from 'firebase/app';`,
+    `import { ${fbAuthSymbols.join(', ')} } from 'firebase/auth';`,
+    `import { ${fbFirestoreSymbols.join(', ')} } from 'firebase/firestore';`,
+    `import { ${fbFunctionsSymbols.join(', ')} } from 'firebase/functions';`,
+    `export const __fb_app = { ${fbAppSymbols.join(', ')} };`,
+    `export const __fb_auth = { ${fbAuthSymbols.join(', ')} };`,
+    `export const __fb_firestore = { ${fbFirestoreSymbols.join(', ')} };`,
+    `export const __fb_functions = { ${fbFunctionsSymbols.join(', ')} };`,
+  ].join('\n') + '\n',
+);
+buildSync({
+  entryPoints: [firebaseSharedEntry],
+  outfile: firebaseSharedOut,
+  bundle: true,
+  format: 'esm',
+  platform: 'browser',
+  target: 'es2022',
+  minify: true,
+  treeShaking: true,
+});
+for (const [pkg, ns, syms] of [
+  ['firebase/app', '__fb_app', fbAppSymbols],
+  ['firebase/auth', '__fb_auth', fbAuthSymbols],
+  ['firebase/firestore', '__fb_firestore', fbFirestoreSymbols],
+  ['firebase/functions', '__fb_functions', fbFunctionsSymbols],
+] as const) {
   const safeName = pkg.replace(/\//g, '__');
-  const entryFile = resolve(CACHE_DIR, `_${safeName}-entry.js`);
-  const outFile = resolve(CACHE_DIR, `${safeName}.mjs`);
-  buildSync({
-    entryPoints: [entryFile],
-    outfile: outFile,
-    bundle: true,
-    format: 'esm',
-    platform: 'browser',
-    target: 'es2022',
-    external: ['firebase/app', '@firebase/app'],
-    minify: true,
-    treeShaking: true,
-  });
+  const proxyEntry = resolve(CACHE_DIR, `${safeName}-proxy.mjs`);
+  writeFileSync(
+    proxyEntry,
+    `import { ${ns} } from './firebase-shared.mjs';\n` +
+      syms.map(k => `export const ${k} = ${ns}.${k};`).join('\n') +
+      '\n',
+  );
+  aliasMap[pkg] = proxyEntry;
 }
-// Keep firebase/* on standard resolution for shared internal @firebase/app state; lucide-react + katex alone drop >1,550 modules!
-delete aliasMap['firebase/app'];
-delete aliasMap['firebase/auth'];
-delete aliasMap['firebase/firestore'];
+console.log('[seq-vendor] Prebundled tree-shaken firebase/{app,auth,firestore,functions} -> firebase-shared.mjs');
 
-// Prebundle katex into a single ESM file
+// Prebundle katex + mhchem together into a single ESM file (prevents duplicate 587KB katex.mjs load)
 const katexEntry = resolve(CACHE_DIR, '_katex-entry.js');
 const katexOut = resolve(CACHE_DIR, 'katex-prebundled.mjs');
-writeFileSync(katexEntry, `import katex from 'katex'; export default katex; export * from 'katex';\n`);
+const katexMhchemNoop = resolve(CACHE_DIR, 'katex-mhchem-noop.mjs');
+writeFileSync(
+  katexEntry,
+  `import katex from 'katex'; import 'katex/dist/contrib/mhchem.mjs'; export default katex; export * from 'katex';\n`,
+);
 buildSync({
   entryPoints: [katexEntry],
   outfile: katexOut,
@@ -126,8 +207,28 @@ buildSync({
   target: 'es2022',
   minify: true,
 });
+writeFileSync(katexMhchemNoop, `import './katex-prebundled.mjs';\n`);
 aliasMap['katex'] = katexOut;
-console.log('[seq-vendor] Prebundled katex -> katex-prebundled.mjs');
+aliasMap['katex/dist/contrib/mhchem.mjs'] = katexMhchemNoop;
+console.log('[seq-vendor] Prebundled katex + mhchem -> katex-prebundled.mjs');
+
+// Prebundle motion/react into a single ESM file (eliminates ~280 framer-motion/motion-dom Rollup modules)
+const motionEntry = resolve(CACHE_DIR, '_motion-react-entry.js');
+const motionOut = resolve(CACHE_DIR, 'motion-react-prebundled.mjs');
+writeFileSync(motionEntry, `export * from 'motion/react';\n`);
+buildSync({
+  entryPoints: [motionEntry],
+  outfile: motionOut,
+  bundle: true,
+  format: 'esm',
+  platform: 'browser',
+  target: 'es2022',
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
+  minify: true,
+  treeShaking: true,
+});
+aliasMap['motion/react'] = motionOut;
+console.log('[seq-vendor] Prebundled motion/react -> motion-react-prebundled.mjs');
 
 // --- Step 1C: 重い教材データモジュールを1本ずつ別プロセスでシリアライズ ---
 const TARGETS: ReadonlyArray<{ key: string; importPath: string; exports: readonly string[] }> = [
@@ -138,6 +239,9 @@ const TARGETS: ReadonlyArray<{ key: string; importPath: string; exports: readonl
   { key: 'listening-pre1', importPath: './src/eiken/materials/listening-pre1.ts', exports: ['GRADE_PRE1_LISTENING_EXAMS'] },
   { key: 'listening-g1', importPath: './src/eiken/materials/listening-g1.ts', exports: ['GRADE_1_LISTENING_EXAMS'] },
   { key: 'written-booklets', importPath: './src/eiken/materials/written-booklets.ts', exports: ['WRITTEN_BOOKLETS'] },
+  { key: 'chapter-index', importPath: './src/data/chapterIndex.generated.ts', exports: ['SUBJECT_INDEX', 'SUBJECT_STATS'] },
+  { key: 'listening-images', importPath: './src/eiken/listeningImages.generated.ts', exports: ['LISTENING_IMAGE_URLS'] },
+  { key: 'listening-audio', importPath: './src/eiken/listeningAudio.generated.ts', exports: ['LISTENING_AUDIO_URLS'] },
 ];
 
 const manifest: Record<string, { key: string; exports: readonly string[] }> = {};

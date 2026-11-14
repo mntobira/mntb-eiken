@@ -118,7 +118,21 @@ try {
   const keys = await page.evaluate(() => caches.keys());
   assert.ok(keys.includes('manatobi-shell-v7'));
   assert.ok(keys.some(key => key.startsWith('manatobi-eiken-shell-')));
-  for (const path of ['/tanjou.mp3', '/cinematics/title.mp4', '/manifest.json', '/data/vocabPron.json', '/fonts/shared.css', '/prints/print_level_eiken_howto.pdf']) {
+  for (const path of [
+    '/tanjou.mp3',
+    '/cinematics/title.mp4',
+    '/manifest.json',
+    '/data/vocabPron.json',
+    '/fonts/shared.css',
+    '/prints/print_level_eiken_howto.pdf',
+    '/eiken_audio/eiken_5/eiken_5_listening_r01_part1_01.mp3',
+    '/eiken_audio/eiken_5/eiken_5_listening_r15_part3_10.mp3',
+    '/eiken_images/eiken_5_shared/g5_img_001.webp',
+    '/eiken_images/eiken_4_shared/g4_img_001.webp',
+    '/eiken_images/eiken_3_shared/g3_img_001.webp',
+    '/eiken_images/eiken_pre1_shared/pre1_img_001.webp',
+    '/eiken_images/eiken_1_shared/g1_img_001.webp',
+  ]) {
     const response = await page.request.get(origin + path);
     assert.equal(response.status(), 200, path);
     assert.ok(!response.headers()['content-type'].includes('text/html'), path);

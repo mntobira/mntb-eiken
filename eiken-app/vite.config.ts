@@ -12,7 +12,7 @@ export default defineConfig(({ mode, command }) => {
     name: 'eiken-isolated-assets',
     transform(code, id) {
       if (base === '/' || !id.includes('/src/') || !/\.(tsx?|css)$/.test(id)) return;
-      return code.replace(/(["'`])\/(brand|mascots|icons|sfx|eiken_audio)\//g, `$1${base}$2/`);
+      return code.replace(/(["'`])\/(brand|mascots|icons|sfx|eiken_audio|eiken_images)\//g, `$1${base}$2/`);
     },
     generateBundle(_, bundle) {
       const modules = Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []);
@@ -43,6 +43,14 @@ export default defineConfig(({ mode, command }) => {
       const cleanId = id.split('?')[0];
       const entry = seqBundle.materials[cleanId];
       if (!entry) return null;
+      if (entry.key === 'chapter-index') {
+        return [
+          `export const SUBJECT_INDEX = "__MANATOBI_SEQ_DATA__:chapter-index:SUBJECT_INDEX__";`,
+          `export const SUBJECT_STATS = "__MANATOBI_SEQ_DATA__:chapter-index:SUBJECT_STATS__";`,
+          `export function getChapterIndexOfSubject(subjectId) { return (SUBJECT_INDEX.find(s => s.id === subjectId) ?? SUBJECT_INDEX[0])?.chapters ?? []; }`,
+          `export function getSubjectStats(subjectId) { return SUBJECT_STATS[String(subjectId)] ?? {}; }`,
+        ].join('\n');
+      }
       return entry.exports
         .map(exp => `export const ${exp} = "__MANATOBI_SEQ_DATA__:${entry.key}:${exp}__";`)
         .join('\n');
@@ -76,6 +84,12 @@ export default defineConfig(({ mode, command }) => {
           manualChunks(id) {
             const matMatch = id.match(/\/src\/eiken\/materials\/([^/.]+)/);
             if (matMatch) return `eiken-mat-${matMatch[1]}`;
+            if (id.includes('.vite-seq-cache/')) {
+              if (id.includes('firebase')) return 'vendor-firebase';
+              if (id.includes('katex')) return 'vendor-katex';
+              if (id.includes('motion')) return 'vendor-motion';
+              if (id.includes('lucide')) return 'vendor-icons';
+            }
             if (id.includes('node_modules')) {
               if (id.includes('/firebase/firestore')) return 'vendor-firestore';
               if (id.includes('/firebase/auth')) return 'vendor-fireauth';

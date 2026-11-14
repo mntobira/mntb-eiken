@@ -1,5 +1,6 @@
 import type { AudioTrack, Chapter, Problem, SubQuestion, TrackMaterial } from '../types/curriculum';
 import type { EikenGrade } from './config';
+import { LISTENING_AUDIO_URLS } from './listeningAudio.generated';
 import { LISTENING_IMAGE_URLS } from './listeningImages.generated';
 import {
   LISTENING_BLUEPRINTS,
@@ -9,10 +10,12 @@ import {
 } from './listeningExamCore';
 
 /**
- * 同一原本（ListeningExamRound）からアプリの分野別リスニング演習 Chapter 群へ変換する。
+ * 同一原本（ListeningExamRound）からアプリのリスニング演習 Chapter 群へ変換する。
  * - 筆記の `writtenPractice.ts` と同じ思想：冊子／台本／アプリで問題ID・正答・解説を完全共有。
- * - 読み上げ選択肢（choicePresentation === 'read-aloud'）は解答中の画面に英文テキストを出さず、
- *   「選択肢1 / 選択肢2 / 選択肢3」とし、解答後の解説画面で英文・和訳・全選択肢の理由を開示する。
+ * - `LISTENING_AUDIO_URLS` に実音源MP3が登録されている単元（5級全375問、および今後追加される4級〜1級）は
+ *   自動的にネイティブ `<audio>` ストリーミング再生（2回連続再生・速度変更・シーク対応）へ切り替わる。
+ * - 読み上げ選択肢（choicePresentation === 'read-aloud'）は解答中の画面に英文テキストを出さず
+ *   「音声の選択肢 1〜3」とし、解答後の解説画面で全選択肢の英文・和訳・正誤理由を開示する。
  * - 準1級・1級 第2部（1パッセージ2問）および 1級 第4部（インタビュー2問）は
  *   1つの Problem に subQuestions 2個・audioTracks 1本（subIds 付き）で本試験どおり連動する。
  * - Real-Life 形式は TrackMaterial（状況・表・条件メモ）を左ペインに表示する。
@@ -61,20 +64,30 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
   const qLabel = firstNo === lastNo ? `No.${firstNo}` : `No.${firstNo}–${lastNo}`;
 
   const resolvedImageUrl = LISTENING_IMAGE_URLS[unit.audioId];
+  const resolvedAudioUrl = LISTENING_AUDIO_URLS[unit.audioId];
+  const hasVisibleIllustration = Boolean(resolvedImageUrl);
 
   const subQuestions: SubQuestion[] = unit.questions.map((q, qIdx) => {
     const isReadAloud = q.choicePresentation === 'read-aloud';
-    const optionTexts = isReadAloud ? undefined : [...q.choices];
     const choiceBreakdown = q.choices
       .map((text, idx) => `${idx + 1}. ${text} — ${q.distractorReasons[idx]}`)
       .join('\n');
+
+    // Grade 5 Part 3 units whose illustration has not yet been generated need printed choices so the question remains solvable.
+    const isScenePictureOnly =
+      isReadAloud && exam.grade === 'eiken_5' && unit.part === 'part3' && !hasVisibleIllustration && Boolean(unit.image);
+    const effectiveOptionTexts = isReadAloud
+      ? isScenePictureOnly
+        ? [...q.choices]
+        : undefined
+      : [...q.choices];
 
     return {
       id: `${q.id}_answer`,
       label: isReadAloud ? `No.${q.questionNumber}` : q.questionPrompt,
       type: 'multiple_choice',
       options: q.choices.map((_, idx) => String(idx + 1)),
-      optionTexts,
+      optionTexts: effectiveOptionTexts,
       correctAnswer: String(q.answer + 1),
       imageUrl: qIdx === 0 ? resolvedImageUrl : undefined,
       imageCaption: undefined,
@@ -82,7 +95,15 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
       explainJa: `${q.explanation}\n\n【選択肢の英文と理由】\n${choiceBreakdown}`,
       detailedExplanation: {
         theme: `${exam.theme}（${q.skill}）`,
-        difficulty: Math.min(5, Math.max(1, ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'].indexOf(exam.grade) - 1)),
+        difficulty: Math.min(
+          5,
+          Math.max(
+            1,
+            ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'].indexOf(
+              exam.grade,
+            ) - 1,
+          ),
+        ),
         steps: [q.evidence, q.explanation],
       },
       distractors: q.distractorReasons.map((why, idx) => ({
@@ -106,8 +127,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
     subIds: subQuestions.length > 1 ? subQuestions.map(s => s.id) : undefined,
     label: qLabel,
     hint: undefined,
-    // 実ファイル配備前は undefined にしてブラウザ読み上げフォールバックを有効化する
-    audioUrl: undefined,
+    audioUrl: resolvedAudioUrl || undefined,
     script,
     turns,
     material: buildTrackMaterial(unit, resolvedImageUrl),
@@ -137,7 +157,7 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
   return {
     id: unit.audioId,
     title: `第${exam.round}回 ${partSpec.label} ${qLabel}`,
-    category: `第${exam.round}回 ${exam.theme}（${exam.focusSkill}）`,
+    category: `第${exam.round}回 ${partSpec.label} ${qLabel}｜${exam.theme}`,
     text: promptHeader,
     readCount: unit.readCount,
     playOnce: unit.readCount === 1,
@@ -152,10 +172,8 @@ export function listeningUnitToProblem(exam: ListeningExamRound, unit: Listening
 
 /**
  * 級ごとのリスニング予想問題 Chapter 一覧を生成する。
- * - 各部の単元（例：「予想問題｜第1部 会話の応答文選択（全15回）」）として整理し、
- *   また回ごとの通し演習（「リスニング 第1回（25問）」〜「リスニング 第15回」）も提供する。
- *   ただし重複計上を防ぐため、アプリの `partsForGrade` には「回別（第1回〜第15回）」の15章として登録し、
- *   1回＝本試験1回分の問題数（25〜30問）をそのまま演習・復習できるようにする。
+ * - 1回＝本試験1回分の問題数（25〜30問）をそのまま演習・復習できる15章を登録する。
+ * - 実音源MP3・実イラストの収録状況をカード見出し＆トピックに明示して受験生が選びやすくする。
  */
 export function listeningBookletChapters(
   exams: readonly ListeningExamRound[],
@@ -168,7 +186,33 @@ export function listeningBookletChapters(
     .map((exam): Chapter => {
       const problems = exam.units.map(unit => listeningUnitToProblem(exam, unit));
       const marks = problems.reduce((sum, p) => sum + p.subQuestions.length, 0);
-      const title = `リスニング 第${exam.round}回｜${exam.theme}`;
+      const imageUnits = exam.units.filter(u => Boolean(u.image));
+      const resolvedImageCount = imageUnits.filter(u => Boolean(LISTENING_IMAGE_URLS[u.audioId])).length;
+      const resolvedAudioCount = exam.units.filter(u => Boolean(LISTENING_AUDIO_URLS[u.audioId])).length;
+
+      const statusParts: string[] = [];
+      if (resolvedAudioCount === exam.units.length) {
+        statusParts.push('専用音声');
+      } else if (resolvedAudioCount > 0) {
+        statusParts.push(`専用音声${resolvedAudioCount}/${exam.units.length}`);
+      }
+      if (imageUnits.length > 0 && resolvedImageCount === imageUnits.length) {
+        statusParts.push('イラスト完備');
+      } else if (imageUnits.length > 0 && resolvedImageCount > 0) {
+        statusParts.push(`イラスト${resolvedImageCount}/${imageUnits.length}`);
+      }
+      const badge = statusParts.length > 0 ? `【${statusParts.join('・')}】` : '';
+      const title = `リスニング 第${exam.round}回｜${exam.theme}${badge ? ` ${badge}` : ''}`;
+      const partSummary = blueprint.parts.map(p => p.label.replace(/^第(\d+)部\s*/, '第$1部:')).join(' ／ ');
+
+      const detailExtras: string[] = [];
+      if (resolvedAudioCount > 0) {
+        detailExtras.push(`専用収録MP3 ${resolvedAudioCount}/${exam.units.length}音源`);
+      }
+      if (imageUnits.length > 0 && resolvedImageCount > 0) {
+        detailExtras.push(`白黒線画イラスト ${resolvedImageCount}/${imageUnits.length}問`);
+      }
+
       return {
         id: exam.id,
         title,
@@ -176,8 +220,10 @@ export function listeningBookletChapters(
         realTitle: 'リスニング予想問題（全15回）',
         questionGroup: 'リスニング',
         topics: [
-          `テーマ：${exam.theme} ／ 場面：${exam.scene} ／ 重点：${exam.focusSkill}`,
-          `全${blueprint.totalQuestions}問・${blueprint.totalAudioFiles}音源（独自作成・過去問流用なし）`,
+          `テーマ：${exam.theme}（${exam.scene}） ／ 重点：${exam.focusSkill}`,
+          `全${blueprint.totalQuestions}問（${partSummary}）${
+            detailExtras.length > 0 ? ` ／ ${detailExtras.join('・')}` : ''
+          }`,
         ],
         practiceProblems: problems,
         miniTest: [],
@@ -237,6 +283,10 @@ export function listeningPartChapters(
       if (!units.length) return [];
       const problems = units.map(unit => listeningUnitToProblem(exam, unit));
       const marks = problems.reduce((sum, p) => sum + p.subQuestions.length, 0);
+      const imageUnits = units.filter(u => Boolean(u.image));
+      const resolvedImageCount = imageUnits.filter(u => Boolean(LISTENING_IMAGE_URLS[u.audioId])).length;
+      const resolvedAudioCount = units.filter(u => Boolean(LISTENING_AUDIO_URLS[u.audioId])).length;
+
       const fullTitle = `リスニング 第${exam.round}回｜${partSpec.label}`;
       const shortCardTitle =
         partSpec.questionsPerAudio > 1

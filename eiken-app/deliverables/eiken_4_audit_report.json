@@ -1,8 +1,10 @@
 {
   "totalSlots": 150,
+  "mappedSlots": 150,
   "directMatched": 139,
   "repairedWithExistingZipImage": 5,
-  "retakeNeededCount": 6,
+  "retakeCompletedCount": 6,
+  "retakeNeededCount": 0,
   "items": [
     {
       "round": 1,
@@ -88,9 +90,9 @@
       "round": 2,
       "questionNumber": 1,
       "file": "eiken_4_listening_r02_part1_01.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "体育館の入口前で荷物を持っている",
-      "note": "台本は「体育館のドアを開けておいてほしい（hold the gym door open）」だが、画像が廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+      "note": "台本「体育館のドアを開けておいてほしい（hold the gym door open）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 2,
@@ -168,9 +170,9 @@
       "round": 3,
       "questionNumber": 1,
       "file": "eiken_4_listening_r03_part1_01.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "ラジオのある居間で本を開いている",
-      "note": "台本は「居間のラジオの音量を下げてほしい（turn down the radio volume）」だが、画像が学校廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+      "note": "台本「居間のラジオの音量を下げてほしい（turn down the radio volume）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 3,
@@ -248,9 +250,9 @@
       "round": 4,
       "questionNumber": 1,
       "file": "eiken_4_listening_r04_part1_01.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "教室の机でノートを見ている",
-      "note": "台本は「緑の蛍光ペンを貸してほしい（lend me your green highlighter）」だが、画像が廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+      "note": "台本「緑の蛍光ペンを貸してほしい（lend me your green highlighter）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 4,
@@ -352,9 +354,9 @@
       "round": 5,
       "questionNumber": 4,
       "file": "eiken_4_listening_r05_part1_04.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "昇降口付近で声をかけている補助イラスト",
-      "note": "台本は「なぜ机の下を探しているの？（Why are you looking under the desk?）」だが、画像が昇降口の下駄箱前で立ち話する図になっているため取り直し推奨"
+      "note": "台本「なぜ机の下を探しているの？（Why are you looking under the desk?）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 5,
@@ -488,9 +490,9 @@
       "round": 7,
       "questionNumber": 1,
       "file": "eiken_4_listening_r07_part1_01.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "教室の壁の前で大きな白地図を持っている",
-      "note": "台本は「教室の壁地図を掛けるのを手伝ってほしい（help me hang this wall map）」だが、画像が廊下で本を持って話す図になっているため取り直し推奨"
+      "note": "台本「教室の壁地図を掛けるのを手伝ってほしい（help me hang this wall map）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 7,
@@ -568,9 +570,9 @@
       "round": 8,
       "questionNumber": 1,
       "file": "eiken_4_listening_r08_part1_01.png",
-      "status": "retake_needed",
+      "status": "retake_completed",
       "sceneSummaryJa": "公園の花壇の前でカメラを差し出している",
-      "note": "台本は「花壇の前で写真を撮ってほしい（take a photo of us here）」だが、画像が学校廊下で段ボール箱を運ぶ図になっているため取り直し推奨"
+      "note": "台本「花壇の前で写真を撮ってほしい（take a photo of us here）」に合わせ、統一線画タッチで新規描き起こし済"
     },
     {
       "round": 8,

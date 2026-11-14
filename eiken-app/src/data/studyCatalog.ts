@@ -66,9 +66,16 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
   contents: [
     ...EIKEN_GRADES.filter(grade => isSubjectEnabled(grade.id)).map((grade): StudyContent => {
       const stats = getSubjectStats(grade.id);
+      const descByGrade: Record<string, string> = {
+        eiken_5: '筆記・リスニング全15回（専用音声375本完備・図271枚）',
+        eiken_4: '筆記・リスニング全15回（第1部イラスト150枚完備）',
+        eiken_3: '筆記・リスニング全15回（第1部イラスト150枚完備）',
+        eiken_pre1: '筆記・リスニング全15回（Real-Life図版75枚完備）',
+        eiken_1: 'リスニング第1〜4部 全15回（Real-Life図版75枚完備）',
+      };
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'book',
-        description: grade.id === 'eiken_1' ? 'リスニング第1〜4部（各15回）の通し演習' : '筆記大問別・リスニング部別の通し演習',
+        description: descByGrade[grade.id] ?? '筆記大問別・リスニング部別の通し演習（全15回）',
         meta: `${stats.chapters}回・${stats.marks}問`, progressSubject: grade.id,
         action: { kind: 'units', subject: grade.id },
       };
