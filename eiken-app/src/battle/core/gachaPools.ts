@@ -48,9 +48,9 @@ export const GACHA_POOLS: readonly GachaPoolDef[] = [
     id: 'niji',
     title: '英検 がんばる自習室',
     short: 'がんばる自習室',
-    lrName: '英検 準2級プラス〜準1級の冊子・学習プリント＆自習室装備',
-    lrNote: '準2級プラス〜準1級の一次筆記・リーディング第1〜15回（UR 45冊：問題冊子・マーク＆英作文解答用紙・詳しい解説）、重点語ノート①②・大問1スピード演習・ライティング実戦・解法ガイド（SR 15冊）、および自習室テーマの限定装備・お供・背景を収録。同じ問題はアプリの分野別・ライティング練習でも無料で解けます。',
-    preferSubjects: ['eiken_pre2plus', 'eiken_2', 'eiken_pre1'],
+    lrName: '英検 準2級プラス〜1級の冊子・学習プリント＆自習室装備',
+    lrNote: '準2級プラス〜1級の一次筆記・リーディング第1〜15回（UR 60冊：問題冊子・マーク＆英作文解答用紙・詳しい解説）、重点語ノート①②・大問1スピード演習・ライティング実戦・解法ガイド（SR 20冊）、および自習室テーマの限定装備・お供・背景を収録。同じ問題はアプリの分野別・ライティング練習でも無料で解けます。',
+    preferSubjects: ['eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'],
   },
 ];
 
@@ -104,7 +104,7 @@ export const NIJI_SHARED_IDS: readonly string[] = [
   'comp_key_cocoa', 'comp_key_forest', 'comp_key_teal', 'comp_key_emerald', 'comp_key_galaxy',
 ];
 
-const UPPER_EIKEN_GRADES = ['pre2plus', '2', 'pre1'] as const;
+const UPPER_EIKEN_GRADES = ['pre2plus', '2', 'pre1', '1'] as const;
 const BASIC_EIKEN_GRADES = ['5', '4', '3', 'pre2'] as const;
 
 function eikenPrintGradeOf(id: string): string | null {

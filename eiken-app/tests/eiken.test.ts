@@ -250,7 +250,7 @@ describe('Eiken isolation', () => {
 
 
 describe('Release content completeness', () => {
-  it('keeps all 14 reading passages and their 28 questions, translations and choice explanations', () => {
+  it('keeps all 16 reading passages and their 32 questions, translations and choice explanations', () => {
     let readings = 0, marks = 0;
     const ids = new Set<string>();
     for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
@@ -302,7 +302,7 @@ describe('Release content completeness', () => {
       }
       expect(getSubjectStats(grade.id).marks).toBe(parts.flatMap(part => part.chapters).flatMap(chapter => chapter.practiceProblems).reduce((n, problem) => n + problem.subQuestions.length, 0));
     }
-    expect(readings).toBe(14); expect(marks).toBe(28);
+    expect(readings).toBe(16); expect(marks).toBe(32);
   });
   it('provides actual heroes, distinct pickups and mathematically accurate odds for both pools every week', () => {
     for (const pool of GACHA_POOLS) {
@@ -324,13 +324,13 @@ describe('Release content completeness', () => {
       expect(rarityTable('N', pool.id).reduce((n, row) => n + row.rate, 0)).toBeCloseTo(1, 10);
       for (let i = 0; i < 1000; i++) expect(items).toContain(pickGachaItem(i / 1000, 'N', pool.id)?.item);
     }
-    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook2_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_drill_short_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_guide_'))).toHaveLength(7);
-    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_writing_'))).toHaveLength(5);
-    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(105);
-    expect(GACHA_PRINTS).toHaveLength(138);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook_'))).toHaveLength(8);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_wordbook2_'))).toHaveLength(8);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_drill_short_'))).toHaveLength(8);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_guide_'))).toHaveLength(8);
+    expect(GACHA_PRINTS.filter(print => print.id.startsWith('print_eiken_writing_'))).toHaveLength(6);
+    expect(GACHA_PRINTS.filter(print => print.id.includes('_written_'))).toHaveLength(120);
+    expect(GACHA_PRINTS).toHaveLength(158);
     for (const print of GACHA_PRINTS) {
       expect(print.subject).toMatch(/^eiken_/);
       expect(print.pages).toBe(print.variants ? print.variants.reduce((n, part) => n + part.pages, 0) : print.id.startsWith('print_eiken_wordbook') ? 5 : 4);
@@ -341,11 +341,11 @@ describe('Release content completeness', () => {
     }
     for (const item of ITEMS.filter(item => item.kind === 'pose')) expect(existsSync(`public${item.value}`)).toBe(true);
   });
-  it('provides seven real wordbooks, unique stable IDs, bilingual examples and valid exercise links', () => {
+  it('provides eight real wordbooks, unique stable IDs, bilingual examples and valid exercise links', () => {
     const data = JSON.parse(readFileSync('public/data/listeningVocabulary.json', 'utf8'));
-    expect(data.wordCount).toBe(420); expect(data.questionCount).toBe(840);
+    expect(data.wordCount).toBe(480); expect(data.questionCount).toBe(960);
     expect(new Set(data.words.map(word => word.id)).size).toBe(data.words.length);
-    for (const grade of EIKEN_GRADES.filter(grade => grade.available && grade.id !== 'eiken_1')) {
+    for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
       const words = data.words.filter(word => word.level === grade.id);
       expect(words).toHaveLength(60);
       const chapters = partsForGrade(grade.id).flatMap(part => part.chapters);
@@ -418,7 +418,7 @@ describe('Release content completeness', () => {
     expect(mockHtml).toContain('eiken-round-card');
     expect(mockHtml).toContain('通しで解く');
     expect(mockHtml).not.toContain('模試をはじめる');
-    expect(mockHtml).toContain('一次筆記（105回）');
+    expect(mockHtml).toContain('一次筆記（120回）');
     expect(mockHtml).toContain('リスニング（120回）');
 
     // リスニングモード初期表示でも eiken-round-card と専用音源チップが正しく描画される

@@ -538,7 +538,6 @@ export function EikenMockExam({
 }) {
   const [examKind, setExamKind] = useState<MockExamKind>(() => {
     if (initialExamKind) return initialExamKind;
-    if (initialGrade === 'eiken_1') return 'listening';
     return 'written';
   });
 
@@ -1227,13 +1226,12 @@ export function EikenMockExam({
               className={`em-kind-tab ${examKind === 'written' ? 'is-active' : ''}`}
               onClick={() => {
                 setExamKind('written');
-                if (initialGrade === 'eiken_1') onGrade('eiken_pre1');
                 document.getElementById('mock-tab-panel')?.scrollTo({ top: 0 });
               }}
               data-mock-kind-tab="written"
             >
               <BookOpen size={14} aria-hidden="true" />
-              <span>一次筆記（105回）</span>
+              <span>一次筆記（{WRITTEN_BOOKLETS.length}回）</span>
             </button>
             <button
               type="button"
@@ -2729,7 +2727,10 @@ export function EikenMockExam({
                     {item.orderTokens && (
                       <div className="em-reorder-builder" aria-label="語句整序の組み立てパレット">
                         <div className="em-reorder-hint-row">
-                          <span>語群をタップして並べ替えを試せます（★1番目・3番目が選択肢に対応）</span>
+                          <span>
+                            語群をタップして並べ替えを試せます（★
+                            {item.orderTokens.length === 5 ? '2番目・4番目' : '1番目・3番目'}が選択肢に対応）
+                          </span>
                           {(orderDrafts[item.id]?.length ?? 0) > 0 && (
                             <div className="em-reorder-actions">
                               <button
@@ -2785,6 +2786,9 @@ export function EikenMockExam({
 
                         {(() => {
                           const seq = orderDrafts[item.id] || [];
+                          const isFive = item.orderTokens.length === 5;
+                          const keyIdxA = isFive ? 1 : 0;
+                          const keyIdxB = isFive ? 3 : 2;
                           const fallbackPair =
                             seq.length === 0 && Number.isInteger(picked)
                               ? parseReorderChoicePair(item.choices?.[picked!] ?? '')
@@ -2792,11 +2796,11 @@ export function EikenMockExam({
                           return (
                             <div className="em-reorder-slots" lang="en">
                               {item.orderPrefix && <span className="em-reorder-prefix">{item.orderPrefix}</span>}
-                              {[0, 1, 2, 3].map(slotIdx => {
-                                const isKeySlot = slotIdx === 0 || slotIdx === 2;
+                              {Array.from({ length: item.orderTokens.length }, (_, slotIdx) => {
+                                const isKeySlot = slotIdx === keyIdxA || slotIdx === keyIdxB;
                                 const tokNo =
                                   seq[slotIdx] ??
-                                  (fallbackPair ? (slotIdx === 0 ? fallbackPair[0] : slotIdx === 2 ? fallbackPair[1] : undefined) : undefined);
+                                  (fallbackPair ? (slotIdx === keyIdxA ? fallbackPair[0] : slotIdx === keyIdxB ? fallbackPair[1] : undefined) : undefined);
                                 const tokText = tokNo ? item.orderTokens?.[tokNo - 1] ?? '' : '';
                                 return (
                                   <span

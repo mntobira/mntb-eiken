@@ -16,7 +16,7 @@ export type OriginalUnit = {
   minutes: number
   vocabulary: [OriginalQuestion, OriginalQuestion]
   readings: [ReadingBlock, ReadingBlock]
-  listenings: [ListeningBlock, ListeningBlock]
+  listenings: [ListeningBlock, ListeningBlock] | []
   writing: WritingTask[]
 }
 export const mc = (skill: string, prompt: string, choices: OriginalQuestion['choices'], answer: number, evidence: string, reasons: OriginalQuestion['reasons']): OriginalQuestion => ({ skill, prompt, choices, answer, evidence, reasons })

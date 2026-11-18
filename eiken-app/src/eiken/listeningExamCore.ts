@@ -155,7 +155,7 @@ export const LISTENING_BLUEPRINTS: Readonly<Record<EikenGrade, ListeningBlueprin
       { id: 'part1', label: '第1部 会話の内容一致選択', questionCount: 10, audioUnitCount: 10, questionsPerAudio: 1, choiceCount: 4, choicePresentation: 'printed', readCount: 1, imageRole: null, targetWordRange: [80, 235] },
       { id: 'part2', label: '第2部 文の内容一致選択', questionCount: 10, audioUnitCount: 5, questionsPerAudio: 2, choiceCount: 4, choicePresentation: 'printed', readCount: 1, imageRole: null, targetWordRange: [100, 250] },
       { id: 'part3', label: '第3部 Real-Life形式の内容一致選択', questionCount: 5, audioUnitCount: 5, questionsPerAudio: 1, choiceCount: 4, choicePresentation: 'printed', readCount: 1, imageRole: 'material', targetWordRange: [72, 225] },
-      { id: 'part4', label: '第4部 インタビューの内容一致選択', questionCount: 2, audioUnitCount: 1, questionsPerAudio: 2, choiceCount: 4, choicePresentation: 'printed', readCount: 1, imageRole: null, targetWordRange: [130, 310] },
+      { id: 'part4', label: '第4部 インタビューの内容一致選択', questionCount: 2, audioUnitCount: 1, questionsPerAudio: 2, choiceCount: 4, choicePresentation: 'printed', readCount: 1, imageRole: null, targetWordRange: [130, 680] },
     ],
   },
 };

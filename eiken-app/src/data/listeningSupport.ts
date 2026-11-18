@@ -1,10 +1,10 @@
-export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261110b';
+export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261117a';
 import { perUserKey } from '../utils/userStorageKeys';
 export interface WordQuestion { id:string; prompt:string; label:string; options:string[]; answerIndex:number }
 export interface ListeningExample { chapterId:string; chapterTitle:string; problemId:string; problemIndex:number; script:string; audioUrl:string; translation:string }
 export interface ListeningWord { id:string; word:string; meaning:string; fullMeaning:string; level:string; exampleSentence?:string; exampleTranslation?:string; chapterIds:string[]; examples:ListeningExample[]; questions:WordQuestion[] }
 export interface VocabularyData { wordCount:number; questionCount:number; unitSize:number; chapters:{id:string;title:string}[]; words:ListeningWord[] }
-export const VOCAB_LEVELS: Record<string,string> = {eiken_5:'単語・英検5級',eiken_4:'単語・英検4級',eiken_3:'単語・英検3級',eiken_pre2:'単語・英検準2級',eiken_pre2plus:'単語・英検準2級プラス',eiken_2:'単語・英検2級',eiken_pre1:'単語・英検準1級'};
+export const VOCAB_LEVELS: Record<string,string> = {eiken_5:'単語・英検5級',eiken_4:'単語・英検4級',eiken_3:'単語・英検3級',eiken_pre2:'単語・英検準2級',eiken_pre2plus:'単語・英検準2級プラス',eiken_2:'単語・英検2級',eiken_pre1:'単語・英検準1級',eiken_1:'単語・英検1級'};
 export interface SupportProgress { version:1; words:string[]; grammar:string[] }
 export const supportStorageKey=(uid:string)=>perUserKey('listening_support_v1_',uid);
 export function parseSupportProgress(raw:string|null):SupportProgress {

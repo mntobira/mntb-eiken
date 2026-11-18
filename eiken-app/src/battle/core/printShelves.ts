@@ -30,7 +30,7 @@ export type PrintShelfId =
 /** 並び順：英検の冊子（基礎級・上位級）→ 単語ノート → 短文スピード演習 → ライティング → 解法ガイド */
 export const PRINT_SHELVES: readonly { id: PrintShelfId; label: string }[] = [
   { id: 'eiken_written_basic', label: '冊子 5級〜準2級' },
-  { id: 'eiken_written_upper', label: '冊子 準2プラス〜準1級' },
+  { id: 'eiken_written_upper', label: '冊子 準2プラス〜1級' },
   { id: 'eiken_wordbook', label: '重点語・例文ノート' },
   { id: 'eiken_drill', label: '大問1 スピード演習' },
   { id: 'eiken_writing', label: 'ライティング実戦' },
@@ -81,7 +81,7 @@ export function univOfPrint(id: string): string | null {
 export function printShelfOf(p: GachaPrintDef): PrintShelfId {
   if (p.subject.startsWith('eiken_')) {
     if (p.id.includes('_written_')) {
-      return ['eiken_pre2plus', 'eiken_2', 'eiken_pre1'].includes(p.subject)
+      return ['eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'].includes(p.subject)
         ? 'eiken_written_upper'
         : 'eiken_written_basic';
     }

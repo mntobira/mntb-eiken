@@ -12,7 +12,7 @@ export const VOCAB_PREF_KEY = 'eiken_wordbook_prefs_v2';
 export const GOAL_OPTIONS = [
   { id: 'eiken_5', label: '5級' }, { id: 'eiken_4', label: '4級' }, { id: 'eiken_3', label: '3級' },
   { id: 'eiken_pre2', label: '準2級' }, { id: 'eiken_pre2plus', label: '準2級プラス' },
-  { id: 'eiken_2', label: '2級' }, { id: 'eiken_pre1', label: '準1級' }, { id: 'custom', label: '全級から選ぶ' },
+  { id: 'eiken_2', label: '2級' }, { id: 'eiken_pre1', label: '準1級' }, { id: 'eiken_1', label: '1級' }, { id: 'custom', label: '全級から選ぶ' },
 ] as const;
 export type GoalId = typeof GOAL_OPTIONS[number]['id'];
 

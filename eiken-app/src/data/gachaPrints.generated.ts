@@ -178,6 +178,28 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "description": "英検準1級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
   },
   {
+    "id": "print_eiken_wordbook_1",
+    "label": "英検1級 重点語・例文ノート①（基本1〜30語・確認テスト）",
+    "subject": "eiken_1",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook_1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook_1.webp",
+    "pages": 5,
+    "kb": 175,
+    "description": "英検1級のアプリ単語帳から前半1〜30語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
+    "id": "print_eiken_wordbook2_1",
+    "label": "英検1級 重点語・例文ノート②（実戦31〜60語・確認テスト）",
+    "subject": "eiken_1",
+    "category": "単語テスト",
+    "file": "/prints/print_eiken_wordbook2_1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_wordbook2_1.webp",
+    "pages": 5,
+    "kb": 171,
+    "description": "英検1級のアプリ単語帳から後半31〜60語を収録した例文＆書き込み確認テスト付きノート。"
+  },
+  {
     "id": "print_eiken_drill_short_5",
     "label": "英検5級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
     "subject": "eiken_5",
@@ -253,6 +275,17 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "pages": 4,
     "kb": 141,
     "description": "英検準1級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
+  },
+  {
+    "id": "print_eiken_drill_short_1",
+    "label": "英検1級 大問1 短文語彙・文法 スピード演習（12問・解説付）",
+    "subject": "eiken_1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_drill_short_1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_drill_short_1.webp",
+    "pages": 4,
+    "kb": 183,
+    "description": "英検1級の大問1（短文空所）から頻出パターン12問を抜粋した4ページのスピード確認プリント。"
   },
   {
     "id": "print_eiken_guide_5",
@@ -332,6 +365,17 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "description": "英検準1級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
   },
   {
+    "id": "print_eiken_guide_1",
+    "label": "英検1級 大問別 解法＆時間配分ガイド（例題解説つき）",
+    "subject": "eiken_1",
+    "category": "出題傾向",
+    "file": "/prints/print_eiken_guide_1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_guide_1.webp",
+    "pages": 4,
+    "kb": 120,
+    "description": "英検1級の大問構成・目標タイム・解法手順と15回達成チェック表をまとめた4ページ攻略ガイド。"
+  },
+  {
     "id": "print_eiken_writing_3",
     "label": "英検3級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
     "subject": "eiken_3",
@@ -385,5 +429,16 @@ export const GACHA_PRINTS: readonly GachaPrintDef[] = [...WRITTEN_PRINTS,
     "pages": 4,
     "kb": 92,
     "description": "英検準1級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
+  },
+  {
+    "id": "print_eiken_writing_1",
+    "label": "英検1級 ライティング実戦ワーク（課題2題・参考解答＆点検表）",
+    "subject": "eiken_1",
+    "category": "演習プリント",
+    "file": "/prints/print_eiken_writing_1.pdf",
+    "thumb": "/prints/thumbs/print_eiken_writing_1.webp",
+    "pages": 4,
+    "kb": 118,
+    "description": "英検1級のライティング2課題を紙に書いて練習できる罫線ワークシート＋参考解答・自己点検表（4ページ）。"
   }
 ];

@@ -80,7 +80,7 @@ function splitEikenRoundTitle(rawTitle: string): { main: string; sub: string | n
   return { main: clean, sub: null };
 }
 
-const EIKEN_GRADE_ORDER = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const;
+const EIKEN_GRADE_ORDER = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'] as const;
 
 export function ChapterSelection({
   mode,
@@ -318,11 +318,11 @@ export function ChapterSelection({
         {isEiken && onOpenMock && (
           <button
             type="button"
-            onClick={() => onOpenMock(isEikenListeningGroup || subject === 'eiken_1' ? 'listening' : 'written')}
+            onClick={() => onOpenMock(isEikenListeningGroup ? 'listening' : 'written')}
             className="shrink-0 rounded-full border border-[#3e9c93]/55 bg-[#fffdf8] px-3 py-2 text-xs font-extrabold text-[#1f5c53] shadow-[0_2px_0_#d8ebe6] transition hover:bg-[#edf9f6] cursor-pointer"
             data-chapter-open-mock
           >
-            {isEikenListeningGroup || subject === 'eiken_1' ? 'リスニング通し演習へ' : '通し演習へ'}
+            {isEikenListeningGroup ? 'リスニング通し演習へ' : '通し演習へ'}
           </button>
         )}
         <DoorMascot subject={subject} showSpeech={false} size="mini" className="unit-head-mascot w-auto" />

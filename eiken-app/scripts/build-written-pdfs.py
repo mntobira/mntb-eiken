@@ -132,6 +132,7 @@ labels = {
  'eiken_pre2plus': '英検準2級プラス',
  'eiken_2': '英検2級',
  'eiken_pre1': '英検準1級',
+ 'eiken_1': '英検1級',
 }
 
 for directory in ['prints', 'prints/thumbs', 'prints/previews']:
