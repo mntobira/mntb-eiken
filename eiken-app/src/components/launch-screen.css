@@ -319,6 +319,31 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
 }
+.launch-op-sound-start {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 232, 178, 0.92);
+  background: rgba(10, 19, 38, 0.86);
+  color: #fffaf0;
+  font: 800 14px/1.2 var(--mt-font-body);
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.launch-op-sound-start:active {
+  transform: translate(-50%, calc(-50% + 1.5px));
+}
 
 /* 既存のタイトル画面ステージ：背景プレートの上に①（battle_countdown）高精度切り抜きとびら君をぴたりと重ねる */
 .launch-tobira-cutout-wrap {
