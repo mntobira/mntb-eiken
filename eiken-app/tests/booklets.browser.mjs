@@ -171,8 +171,17 @@ for (const selected of targets) {
             const wItem = writingItems[wIdx];
             const wKind = wItem.section === 'email' ? 'Eメール返信' : wItem.section === 'summary' ? '英文要約' : '英作文（意見論述）';
             await page.getByRole('button', { name: new RegExp(`課題${wIdx + 1}：${wKind.replace(/[()（）]/g, '\\$&')}`) }).click();
-            const sampleToggle = page.getByRole('button', { name: /参考解答・解説を見る/ });
-            await sampleToggle.click();
+            if (exam.grade === 'eiken_1') {
+              assert.equal(await page.locator('[data-writing-model]').count(), 0);
+              assert.equal(await page.locator('.ew-answer fieldset').count(), 0);
+              await page.locator('#writing-answer').fill('This is my independent practice answer.');
+              await page.getByRole('button', { name: '解答を提出して答え合わせ' }).click();
+              await page.locator('.ew-answer fieldset').waitFor();
+              assert.equal(await page.locator('.ew-model-steps mark').count(), 3);
+              await page.getByText('重要語句・使い方', { exact: true }).waitFor();
+            } else {
+              await page.getByRole('button', { name: /参考解答・解説を見る/ }).click();
+            }
             await page.waitForFunction((snippet) => document.body.innerText.includes(snippet), wItem.model.slice(0, 40));
           }
           await page.evaluate(() => window.__SET_APP_STATE__('home'));

@@ -13,7 +13,7 @@ import { KineticText } from '../motion';
  *   ④ クレジット（BGM の配布元・URL は利用規約で記載が必須）
  */
 const STEPS = [
-  { icon: Headphones, tone: 'blue', title: '級別の問題を解く', body: '5級〜準1級の聞き取り・読解・語彙を重点練習。3級以上は英作文の下書きと自己点検もできます。' },
+  { icon: Headphones, tone: 'blue', title: '級別の問題を解く', body: '5級〜1級の聞き取り・読解・語彙を重点練習。3級以上は英作文の下書きと自己点検もできます。' },
   { icon: BookOpen, tone: 'gold', title: '単語を覚える', body: '級別の単語帳で意味と独自例文を確認。4択で間違えた語は復習し、覚えた印で進み具合が分かります。' },
   { icon: Repeat2, tone: 'lilac', title: '間違いを復習', body: '間違えた問題は復習ノートへ。解説・和訳を確認し、日をあけてもう一度解き直しましょう。' },
   { icon: Swords, tone: 'night', title: '対戦で力試し', body: 'AIはゲストでも練習できます。オンライン対戦は連携設定とログインが必要で、フレンド対戦は相互登録した相手と行います。' },

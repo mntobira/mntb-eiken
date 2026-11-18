@@ -39,7 +39,7 @@ const BGM_PLAY_ERROR_MESSAGES = {
 } as const satisfies Record<string, BgmPlayErrorMessages>;
 
 /** appState は App の AppState（画面名の文字列）。App を import すると循環するので string で受ける。 */
-export function useTitleBgmController({ appState, hasEntered }: { appState: string; hasEntered: boolean }) {
+export function useTitleBgmController({ appState, hasEntered, deferPlayback = false }: { appState: string; hasEntered: boolean; deferPlayback?: boolean }) {
   // BGM state
   const audioRef = useRef<HTMLAudioElement>(null);
   const titlePauseTimer = useRef<number | null>(null);
@@ -150,10 +150,10 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
     return () => { engine.releaseBgmOwner(token); window.removeEventListener('pointerdown', resume); document.removeEventListener('visibilitychange', resume); };
   }, [appState, isBgmEnabled]);
 
-  const bgmStateRef = useRef({ isBgmEnabled, isAudioValid, appState });
+  const bgmStateRef = useRef({ isBgmEnabled, isAudioValid, appState, deferPlayback });
   useEffect(() => {
-    bgmStateRef.current = { isBgmEnabled, isAudioValid, appState };
-  }, [isBgmEnabled, isAudioValid, appState]);
+    bgmStateRef.current = { isBgmEnabled, isAudioValid, appState, deferPlayback };
+  }, [isBgmEnabled, isAudioValid, appState, deferPlayback]);
 
   /*
     ===== ONのままでも90秒で自然に消える（フェードアウト） =====
@@ -216,9 +216,9 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
       
       // Attempt to play immediately on interaction to satisfy strict browser policies
       const audio = audioRef.current;
-      const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
+      const { isBgmEnabled, isAudioValid, appState, deferPlayback } = bgmStateRef.current;
       
-      if (audio && isAudioValid && isBgmEnabled && !BGM_SILENT_STATES.includes(appState)) {
+      if (audio && !deferPlayback && isAudioValid && isBgmEnabled && !BGM_SILENT_STATES.includes(appState)) {
         unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
         const playPromise = audio.play();
         if (playPromise !== undefined) {
@@ -255,8 +255,8 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
         audio.pause();
         return;
       }
-      const { isBgmEnabled, isAudioValid, appState } = bgmStateRef.current;
-      if (!isBgmEnabled || !isAudioValid || !hasInteracted || !hasEntered || BGM_SILENT_STATES.includes(appState)) return;
+      const { isBgmEnabled, isAudioValid, appState, deferPlayback } = bgmStateRef.current;
+      if (deferPlayback || !isBgmEnabled || !isAudioValid || !hasInteracted || !hasEntered || BGM_SILENT_STATES.includes(appState)) return;
       unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current, bgmElapsedMs()));
       void audio.play().catch(() => undefined);
     };
@@ -310,7 +310,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
     
     // Starting from the title mounts <audio>; a prior title tap may already have
     // set hasInteracted, so hasEntered must also trigger this effect.
-    const shouldPlay = hasEntered && isBgmEnabled && hasInteracted && !BGM_SILENT_STATES.includes(appState);
+    const shouldPlay = hasEntered && !deferPlayback && isBgmEnabled && hasInteracted && !BGM_SILENT_STATES.includes(appState);
 
     if (shouldPlay) {
       /*
@@ -348,7 +348,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
         titlePauseTimer.current = window.setTimeout(() => { titlePauseTimer.current = null; audio.pause(); }, 250);
       }
     }
-  }, [appState, isBgmEnabled, hasInteracted, isAudioValid, hasEntered]);
+  }, [appState, isBgmEnabled, hasInteracted, isAudioValid, hasEntered, deferPlayback]);
 
   /*
     ===== フェードを実際に進める時計 =====
@@ -360,7 +360,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
     常時タイマーを回すと、音を切っている人の電池まで削ることになる。
   */
   useEffect(() => {
-    if (!isBgmEnabled || !isAudioValid || hasInteracted === false) return;
+    if (deferPlayback || !isBgmEnabled || !isAudioValid || hasInteracted === false) return;
     if (BGM_SILENT_STATES.includes(appState)) return;
 
     const id = window.setInterval(() => {
@@ -377,7 +377,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
     }, 500);
 
     return () => window.clearInterval(id);
-  }, [isBgmEnabled, isAudioValid, hasInteracted, appState]);
+  }, [isBgmEnabled, isAudioValid, hasInteracted, appState, deferPlayback]);
 
   // iOS/Safari では audio.play() をユーザー操作（クリック/タップ）と同一の
   // コールスタック内で呼ばないと再生がブロックされる。
@@ -399,7 +399,7 @@ export function useTitleBgmController({ appState, hasEntered }: { appState: stri
     if (!audio) return;
 
     if (enabled) {
-      if (!isAudioValid || hasLoggedAudioError.current) return;
+      if (deferPlayback || !isAudioValid || hasLoggedAudioError.current) return;
       if (BGM_SILENT_STATES.includes(appState)) return;
       unlockTitleBgm(audio, appBgmVolume(bgmVolumeRef.current));
       markBgmPlaying(true);

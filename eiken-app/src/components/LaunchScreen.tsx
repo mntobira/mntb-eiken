@@ -48,9 +48,13 @@ function useLandscapeTitle(): boolean {
   return isLandscape;
 }
 
-export function LaunchScreen({ onStart }: {
+export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished }: {
   /** 2026-10-19 ゲスト入口は廃止（ログイン必須）。未ログインなら次にログイン画面が出る */
-  onStart: () => void;
+  onStart: (finishBgm: boolean) => void;
+  bgmEnabled: boolean;
+  onBgmToggle: (enabled: boolean) => void;
+  finishingBgm: boolean;
+  onBgmFinished: () => void;
 }) {
   const { progress } = useGrowthProgress();
   const isLandscape = useLandscapeTitle();
@@ -64,18 +68,23 @@ export function LaunchScreen({ onStart }: {
 
   const {
     audioRef: titleBgmRef,
-    muted: titleBgmMuted,
     toggleMute: toggleTitleBgm,
     stopTitleBgm,
-  } = useLaunchTitleBgm(gate === 'op' || gate === 'title');
+  } = useLaunchTitleBgm(gate === 'op' || gate === 'title', gate === 'op', !bgmEnabled);
+  const toggleBgm = () => {
+    toggleTitleBgm(bgmEnabled);
+    onBgmToggle(!bgmEnabled);
+  };
 
   const sfxTimers = useRef<number[]>([]);
-  const bloomDone = useRef(false);
   const skipRequested = useRef(false);
   const opDoneRef = useRef(false);
   const opVideoRef = useRef<HTMLVideoElement>(null);
 
-  const cue = (name: LaunchSfx) => { playLaunchSfx(name, readAudioPreferences().volume); };
+  const cue = (name: LaunchSfx) => {
+    const settings = readAudioPreferences();
+    if (settings.bgm) playLaunchSfx(name, settings.volume);
+  };
   const clearSfxTimers = () => { sfxTimers.current.forEach(t => window.clearTimeout(t)); sfxTimers.current = []; };
 
   const advancePastEmblem = () => {
@@ -120,8 +129,7 @@ export function LaunchScreen({ onStart }: {
   };
 
   useEffect(() => {
-    if (gate !== 'op') return;
-    opDoneRef.current = false;
+    if (gate !== 'op' || opDoneRef.current) return;
     setOpFadingOut(false);
     const el = opVideoRef.current;
     if (!el) {
@@ -149,22 +157,6 @@ export function LaunchScreen({ onStart }: {
       el.pause();
     };
   }, [gate, opMovie.mp4, opMovie.durationSec]);
-
-  useEffect(() => {
-    if (gate !== 'title' || bloomDone.current) return;
-    bloomDone.current = true;
-    // タイトル専用BGM（title_intro_bgm.mp3）が有効／再生中のときは /tanjou.mp3 用 E メジャー和音（title_bloom）を重ねない
-    const bgmEl = titleBgmRef.current;
-    const titleBgmPlaying = Boolean(bgmEl && !bgmEl.paused && !titleBgmMuted && bgmEl.volume > 0);
-    if (titleBgmPlaying || !titleBgmMuted) return;
-    let alive = true;
-    void preloadLaunchSfx().then(() => {
-      if (!alive) return;
-      resumeSharedAudio();
-      cue('title_bloom');
-    });
-    return () => { alive = false; };
-  }, [gate, titleBgmMuted, titleBgmRef]);
 
   useEffect(() => {
     if (gate === 'philosophy') {
@@ -203,7 +195,7 @@ export function LaunchScreen({ onStart }: {
   const walk = phase === 'done' && !played;
 
   useEffect(() => {
-    if (gate !== 'title') return;
+    if (gate !== 'title' || finishingBgm) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Enter' || e.isComposing) return;
       const t = e.target as HTMLElement | null;
@@ -217,14 +209,29 @@ export function LaunchScreen({ onStart }: {
 
   const enter = () => {
     fadeOutLaunchSfx();
-    stopTitleBgm();
-    onStart();
+    const audio = titleBgmRef.current;
+    // すでに鳴っている一周の残りだけを引き継ぐ。新しい周回や自動再生は始めない。
+    const finishBgm = Boolean(bgmEnabled && audio && !audio.paused && audio.currentTime > 0 && Number.isFinite(audio.duration));
+    if (!finishBgm) stopTitleBgm();
+    onStart(finishBgm);
   };
+
+  useEffect(() => {
+    if (!finishingBgm) return;
+    // バックグラウンドや音源読み込みの中断で、ホームBGMの開始を待ち続けない。
+    const releaseWhenHidden = () => { if (document.hidden) onBgmFinished(); };
+    document.addEventListener('visibilitychange', releaseWhenHidden);
+    const timer = window.setTimeout(onBgmFinished, 15_000);
+    return () => {
+      document.removeEventListener('visibilitychange', releaseWhenHidden);
+      window.clearTimeout(timer);
+    };
+  }, [finishingBgm, onBgmFinished]);
 
   return (
     <>
-      <audio ref={titleBgmRef} src={TITLE_SCREEN_BGM_SRC} loop preload="auto" playsInline data-title-screen-bgm="" />
-      {gate === 'emblem' ? (
+      <audio ref={titleBgmRef} src={TITLE_SCREEN_BGM_SRC} loop={!finishingBgm} preload="auto" playsInline data-title-screen-bgm="" onEnded={finishingBgm ? onBgmFinished : undefined} onError={finishingBgm ? onBgmFinished : undefined} />
+      {finishingBgm ? null : gate === 'emblem' ? (
         <main className="launch-emblem" data-phase={emblemPhase} data-skip={emblemSkipped || undefined} aria-label={`マナトビ 起動エンブレム（タップで進む）。${EIKEN_DISCLAIMER}`} role="button" tabIndex={0} onClick={skipEmblem} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipEmblem(); } }}><div className="launch-emblem-inner"><img className="launch-emblem-applogo" src="/brand/app-icon-logo.webp" alt="マナトビ" width={640} height={640}/><h1>聞いて、解いて、<br/>競って、<em>これ1本</em>で。</h1></div><p className="launch-emblem-disclaimer">{EIKEN_DISCLAIMER}</p></main>
       ) : gate === 'op' ? (
         <main
@@ -248,7 +255,7 @@ export function LaunchScreen({ onStart }: {
             onError={finishOpToTitle}
           />
           <div className="launch-op-hud" onClick={e => e.stopPropagation()}>
-            <TitleBgmMuteButton muted={titleBgmMuted} onToggle={toggleTitleBgm} />
+            <TitleBgmMuteButton muted={!bgmEnabled} onToggle={toggleBgm} />
           </div>
           <div className="launch-op-bottom">
             <img className="launch-op-brand" src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" draggable={false} />
@@ -265,7 +272,7 @@ export function LaunchScreen({ onStart }: {
         <PhilosophyPage onBack={() => setGate('title')} />
       ) : (
         <main className="launch-screen" aria-label="マナトビ タイトル画面" data-launch-screen data-orientation={isLandscape ? 'landscape' : 'portrait'}>
-          <TitleBgmMuteButton muted={titleBgmMuted} onToggle={toggleTitleBgm} />
+          <TitleBgmMuteButton muted={!bgmEnabled} onToggle={toggleBgm} />
           <div className="launch-content">
             <h1 className="launch-brand"><img src="/brand/manatobi-logo.webp" width={1008} height={321} alt="マナトビ" fetchPriority="high" /></h1>
             <div className="launch-stage" data-phase={phase} aria-label="とびら君の登場演出">
@@ -302,14 +309,14 @@ export function LaunchScreen({ onStart }: {
               </div>
             </div>
             <p className="launch-copy">聞いて、解いて、<br className="launch-copy-break" />競って、<em>これ1本</em>で。</p>
-            <p className="launch-lead">英検5級〜準1級のリスニング・読解・語彙を級別に練習。<br />単語帳・復習・3級以上の英作文も、ひとつのアプリで。</p>
+            <p className="launch-lead">英検5級〜1級のリスニング・読解・語彙を級別に練習。<br />単語帳・復習・3級以上の英作文も、ひとつのアプリで。</p>
             <ul className="launch-chips" aria-label="できること">
               <li><PenLine size={16} aria-hidden="true" /><span><b>演習</b><small>級別の独自問題で重点練習</small></span></li>
               <li><Repeat2 size={16} aria-hidden="true" /><span><b>復習</b><small>解説・和訳と間違えた語を確認</small></span></li>
               <li><Swords size={16} aria-hidden="true" /><span><b>オンライン対戦</b><small>友だち・全国・AI と</small></span></li>
             </ul>
             <div className="launch-actions">
-              <p className="launch-countdown-mini"><Headphones size={16} aria-hidden="true" />英検 <strong>5級〜準1級</strong><small>1級は準備中</small></p>
+              <p className="launch-countdown-mini"><Headphones size={16} aria-hidden="true" />英検 <strong>5級〜1級</strong></p>
               <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
               <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : FIREBASE_CONFIGURED ? 'ログインして記録を同期、または端末で練習できます' : 'この端末に記録を保存して練習できます'}</p>
               <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>

@@ -5244,6 +5244,48 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "problemCount": 2
       },
       {
+        "id": "eiken_1_reading_extra_late-bus",
+        "title": "追加読解 1｜Who Benefits from a Reliable Last Bus?",
+        "abstractTitle": "追加読解 1｜Who Benefits from a Reliable Last Bus?（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_1_reading_extra_river-prices",
+        "title": "追加読解 2｜A Market for Water That Stays in the River",
+        "abstractTitle": "追加読解 2｜A Market for Water That Stays in the River（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_1_reading_extra_archives",
+        "title": "追加読解 3｜The Archive That Preserves Disagreement",
+        "abstractTitle": "追加読解 3｜The Archive That Preserves Disagreement（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_1_reading_extra_street-cooling",
+        "title": "追加読解 4｜Measuring Shade Where People Actually Walk",
+        "abstractTitle": "追加読解 4｜Measuring Shade Where People Actually Walk（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_1_reading_extra_guarantees",
+        "title": "追加読解 5｜Do Long Guarantees Make Products Last?",
+        "abstractTitle": "追加読解 5｜Do Long Guarantees Make Products Last?（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
+        "id": "eiken_1_reading_extra_museum",
+        "title": "追加読解 6｜Should Museums Tell Visitors What to Notice?",
+        "abstractTitle": "追加読解 6｜Should Museums Tell Visitors What to Notice?（全4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 1
+      },
+      {
         "id": "eiken_1_reading_01",
         "title": "基礎ウォームアップ（読解）",
         "abstractTitle": "長文読解練習（基礎ウォームアップ・2本文・計4問）",
@@ -5409,10 +5451,10 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "marks": 908
   },
   "eiken_1": {
-    "chapters": 108,
-    "units": 108,
-    "questions": 711,
-    "marks": 938
+    "chapters": 114,
+    "units": 114,
+    "questions": 717,
+    "marks": 962
   }
 };
 export function getChapterIndexOfSubject(subjectId: string | null | undefined): readonly ChapterIndexEntry[] {

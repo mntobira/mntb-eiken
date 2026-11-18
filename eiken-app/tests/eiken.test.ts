@@ -211,6 +211,25 @@ describe('Eiken isolation', () => {
     expect(() => validateQuestion({ ...EIKEN_QUESTIONS[0], examType: 'university' } as any)).toThrow();
     expect(() => validateQuestion({ ...EIKEN_QUESTIONS[0], audioUrl: '/university/audio.mp3' })).toThrow();
   });
+  it('adds 24 independent Grade 1 reading questions with stable IDs, evidence and translations', () => {
+    const reading = partsForGrade('eiken_1').find(p => p.section === 'reading')!;
+    const extra = reading.chapters.filter(c => c.id.startsWith('eiken_1_reading_extra_'));
+    const allQuestions = extra.flatMap(c => c.practiceProblems.flatMap(p => p.subQuestions));
+    expect(extra).toHaveLength(6);
+    expect(allQuestions).toHaveLength(24);
+    expect(new Set(allQuestions.map(q => q.id)).size).toBe(24);
+    expect(reading.chapters.reduce((n, c) => n + c.practiceProblems.reduce((q, p) => q + p.subQuestions.length, 0), 0)).toBe(223);
+    for (const c of extra) {
+      expect(c.realTitle).toMatch(/^大問3/);
+      expect(c.practiceProblems[0].explanationTracks?.[0].translation).toBeTruthy();
+    }
+    for (const q of allQuestions) {
+      expect(q.optionTexts).toHaveLength(4);
+      expect(q.options).toContain(q.correctAnswer);
+      expect(q.distractors).toHaveLength(4);
+      expect(q.explainJa).toBeTruthy();
+    }
+  });
   it('never reads, overwrites or clears university browser storage', () => {
     const backing = new MemoryStorage();
     vi.stubGlobal('localStorage', backing);
@@ -261,7 +280,7 @@ describe('Release content completeness', () => {
         if (chapter.id.includes('_listening_r')) {
           expect(chapter.practiceProblems.length).toBeGreaterThanOrEqual(1);
           expect(chapter.practiceProblems.reduce((n, problem) => n + problem.subQuestions.length, 0)).toBe(chapter.marks);
-        } else if (!chapter.id.includes('_written_')) {
+        } else if (!chapter.id.includes('_written_') && !chapter.id.startsWith('eiken_1_reading_extra_')) {
           expect(chapter.practiceProblems).toHaveLength(2);
         } else {
           expect(chapter.practiceProblems.reduce((n, problem) => n + problem.subQuestions.length, 0)).toBe(chapter.marks);
