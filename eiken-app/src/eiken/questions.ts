@@ -6,6 +6,7 @@ import { INTERMEDIATE_UNITS } from './materials/original-intermediate';
 import { BRIDGE_UNIT } from './materials/original-bridge';
 import { UPPER_UNIT } from './materials/original-upper';
 import { ADVANCED_UNIT } from './materials/original-advanced';
+import { GRADE_1_UNIT } from './materials/original-grade1';
 import { bookletSectionChapters, getGradeDaimonSpecs } from './writtenPractice';
 import { getGradeListeningPartSpecs, listeningPartChapters } from './listeningPractice';
 import { ALL_LISTENING_EXAMS } from './materials/listening-booklets';
@@ -23,8 +24,8 @@ export interface EikenQuestion {
   playback: { readCount: 1 | 2; replayAllowed: boolean; source: 'browser-speech' | 'recorded' };
   origin: 'manatobi-original';
 }
-export const EIKEN_UNITS = [...FOUNDATION_UNITS, ...INTERMEDIATE_UNITS, BRIDGE_UNIT, UPPER_UNIT, ADVANCED_UNIT];
-const gradeMap: Record<string, EikenGrade> = { '5': 'eiken_5', '4': 'eiken_4', '3': 'eiken_3', 'pre-2': 'eiken_pre2', 'pre-2-plus': 'eiken_pre2plus', '2': 'eiken_2', 'pre-1': 'eiken_pre1' };
+export const EIKEN_UNITS = [...FOUNDATION_UNITS, ...INTERMEDIATE_UNITS, BRIDGE_UNIT, UPPER_UNIT, ADVANCED_UNIT, GRADE_1_UNIT];
+const gradeMap: Record<string, EikenGrade> = { '5': 'eiken_5', '4': 'eiken_4', '3': 'eiken_3', 'pre-2': 'eiken_pre2', 'pre-2-plus': 'eiken_pre2plus', '2': 'eiken_2', 'pre-1': 'eiken_pre1', '1': 'eiken_1' };
 export const EIKEN_QUESTIONS: EikenQuestion[] = [
   ...EIKEN_UNITS.flatMap((unit, difficulty) => unit.listenings.map((block, index) => ({
     id: `${gradeMap[unit.grade]}_listening_01_${index + 1}`, examType: 'eiken' as const, grade: gradeMap[unit.grade],

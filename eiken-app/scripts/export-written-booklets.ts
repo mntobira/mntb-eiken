@@ -5,17 +5,17 @@ import { buildPrimaryBundleRef, GRADE_AUTHORING_SPECS } from '../src/eiken/writt
 import { WRITTEN_BLUEPRINTS, validateReleasedBooklets } from '../src/eiken/writtenExamCore';
 import { EIKEN_UNITS } from '../src/eiken/questions';
 validateReleasedBooklets(WRITTEN_BOOKLETS);
-const gradeIds=['eiken_5','eiken_4','eiken_3','eiken_pre2','eiken_pre2plus','eiken_2','eiken_pre1'] as const;
-writeFileSync('deliverables/eiken-writing-tasks.json',JSON.stringify(EIKEN_UNITS.slice(0,7).map((u,i)=>({grade:gradeIds[i],theme:u.theme,focus:u.focus,writing:u.writing})),null,2)+'\n');
+const gradeIds=['eiken_5','eiken_4','eiken_3','eiken_pre2','eiken_pre2plus','eiken_2','eiken_pre1','eiken_1'] as const;
+writeFileSync('deliverables/eiken-writing-tasks.json',JSON.stringify(EIKEN_UNITS.slice(0,8).map((u,i)=>({grade:gradeIds[i],theme:u.theme,focus:u.focus,writing:u.writing})),null,2)+'\n');
 const source=JSON.stringify(WRITTEN_BOOKLETS);
 const choiceQuestions=WRITTEN_BOOKLETS.reduce((count,exam)=>count+exam.items.filter(item=>item.kind==='choice').length,0);
 const writingTasks=WRITTEN_BOOKLETS.reduce((count,exam)=>count+exam.items.filter(item=>item.kind==='writing').length,0);
 writeFileSync('deliverables/written-booklets.json',JSON.stringify({
  sourceHash:createHash('sha256').update(source).digest('hex'),
- scope:'Full primary written exam booklets (reading + writing where applicable) and reading practice booklets across all 15 rounds of 7 grades; listening excluded from written booklets. Paired bundle IDs match Hub Listening room.',
+ scope:'Full primary written exam booklets (reading + writing where applicable) and reading practice booklets across all 15 rounds of 8 grades; listening excluded from written booklets. Paired bundle IDs match Hub Listening room.',
  authoringGuide:'docs/WRITTEN_AUTHORING_GUIDE.md',
  progress:{
-  target:105,completed:WRITTEN_BOOKLETS.length,remaining:105-WRITTEN_BOOKLETS.length,
+  target:120,completed:WRITTEN_BOOKLETS.length,remaining:120-WRITTEN_BOOKLETS.length,
   questions:choiceQuestions,
   writingTasks,
   totalItems:choiceQuestions+writingTasks,

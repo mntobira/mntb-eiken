@@ -322,7 +322,7 @@ export default function App() {
     safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
     if (content.action.kind === 'writing') { setWritingInitialTaskKey(null); setWritingBackTo('study'); setAppState('writing'); return; }
     if (content.action.kind === 'mock') {
-      setMockInitialKind(selectedSubject === 'eiken_1' ? 'listening' : 'written');
+      setMockInitialKind('written');
       setMockBackTo('study');
       setAppState('mock');
       return;
@@ -678,7 +678,7 @@ export default function App() {
                   onChangeSubject={handleChangeStudySubject}
                   onSelectChapter={handleSelectChapter}
                   onOpenMock={(kind) => {
-                    setMockInitialKind(kind ?? (selectedSubject === 'eiken_1' ? 'listening' : 'written'));
+                    setMockInitialKind(kind ?? 'written');
                     setMockBackTo('chapters');
                     setAppState('mock');
                   }}

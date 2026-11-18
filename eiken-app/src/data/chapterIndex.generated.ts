@@ -5032,6 +5032,335 @@ export const SUBJECT_INDEX: readonly SubjectIndexEntry[] = [
         "abstractTitle": "第15回（1音源・計2問）",
         "realTitle": "リスニング第4部 インタビューの内容一致選択",
         "problemCount": 1
+      },
+      {
+        "id": "eiken_1_written_01_cloze",
+        "title": "筆記 第1回｜長文の語句空所補充",
+        "abstractTitle": "第1回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_02_cloze",
+        "title": "筆記 第2回｜長文の語句空所補充",
+        "abstractTitle": "第2回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_03_cloze",
+        "title": "リーディング 第3回｜長文の語句空所補充",
+        "abstractTitle": "第3回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_04_cloze",
+        "title": "リーディング 第4回｜長文の語句空所補充",
+        "abstractTitle": "第4回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_05_cloze",
+        "title": "リーディング 第5回｜長文の語句空所補充",
+        "abstractTitle": "第5回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_06_cloze",
+        "title": "リーディング 第6回｜長文の語句空所補充",
+        "abstractTitle": "第6回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_07_cloze",
+        "title": "リーディング 第7回｜長文の語句空所補充",
+        "abstractTitle": "第7回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_08_cloze",
+        "title": "リーディング 第8回｜長文の語句空所補充",
+        "abstractTitle": "第8回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_09_cloze",
+        "title": "リーディング 第9回｜長文の語句空所補充",
+        "abstractTitle": "第9回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_10_cloze",
+        "title": "リーディング 第10回｜長文の語句空所補充",
+        "abstractTitle": "第10回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_11_cloze",
+        "title": "リーディング 第11回｜長文の語句空所補充",
+        "abstractTitle": "第11回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_12_cloze",
+        "title": "リーディング 第12回｜長文の語句空所補充",
+        "abstractTitle": "第12回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_13_cloze",
+        "title": "リーディング 第13回｜長文の語句空所補充",
+        "abstractTitle": "第13回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_14_cloze",
+        "title": "リーディング 第14回｜長文の語句空所補充",
+        "abstractTitle": "第14回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_15_cloze",
+        "title": "リーディング 第15回｜長文の語句空所補充",
+        "abstractTitle": "第15回（2本文・計6問）",
+        "realTitle": "大問2 長文の語句空所補充",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_01_reading",
+        "title": "筆記 第1回｜長文の内容一致選択",
+        "abstractTitle": "第1回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_02_reading",
+        "title": "筆記 第2回｜長文の内容一致選択",
+        "abstractTitle": "第2回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_03_reading",
+        "title": "リーディング 第3回｜長文の内容一致選択",
+        "abstractTitle": "第3回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_04_reading",
+        "title": "リーディング 第4回｜長文の内容一致選択",
+        "abstractTitle": "第4回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_05_reading",
+        "title": "リーディング 第5回｜長文の内容一致選択",
+        "abstractTitle": "第5回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_06_reading",
+        "title": "リーディング 第6回｜長文の内容一致選択",
+        "abstractTitle": "第6回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_07_reading",
+        "title": "リーディング 第7回｜長文の内容一致選択",
+        "abstractTitle": "第7回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_08_reading",
+        "title": "リーディング 第8回｜長文の内容一致選択",
+        "abstractTitle": "第8回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_09_reading",
+        "title": "リーディング 第9回｜長文の内容一致選択",
+        "abstractTitle": "第9回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_10_reading",
+        "title": "リーディング 第10回｜長文の内容一致選択",
+        "abstractTitle": "第10回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_11_reading",
+        "title": "リーディング 第11回｜長文の内容一致選択",
+        "abstractTitle": "第11回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_12_reading",
+        "title": "リーディング 第12回｜長文の内容一致選択",
+        "abstractTitle": "第12回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_13_reading",
+        "title": "リーディング 第13回｜長文の内容一致選択",
+        "abstractTitle": "第13回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_14_reading",
+        "title": "リーディング 第14回｜長文の内容一致選択",
+        "abstractTitle": "第14回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_15_reading",
+        "title": "リーディング 第15回｜長文の内容一致選択",
+        "abstractTitle": "第15回（2本文・計7問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_reading_01",
+        "title": "基礎ウォームアップ（読解）",
+        "abstractTitle": "長文読解練習（基礎ウォームアップ・2本文・計4問）",
+        "realTitle": "大問3 長文の内容一致選択",
+        "problemCount": 2
+      },
+      {
+        "id": "eiken_1_written_01_short",
+        "title": "筆記 第1回｜短文の語句空所補充",
+        "abstractTitle": "第1回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_02_short",
+        "title": "筆記 第2回｜短文の語句空所補充",
+        "abstractTitle": "第2回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_03_short",
+        "title": "リーディング 第3回｜短文の語句空所補充",
+        "abstractTitle": "第3回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_04_short",
+        "title": "リーディング 第4回｜短文の語句空所補充",
+        "abstractTitle": "第4回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_05_short",
+        "title": "リーディング 第5回｜短文の語句空所補充",
+        "abstractTitle": "第5回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_06_short",
+        "title": "リーディング 第6回｜短文の語句空所補充",
+        "abstractTitle": "第6回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_07_short",
+        "title": "リーディング 第7回｜短文の語句空所補充",
+        "abstractTitle": "第7回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_08_short",
+        "title": "リーディング 第8回｜短文の語句空所補充",
+        "abstractTitle": "第8回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_09_short",
+        "title": "リーディング 第9回｜短文の語句空所補充",
+        "abstractTitle": "第9回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_10_short",
+        "title": "リーディング 第10回｜短文の語句空所補充",
+        "abstractTitle": "第10回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_11_short",
+        "title": "リーディング 第11回｜短文の語句空所補充",
+        "abstractTitle": "第11回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_12_short",
+        "title": "リーディング 第12回｜短文の語句空所補充",
+        "abstractTitle": "第12回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_13_short",
+        "title": "リーディング 第13回｜短文の語句空所補充",
+        "abstractTitle": "第13回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_14_short",
+        "title": "リーディング 第14回｜短文の語句空所補充",
+        "abstractTitle": "第14回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_written_15_short",
+        "title": "リーディング 第15回｜短文の語句空所補充",
+        "abstractTitle": "第15回（全22問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 22
+      },
+      {
+        "id": "eiken_1_vocabulary_01",
+        "title": "基礎ウォームアップ（語彙・文法）",
+        "abstractTitle": "語彙・文法練習（基礎ウォームアップ・全2問）",
+        "realTitle": "大問1 短文の語句空所補充",
+        "problemCount": 2
       }
     ]
   }
@@ -5080,10 +5409,10 @@ export const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = {
     "marks": 908
   },
   "eiken_1": {
-    "chapters": 61,
-    "units": 61,
-    "questions": 317,
-    "marks": 407
+    "chapters": 108,
+    "units": 108,
+    "questions": 711,
+    "marks": 938
   }
 };
 export function getChapterIndexOfSubject(subjectId: string | null | undefined): readonly ChapterIndexEntry[] {

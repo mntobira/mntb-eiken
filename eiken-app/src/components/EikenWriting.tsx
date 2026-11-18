@@ -10,7 +10,7 @@ import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
 import './eiken-writing.css';
 
-const gradeIds = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1'] as const;
+const gradeIds = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'] as const;
 export interface UnifiedWritingTask {
   id: string;
   key: string;

@@ -72,7 +72,7 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
         eiken_4: '筆記・リスニング全15回（第1部イラスト150枚完備）',
         eiken_3: '筆記・リスニング全15回（第1部イラスト150枚完備）',
         eiken_pre1: '筆記・リスニング全15回（Real-Life図版75枚完備）',
-        eiken_1: 'リスニング第1〜4部 全15回（Real-Life図版75枚完備）',
+        eiken_1: '筆記・リスニング全15回（Real-Life図版75枚完備）',
       };
       return {
         id: grade.id, title: grade.label, primary: true, icon: 'book',
@@ -83,19 +83,19 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
     }),
     {
       id: 'eiken_mock', title: '英検 通し模試（筆記・リスニング）', icon: 'briefcase', badge: 'NEW', section: 'memorize',
-      description: '一次筆記105回＋リスニング120回（8級対応）。全パート本番模試も大問・部別の通し演習も一括採点',
+      description: '一次筆記120回＋リスニング120回（全8級対応）。全パート本番模試も大問・部別の通し演習も一括採点',
       meta: `筆記${WRITTEN_BOOKLETS.length}回・リスニング${ALL_LISTENING_EXAMS.length}回`,
       action: { kind: 'mock' },
     },
     {
       id: 'eiken_writing', title: '英検ライティング', icon: 'pen', section: 'memorize',
-      description: '3級〜準1級の返信・意見・要約。下書き保存と自己点検',
-      meta: `5級別・${EIKEN_UNITS.reduce((n, unit) => n + unit.writing.length, 0) + bookletWritingTasks().length}課題`,
+      description: '3級〜1級の返信・意見・要約。下書き保存と自己点検',
+      meta: `6級別・${EIKEN_UNITS.reduce((n, unit) => n + unit.writing.length, 0) + bookletWritingTasks().length}課題`,
       action: { kind: 'writing' },
     },
     {
       id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
-      description: '5級〜準1級の重点語・例文・意味を級別に学ぶ',
+      description: '5級〜1級の重点語・例文・意味を級別に学ぶ',
       meta: `${VOCABULARY_COUNT.toLocaleString()}語`, action: { kind: 'foundation', tab: 'words' },
     },
   ],

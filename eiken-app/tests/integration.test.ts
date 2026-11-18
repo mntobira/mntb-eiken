@@ -15,10 +15,10 @@ const task = 'eiken_3_writing_opinion';
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Eiken integration contracts', () => {
-  it('connects all ten independently authored writing tasks with usable rubrics and model answers', () => {
+  it('connects all twelve independently authored writing tasks with usable rubrics and model answers', () => {
     const tasks = EIKEN_UNITS.flatMap(unit => unit.writing);
-    expect(tasks).toHaveLength(10);
-    expect(EIKEN_UNITS.filter(unit => unit.writing.length).map(unit => unit.grade)).toEqual(['3', 'pre-2', 'pre-2-plus', '2', 'pre-1']);
+    expect(tasks).toHaveLength(12);
+    expect(EIKEN_UNITS.filter(unit => unit.writing.length).map(unit => unit.grade)).toEqual(['3', 'pre-2', 'pre-2-plus', '2', 'pre-1', '1']);
     for (const task of tasks) {
       expect(task.instruction.length).toBeGreaterThan(20);
       expect(wordCount(task.model)).toBeGreaterThan(20);

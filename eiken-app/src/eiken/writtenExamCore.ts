@@ -5,7 +5,7 @@ export type WrittenSection = 'short' | 'conversation' | 'reorder' | 'cloze' | 'r
 export interface WrittenBlueprint { minutes: number; sections: readonly { id: WrittenSection; count: number; kind: 'choice' | 'writing' }[]; source: string }
 const section = (id: WrittenSection, count: number, kind: 'choice' | 'writing' = 'choice') => ({ id, count, kind });
 /** Format facts checked against each official /solutions.html on 2026-11-10. No question text is copied. */
-export const WRITTEN_BLUEPRINTS: Partial<Record<EikenGrade, WrittenBlueprint>> = {
+export const WRITTEN_BLUEPRINTS: Readonly<Record<EikenGrade, WrittenBlueprint>> = {
   eiken_5: { minutes:25, sections:[section('short',15),section('conversation',5),section('reorder',5)],source:'https://www.eiken.or.jp/eiken/exam/grade_5/solutions.html' },
   eiken_4: { minutes:35, sections:[section('short',15),section('conversation',5),section('reorder',5),section('reading',10)],source:'https://www.eiken.or.jp/eiken/exam/grade_4/solutions.html' },
   eiken_3: { minutes:65, sections:[section('short',15),section('conversation',5),section('reading',10),section('email',1,'writing'),section('essay',1,'writing')],source:'https://www.eiken.or.jp/eiken/exam/grade_3/solutions.html' },
@@ -13,6 +13,7 @@ export const WRITTEN_BLUEPRINTS: Partial<Record<EikenGrade, WrittenBlueprint>> =
   eiken_pre2plus: { minutes:85, sections:[section('short',17),section('cloze',6),section('reading',8),section('summary',1,'writing'),section('essay',1,'writing')],source:'https://www.eiken.or.jp/eiken/exam/grade_p2plus/solutions.html' },
   eiken_2: { minutes:85, sections:[section('short',17),section('cloze',6),section('reading',8),section('summary',1,'writing'),section('essay',1,'writing')],source:'https://www.eiken.or.jp/eiken/exam/grade_2/solutions.html' },
   eiken_pre1: { minutes:90, sections:[section('short',18),section('cloze',6),section('reading',7),section('summary',1,'writing'),section('essay',1,'writing')],source:'https://www.eiken.or.jp/eiken/exam/grade_p1/solutions.html' },
+  eiken_1: { minutes:100, sections:[section('short',22),section('cloze',6),section('reading',7),section('summary',1,'writing'),section('essay',1,'writing')],source:'https://www.eiken.or.jp/eiken/exam/grade_1/solutions.html' },
 };
 export interface WrittenItem {
   id:string; section:WrittenSection; kind:'choice'|'writing'; prompt:string;
@@ -40,10 +41,11 @@ export function validateWrittenExam(exam:WrittenExam, requireApproved=true):void
       if(!exam.revision.startsWith('test-') && item.distractorReasons.some(reason=>FORBIDDEN_GENERIC_REASON_PATTERNS.some(rx=>rx.test(reason.trim()))))throw new Error(`GENERIC_DISTRACTOR_REASON:${item.id}`);
       if(item.section==='reorder') {
         const tokens=item.orderTokens, order=item.orderAnswer;
-        if(!tokens || tokens.length!==4 || tokens.some(token=>!token.trim()) || new Set(tokens).size!==4)throw new Error('ORDER_TOKENS_REQUIRED');
+        if(!tokens || (tokens.length!==4 && tokens.length!==5) || tokens.some(token=>!token.trim()) || new Set(tokens).size!==tokens.length)throw new Error('ORDER_TOKENS_REQUIRED');
         if(!order || order.length!==tokens.length || new Set(order).size!==tokens.length || order.some(no=>!Number.isInteger(no)||no<1||no>tokens.length) || !item.orderPrefix?.trim() || !item.completedSentence?.trim())throw new Error('ORDER_ANSWER_REQUIRED');
         const sentence=`${item.orderPrefix} ${order.map(no=>tokens[no-1]).join(' ')}`;
-        if(item.completedSentence.replace(/[.?]$/,'')!==sentence || item.choices[item.answer!].replace(/\s/g,'')!==`${order[0]}－${order[2]}`)throw new Error('ORDER_ANSWER_MISMATCH');
+        const expectedPair=tokens.length===5?`${order[1]}－${order[3]}`:`${order[0]}－${order[2]}`;
+        if(item.completedSentence.replace(/[.?]$/,'')!==sentence || item.choices[item.answer!].replace(/\s/g,'')!==expectedPair)throw new Error('ORDER_ANSWER_MISMATCH');
       }
     }else{
       if(!item.model?.trim() || !item.rubric?.length || !item.wordRange || !Number.isInteger(item.wordRange[0]) || !Number.isInteger(item.wordRange[1]) || item.rubric.some(text=>!text.trim()) || item.wordRange[0]<1 || item.wordRange[1]<item.wordRange[0])throw new Error('WRITING_RUBRIC_REQUIRED');

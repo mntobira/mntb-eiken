@@ -43,6 +43,12 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {...W
   "print_eiken_wordbook2_pre1": [
     "/prints/previews/print_eiken_wordbook2_pre1_p1.webp"
   ],
+  "print_eiken_wordbook_1": [
+    "/prints/previews/print_eiken_wordbook_1_p1.webp"
+  ],
+  "print_eiken_wordbook2_1": [
+    "/prints/previews/print_eiken_wordbook2_1_p1.webp"
+  ],
   "print_eiken_drill_short_5": [
     "/prints/previews/print_eiken_drill_short_5_p1.webp"
   ],
@@ -63,6 +69,9 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {...W
   ],
   "print_eiken_drill_short_pre1": [
     "/prints/previews/print_eiken_drill_short_pre1_p1.webp"
+  ],
+  "print_eiken_drill_short_1": [
+    "/prints/previews/print_eiken_drill_short_1_p1.webp"
   ],
   "print_eiken_guide_5": [
     "/prints/previews/print_eiken_guide_5_p1.webp"
@@ -85,6 +94,9 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {...W
   "print_eiken_guide_pre1": [
     "/prints/previews/print_eiken_guide_pre1_p1.webp"
   ],
+  "print_eiken_guide_1": [
+    "/prints/previews/print_eiken_guide_1_p1.webp"
+  ],
   "print_eiken_writing_3": [
     "/prints/previews/print_eiken_writing_3_p1.webp"
   ],
@@ -99,5 +111,8 @@ export const GACHA_PREVIEWS: Readonly<Record<string, readonly string[]>> = {...W
   ],
   "print_eiken_writing_pre1": [
     "/prints/previews/print_eiken_writing_pre1_p1.webp"
+  ],
+  "print_eiken_writing_1": [
+    "/prints/previews/print_eiken_writing_1_p1.webp"
   ]
 };

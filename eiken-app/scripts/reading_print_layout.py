@@ -35,6 +35,7 @@ LABELS = {
  'eiken_pre2plus': '英検準2級プラス',
  'eiken_2': '英検2級',
  'eiken_pre1': '英検準1級',
+ 'eiken_1': '英検1級',
 }
 EN_GRADES = {
  'eiken_4': 'Grade 4',
@@ -43,6 +44,7 @@ EN_GRADES = {
  'eiken_pre2plus': 'Grade Pre-2 Plus',
  'eiken_2': 'Grade 2',
  'eiken_pre1': 'Grade Pre-1',
+ 'eiken_1': 'Grade 1',
 }
 SPLITS = {
  'eiken_4': [8, 7],
@@ -51,12 +53,15 @@ SPLITS = {
  'eiken_pre2plus': [6, 6, 5],
  'eiken_2': [6, 6, 5],
  'eiken_pre1': [6, 6, 6],
+ 'eiken_1': [7, 8, 7],
 }
 FONT = ParagraphStyle('reading-en', fontName='Times-Roman', fontSize=11.5, leading=17)
 CONV_FONT = ParagraphStyle('conv-en', fontName='Times-Roman', fontSize=10.8, leading=15.0)
 WRITING_EN = ParagraphStyle('writing-en', fontName='Times-Roman', fontSize=11.5, leading=17.5)
 WRITING_INDENT_EN = ParagraphStyle('writing-indent-en', fontName='Times-Roman', fontSize=11.5, leading=18, firstLineIndent=18, spaceAfter=5)
 TOPIC_ITALIC = ParagraphStyle('topic-italic', fontName='Times-BoldItalic', fontSize=12.5, leading=18.5)
+ARTICLE_TITLE_STYLE = ParagraphStyle('article-title', fontName='Times-Italic', fontSize=14.0, leading=17.5, alignment=1)
+CONT_NOTE_STYLE = ParagraphStyle('cont-note', fontName='BookletJP', fontSize=8.9, leading=12.5, wordWrap='CJK')
 JAPANESE = ParagraphStyle('reading-jp', fontName='BookletJP', fontSize=9.8, leading=15.5, wordWrap='CJK')
 BULLET_JP = ParagraphStyle('bullet-jp', fontName='BookletJP', fontSize=9.3, leading=14.8, leftIndent=12, firstLineIndent=-12, spaceAfter=2.5, wordWrap='CJK')
 BANNER_WHITE = ParagraphStyle('banner-white', fontName='BookletJP', fontSize=8.2, leading=13, textColor=colors.white, wordWrap='CJK')
@@ -162,10 +167,11 @@ def compact_continuation_bar(c, section_no, sub_letter, note_text, top=54):
  c.setFont('Times-BoldItalic', 13)
  c.drawCentredString(65, H - top - 16, label)
  c.setFillColor(colors.black)
- line(c, note_text, X, top + 4, 'BookletJP', 9.2)
+ nh = draw(c, note_text, X, top + 3, BW, CONT_NOTE_STYLE)
+ bar_bottom = top + max(28, nh + 7)
  c.setLineWidth(0.55)
- c.line(BAND_X, H - top - 28, RIGHT, H - top - 28)
- return top + 40
+ c.line(BAND_X, H - bar_bottom, RIGHT, H - bar_bottom)
+ return bar_bottom + 12
 
 def options_height(choices, columns, style=FONT, row_gap=5):
  cw = BW / columns
@@ -258,9 +264,8 @@ def draw_passage_block(c, passage, top, is_cloze=False):
    draw(c, body_text, X + 2, top + 10, BW - 24, highlight_cloze=is_cloze)
   return top + box_h + 16
  else:
-  c.setFont('Times-Italic', 14.5)
-  c.drawCentredString(X + BW / 2, H - top - 12, passage['title'])
-  top += 20
+  title_h = draw(c, passage['title'], X, top, BW, ARTICLE_TITLE_STYLE)
+  top += title_h + 6
   body_h = height(pt, BW, highlight_cloze=is_cloze)
   if top + body_h > H - 48:
    raise ValueError(f'Passage exceeds safe one-page block: {passage["id"]}')
@@ -404,10 +409,13 @@ def draw_writing_page(c, exam, section_no, first_writing_no, second_writing_no, 
 
   uses_question_label = grade in ('eiken_3', 'eiken_pre2', 'eiken_pre2plus')
   keyword = 'QUESTION' if uses_question_label else 'TOPIC'
+  reason_count = 3 if grade == 'eiken_1' else 2
   bullets = [
-   f'● 以下の {keyword} について、あなたの考え（意見）とその理由を2つ英文で書きなさい。',
+   f'● 以下の {keyword} について、あなたの考え（意見）とその理由を{reason_count}つ英文で書きなさい。',
   ]
-  if points_list:
+  if grade == 'eiken_1':
+   bullets.append('● 構成は「序論・本論（理由3つ）・結論」を基本とし、説得力のある具体例や根拠を示して論述しなさい。')
+  elif points_list:
    if grade == 'eiken_pre1':
     bullets.append('● POINTS は理由を書く際の観点です。4つのうちから2つを選び、序論・本論（2つ）・結論の構成で書きなさい。')
    else:
@@ -436,10 +444,11 @@ def draw_writing_page(c, exam, section_no, first_writing_no, second_writing_no, 
   draw_memo_tag(c, top)
 
 def build_reading_questions(path, exam, cover_pdf):
- FONT.fontSize = 10.6 if exam['grade'] == 'eiken_pre1' else 11.4
- FONT.leading = 14.8 if exam['grade'] == 'eiken_pre1' else 16.8
- WRITING_EN.fontSize = 10.8 if exam['grade'] == 'eiken_pre1' else 11.3
- WRITING_EN.leading = 15.8 if exam['grade'] == 'eiken_pre1' else 17.0
+ is_upper_dense = exam['grade'] in ('eiken_pre1', 'eiken_1')
+ FONT.fontSize = 10.1 if exam['grade'] == 'eiken_1' else (10.6 if exam['grade'] == 'eiken_pre1' else 11.4)
+ FONT.leading = 14.1 if exam['grade'] == 'eiken_1' else (14.8 if exam['grade'] == 'eiken_pre1' else 16.8)
+ WRITING_EN.fontSize = 10.4 if exam['grade'] == 'eiken_1' else (10.8 if exam['grade'] == 'eiken_pre1' else 11.3)
+ WRITING_EN.leading = 15.0 if exam['grade'] == 'eiken_1' else (15.8 if exam['grade'] == 'eiken_pre1' else 17.0)
  WRITING_INDENT_EN.fontSize = WRITING_EN.fontSize
  WRITING_INDENT_EN.leading = WRITING_EN.leading + 0.5
 
@@ -482,15 +491,31 @@ def build_reading_questions(path, exam, cover_pdf):
      new_page()
      top = compact_continuation_bar(c, section_no, None, f'{SECTION_NAMES[section]}（続き）')
     available = H - 52 - top
+    page_items = items[index:index + count]
+    def best_short_cols(it, max_h):
+     if qheight(it, 4) <= max_h:
+      return 4
+     if qheight(it, 2) <= max_h:
+      return 2
+     return 1
     slot = min(116, available / count)
-    for item in items[index:index + count]:
-     cols = 4 if qheight(item, 4) <= slot else 2
-     if qheight(item, cols) > slot:
-      cols = 1
-     if qheight(item, cols) > slot:
-      raise ValueError(f'Short options cannot fit slot ({cols} cols): {item["id"]}')
-     question(c, numbers[item['id']], item, top, cols)
-     top += slot
+    cols_list = [best_short_cols(it, slot) for it in page_items]
+    req_hs = [qheight(it, col_c) for it, col_c in zip(page_items, cols_list)]
+    if all(rh <= slot for rh in req_hs):
+     for item, cols in zip(page_items, cols_list):
+      question(c, numbers[item['id']], item, top, cols)
+      top += slot
+    else:
+     # Proportional vertical allocation when a 2-turn dialogue item exceeds uniform slot
+     cols_list = [best_short_cols(it, 130) for it in page_items]
+     req_hs = [qheight(it, col_c) for it, col_c in zip(page_items, cols_list)]
+     total_req = sum(req_hs)
+     if total_req + 4 * max(0, count - 1) > available:
+      raise ValueError(f'Short page overflow ({total_req:.1f}>{available:.1f}): {page_items[0]["id"]}')
+     extra = (available - total_req) / count
+     for item, cols, rh in zip(page_items, cols_list, req_hs):
+      question(c, numbers[item['id']], item, top, cols)
+      top += rh + extra
     plans.append({'section': section, 'page': page, 'questions': list(range(index + 1, index + count + 1))})
     index += count
 
@@ -518,11 +543,14 @@ def build_reading_questions(path, exam, cover_pdf):
    plans.append({'section': section, 'page': page, 'questions': [numbers[q['id']] for q in items]})
 
   elif section == 'reorder':
+   is_five_reorder = any(len(q.get('orderTokens', [])) == 5 for q in items)
+   end_c = '⑤' if is_five_reorder else '④'
+   pos_pair = '2番目と4番目' if is_five_reorder else '1番目と3番目'
    top = heading(
     c,
     section_no,
     '',
-    f'次の({first_n})から({last_n})までの日本文の意味を表すように①から④までを並べ替えてわくの中に入れたとき、1番目と3番目にくるものの組合せを1, 2, 3, 4から選びなさい。',
+    f'次の({first_n})から({last_n})までの日本文の意味を表すように①から{end_c}までを並べ替えてわくの中に入れたとき、{pos_pair}にくるものの組合せを1, 2, 3, 4から選びなさい。',
    )
    top = max(top + 6, 172)
    for item in items:
@@ -559,22 +587,43 @@ def build_reading_questions(path, exam, cover_pdf):
 
     top = heading(c, section_no, '', inst, top=52, sub_letter=sub_letter)
 
-    sim_c = canvas.Canvas('/dev/null', pagesize=A4)
-    after_passage_top = draw_passage_block(sim_c, passage, top, is_cloze=(section == 'cloze'))
-    if section == 'cloze':
-     q_total = sum(qheight(q, best_cloze_columns(q), False) for q in group)
-    else:
+    fmt = passage.get('format', 'article')
+    is_cloze = (section == 'cloze')
+    # Check if an article passage needs multi-page paragraph flow (e.g. Grade 1 ~800-word Passage B)
+    title_block_h = height(passage['title'], BW, ARTICLE_TITLE_STYLE) + 6 if fmt == 'article' else 20
+    article_body_h = height(passage['text'], BW, highlight_cloze=is_cloze) if fmt == 'article' else 0
+    needs_multipage_article = (fmt == 'article') and (not is_cloze) and (top + title_block_h + article_body_h > H - 48)
+
+    if needs_multipage_article:
+     top += draw(c, passage['title'], X, top, BW, ARTICLE_TITLE_STYLE) + 6
+     paras = [pr.strip() for pr in passage['text'].split('\n\n') if pr.strip()]
+     for p_idx, pr_text in enumerate(paras):
+      ph = height(pr_text, BW)
+      if top + ph > H - 48:
+       new_page()
+       top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}（本文続き）')
+      top += draw(c, pr_text, X, top, BW) + (8 if p_idx < len(paras) - 1 else 14)
      q_total = sum(qheight(q, 1, True) + (8 if idx_q < len(group) - 1 else 0) for idx_q, q in enumerate(group))
+     if top + q_total > H - 46:
+      new_page()
+      top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}　設問 {g_first}〜{g_last}')
+    else:
+     sim_c = canvas.Canvas('/dev/null', pagesize=A4)
+     after_passage_top = draw_passage_block(sim_c, passage, top, is_cloze=is_cloze)
+     if section == 'cloze':
+      q_total = sum(qheight(q, best_cloze_columns(q), False) for q in group)
+     else:
+      q_total = sum(qheight(q, 1, True) + (8 if idx_q < len(group) - 1 else 0) for idx_q, q in enumerate(group))
 
-    combined_allowed = section == 'cloze' or (passage.get('format') in ['notice', 'email'] and exam['grade'] != 'eiken_4')
-    if section == 'cloze' and after_passage_top + q_total > H - 46:
-     raise ValueError(f'Cloze text/options exceed one page: {passage["id"]}: {after_passage_top + q_total}')
-    combined = combined_allowed and (after_passage_top + q_total <= H - 46)
+     combined_allowed = section == 'cloze' or (passage.get('format') in ['notice', 'email'] and exam['grade'] != 'eiken_4')
+     if section == 'cloze' and exam['grade'] != 'eiken_1' and after_passage_top + q_total > H - 46:
+      raise ValueError(f'Cloze text/options exceed one page: {passage["id"]}: {after_passage_top + q_total}')
+     combined = combined_allowed and (after_passage_top + q_total <= H - 46)
 
-    top = draw_passage_block(c, passage, top, is_cloze=(section == 'cloze'))
-    if not combined:
-     new_page()
-     top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}　設問 ({g_first})〜({g_last})')
+     top = draw_passage_block(c, passage, top, is_cloze=is_cloze)
+     if not combined:
+      new_page()
+      top = compact_continuation_bar(c, section_no, sub_letter, f'{passage["title"]}　設問 {g_first}〜{g_last}')
 
     for idx_q, item in enumerate(group):
      cols = best_cloze_columns(item) if section == 'cloze' else 1

@@ -19,7 +19,7 @@ from reportlab.pdfbase import pdfmetrics
 W, H = A4
 LEFT = 102
 RIGHT = 539
-CIRCLED = '①②③④'
+CIRCLED = '①②③④⑤'
 EN = ParagraphStyle('exam-en', fontName='Times-Roman', fontSize=12.5, leading=20)
 JP = ParagraphStyle('exam-jp', fontName='BookletJP', fontSize=10.5, leading=17, wordWrap='CJK')
 SMALL = ParagraphStyle('exam-note', fontName='BookletJP', fontSize=8.5, leading=13.5, wordWrap='CJK')
@@ -34,6 +34,7 @@ GRADE_LABELS = {
  'eiken_pre2plus': ('英検準2級プラス', '準2級+', 'GRADE PRE-2 PLUS'),
  'eiken_2': ('英検2級', '2級', 'GRADE 2'),
  'eiken_pre1': ('英検準1級', '準1級', 'GRADE PRE-1'),
+ 'eiken_1': ('英検1級', '1級', 'GRADE 1'),
 }
 SECTION_NAMES = {
  'short': '短文の語句空所補充',
@@ -301,13 +302,17 @@ def reorder_question(c, number, item, top):
  prefix = item['orderPrefix']
  string(c, prefix, LEFT + 20, baseline_top, 'Times-Roman', 12.5)
  start = LEFT + 24 + pdfmetrics.stringWidth(prefix, 'Times-Roman', 12.5)
- for index in range(4):
-  x = start + index * 67
-  c.setLineWidth(.8 if index in [0, 2] else .4)
-  c.rect(x, H - baseline_top - 16, 63, 18, stroke=1, fill=0)
-  if index in [0, 2]:
-   string(c, f'{index + 1}番目', x + 19, baseline_top - 11, 'BookletJP', 7.5)
- string(c, item['completedSentence'][-1], start + 4 * 67 + 2, baseline_top, 'Times-Roman', 12.5)
+ n_slots = len(item['orderTokens'])
+ key_slots = [1, 3] if n_slots == 5 else [0, 2]
+ slot_step = 56 if n_slots == 5 else 67
+ box_w = 52 if n_slots == 5 else 63
+ for index in range(n_slots):
+  x = start + index * slot_step
+  c.setLineWidth(.8 if index in key_slots else .4)
+  c.rect(x, H - baseline_top - 16, box_w, 18, stroke=1, fill=0)
+  if index in key_slots:
+   string(c, f'{index + 1}番目', x + (13 if n_slots == 5 else 19), baseline_top - 11, 'BookletJP', 7.5)
+ string(c, item['completedSentence'][-1], start + n_slots * slot_step + 2, baseline_top, 'Times-Roman', 12.5)
  for index, pair in enumerate(item['choices']):
   x = LEFT + index * (RIGHT - LEFT) / 4
   string(c, str(index + 1), x + 10, top + 84, 'Times-Bold', 12.5)
@@ -563,6 +568,7 @@ def _build_writing_sheet_page(path, exam):
   'eiken_pre2plus': (12, 14),
   'eiken_2': (15, 16),
   'eiken_pre1': (16, 20),
+  'eiken_1': (20, 26),
  }[exam['grade']]
 
  col_gap = 24

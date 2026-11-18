@@ -5,11 +5,14 @@ export const question=(spec:ChoiceSpec,section:WrittenItem['section']='short'):W
 export function passage(key:string,title:string,text:string,translation:string,format:'notice'|'email'|'article',specs:ChoiceSpec[],section:'reading'|'cloze'='reading'):WrittenItem[]{
  return specs.map(spec=>({...question(spec,section),passage:{id:key,title,text,translation,format}}));
 }
-export function reorder(japanese:string,prefix:string,tokens:[string,string,string,string],order:[number,number,number,number],pairs:[string,string,string,string],answer:number,explanation:string):WrittenItem{
+export function reorder(japanese:string,prefix:string,tokens:[string,string,string,string]|[string,string,string,string,string],order:[number,number,number,number]|[number,number,number,number,number],pairs:[string,string,string,string],answer:number,explanation:string):WrittenItem{
  const questionStart=/^(How|What|When|Where|Who|Whose|Which|Why|Do(?!\s+not\b)|Does|Did|Is|Are|Was|Were|Can|Could|Will|Would|May|Shall|Have|Has)\b/;
  const fullPrefix=prefix==='Do' && order[0] && tokens[order[0]-1]==='not' ? 'Do not' : prefix;
  const sentence=`${prefix} ${order.map(n=>tokens[n-1]).join(' ')}${questionStart.test(fullPrefix)?'?':'.'}`;
- return {...question([`${japanese}\n${prefix} ( ____ / ____ / ____ / ____ )${sentence.at(-1)}\n1番目・3番目の語句番号の組を選んでください。`,pairs,answer,explanation,pairs.map((pair,i)=>i===answer?`正しい語順の1番目・3番目は${pair}。`:`${pair}は完成文の1番目・3番目と一致しない。`) as [string,string,string,string],japanese],'reorder'),orderTokens:tokens,orderAnswer:order,orderPrefix:prefix,completedSentence:sentence};
+ const isFive=tokens.length===5;
+ const slotLine=isFive?'( ____ / ____ / ____ / ____ / ____ )':'( ____ / ____ / ____ / ____ )';
+ const posLabel=isFive?'2番目・4番目':'1番目・3番目';
+ return {...question([`${japanese}\n${prefix} ${slotLine}${sentence.at(-1)}\n${posLabel}の語句番号の組を選んでください。`,pairs,answer,explanation,pairs.map((pair,i)=>i===answer?`正しい語順の${posLabel}は${pair}。`:`${pair}は完成文の${posLabel}と一致しない。`) as [string,string,string,string],japanese],'reorder'),orderTokens:[...tokens],orderAnswer:[...order],orderPrefix:prefix,completedSentence:sentence};
 }
 export function emailWriting(key:string,title:string,emailText:string,emailTranslation:string,prompt:string,wordRange:[number,number],model:string,modelTranslation:string,explanation:string,rubric:[string,string,string,string]):WrittenItem{
  return {id:'pending',section:'email',kind:'writing',prompt,passage:{id:key,title,text:emailText,translation:emailTranslation,format:'email'},wordRange,model,translation:modelTranslation,explanation,rubric:[...rubric]};
