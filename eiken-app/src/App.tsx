@@ -221,13 +221,6 @@ export default function App() {
     setBattleReturnActive(false);
     setAppState(next);
   };
-  // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
-  // 第3引数は「いま開いている章」。級×技能（2級リスニング…）への振り分けに使う。
-  useStudyTimeTracker(
-    appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning),
-    appState,
-    selectedChapterId,
-  );
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -243,6 +236,18 @@ export default function App() {
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'reading' | 'grammar' | 'more'>('words');
+  // 学習時間の計測（既存のプロフィール合計は quiz/explanation/mock 実行中のみ。すごろく分野別台帳は writing/foundation も対象）
+  useStudyTimeTracker(
+    appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning),
+    appState,
+    {
+      chapterId: selectedChapterId,
+      screenKey: appState,
+      subjectId: selectedSubject,
+      foundationTab,
+      mockKind: mockInitialKind,
+    },
+  );
   /** アプリ内の PDF ビューが開いているか（開いている間は広告を出さない） */
   const pdfOpen = usePdfOpen();
   const bannerAdSuppressed = useBannerAdSuppressed();

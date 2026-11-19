@@ -1,99 +1,145 @@
 /**
  * ===================================================================
- * すごろく塾向け機能の共通型（AI 1〜AI 5 共通データ契約）
+ * すごろく×マナトビ英検 共通型定義（契約ファイル）
  * ===================================================================
+ * 『03_AI並列開発指示書』第2章B「AI 1〜AI 5 が共通で準拠するディレクトリ＆Firestoreデータ契約」
+ * に厳密に準拠したインターフェース定義。
  *
- * ■ このファイルの位置づけ
- *   『03_AI並列開発指示書』第2章の共同契約を、実コードで1か所に固定する。
- *   各AIはここに定義された名前（フィールド名）に厳密に揃えること。
- *   ★既存に無い項目は「追加」のみ。既存項目の改名・削除は禁止（後方互換）。★
- *
- * ■ 既存資産との関係（重要な読み替え）
- *   指示書の表では classrooms/{classId}/assignments/{assignmentId} と
- *   書かれているが、現行リポジトリの実装は
- *     class_assignments/{assignmentId}（classId フィールドで紐付け）
- *   である。既存の JukuTab / classAssignments / firestore.rules を
- *   壊さないことが最優先なので、本実装は既存形を正とする。
- *   そのうえで「ペース設定」など追加情報だけを別コレクションに重ねる
- *   （重ねられない環境では自動計算で代替する。homework/homeworkPlans.ts）。
- *
- * ■ 学習ログのコレクション名
- *   指示書は users/{uid}/sugoroku_study_logs/{dateKey} だが、
- *   現行ルールでは eiken_users 配下は全面禁止で、サブコレクションの
- *   ルールも存在しない。そこでトップレベルの
- *     eiken_sugoroku_study_logs/{uid}_{dateKey}
- *   を使う（＝本番反映は AI 4 のルール追加とセット）。
- *   ルール案は docs/SUGOROKU_AI2_HOMEWORK_TIMELOG.md に記載している。
- *
- * ■ このファイルは他の src を import しない（葉モジュール）
- *   型だけを置く。値（定数）を足すときも、依存を持たないものに限る。
+ * 他AI（AI 1〜AI 5）が後方互換で拡張・参照できるよう、すべてのコレクション名・
+ * ドキュメント構造・主要フィールド名を仕様どおりに固定する。
  */
 
-/** 英検の級ID（既存 eiken/config.ts の EikenGrade と同一の並び） */
-export type SugorokuGradeId =
-  | 'eiken_5'
-  | 'eiken_4'
-  | 'eiken_3'
-  | 'eiken_pre2'
-  | 'eiken_pre2plus'
-  | 'eiken_2'
-  | 'eiken_pre1'
-  | 'eiken_1';
+import type { EikenGrade } from '../../eiken/config';
 
-/** 4技能＋語彙。指示書の skillBreakdown（reading/listening/vocab/writing/speaking）に一致 */
-export type SugorokuSkill = 'reading' | 'listening' | 'writing' | 'speaking' | 'vocab';
+/** 英検の級ID（既存 eiken/config.ts の EikenGrade と同一） */
+export type SugorokuGradeId = EikenGrade;
 
-/** 級×技能の内訳キーの形（例 'eiken_2:listening'）。Firestore の map キーに使う */
-export type GradeSkillKey = string;
+/** 英検4技能＋語彙の分野キー */
+export type SugorokuSkillKey = 'reading' | 'listening' | 'writing' | 'speaking' | 'vocab';
+
+/** AI 2 等で用いる短縮エイリアス（SugorokuSkillKey と同一） */
+export type SugorokuSkill = SugorokuSkillKey;
+
+/** `${EikenGrade}:${SugorokuSkillKey}` 形式の複合キー（例: 'eiken_2:listening'） */
+export type GradeSkillKey = `${EikenGrade}:${SugorokuSkillKey}` | string;
+
+/** すごろく塾内のロール */
+export type SugorokuRole = 'owner' | 'staff' | 'student';
 
 /**
- * 1日ぶんの分野別学習ログ。
- *   eiken_sugoroku_study_logs/{uid}_{dateKey}
- *
- * totalActiveSeconds は「有効学習時間」（前面表示＋1分無操作除外＋音声再生中は加算）。
- * byGradeSkill の合計と一致させる必要はない（級・技能が特定できない画面がある）。
+ * Firestore コレクション・サブコレクション名定数
+ * （eiken-app 内の firestoreMetered を通す場合は自動で eiken_ プレフィックスが付与される）
+ */
+export const SUGOROKU_COLLECTIONS = {
+  classrooms: 'classrooms',
+  sugorokuMembers: 'sugoroku_members',
+  sugorokuStudyLogs: 'sugoroku_study_logs',
+  studySummaries: 'study_summaries',
+  assignments: 'assignments',
+  writingSubmissions: 'writing_submissions',
+  speakingSubmissions: 'speaking_submissions',
+} as const;
+
+/**
+ * 1. 塾クラス・ロール（既存拡張）
+ * Path: classrooms/{classId}/sugoroku_members/{uid} または sugoroku_members/{classId}_{uid}
+ */
+export interface SugorokuMemberDoc {
+  uid: string;
+  classId?: string;
+  role: SugorokuRole;
+  /** 講師管理画面内のみで扱う実名（名簿名）。公開ランキング等には絶対に出さない */
+  rosterName?: string;
+  /** 生徒のニックネーム（フォールバック用） */
+  displayName?: string;
+  /** 目標級（例: 'eiken_2', 'eiken_pre2plus', 'eiken_pre2'） */
+  targetGrade: EikenGrade;
+  active: boolean;
+  /** 有料塾生は常に true（広告完全非表示） */
+  adFree: boolean;
+  email?: string;
+  note?: string;
+  joinedAt?: number;
+  updatedAt?: number;
+}
+
+/**
+ * 2. 分野別学習時間ログ
+ * Path: users/{uid}/sugoroku_study_logs/{dateKey} （集計キャッシュ: study_summaries/{uid}）
  */
 export interface SugorokuStudyLogDoc {
-  uid: string;
-  /** 'YYYY-MM-DD'（端末のローカル日付） */
+  /** オプション：トップレベル併用時のUID */
+  uid?: string;
+  /** 'YYYY-MM-DD' */
   dateKey: string;
+  /** 1分無操作除外済みの有効学習秒数合計 */
   totalActiveSeconds: number;
+  /** 級×技能別の有効学習秒数（例: { 'eiken_2:listening': 1500, 'eiken_2:reading': 900, 'eiken_2:vocab': 600 }） */
   byGradeSkill: Record<GradeSkillKey, number>;
-  /** その日に解いた大問数（分かる範囲。0 は不明） */
+  /** その日に解いた問題数 */
   solvedCount: number;
-  /** 最終更新（ms）。Firestore では number で持つ（ルール検証を単純にするため） */
+  /** オプション：級×技能別の正答数・解答数（正答率推移表示用） */
+  accuracyByGradeSkill?: Record<GradeSkillKey, { correct: number; total: number }>;
   updatedAt: number;
 }
 
 /**
- * 教師が配る「ペースメーカー付き宿題」の追加情報。
- *   eiken_sugoroku_homework_plans/{assignmentId}
- * 既存 class_assignments の1件に対応する（assignmentId をそのまま doc ID にする）。
- * ルール未適用の環境では保存に失敗するので、読み書きは必ず「失敗しても学習を止めない」形にする。
+ * 生徒ごとの集計キャッシュ（一覧高速表示用）
+ * Path: study_summaries/{uid}
  */
-export interface SugorokuHomeworkPlan {
-  /** = class_assignments のドキュメントID */
+export interface SugorokuStudySummaryDoc {
+  uid: string;
+  totalActiveSeconds: number;
+  weeklyActiveSeconds?: number;
+  todayActiveSeconds?: number;
+  byGradeSkillTotal?: Record<GradeSkillKey, number>;
+  solvedTotal: number;
+  lastActiveAt?: number;
+  lastDateKey?: string;
+  updatedAt: number;
+}
+
+/** 技能別ノルマ内訳（問数または語数） */
+export interface SugorokuSkillBreakdown {
+  reading?: number;
+  listening?: number;
+  vocab?: number;
+  writing?: number;
+  speaking?: number;
+}
+
+/**
+ * 3. 日次/週次 宿題（ペースメーカー）
+ * Path: classrooms/{classId}/assignments/{assignmentId}（および既存 class_assignments 互換）
+ */
+export interface SugorokuAssignmentDoc {
   id: string;
   classId: string;
   teacherUid: string;
   title: string;
   chapterIds: string[];
-  /** 締切（ms）。その日の 23:59:59.999 */
+  /** 締切タイムスタンプ（ms） */
   dueAt: number;
-  /** 配信開始（ms）。未指定は作成時刻 */
+  /** 開始タイムスタンプ（ms） */
   startAt?: number;
-  /** 1日の推奨問数。未指定なら「残り ÷ 残り日数」で自動計算 */
-  dailyQuotaProblems?: number;
-  /** 技能別の目安（問数ではなく「重み」として使う。合計は自由） */
-  skillBreakdown?: Partial<Record<SugorokuSkill, number>>;
-  /** 個別配信。未指定はクラス全員 */
+  /** 個別配信対象生徒UID配列（未指定または空配列時はクラス全員） */
   targetStudentUids?: string[];
-  /** 適用したプリセット（例 'eiken2-12w'） */
+  /** 1日あたりの推奨問数（ペースメーカー用） */
+  dailyQuotaProblems?: number;
+  /** 技能別の問題数内訳 */
+  skillBreakdown?: SugorokuSkillBreakdown;
+  /** 適用したプリセットID（例: 'eiken2-12w', 'eikenpre2plus-12w', 'eikenpre2-12w'） */
   presetId?: string;
+  /** 12週ルートの週番号（1〜12） */
+  presetWeek?: number;
   createdAt?: number;
+  updatedAt?: number;
 }
 
-/** 生徒ホームのカードに出す1件ぶんの表示モデル（純粋計算の結果） */
+/** AI 2 宿題プラン型（SugorokuAssignmentDoc と完全互換） */
+export type SugorokuHomeworkPlan = SugorokuAssignmentDoc;
+
+/** 生徒ホームの「今日の宿題」カード表示モデル（純粋計算結果） */
 export interface SugorokuHomeworkTask {
   assignmentId: string;
   classId: string;
@@ -101,24 +147,139 @@ export interface SugorokuHomeworkTask {
   title: string;
   chapterIds: string[];
   dueAt: number;
+  startAt?: number;
   /** 次に開くべき単元（未完了の先頭） */
   nextChapterId: string;
   total: number;
   solved: number;
   remaining: number;
   percent: number;
-  /** 締切までの残り日数（今日を含む。0 は今日まで） */
+  /** 締切までの残り日数（今日を含む。0 は期限切れ） */
   daysLeft: number;
-  /** 今日やるべき問数 */
+  /** 今日やるべき目標問数 */
   todayQuota: number;
-  /** 今日すでに解いた数（締切前から解いた分は含めない近似） */
+  /** 今日すでに解いた問数 */
   todayDone: number;
+  /** 今日あと解くべき残り問数 */
   todayRemaining: number;
+  /** 1日まとめ解きしすぎ検知フラグ（推奨ペースの2倍以上を1日で一気に解いた場合） */
+  overPacedToday?: boolean;
+  /** 技能別の問題数内訳（表示バッジ用） */
+  skillBreakdown?: SugorokuSkillBreakdown;
   /** 全体の状態 */
   status: 'done' | 'late' | 'not_started' | 'on_track' | 'behind' | 'ahead';
   overdue: boolean;
   /** 1日に必要な問数（自動計算） */
   perDayNeeded: number;
-  /** 生徒への声掛け（1文） */
+  /** 生徒への声掛け（ペースメーカー助言） */
   message: string;
+}
+
+/** ライティング講師添削データ */
+export interface SugorokuWritingReview {
+  reviewerUid: string;
+  reviewerName?: string;
+  /** 英検4観点または総合スコア */
+  score: number;
+  maxScore?: number;
+  rubricScores?: {
+    content?: number;
+    organization?: number;
+    vocabulary?: number;
+    grammar?: number;
+  };
+  comment: string;
+  correctedText?: string;
+  reviewedAt: number;
+}
+
+/**
+ * 4. ライティング提出＆講師添削返却
+ * Path: classrooms/{classId}/writing_submissions/{submissionId}
+ */
+export interface SugorokuWritingSubmissionDoc {
+  id: string;
+  classId?: string;
+  studentUid: string;
+  studentName: string;
+  grade: EikenGrade;
+  taskKey: string;
+  taskTitle?: string;
+  promptSummary?: string;
+  wordCount: number;
+  text: string;
+  formatWarnings: string[];
+  status: 'submitted' | 'reviewed';
+  submittedAt: number;
+  review?: SugorokuWritingReview;
+}
+
+/** S-CBT スピーキングパート識別子 */
+export type SugorokuSpeakingPartId = 'reading_aloud' | 'q1' | 'q2' | 'q3' | 'q4';
+
+/** S-CBT スピーキング個別録音メタデータ */
+export interface SugorokuSpeakingRecordingItem {
+  partId: SugorokuSpeakingPartId;
+  /** Storage path: sugoroku_speaking/{classId}/{uid}/{submissionId}/{partId}.{webm|m4a} */
+  storagePath: string;
+  /** デモ再生や署名付きURL解決後の再生URL（任意） */
+  downloadUrl?: string;
+  mimeType: string;
+  durationSec: number;
+}
+
+/** S-CBT スピーキング講師評価データ */
+export interface SugorokuSpeakingReview {
+  reviewerUid: string;
+  reviewerName?: string;
+  rubricScores: {
+    readingAloud?: number;
+    response?: number;
+    pronunciation?: number;
+    grammarVocab?: number;
+    attitude?: number;
+    total?: number;
+  };
+  comment: string;
+  reviewedAt: number;
+}
+
+/**
+ * 5. S-CBTスピーキング録音提出・評価
+ * Firestore: classrooms/{classId}/speaking_submissions/{submissionId}
+ * Storage:   sugoroku_speaking/{classId}/{uid}/{submissionId}/{partId}.{webm|m4a}
+ */
+export interface SugorokuSpeakingSubmissionDoc {
+  id: string;
+  classId?: string;
+  studentUid: string;
+  studentName: string;
+  grade: EikenGrade;
+  setId: string;
+  setTitle?: string;
+  recordings: SugorokuSpeakingRecordingItem[];
+  status: 'submitted' | 'reviewed';
+  submittedAt: number;
+  review?: SugorokuSpeakingReview;
+}
+
+/**
+ * AI 3 が実装する「ライティング添削タブ」「スピーキング音声確認タブ」を
+ * AI 1 の管理者ポータル（SugorokuAdminApp）へ差し込むための拡張スロットProps契約
+ */
+export interface SugorokuAdminExtensionSlots {
+  /** AI 3 ライティング添削パネルを差し込むカスタムレンダー関数 */
+  renderWritingReviewTab?: (ctx: {
+    classId: string;
+    isDemoMode: boolean;
+    submissions: SugorokuWritingSubmissionDoc[];
+    onSelectStudent?: (studentUid: string) => void;
+  }) => import('react').ReactNode;
+  /** AI 3 S-CBTスピーキング音声確認パネルを差し込むカスタムレンダー関数 */
+  renderSpeakingReviewTab?: (ctx: {
+    classId: string;
+    isDemoMode: boolean;
+    submissions: SugorokuSpeakingSubmissionDoc[];
+    onSelectStudent?: (studentUid: string) => void;
+  }) => import('react').ReactNode;
 }

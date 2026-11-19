@@ -1,23 +1,13 @@
 /*
  * ===================================================================
- * 生徒ホーム「今日の宿題」カード
+ * 生徒ホーム最上部「今日の宿題」カード（マナトビ純正 UI/UX 対応）
  * ===================================================================
  *
- * ■ 置き場所
- *   ホームの最上部（ヘッダーのすぐ下、とびら君のステージより上）。
- *   「アプリを開いた瞬間に目に入る」ことが要件なので、スクロールしないと
- *   見えない位置には置かない。
- *
- * ■ 見た目の方針（既存ホームに合わせる）
- *   ・角丸22px・白地・うすい影 … 既存の home-pillar と同じ質感
- *   ・主ボタンは水色系（対戦＝水色、演習＝金、復習＝藤色に続く4色目を足さない）
- *      → すごろくの宿題は「やらされる」ものではなく「今日のぶん」なので、
- *        既存の水色（前向きな色）を借りる。新しい色は増やさない。
- *   ・文字は既存より一段大きく（運動部の生徒が教室のiPadで読むため）
- *
- * ■ はみ出し対策
- *   ・横スクロールは作らない（min-width:0 / overflow-wrap）
- *   ・長い課題名は2行で切る（それ以上は「…」）
+ * ■ 設計ルール（tokens.css / system.css / motion.css 準拠）
+ *   ・ホーム最上部（ヘッダー直下、とびら君ステージより上）にピン留め表示
+ *   ・ブランド色は「扉の青（--mt-brand）」と「扉のオレンジ（--mt-accent）」に統一
+ *   ・文字サイズは最小 12px 以上、操作タップ領域は 44px 以上を確保
+ *   ・スマホ（360px幅）／iPad／PCすべてで横はみ出しゼロ（min-width:0 / overflow-wrap:anywhere）
  */
 
 .sgr-homework {
@@ -25,28 +15,44 @@
   z-index: 6;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin: 0 0 10px;
-  padding: 14px 16px 12px;
-  border: 2px solid #ffffff;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #ffffff 0%, #f4fbfe 100%);
-  box-shadow: 0 4px 0 #cfe0e8, 0 0 0 1px #dbe7ec;
-  color: #1b2631;
+  padding: 13px 15px 12px;
+  border: 1.5px solid var(--mt-line, #e3d9c8);
+  border-radius: var(--mt-r-lg, 22px);
+  background: linear-gradient(180deg, #ffffff 0%, #f7fafd 100%);
+  box-shadow: 0 3px 0 #d5e1ee, var(--mt-shadow-1, 0 2px 6px rgba(28, 42, 57, 0.06));
+  color: var(--mt-ink, #1c2a39);
+  font-family: var(--mt-font-body, sans-serif);
   text-align: left;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-/* 締切超過は「責める赤」ではなく「気づかせる橙」。赤は既存のエラー表示に譲る。 */
+.sgr-homework[data-status='done'],
+.sgr-homework[data-status='on_track'] {
+  border-color: #bfe0cf;
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbf7 100%);
+  box-shadow: 0 3px 0 #c6e2d3, var(--mt-shadow-1);
+}
+
 .sgr-homework[data-status='late'],
 .sgr-homework[data-status='behind'] {
-  background: linear-gradient(180deg, #ffffff 0%, #fff8ef 100%);
-  box-shadow: 0 4px 0 #e6d3b8, 0 0 0 1px #efe0cc;
+  border-color: #f0cfa4;
+  background: linear-gradient(180deg, #ffffff 0%, #fff9f0 100%);
+  box-shadow: 0 3px 0 #e6d3b8, var(--mt-shadow-1);
 }
 
+.sgr-homework-skeleton {
+  padding: 10px 12px;
+}
+
+/* 上段：クラス名と状態バッジ */
 .sgr-homework-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   min-width: 0;
 }
@@ -54,39 +60,131 @@
 .sgr-homework-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   margin: 0;
+  min-width: 0;
+  flex: 1;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--mt-brand, #2458a6);
+}
+
+.sgr-homework-eyebrow > span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .02em;
-  color: #3c5a6e;
+}
+
+.sgr-homework-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .sgr-homework-flag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-  margin-left: auto;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: #fff1e0;
-  border: 1px solid #f0cfa4;
-  color: #8a5b1c;
-  font-size: 11px;
+  gap: 4px;
+  min-height: 24px;
+  padding: 2px 9px;
+  border-radius: var(--mt-r-pill, 999px);
+  font-size: 12px;
   font-weight: 800;
+  white-space: nowrap;
+}
+
+.sgr-homework-flag[data-tone='pace'] {
+  background: var(--mt-accent-soft, #fdf0db);
+  border: 1px solid #f2d4a7;
+  color: var(--mt-accent-ink, #8a4b00);
+}
+
+.sgr-homework-flag[data-tone='done'] {
+  background: var(--mt-done-soft, #e3f3ea);
+  border: 1px solid #b5dec6;
+  color: var(--mt-done, #1f7a4d);
+}
+
+.sgr-homework-flag[data-tone='warn'] {
+  background: #fdecea;
+  border: 1px solid #f5c6c0;
+  color: var(--mt-danger, #b3261e);
+}
+
+.sgr-homework-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--mt-ink-3, #5a6573);
+  cursor: pointer;
+}
+
+.sgr-spin {
+  animation: mt-spin 0.85s linear infinite;
+}
+
+/* 中段：円グラフ ＋ タイトル・進捗 */
+.sgr-homework-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sgr-homework-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.sgr-homework-ring > svg {
+  grid-area: 1 / 1;
+}
+
+.sgr-homework-ring-num {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--mt-font-display, sans-serif);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--mt-ink, #1c2a39);
+}
+
+.sgr-homework-ring-num > small {
+  font-size: 10px;
+  font-weight: 800;
+  margin-left: 1px;
+}
+
+.sgr-homework-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .sgr-homework-title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 900;
-  line-height: 1.35;
-  color: #14202b;
+  font-family: var(--mt-font-display, sans-serif);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.32;
+  color: var(--mt-ink, #1c2a39);
   overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -94,42 +192,22 @@
   overflow: hidden;
 }
 
-.sgr-homework-bar {
-  position: relative;
-  height: 8px;
-  border-radius: 999px;
-  background: #e8eff3;
-  overflow: hidden;
-}
-
-.sgr-homework-bar > i {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #7fc7de, #4a9dbb);
-  transition: width .35s ease;
-}
-
-.sgr-homework[data-status='late'] .sgr-homework-bar > i,
-.sgr-homework[data-status='behind'] .sgr-homework-bar > i {
-  background: linear-gradient(90deg, #f0c07a, #d99a45);
-}
-
 .sgr-homework-count {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
   gap: 2px;
   margin: 0;
   font-size: 13px;
   font-weight: 700;
-  color: #455260;
+  color: var(--mt-ink-2, #3e4c5b);
 }
 
 .sgr-homework-count strong {
-  font-size: 16px;
+  font-family: var(--mt-font-display, sans-serif);
+  font-size: 15px;
   font-weight: 900;
-  color: #14202b;
+  color: var(--mt-ink, #1c2a39);
 }
 
 .sgr-homework-sep {
@@ -137,75 +215,195 @@
   margin: 0 3px;
 }
 
-.sgr-homework-today,
-.sgr-homework-done {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-weight: 800;
-}
-
-.sgr-homework-today {
-  color: #b4642a;
-}
-
-.sgr-homework-done {
-  color: #2f7c74;
-}
-
 .sgr-homework-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
   margin: 0;
   font-size: 12px;
   font-weight: 600;
-  color: #6b7885;
-  flex-wrap: wrap;
+  color: var(--mt-ink-3, #5a6573);
 }
 
-.sgr-homework-msg {
-  margin: 2px 0 0;
-  font-size: 13px;
+/* 光沢シャイン進捗バー */
+.sgr-homework-bar {
+  position: relative;
+  height: 8px;
+  border-radius: var(--mt-r-pill, 999px);
+  background: #e6ecf2;
+  overflow: hidden;
+}
+
+.sgr-homework-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: var(--mt-r-pill, 999px);
+  background: linear-gradient(90deg, #3b76c8, var(--mt-brand, #2458a6));
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sgr-homework[data-status='done'] .sgr-homework-bar > i,
+.sgr-homework[data-status='on_track'] .sgr-homework-bar > i {
+  background: linear-gradient(90deg, #32a068, var(--mt-done, #1f7a4d));
+}
+
+.sgr-homework[data-status='late'] .sgr-homework-bar > i,
+.sgr-homework[data-status='behind'] .sgr-homework-bar > i {
+  background: linear-gradient(90deg, #f29a1f, #d97e06);
+}
+
+/* 技能別内訳バッジ */
+.sgr-homework-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sgr-skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #f2f5f9;
+  border: 1px solid #dce4ee;
+  color: var(--mt-ink-2, #3e4c5b);
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.5;
-  color: #2f6684;
+}
+
+/* ペース声掛けメッセージ */
+.sgr-homework-msg {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(36, 88, 166, 0.06);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--mt-brand-strong, #1c4687);
   overflow-wrap: anywhere;
 }
 
+.sgr-homework-msg[data-overpaced] {
+  background: #fdf0db;
+  color: #8a4b00;
+}
+
+.sgr-homework[data-status='done'] .sgr-homework-msg,
+.sgr-homework[data-status='on_track'] .sgr-homework-msg {
+  background: #e6f4ec;
+  color: #1f7a4d;
+}
+
+/* ワンタップ直行ボタン（44px以上保証） */
 .sgr-homework-start {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
   min-height: 46px;
-  margin-top: 6px;
-  padding: 0 18px;
-  border: 2px solid #ffffff;
-  border-radius: 16px;
-  background: radial-gradient(circle at 50% 20%, #f0fcff, #a9d7e7 92%);
-  box-shadow: 0 4px 0 #8fb9c8, 0 0 0 1px #b8d2dc;
-  color: #24566f;
-  font-size: 16px;
-  font-weight: 900;
-  transition: transform .12s, filter .12s;
+  margin-top: 2px;
+  padding: 6px 14px;
+  border: 1.5px solid #1c4687;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #2d68c4 0%, var(--mt-brand, #2458a6) 100%);
+  box-shadow: 0 3px 0 var(--mt-brand-strong, #1c4687);
+  color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s, filter 0.12s;
 }
 
 .sgr-homework-start:active {
   transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--mt-brand-strong, #1c4687);
+}
+
+.sgr-homework-start-main {
+  font-family: var(--mt-font-display, sans-serif);
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.sgr-homework-start-sub {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: right;
+}
+
+.sgr-homework-start-arrow {
+  flex-shrink: 0;
 }
 
 @media (hover: hover) {
   .sgr-homework-start:hover {
-    filter: brightness(1.03);
+    filter: brightness(1.05);
   }
+}
+
+/* 今週の学習時間ミニストリップ */
+.sgr-homework-timelog {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--mt-line, #e3d9c8);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mt-ink-3, #5a6573);
+}
+
+.sgr-homework-timelog strong {
+  font-weight: 800;
+  color: var(--mt-ink, #1c2a39);
+}
+
+.sgr-homework-timelog-top {
+  color: var(--mt-brand, #2458a6);
+  font-weight: 700;
+}
+
+/* ほかの宿題アコーディオン */
+.sgr-homework-more-wrap {
+  border-top: 1px dashed var(--mt-line, #e3d9c8);
+  padding-top: 4px;
+}
+
+.sgr-homework-more-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 36px;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--mt-ink-2, #3e4c5b);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sgr-rot-180 {
+  transform: rotate(180deg);
 }
 
 .sgr-homework-more {
   list-style: none;
-  margin: 8px 0 0;
-  padding: 8px 0 0;
-  border-top: 1px dashed #dde6eb;
+  margin: 4px 0 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -216,18 +414,21 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 36px;
-  padding: 4px 2px;
-  border: 0;
-  background: transparent;
-  color: #4b5563;
-  font-size: 12px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: 11px;
+  background: #ffffff;
+  color: var(--mt-ink, #1c2a39);
+  font-size: 12.5px;
   font-weight: 700;
   text-align: left;
+  cursor: pointer;
 }
 
 .sgr-homework-more > li > button:disabled {
-  opacity: .55;
+  opacity: 0.55;
+  cursor: default;
 }
 
 .sgr-homework-more-title {
@@ -240,29 +441,61 @@
 
 .sgr-homework-more-count {
   flex-shrink: 0;
-  color: #6b7885;
+  color: var(--mt-brand, #2458a6);
+  font-size: 12px;
   font-weight: 800;
 }
 
-/* 低い画面では余白を詰める（既存ホームの @media (max-height:740px) と揃える） */
+/* 狭い幅（360pxスマホ）でサブテキストが窮屈にならない調整 */
+@media (max-width: 400px) {
+  .sgr-homework-start-sub {
+    display: none;
+  }
+}
+
+/* 低い画面では余白を詰めてホーム1画面レイアウトを保護 */
 @media (max-height: 740px) {
   .sgr-homework {
-    padding: 10px 12px 9px;
-    gap: 4px;
+    padding: 9px 12px;
+    gap: 5px;
+  }
+  .sgr-homework-ring {
+    width: 42px;
+    height: 42px;
   }
   .sgr-homework-title {
     font-size: 15px;
     -webkit-line-clamp: 1;
   }
+  .sgr-homework-skills {
+    display: none;
+  }
   .sgr-homework-start {
-    min-height: 40px;
-    font-size: 15px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sgr-homework {
+    animation: sgr-card-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes sgr-card-enter {
+    from {
+      opacity: 0;
+      translate: 0 -8px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sgr-homework-bar > i,
-  .sgr-homework-start {
+  .sgr-homework-start,
+  .sgr-spin {
     transition: none;
+    animation: none;
   }
 }
