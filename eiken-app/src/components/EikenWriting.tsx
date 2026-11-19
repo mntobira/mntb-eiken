@@ -1,7 +1,7 @@
 import { syncUserData } from '../utils/userDataSync';
 import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BookOpen, CheckCircle2, FileText, Mail, MessageSquareQuote, Save } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, BookOpen, CheckCircle2, FileText, Mail, MessageSquareQuote, PenLine, Save } from 'lucide-react';
 import { EIKEN_GRADES, type EikenGrade } from '../eiken/config';
 import { EIKEN_UNITS } from '../eiken/questions';
 import { bookletWritingTasks } from '../eiken/writtenPractice';
@@ -86,6 +86,84 @@ function structureHintsForKind(kind: 'email' | 'summary' | 'essay' | 'basic'): s
   return ['課題の条件をすべて満たし、主語・動詞の対応と時制を確認する'];
 }
 
+type WritingNote = [phrase: string, meaning: string, use: string];
+
+// Each highlight is an exact excerpt of its own model, not a generic word list.
+const gradeOneNotes: Record<string, WritingNote[]> = {
+  roundasummary: [
+    ['rainfall-independent drinking water', '降雨に依存しない飲料水', '「雨が少なくても供給できる」という利点を、複合形容詞で短くまとめる。'],
+    ['relieve pressure on overused rivers and aquifers', '過剰利用されている河川・帯水層の負担を減らす', 'relieve pressure on ～ で、どの資源が守られるのかを具体化する。'],
+    ['advise against relying on desalination alone', '淡水化だけに頼らないよう勧める', 'advise against ～ing で、淡水化そのものへの反対ではないことを示す。'],
+  ],
+  roundaessay: [
+    ['undermines shared democratic deliberation', '民主的な公開討議を損なう', 'undermine は制度や信頼を徐々に弱めるときに使う。ここでは公開広告との対比が理由を支える。'],
+    ['creates powerful incentives for invasive personal data harvesting', 'プライバシーを侵害する個人データ収集を強く促す', 'create incentives for ～ で、広告の仕組みが望ましくない行動を誘発する因果を示す。'],
+    ['levels the civic playing field', '政治参加の条件を公平にする', 'level the playing field は、不公平な競争条件をならすという比喩。'],
+  ],
+  roundbsummary: [
+    ['have prompted industrial groups to propose', '企業団体が提案するきっかけとなった', 'prompt A to do で、鉱物需要と採取提案との関係を一文に収める。'],
+    ['may reduce projected metal shortages', '予測される金属不足を和らげる可能性がある', 'may を残し、代替技術で不足が解消すると断定しない。'],
+    ['urge an international moratorium', '国際的な一時停止を求める', 'moratorium は恒久的な禁止ではない。until 以下で解除条件を示す。'],
+  ],
+  roundbessay: [
+    ['bear a binding legal obligation', '法的拘束力のある義務を負う', '任意の支援ではなく法的義務という立場を明示する。provided ～ で条件も示せる。'],
+    ['despite contributing minimally to global warming', '地球温暖化への寄与がわずかであるにもかかわらず', 'despite ～ing で排出責任と被害の大きさの不均衡を際立たせる。'],
+    ['intensify involuntary cross-border displacement', '意思に反する越境移動を深刻化させる', '気候被害が当事国だけにとどまらないことを具体的な影響で示す。'],
+  ],
+  summary: [
+    ['mandate open-access publishing', 'オープンアクセス出版を義務づける', 'mandate は任意の推奨ではなく、助成機関が課す要件を表す。'],
+    ['has generated new inequities', '新たな不公平を生んだ', '読み手が払う購読料と、書き手が払う掲載料の違いを押さえる。'],
+    ['without pricing out authors', '費用を理由に著者を締め出さずに', 'price out は、価格が高いため参加できなくなることを表す。'],
+  ],
+  essay: [
+    ['rather than relying on optional aid', '任意の援助に頼るのではなく', 'rather than ～ing で比較対象を示し、法的義務を支持する立場を明確にする。'],
+    ['predictable statutory funding', '予測可能な、法に基づく資金拠出', 'predictable は金額の大きさでなく、長期計画を立てられる確実性を表す。'],
+    ['safeguards global economic and humanitarian security', '世界の経済・人道上の安全を守る', '食料供給や緊急援助の具体例を続け、他国にも利益があると裏づける。'],
+  ],
+};
+
+function GradeOneModel({ task, kind }: { task: UnifiedWritingTask; kind: string }) {
+  const notes = gradeOneNotes[task.id] ?? [];
+  const essay = kind === 'essay';
+  const labels = essay ? ['序論・立場', '理由 1', '理由 2', '理由 3', '結論'] : ['背景・要点', '対比・課題', '結論・提案'];
+  const paragraphs = essay ? task.model.split(/\n+/).filter(Boolean) :
+    task.model.split(/ (?=(?:However|Yet|To maintain|Consequently),? )/);
+  const [sourceTranslation, explanation] = task.commentary.startsWith('【元文の和訳】')
+    ? task.commentary.replace(/^【元文の和訳】\s*/, '').split(/\n\n【構成・表現のポイント】\s*/)
+    : ['', task.commentary.replace(/^【構成・表現のポイント】\s*/, '')];
+  const highlight = (text: string) => {
+    const matches = notes.map(([phrase]) => ({ phrase, at: text.indexOf(phrase) })).filter(x => x.at >= 0).sort((a, b) => a.at - b.at);
+    let cursor = 0;
+    const parts = matches.map(({ phrase, at }) => {
+      const before = text.slice(cursor, at);
+      cursor = at + phrase.length;
+      return <span key={phrase}>{before}<mark>{phrase}</mark></span>;
+    });
+    return <>{parts}{text.slice(cursor)}</>;
+  };
+  return (
+    <div data-writing-model>
+      <h3>参考解答 <small>一例・{wordCount(task.model)}語</small></h3>
+      <ol className="ew-model-steps">
+        {paragraphs.map((paragraph, index) => (
+          <li key={index}><strong>{labels[index] ?? `段落 ${index + 1}`}</strong><p lang="en">{highlight(paragraph)}</p></li>
+        ))}
+      </ol>
+      <h3>構成・表現のポイント</h3>
+      <p className="ew-review-explanation">{explanation}</p>
+      <h3>重要語句・使い方</h3>
+      <dl className="ew-key-phrases">
+        {notes.map(([phrase, meaning, use]) => (
+          <div key={phrase}><dt><mark lang="en">{phrase}</mark></dt><dd><b>{meaning}</b><br />{use}</dd></div>
+        ))}
+      </dl>
+      {task.modelTranslation && <details><summary>参考解答の和訳</summary><p>{task.modelTranslation}</p></details>}
+      {sourceTranslation && <details><summary>元の英文の和訳</summary><p>{sourceTranslation}</p></details>}
+      <p className="ew-disclaimer">参考解答と同じ文章にする必要はありません。{essay ? '理由同士が重ならず、具体例で立場を支えられているか' : '原文の論旨を保ち、細部を自分の言葉で圧縮できているか'}を比べてみましょう。</p>
+    </div>
+  );
+}
+
 export function EikenWriting({
   uid,
   grade: selectedGrade,
@@ -132,10 +210,8 @@ export function EikenWriting({
       setTaskId(initialTaskKey);
       return;
     }
-    if (!gradeTasks.some(t => t.key === taskId)) {
-      setTaskId(groups[0]?.items[0]?.key ?? gradeTasks[0].key);
-    }
-  }, [grade, gradeTasks, groups, initialTaskKey, taskId]);
+    setTaskId(previous => gradeTasks.some(t => t.key === previous) ? previous : (groups[0]?.items[0]?.key ?? gradeTasks[0].key));
+  }, [gradeTasks, groups, initialTaskKey]);
 
   const task = gradeTasks.find(t => t.key === taskId) ?? groups[0]?.items[0] ?? gradeTasks[0];
   const activeGroup = groups.find(g => g.items.some(i => i.key === task.key)) ?? groups[0];
@@ -143,11 +219,15 @@ export function EikenWriting({
   const [saved, setSaved] = useState(() => read(uid));
   const [message, setMessage] = useState('');
   const [showModel, setShowModel] = useState(false);
+  const [submitted, setSubmitted] = useState<{ key: string; text: string } | null>(null);
+  const reviewHeading = useRef<HTMLHeadingElement>(null);
+  const editor = useRef<HTMLTextAreaElement>(null);
   const [syncing, setSyncing] = useState(false);
   const current = saved.data.drafts[task.key] ?? blank;
 
   useEffect(() => {
     setShowModel(false);
+    setSubmitted(null);
     setMessage('');
   }, [task.key]);
 
@@ -182,17 +262,25 @@ export function EikenWriting({
     }
   };
 
+  const gradeOne = grade === 'eiken_1';
+  const reviewing = gradeOne && submitted?.key === task.key && submitted.text === current.text;
+  useEffect(() => {
+    if (reviewing) reviewHeading.current?.focus();
+  }, [reviewing]);
   const reviewedCount = gradeTasks.filter(t => saved.data.drafts[t.key]?.reviewed).length;
   const currentWords = wordCount(current.text);
   const targetRange = parseTargetRange(task.target);
   const taskKindInfo = shortTaskKind(task);
+  const topic = gradeOne ? task.instruction.match(/^TOPIC:\s*(.+)$/m)?.[1] : undefined;
+  const instructions = topic ? task.instruction.replace(/^TOPIC:\s*.+$/m, '').trim() : task.instruction;
+  const [sourceTitle, ...sourceParagraphs] = task.source && task.bookletId ? task.source.split(/\n\n/) : ['', task.source];
   const structureHints = structureHintsForKind(taskKindInfo.kind);
   const inTargetRange = targetRange ? currentWords >= targetRange[0] && currentWords <= targetRange[1] : false;
   const overTargetRange = targetRange ? currentWords > targetRange[1] : false;
   const gaugePct = targetRange ? Math.min(100, Math.round((currentWords / targetRange[1]) * 100)) : 0;
 
   return (
-    <main className="ew-page" data-writing>
+    <main className="ew-page" data-grade-one={gradeOne || undefined} data-writing>
       <header className="ew-header">
         <button type="button" className="ew-back-btn" onClick={onBack}>
           <ArrowLeft size={18} />学習へ
@@ -292,24 +380,40 @@ export function EikenWriting({
 
       <div className="ew-workspace">
         <section className="ew-prompt" aria-labelledby="writing-task-title">
+          {gradeOne && <div className="ew-stage-label"><BookOpen size={15} aria-hidden="true" /> 英検1級 ・ {taskKindInfo.label}</div>}
           <h2 id="writing-task-title">{task.title}</h2>
-          <p style={{ whiteSpace: 'pre-wrap' }}>{task.instruction}</p>
-          {task.source && <blockquote lang="en">{task.source}</blockquote>}
-          <p className="ew-target">{task.target}</p>
-          <div className="ew-structure-guide" aria-label="構成のヒント">
+          <p className="ew-instructions">{gradeOne ? instructions : task.instruction}</p>
+          {topic && <div className="ew-topic"><b>TOPIC</b><p lang="en">{topic}</p></div>}
+          {gradeOne && <p className="ew-target">{targetRange ? `語数の目安 ${targetRange[0]}〜${targetRange[1]}語` : task.target}</p>}
+          {task.source && (gradeOne ? (
+            <article className="ew-source" lang="en">
+              {sourceTitle && <h3>{sourceTitle}</h3>}
+              {sourceParagraphs.join('\n\n').split(/\n\n/).map((paragraph, i) => <p key={i}>{paragraph}</p>)}
+            </article>
+          ) : <blockquote lang="en">{task.source}</blockquote>)}
+          {!gradeOne && <p className="ew-target">{task.target}</p>}
+          {!gradeOne && <div className="ew-structure-guide" aria-label="構成のヒント">
             <strong>構成ガイド（{taskKindInfo.label}）</strong>
             <ul>
               {structureHints.map(hint => (
                 <li key={hint}>{hint}</li>
               ))}
             </ul>
-          </div>
-          <p className="ew-disclaimer">独自の重点練習です。自動採点・合否判定は行いません。5級・4級の筆記ライティング課題は設けていません。</p>
+          </div>}
+          {!gradeOne && <p className="ew-disclaimer">独自の重点練習です。自動採点・合否判定は行いません。5級・4級の筆記ライティング課題は設けていません。</p>}
         </section>
 
         <section className="ew-answer">
+          {gradeOne && <div className="ew-stage-label"><PenLine size={15} aria-hidden="true" /> {reviewing ? '02 ・ 答え合わせ' : '01 ・ 解答を書く'}</div>}
+          {reviewing ? <>
+            <h2 ref={reviewHeading} tabIndex={-1}>自分の解答 <small>{currentWords}語</small></h2>
+            <p className="ew-submitted-answer" lang="en">{current.text}</p>
+            <button type="button" onClick={() => { setSubmitted(null); requestAnimationFrame(() => editor.current?.focus()); }}>解答を修正する</button>
+          </> : <>
           <label htmlFor="writing-answer">あなたの英文</label>
           <textarea
+            ref={editor}
+            spellCheck={gradeOne ? false : undefined}
             id="writing-answer"
             lang="en"
             value={current.text}
@@ -352,6 +456,18 @@ export function EikenWriting({
               />
             </div>
           )}
+          {gradeOne && <>
+            <div className="ew-actions ew-submit">
+              <button type="button" className="ew-primary-btn" disabled={!currentWords || !!saved.error}
+                onClick={() => setSubmitted({ key: task.key, text: current.text })}>
+                <CheckCircle2 size={16} aria-hidden="true" />解答を提出して答え合わせ
+              </button>
+            </div>
+            <p className="ew-disclaimer">提出後に参考解答と自己点検が表示されます。自動採点は行いません。</p>
+          </>}
+          </>}
+          {reviewing && <GradeOneModel task={task} kind={taskKindInfo.kind} />}
+          {(!gradeOne || reviewing) && <>
           <p className="ew-sync-note">クラウド連携が有効なアカウントでは、他の学習記録と同じ同期対象です。「端末に保存済み」はクラウド送信完了の意味ではありません。</p>
           {auth.currentUser && (FIREBASE_CONFIGURED || USE_EMULATORS) && (
             <button
@@ -402,11 +518,12 @@ export function EikenWriting({
               <CheckCircle2 size={16} />
               {current.reviewed ? '自己点検済み' : '自己点検を完了する'}
             </button>
-            <button type="button" aria-expanded={showModel} onClick={() => setShowModel(value => !value)}>
+            {!gradeOne && <button type="button" aria-expanded={showModel} onClick={() => setShowModel(value => !value)}>
               <BookOpen size={16} />参考解答・解説{showModel ? 'を閉じる' : 'を見る'}
-            </button>
+            </button>}
           </div>
-          {showModel && (
+          </>}
+          {!gradeOne && showModel && (
             <aside data-writing-model>
               <h3>参考解答（一例・{wordCount(task.model)} words）</h3>
               <p lang="en">{task.model}</p>

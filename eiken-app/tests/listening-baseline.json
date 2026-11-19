@@ -170,7 +170,6 @@
     "src/components/StudyRecord.tsx": "8a1b7765f740c9e68566b13975c77b0a409f7fcf",
     "src/components/StudyRecordBattleActions.tsx": "4c4bbc00f459810e63ab283f336db778f3962d89",
     "src/components/TeacherDashboard.tsx": "8a9946d47aada246f47e175c440c4e8db5f4a3d3",
-    "src/components/TitleBgmControl.tsx": "b9d7645c9f9141ec36051a96b586d90b1b1f7598",
     "src/components/TobiraBuddy.tsx": "fbdb0b380f0d2388e751407ba0cbb1be3e45d410",
     "src/components/TobiraMotion.tsx": "6b91d3edd55b48be09ecc993d8a29faa73802fb0",
     "src/components/UnitCard.tsx": "4866b5ee8c1c4345bee32a7d9091083fff6dde05",
@@ -443,7 +442,6 @@
     "src/hooks/useScreenPrefetch.ts": "008626e64a57f68849a14c2592f4fb06aefd2028",
     "src/hooks/useSignInGuard.ts": "4d934afcca10584092badcce2baf30f26a9e621e",
     "src/hooks/useStudyTimeTracker.ts": "80e4f98fcc317a1fca9dd81aec9a36dbb3019cd0",
-    "src/hooks/useTitleBgmController.tsx": "d44f2edcdae16a40d8090cc95470753edb5cdab7",
     "src/hooks/useVirtualKeyboard.ts": "d3056a19628a85b9ebf841bb311bd3a33ccff771",
     "src/main.tsx": "2e21e79b6bd89d43b5084708560ea920ae6c71ce",
     "src/message.tsx": "4d44fc97a1b2519c1a026bc370b5844b46dede96",
@@ -586,6 +584,8 @@
     "src/utils/webSignInCore.ts": "c00a7ea7915a5b18fb36780ade9ba052852c73c5"
   },
   "eikenAdaptations": {
+    "src/components/TitleBgmControl.tsx": "Eiken opening soundtrack volume, one-cycle handoff, and shared BGM settings.",
+    "src/hooks/useTitleBgmController.tsx": "Eiken opening soundtrack volume, one-cycle handoff, and shared BGM settings.",
     "src/components/LaunchScreen.tsx": "Normal-start audit + 2026-11-15 Duo Alpha Cinematics & Title BGM: Eiken disclaimer, grade scope and honest cloud/local entry guidance; shares landscape/portrait AlphaCinematicClip, seamless endPlate idle loop, and TitleBgmMuteButton with mntb-listening.",
     "src/components/Intro.tsx": "Replace university listening-only instructions with actual Eiken grade learning, writing and sync guidance; keep credits.",
     "src/battle/data/battleFriendRoom.ts": "Preserve Eiken listening time across friend modes; mutual-friend contract verified with Auth/Firestore emulators.",

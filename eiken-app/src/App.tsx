@@ -9,7 +9,7 @@ import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
 import { DoorTransition } from './components/ui/DoorTransition';
@@ -153,6 +153,7 @@ import { countSolvedProblemsIn } from './utils/progress';
 import { getChapterIndexOfSubject as getUnitIndexOf } from './data/chapterIndex.generated';
 import { TeacherDashboard } from './components/TeacherDashboard';
 import { useTitleBgmController } from './hooks/useTitleBgmController';
+import { BGM_SILENT_STATES } from './hooks/titleBgmConstants';
 import { FeedbackAdminPanel } from './components/FeedbackAdminPanel';
 import { battleAudio } from './battle/audio/battleAudio';
 import { installFriendPresence } from './utils/friendPresence';
@@ -181,6 +182,8 @@ const IDLE_RESET_MS = 30 * 60 * 1000;
 export default function App() {
   // 画面検証（?screenshot=1 / screenshot_mode）では起動画面を飛ばす
   const [hasEntered, setHasEntered] = useState(isScreenshotLaunch);
+  const [finishingLaunchBgm, setFinishingLaunchBgm] = useState(false);
+  const finishLaunchBgm = useCallback(() => setFinishingLaunchBgm(false), []);
   useGlobalClickSound();
   useEffect(() => installFriendPresence(), []);
   useEffect(() => {
@@ -378,7 +381,11 @@ export default function App() {
   const {
     audioRef, isBgmEnabled, setIsBgmEnabled, bgmVolume, setBgmVolume,
     setHasInteracted, isBgmFadedOut, handleAudioError, handleToggleBgm,
-  } = useTitleBgmController({ appState, hasEntered });
+  } = useTitleBgmController({ appState, hasEntered, deferPlayback: finishingLaunchBgm });
+  const keepLaunchBgm = finishingLaunchBgm && isBgmEnabled && !BGM_SILENT_STATES.includes(appState) && appState !== 'mock';
+  useEffect(() => {
+    if (finishingLaunchBgm && !keepLaunchBgm) finishLaunchBgm();
+  }, [finishingLaunchBgm, keepLaunchBgm, finishLaunchBgm]);
 
   // 通常起動でも利用者が保存したBGMのOFFを尊重する。
 
@@ -488,14 +495,20 @@ export default function App() {
     },
   });
 
-  if (!hasEntered) {
-    const enter = () => { battleAudio().unlock(); setHasInteracted(true); setHasEntered(true); };
-    // 2026-10-19 タイトルの「ゲストで試す」は廃止（ログイン必須）。未ログインならこの次にログイン画面が出る
-    return <LaunchScreen onStart={enter} />;
-  }
+  const enter = (finishBgm: boolean) => {
+    battleAudio().unlock();
+    setHasInteracted(true);
+    setFinishingLaunchBgm(finishBgm);
+    setHasEntered(true);
+  };
 
   return (
     <>
+      {(!hasEntered || keepLaunchBgm) && (
+        <LaunchScreen onStart={enter} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
+          finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
+      )}
+      {hasEntered && <>
       {/* お知らせ（notify）はアプリ内のトーストで出す（components/AppToast.tsx） */}
       <AppToast />
       <>
@@ -842,6 +855,7 @@ export default function App() {
         <DoorTransition screen={appState} />
       </React.Suspense>
 
+      </>}
     </>
   );
 }

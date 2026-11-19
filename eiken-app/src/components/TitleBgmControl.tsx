@@ -1,32 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { setTitleBgmVolume, unlockTitleBgm } from '../battle/audio/titleMediaAudio';
-import { readAudioPreferences, writeAudioPreferences } from '../battle/audio/audioPreferences';
-import { safeGetItem, safeLocalStorage } from '../utils/safeLocalStorage';
+import { readAudioPreferences } from '../battle/audio/audioPreferences';
 
 export const TITLE_SCREEN_BGM_SRC = '/bgm/title_intro_bgm.mp3';
 /**
  * タイトル画面専用BGM（動画④から抽出したループ音源: 実測 -23.0 LUFS / Peak -9.0 dBFS）。
- * 効果音や主CTAの邪魔にならない「控えめ」な音量（標準 volume=0.6 のとき実効 0.21 ≒ -29.5 LUFS）でループ再生する。
+ * 動画中だけ音量を上げる。同じ音源を使い続け、OP→タイトルで再生位置を保持する。
  */
 export const TITLE_SCREEN_BGM_SUBTLE_GAIN = 0.35;
-const TITLE_MUTE_STORAGE_KEY = 'title_screen_bgm_muted';
+export const TITLE_OP_BGM_GAIN = 0.8;
 
-function readInitialMuted(): boolean {
-  try {
-    const saved = safeGetItem(TITLE_MUTE_STORAGE_KEY);
-    if (saved === '1') return true;
-    if (saved === '0') return false;
-    return !readAudioPreferences().bgm;
-  } catch {
-    return false;
-  }
-}
-
-export function useLaunchTitleBgm(active: boolean) {
+export function useLaunchTitleBgm(active: boolean, opening: boolean, muted: boolean) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [muted, setMuted] = useState<boolean>(readInitialMuted);
-  const [interacted, setInteracted] = useState(false);
+  const gain = opening ? TITLE_OP_BGM_GAIN : TITLE_SCREEN_BGM_SUBTLE_GAIN;
+  const gainRef = useRef(gain);
+  gainRef.current = gain;
   const mutedRef = useRef(muted);
   mutedRef.current = muted;
   const activeRef = useRef(active);
@@ -34,24 +23,27 @@ export function useLaunchTitleBgm(active: boolean) {
 
   const targetVolume = () => {
     if (mutedRef.current) return 0;
-    const pref = readAudioPreferences();
-    if (!pref.bgm) return 0;
-    return Math.max(0, Math.min(1, pref.volume * TITLE_SCREEN_BGM_SUBTLE_GAIN));
+    return readAudioPreferences().volume * gainRef.current;
   };
 
   useEffect(() => {
     const onGesture = () => {
-      setInteracted(true);
       const audio = audioRef.current;
-      if (audio && activeRef.current && !mutedRef.current && document.visibilityState !== 'hidden') {
+      if (!audio || mutedRef.current || document.visibilityState === 'hidden') return;
+      if (activeRef.current) {
         unlockTitleBgm(audio, targetVolume());
-        void audio.play().catch(() => undefined);
+        if (audio.paused) void audio.play().catch(() => undefined);
+      } else {
+        // エンブレムへのタップも後続のOP再生に使えるよう、共有AudioContextを先に解錠。
+        unlockTitleBgm(audio, 0);
       }
     };
     window.addEventListener('pointerdown', onGesture, { passive: true });
+    window.addEventListener('click', onGesture);
     window.addEventListener('keydown', onGesture);
     return () => {
       window.removeEventListener('pointerdown', onGesture);
+      window.removeEventListener('click', onGesture);
       window.removeEventListener('keydown', onGesture);
     };
   }, []);
@@ -59,17 +51,15 @@ export function useLaunchTitleBgm(active: boolean) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (active && interacted && !muted && document.visibilityState !== 'hidden') {
+    if (active && !muted && document.visibilityState !== 'hidden') {
       unlockTitleBgm(audio, targetVolume());
       if (audio.paused) {
         void audio.play().catch(() => undefined);
       }
     } else if (!audio.paused) {
-      setTitleBgmVolume(audio, 0);
-      const t = window.setTimeout(() => audio.pause(), 180);
-      return () => window.clearTimeout(t);
+      audio.pause();
     }
-  }, [active, interacted, muted]);
+  }, [active, muted, gain]);
 
   useEffect(() => {
     const onVis = () => {
@@ -77,52 +67,42 @@ export function useLaunchTitleBgm(active: boolean) {
       if (!audio) return;
       if (document.visibilityState === 'hidden') {
         audio.pause();
-      } else if (activeRef.current && interacted && !mutedRef.current) {
+      } else if (activeRef.current && !mutedRef.current) {
         unlockTitleBgm(audio, targetVolume());
         void audio.play().catch(() => undefined);
       }
     };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
-  }, [interacted]);
-
-  useEffect(() => () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
   }, []);
 
-  const toggleMute = () => {
-    const next = !muted;
-    setMuted(next);
-    setInteracted(true);
-    try {
-      safeLocalStorage()?.setItem(TITLE_MUTE_STORAGE_KEY, next ? '1' : '0');
-    } catch { /* ignore storage restrictions */ }
-    writeAudioPreferences({ bgm: !next });
+  useEffect(() => {
+    const audio = audioRef.current;
+    return () => audio?.pause();
+  }, []);
+
+  const toggleMute = (next: boolean) => {
+    mutedRef.current = next;
     const audio = audioRef.current;
     if (!audio) return;
     if (next) {
       setTitleBgmVolume(audio, 0);
       audio.pause();
     } else if (activeRef.current) {
-      unlockTitleBgm(audio, Math.max(0.08, readAudioPreferences().volume * TITLE_SCREEN_BGM_SUBTLE_GAIN));
+      unlockTitleBgm(audio, targetVolume());
       void audio.play().catch(() => undefined);
     }
   };
 
-  const stopTitleBgm = () => {
+  const stopTitleBgm = useCallback(() => {
     activeRef.current = false;
     const audio = audioRef.current;
     if (!audio) return;
     setTitleBgmVolume(audio, 0);
     audio.pause();
-    try {
-      audio.currentTime = 0;
-    } catch { /* ignore seek before metadata */ }
-  };
+  }, []);
 
-  return { audioRef, muted, toggleMute, stopTitleBgm };
+  return { audioRef, toggleMute, stopTitleBgm };
 }
 
 export function TitleBgmMuteButton({ muted, onToggle }: { muted: boolean; onToggle: () => void }) {

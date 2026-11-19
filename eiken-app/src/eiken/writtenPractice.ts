@@ -3,6 +3,7 @@ import { SQ_BODY_MARK, SQ_MARK } from '../utils/explanationFormat';
 import type { EikenGrade } from './config';
 import type { WritingTask } from './materials/original-types';
 import { WRITTEN_BOOKLETS } from './materials/written-booklets';
+import { GRADE_ONE_READING_EXTENSION } from './materials/reading-grade-one-extension';
 import { WRITTEN_BLUEPRINTS, type WrittenExam, type WrittenItem, type WrittenSection } from './writtenExamCore';
 
 export const WRITTEN_SECTION_LABELS: Record<WrittenSection, string> = {
@@ -228,6 +229,22 @@ export function bookletSectionChapters(grade: EikenGrade, section: WrittenSectio
         practiceProblems: problems,
       },
     ];
+  });
+}
+
+/** Supplemental instruction uses the same passage and explanation components as booklet practice. */
+export function gradeOneReadingExtension(tabTitle: string): Chapter[] {
+  return GRADE_ONE_READING_EXTENSION.map((passage, index) => {
+    const id = `eiken_1_reading_extra_${passage[0].passage!.id}`;
+    const items = passage.map((item, question) => ({ ...item, id: `${id}_q${question + 1}` }));
+    const practice: WrittenExam = { id, grade: 'eiken_1', round: index + 1, revision: 'supplement-v1', origin: 'manatobi-original', review: 'approved', items };
+    return {
+      id, realTitle: tabTitle, questionGroup: WRITTEN_SECTION_LABELS.reading,
+      title: `追加読解 ${index + 1}｜${passage[0].passage!.title}`,
+      abstractTitle: `追加読解 ${index + 1}｜${passage[0].passage!.title}（全${items.length}問）`,
+      topics: ['長文の内容一致選択・追加演習'],
+      marks: items.length, miniTest: [], practiceProblems: passageProblems(practice, items),
+    };
   });
 }
 

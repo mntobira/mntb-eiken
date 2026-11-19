@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES } from '../src/components/AlphaCinematicClip';
-import { TITLE_SCREEN_BGM_SRC, TITLE_SCREEN_BGM_SUBTLE_GAIN } from '../src/components/TitleBgmControl';
+import { TITLE_SCREEN_BGM_SRC, TITLE_SCREEN_BGM_SUBTLE_GAIN, TITLE_OP_BGM_GAIN } from '../src/components/TitleBgmControl';
 
 const probe = (file: string) => {
   try {
@@ -69,6 +69,9 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     expect(statSync(bgmFile).size).toBeLessThan(500_000);
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeGreaterThan(0.1);
     expect(TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeLessThanOrEqual(0.5);
+    expect(TITLE_OP_BGM_GAIN / TITLE_SCREEN_BGM_SUBTLE_GAIN).toBeGreaterThan(2);
+    expect(TITLE_OP_BGM_GAIN).toBeLessThanOrEqual(1);
+    expect(launch).not.toContain('1級は準備中');
   });
 
   it('対戦カウントダウン（3・2・1・START!）とガチャ確定演出（GachaReveal / RewardVideo）に統合されている', () => {

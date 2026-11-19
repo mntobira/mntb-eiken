@@ -252,7 +252,9 @@ export function ChapterSelection({
     if (isEiken) {
       const isRoundChapter = (c: Chapter) => /_(written_\d+|listening_r\d+)_/.test(c.id);
       const booklet = chapters.filter(isRoundChapter);
-      const warmup = chapters.filter(c => !isRoundChapter(c));
+      const isExtra = (c: Chapter) => c.id.startsWith('eiken_1_reading_extra_');
+      const extra = chapters.filter(isExtra);
+      const warmup = chapters.filter(c => !isRoundChapter(c) && !isExtra(c));
       const hasListeningRounds = booklet.some(c => c.id.includes('_listening_r'));
       const out: { key: string | null; label: string | null; chapters: Chapter[] }[] = [];
       if (booklet.length > 0) {
@@ -263,6 +265,9 @@ export function ChapterSelection({
             : '回別 大問通し演習（印刷冊子・通し模試と共通）',
           chapters: booklet,
         });
+      }
+      if (extra.length > 0) {
+        out.push({ key: 'eiken:extra', label: `追加の長文読解（計${extra.reduce((n, c) => n + (c.marks ?? 0), 0)}問）`, chapters: extra });
       }
       if (warmup.length > 0) {
         out.push({

@@ -7,7 +7,7 @@ import { BRIDGE_UNIT } from './materials/original-bridge';
 import { UPPER_UNIT } from './materials/original-upper';
 import { ADVANCED_UNIT } from './materials/original-advanced';
 import { GRADE_1_UNIT } from './materials/original-grade1';
-import { bookletSectionChapters, getGradeDaimonSpecs } from './writtenPractice';
+import { bookletSectionChapters, getGradeDaimonSpecs, gradeOneReadingExtension } from './writtenPractice';
 import { getGradeListeningPartSpecs, listeningPartChapters } from './listeningPractice';
 import { ALL_LISTENING_EXAMS } from './materials/listening-booklets';
 import { GRADE_1_LISTENING_EXAMS } from './materials/listening-g1';
@@ -259,7 +259,7 @@ export function partsForGrade(grade: EikenGrade): Part[] {
       spec.section === 'short'
         ? [...bookletChapters, vocabularyIntro]
         : spec.section === 'reading'
-        ? [...bookletChapters, readingIntro]
+        ? [...bookletChapters, ...(grade === 'eiken_1' ? gradeOneReadingExtension(spec.tabTitle) : []), readingIntro]
         : bookletChapters;
     if (spec.section === 'cloze' || spec.section === 'reading') {
       readingChapters.push(...chapters);
