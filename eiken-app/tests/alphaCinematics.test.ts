@@ -54,7 +54,7 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     }
   });
 
-  it('タイトル画面が「エンブレム → モンスト風OP（②横/③縦・タップスキップ可）→ 既存タイトル画面で①切り抜き演出 → 待機」を備える', () => {
+  it('タイトル画面はOPをタップでスキップでき、とびら君切り抜き演出には専用スキップボタンを出さない', () => {
     const launch = readFileSync('src/components/LaunchScreen.tsx', 'utf8');
     expect(launch).toContain('(orientation: landscape) and (min-width: 768px)');
     expect(launch).toContain('FULLFRAME_CINEMATIC_MOVIES.titleOpLandscape');
@@ -62,6 +62,7 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     expect(launch).toContain('ALPHA_CINEMATIC_CLIPS.battleCountdown');
     expect(launch).toContain('data-launch-op');
     expect(launch).toContain('タップしてスキップ');
+    expect(launch).not.toContain('skippable');
     expect(launch).toContain('TitleBgmMuteButton');
 
     const bgmFile = resolve('public', '.' + TITLE_SCREEN_BGM_SRC);
