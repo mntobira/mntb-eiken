@@ -34,6 +34,8 @@ import { ModeSelection } from './components/ModeSelection';
  */
 const StudyCatalog = React.lazy(() => import('./components/StudyCatalog').then(m => ({ default: m.StudyCatalog })));
 const EikenWriting = React.lazy(() => import('./components/EikenWriting').then(module => ({ default: module.EikenWriting })));
+const ScbtSpeakingPractice = React.lazy(() => import('./sugoroku/speaking-scbt/ScbtSpeakingPractice').then(module => ({ default: module.ScbtSpeakingPractice })));
+const SugorokuReviewHub = React.lazy(() => import('./sugoroku/review-portal/SugorokuReviewHub').then(module => ({ default: module.SugorokuReviewHub })));
 const EikenMockExam = React.lazy(() => import('./components/EikenMockExam').then(module => ({ default: module.EikenMockExam })));
 const FoundationPage = React.lazy(() =>
   import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
@@ -199,7 +201,19 @@ export default function App() {
     quizRange, setQuizRange, quizAnswers, setQuizAnswers, isGuest, setIsGuest,
     selectedSubject, setSelectedSubject,
   } = useAppPersistence();
-  // 使われ方の記録：どの画面を開いたか（設定でオフにできる。utils/analytics.ts）
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const portal = new URLSearchParams(window.location.search).get('portal');
+    if (portal === 'review' || portal === 'writing-review' || portal === 'speaking-review') {
+      setHasEntered(true);
+      setReviewHubInitialTab(portal === 'speaking-review' ? 'speaking' : 'writing');
+      setReviewHubBackTo('home');
+      setAppState('sugoroku_review');
+    } else if (portal === 'speaking') {
+      setHasEntered(true);
+      setAppState('speaking');
+    }
+  }, [setAppState]);
   useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });
@@ -210,6 +224,8 @@ export default function App() {
   const [mockBackTo, setMockBackTo] = useState<'study' | 'chapters'>('study');
   const [writingInitialTaskKey, setWritingInitialTaskKey] = useState<string | null>(null);
   const [writingBackTo, setWritingBackTo] = useState<'study' | 'chapters'>('study');
+  const [reviewHubInitialTab, setReviewHubInitialTab] = useState<'writing' | 'speaking'>('writing');
+  const [reviewHubBackTo, setReviewHubBackTo] = useState<AppState>('study');
   const [growthPage, setGrowthPage] = useState<GrowthPage>('overview');
   // 対戦 → 演習 → 対戦に戻る導線とスクロール位置は hooks/useBattleReturn.ts
   const { battleReturnActive, setBattleReturnActive, battleScrollRef, returnToBattle, rememberBattleScroll } = useBattleReturn(appState, setAppState);
@@ -324,6 +340,7 @@ export default function App() {
     setStudyLastContent(content.id);
     safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
     if (content.action.kind === 'writing') { setWritingInitialTaskKey(null); setWritingBackTo('study'); setAppState('writing'); return; }
+    if (content.action.kind === 'speaking') { setAppState('speaking'); return; }
     if (content.action.kind === 'mock') {
       setMockInitialKind('written');
       setMockBackTo('study');
@@ -770,7 +787,9 @@ export default function App() {
                 progressOf={(subject) => studyProgressOf(subject)}
               />
             </React.Suspense>}
-            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} /></React.Suspense>}
+            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} onOpenTeacherReview={() => { setReviewHubInitialTab('writing'); setReviewHubBackTo('writing'); setAppState('sugoroku_review'); }} /></React.Suspense>}
+            {appState === 'speaking' && <React.Suspense fallback={<ScreenLoading />}><ScbtSpeakingPractice key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} onOpenTeacherReview={() => { setReviewHubInitialTab('speaking'); setReviewHubBackTo('speaking'); setAppState('sugoroku_review'); }} /></React.Suspense>}
+            {appState === 'sugoroku_review' && <React.Suspense fallback={<ScreenLoading />}><SugorokuReviewHub initialTab={reviewHubInitialTab} onBack={() => setAppState(reviewHubBackTo)} /></React.Suspense>}
             {appState === 'mock' && <React.Suspense fallback={<ScreenLoading />}><EikenMockExam key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialExamKind={mockInitialKind} backLabel={mockBackTo === 'chapters' ? '大問別へ' : '学習へ'} onBack={() => setAppState(mockBackTo)} onRunningChange={setMockRunning} /></React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
               <FoundationPage key={auth.currentUser?.uid || 'guest'}

@@ -1,0 +1,247 @@
+.scbt-page {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #faf8f1;
+  color: #233342;
+  padding: 16px 20px 96px;
+  overflow: auto;
+}
+
+.scbt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.scbt-back-btn {
+  min-height: 40px;
+  border: 1px solid #b8cec9;
+  border-radius: 12px;
+  background: #fffdf8;
+  padding: 6px 13px;
+  font-weight: 700;
+  color: #2c3e50;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.scbt-card {
+  background: #ffffff;
+  border: 1px solid #ddd7c8;
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 2px 0 #eae3d2;
+}
+
+.scbt-stepper {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.scbt-step-pill {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #f1efe8;
+  color: #5b6770;
+  border: 1px solid #dedad0;
+}
+
+.scbt-step-pill[data-active="true"] {
+  background: #1f5c51;
+  color: #ffffff;
+  border-color: #1f5c51;
+}
+
+.scbt-step-pill[data-done="true"] {
+  background: #e1f4ee;
+  color: #1f5c51;
+  border-color: #9fd4c5;
+}
+
+.scbt-passage-card {
+  background: #fcfbf7;
+  border: 1.5px solid #c9d8d3;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.scbt-passage-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: #1a2e3b;
+}
+
+.scbt-passage-text {
+  font-size: 16px;
+  line-height: 1.85;
+  margin: 0;
+  color: #1f2d3a;
+}
+
+.scbt-timer-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #eef7f4;
+  border: 1.5px solid #9fd4c5;
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.scbt-timer-box[data-recording="true"] {
+  background: #fff1f2;
+  border-color: #fda4af;
+}
+
+.scbt-timer-num {
+  font-size: 24px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: #1f5c51;
+}
+
+.scbt-timer-box[data-recording="true"] .scbt-timer-num {
+  color: #be123c;
+}
+
+.scbt-meter-track {
+  height: 10px;
+  width: 160px;
+  max-width: 100%;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.scbt-meter-fill {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.08s linear;
+}
+
+.scbt-primary-btn {
+  min-height: 44px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  border: 1px solid #1f6b5c;
+  background: #1f6b5c;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.scbt-primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.scbt-danger-btn {
+  min-height: 44px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  border: 1px solid #be123c;
+  background: #be123c;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.scbt-secondary-btn {
+  min-height: 42px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #b8cec9;
+  background: #ffffff;
+  color: #243b45;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.scbt-illus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.scbt-illus-frame {
+  background: #ffffff;
+  border: 1.5px solid #2c3e50;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scbt-review-part-row {
+  border: 1px solid #dcd7c9;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fcfbf8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scbt-speed-btn {
+  min-height: 32px;
+  padding: 3px 9px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+}
+
+.scbt-speed-btn[data-active="true"] {
+  background: #1e293b;
+  border-color: #1e293b;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .scbt-page {
+    padding: 10px 12px 88px;
+  }
+  .scbt-card {
+    padding: 14px;
+  }
+  .scbt-passage-text {
+    font-size: 14.5px;
+  }
+}
