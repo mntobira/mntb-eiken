@@ -10,6 +10,7 @@
 @source "./styles";
 @source "./eiken";
 @source not "./eiken/materials";
+@source "./sugoroku";
 @source "./battle/ui";
 @source "./battle/core";
 @source "./features";

@@ -9,6 +9,7 @@ import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
+import { SugorokuAuthGate, useSugorokuPortalMode } from './sugoroku/auth';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -241,6 +242,7 @@ export default function App() {
   const pdfOpen = usePdfOpen();
   const bannerAdSuppressed = useBannerAdSuppressed();
   useJukuAdFree(); // 塾クラスの生徒には広告を出さない（2026-11-04）
+  const sugorokuPortalMode = useSugorokuPortalMode();
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogSubject));
@@ -503,7 +505,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <SugorokuAuthGate enforce={sugorokuPortalMode === 'juku'}>
       {(!hasEntered || keepLaunchBgm) && (
         <LaunchScreen onStart={enter} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
           finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
@@ -856,6 +858,6 @@ export default function App() {
       </React.Suspense>
 
       </>}
-    </>
+    </SugorokuAuthGate>
   );
 }

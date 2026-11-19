@@ -1,4 +1,114 @@
 rules_version = '2';
 service firebase.storage {
- match /b/{bucket}/o { match /{allPaths=**} { allow read, write: if false; } }
+  match /b/{bucket}/o {
+    // ---------------------------------------------------------------
+    // Helper Functions（すごろく塾 S-CBT スピーキング録音保護ルール）
+    // ---------------------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 録音パートIDの厳格固定（reading_aloud / q1 / q2 / q3 / q4 × webm / m4a / mp4）
+    function isValidSpeakingFileName(fileName) {
+      return fileName.matches('^(reading_aloud|q1|q2|q3|q4)\\.(webm|m4a|mp4)$');
+    }
+
+    // 音声MIME制限（ChromeのWebM/Opus、iPad/iPhone SafariのMP4/AAC・M4Aのみ許可）
+    function isValidSpeakingMimeType() {
+      return request.resource != null
+        && request.resource.contentType is string
+        && (
+          request.resource.contentType.matches('^audio/(webm|mp4|x-m4a|m4a|aac|mpeg)(;.*)?$')
+          || request.resource.contentType.matches('^video/mp4(;.*)?$')
+        );
+    }
+
+    // 1録音ファイルあたり 5MB 以下（5 * 1024 * 1024 = 5,242,880 bytes）
+    function isWithinSpeakingSizeLimit() {
+      return request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // クラスが plan == 'juku' の有効な塾クラスか
+    function isJukuClassroom(classId) {
+      return firestore.exists(/databases/(default)/documents/eiken_classrooms/$(classId))
+        && firestore.get(/databases/(default)/documents/eiken_classrooms/$(classId)).data.get('plan', 'free') == 'juku';
+    }
+
+    // 生徒本人が該当クラスに在籍しているか
+    function isEnrolledStudent(classId, uid) {
+      return isAuthenticated()
+        && request.auth.uid == uid
+        && firestore.exists(/databases/(default)/documents/eiken_class_members/$(classId + '_' + uid));
+    }
+
+    // 担当クラス講師（teacherUid）または すごろく塾スタッフ（owner / staff）か
+    function isAuthorizedClassReviewer(classId) {
+      return isAuthenticated()
+        && (
+          (
+            firestore.exists(/databases/(default)/documents/eiken_classrooms/$(classId))
+            && firestore.get(/databases/(default)/documents/eiken_classrooms/$(classId)).data.teacherUid == request.auth.uid
+          )
+          || (
+            firestore.exists(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid))
+            && firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid)).data.active == true
+            && (
+              firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid)).data.role == 'owner'
+              || (
+                firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid)).data.role == 'staff'
+                && (
+                  !('classIds' in firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid)).data)
+                  || classId in firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(request.auth.uid)).data.classIds
+                )
+              )
+            )
+          )
+        );
+    }
+
+    // ===============================================================
+    // S-CBT スピーキング録音パス
+    //   sugoroku_speaking/{classId}/{uid}/{submissionId}/{fileName}
+    //   - 生徒本人は自分の在籍塾クラス配下・自分の uid 配下にのみアップロード・自己再生可
+    //   - 担当クラス講師（および塾 owner / 担当 staff）のみ再生（get）可
+    //   - 他生徒・他クラス講師・未認証ユーザーは読み書きとも完全拒否
+    // ===============================================================
+    match /sugoroku_speaking/{classId}/{uid}/{submissionId}/{fileName} {
+      allow get: if (isAuthenticated() && request.auth.uid == uid && isEnrolledStudent(classId, uid))
+        || (isJukuClassroom(classId) && isAuthorizedClassReviewer(classId));
+      allow list: if false;
+
+      allow create, update: if isEnrolledStudent(classId, uid)
+        && isJukuClassroom(classId)
+        && submissionId.matches('^[A-Za-z0-9_-]{1,120}$')
+        && isValidSpeakingFileName(fileName)
+        && isWithinSpeakingSizeLimit()
+        && isValidSpeakingMimeType();
+
+      allow delete: if isAuthenticated() && request.auth.uid == uid && isEnrolledStudent(classId, uid);
+    }
+
+    // eiken_ プレフィックス付きパスでアクセスされた場合も同一の厳格ルールで保護
+    match /eiken_sugoroku_speaking/{classId}/{uid}/{submissionId}/{fileName} {
+      allow get: if (isAuthenticated() && request.auth.uid == uid && isEnrolledStudent(classId, uid))
+        || (isJukuClassroom(classId) && isAuthorizedClassReviewer(classId));
+      allow list: if false;
+
+      allow create, update: if isEnrolledStudent(classId, uid)
+        && isJukuClassroom(classId)
+        && submissionId.matches('^[A-Za-z0-9_-]{1,120}$')
+        && isValidSpeakingFileName(fileName)
+        && isWithinSpeakingSizeLimit()
+        && isValidSpeakingMimeType();
+
+      allow delete: if isAuthenticated() && request.auth.uid == uid && isEnrolledStudent(classId, uid);
+    }
+
+    // それ以外のすべての Storage パスは完全拒否（既存の既定拒否を維持）
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }
