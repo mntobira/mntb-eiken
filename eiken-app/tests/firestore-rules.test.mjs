@@ -517,6 +517,14 @@ test('storage.rules: S-CBT audio upload enforces student ownership, <=5MB limit,
     await assertFails(uploadBytes(ref(unauthorizedSt, validPath), smallAudio, { contentType: 'audio/webm' }));
   }
 
+  // 3b. ちょうど 5MB（5 * 1024 * 1024 bytes）は上限以内のため成功
+  const exact5Mb = new Uint8Array(5 * 1024 * 1024);
+  await assertSucceeds(uploadBytes(
+    ref(stStudentA, 'sugoroku_speaking/class_juku_a/student_a/spk_01/q4.webm'),
+    exact5Mb,
+    { contentType: 'audio/webm' },
+  ));
+
   // 4. 5MB 超過ファイル（5MB + 1 byte）は拒否
   const over5Mb = new Uint8Array(5 * 1024 * 1024 + 1);
   await assertFails(uploadBytes(
@@ -543,4 +551,122 @@ test('storage.rules: S-CBT audio upload enforces student ownership, <=5MB limit,
   // 7. 生徒本人は自分の録音を削除可能、他人は削除不可
   await assertFails(deleteObject(ref(stStudentB, safariPath)));
   await assertSucceeds(deleteObject(ref(stStudentA, safariPath)));
+});
+
+test('sugoroku class member subcollection, flat study logs, and suspended member revocation', async () => {
+  await seedSugorokuFixtures();
+
+  const stStudentA = env.authenticatedContext('student_a').storage();
+
+  // 1. クラス別 sugoroku_members サブコレクション（AI 1 管理ポータル連携）
+  const classMemberARef = doc(studentA, 'eiken_classrooms/class_juku_a/sugoroku_members/student_a');
+  await assertSucceeds(setDoc(classMemberARef, {
+    uid: 'student_a',
+    classId: 'class_juku_a',
+    role: 'student',
+    targetGrade: 'eiken_2',
+    active: true,
+    adFree: true,
+    displayName: 'たくみ',
+    consentAcceptedAt: Date.now(),
+    updatedAt: Date.now(),
+    serverUpdatedAt: serverTimestamp(),
+  }));
+
+  // 生徒本人が自分で rosterName や note を書き込むのは拒否
+  await assertFails(setDoc(doc(studentA, 'eiken_classrooms/class_juku_a/sugoroku_members/student_a'), {
+    uid: 'student_a',
+    classId: 'class_juku_a',
+    role: 'student',
+    targetGrade: 'eiken_2',
+    active: true,
+    adFree: true,
+    rosterName: '勝手な名簿名',
+    note: '勝手な指導メモ',
+    updatedAt: Date.now(),
+  }));
+
+  // 担当講師（teacher_a）は rosterName・note・targetGrade を更新でき、一覧 list も取得可能
+  await assertSucceeds(setDoc(doc(teacherA, 'eiken_classrooms/class_juku_a/sugoroku_members/student_a'), {
+    uid: 'student_a',
+    classId: 'class_juku_a',
+    role: 'student',
+    rosterName: '佐藤 拓海',
+    targetGrade: 'eiken_pre1',
+    note: 'ライティングの理由展開が毎週伸びています',
+    active: true,
+    adFree: true,
+    updatedAt: Date.now(),
+    serverUpdatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(getDocs(collection(teacherA, 'eiken_classrooms/class_juku_a/sugoroku_members')));
+
+  // 他生徒や他クラス講師はクラス名簿サブコレクションを list 不可（実名・指導メモ漏洩防止）
+  await assertFails(getDocs(collection(studentB, 'eiken_classrooms/class_juku_a/sugoroku_members')));
+  await assertFails(getDocs(collection(teacherB, 'eiken_classrooms/class_juku_a/sugoroku_members')));
+
+  // 2. フラット学習時間ログ eiken_sugoroku_study_logs/{uid}_{dateKey}（AI 2 timelogStore 互換）
+  await assertSucceeds(setDoc(doc(studentA, 'eiken_sugoroku_study_logs/student_a_2026-11-19'), {
+    uid: 'student_a',
+    dateKey: '2026-11-19',
+    totalActiveSeconds: 2400,
+    byGradeSkill: { 'eiken_2:listening': 1200, 'eiken_2:vocab': 1200 },
+    accuracyByGradeSkill: { 'eiken_2:listening': { correct: 18, total: 22 } },
+    solvedCount: 22,
+    updatedAt: Date.now(),
+  }));
+
+  // 他人の UID プレフィックスを偽装した書き込みは拒否
+  await assertFails(setDoc(doc(studentA, 'eiken_sugoroku_study_logs/student_b_2026-11-19'), {
+    uid: 'student_a',
+    dateKey: '2026-11-19',
+    totalActiveSeconds: 100,
+    byGradeSkill: {},
+    solvedCount: 1,
+    updatedAt: Date.now(),
+  }));
+
+  // 本人・担当講師は読めるが、他生徒・他クラス講師は読めない
+  await assertSucceeds(getDoc(doc(studentA, 'eiken_sugoroku_study_logs/student_a_2026-11-19')));
+  await assertSucceeds(getDoc(doc(teacherA, 'eiken_sugoroku_study_logs/student_a_2026-11-19')));
+  await assertFails(getDoc(doc(studentB, 'eiken_sugoroku_study_logs/student_a_2026-11-19')));
+  await assertFails(getDoc(doc(teacherB, 'eiken_sugoroku_study_logs/student_a_2026-11-19')));
+
+  // 3. 退塾・停止（active: false）時の即時遮断テスト
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const adminDb = ctx.firestore();
+    await setDoc(doc(adminDb, 'eiken_sugoroku_members/student_a'), {
+      uid: 'student_a',
+      role: 'student',
+      active: false,
+      adFree: false,
+      classIds: ['class_juku_a'],
+    });
+  });
+
+  // 停止された student_a は新規ライティング提出・学習ログ更新・Storage 録音アップロードがすべて即時拒否される
+  await assertFails(setDoc(doc(studentA, 'eiken_classrooms/class_juku_a/writing_submissions/sub_after_suspend'), {
+    studentUid: 'student_a',
+    studentName: 'たくみ',
+    grade: 'eiken_2',
+    taskKey: 'g2_email_01',
+    wordCount: 90,
+    text: 'Suspended user attempt.',
+    formatWarnings: [],
+    status: 'submitted',
+    submittedAt: Date.now(),
+  }));
+  await assertFails(setDoc(doc(studentA, 'eiken_sugoroku_study_logs/student_a_2026-11-20'), {
+    uid: 'student_a',
+    dateKey: '2026-11-20',
+    totalActiveSeconds: 300,
+    byGradeSkill: {},
+    solvedCount: 5,
+    updatedAt: Date.now(),
+  }));
+  await assertFails(uploadBytes(
+    ref(stStudentA, 'sugoroku_speaking/class_juku_a/student_a/spk_suspended/q1.webm'),
+    new Uint8Array(512),
+    { contentType: 'audio/webm' },
+  ));
 });

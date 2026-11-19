@@ -1,13 +1,14 @@
 /**
+ * ===================================================================
  * すごろく塾 認証・招待コード承認・ロール判定・Ad-Free 連動の Firestore サービス層
- *
+ * ===================================================================
  * 既存の:
  *   - utils/googleAuth.ts（signInWithGoogle / consumeGoogleRedirectResult / isInAppBrowser）
  *   - authDomainPolicy.ts（shouldUseSameOriginAuth）
  *   - utils/classroom.ts（joinClassroomByCode / fetchMyMembershipDetails / fetchMyClassrooms）
  *   - ads/adFree.ts ＆ utils/classAssignments.ts（saveJukuMemberships / setAdFree）
  * を活用し、学校 iPad Safari ポップアップ制限のリダイレクト切替対応を含む
- * Googleログイン導線・招待コード参加・sugoroku_members 同期・管理者ロール判定を提供する。
+ * Googleログイン導線・招待コード参加・sugoroku_members デュアル同期・管理者ロール判定を提供する。
  */
 
 import {
@@ -50,17 +51,21 @@ import { setAdFree } from '../../ads/adFree';
 import { safeGetItem, safeRemoveItem } from '../../utils/safeLocalStorage';
 import { safeSetItem } from '../../utils/storageGuard';
 import { isEikenGrade, type EikenGrade } from '../../eiken/config';
-import type { SugorokuMemberDoc } from '../shared/types';
+import { SUGOROKU_COLLECTIONS, type SugorokuMemberDoc } from '../shared/types';
 import {
+  SUGOROKU_INVITE_DRAFT_KEY,
   SUGOROKU_MEMBERS_COLLECTION,
   SUGOROKU_MEMBER_CACHE_PREFIX,
   evaluateSugorokuAdminAccess,
   isSafariOrIPadBrowser,
+  isSuspendedSugorokuMember,
   normalizeSugorokuInviteCode,
   parseCachedSugorokuMember,
+  parseSugorokuInviteDraft,
   shouldApplySugorokuAdFree,
   validateSugorokuInviteCode,
   type AdminAccessDecision,
+  type SugorokuInviteDraft,
 } from './sugorokuAuthCore';
 
 function memberCacheKey(uid: string): string {
@@ -87,6 +92,7 @@ export function saveCachedSugorokuMember(member: SugorokuMemberDoc | null, uid?:
       active: member.active,
       adFree: member.adFree === true,
       targetGrade: member.targetGrade,
+      classId: member.classId,
       classIds: member.classIds,
       displayName: member.displayName,
       consentAcceptedAt: member.consentAcceptedAt,
@@ -95,8 +101,39 @@ export function saveCachedSugorokuMember(member: SugorokuMemberDoc | null, uid?:
 }
 
 /**
+ * リダイレクトログインを挟んでも招待コード・ニックネーム入力を失わないための sessionStorage 退避。
+ */
+export function saveSugorokuInviteDraft(draft: SugorokuInviteDraft): void {
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SUGOROKU_INVITE_DRAFT_KEY, JSON.stringify(draft));
+    }
+  } catch {
+    // Safari プライベートモード等で失敗しても無視
+  }
+}
+
+export function loadSugorokuInviteDraft(): SugorokuInviteDraft | null {
+  try {
+    if (typeof sessionStorage === 'undefined') return null;
+    return parseSugorokuInviteDraft(sessionStorage.getItem(SUGOROKU_INVITE_DRAFT_KEY));
+  } catch {
+    return null;
+  }
+}
+
+export function clearSugorokuInviteDraft(): void {
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(SUGOROKU_INVITE_DRAFT_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+/**
  * 現在の環境でリダイレクトログインへの切り替えが安全に動作するか判定する。
- * authDomainPolicy.ts の同一オリジン判定、またはローカルエミュレータ時に有効。
  */
 export function canUseSugorokuRedirectSignIn(): boolean {
   if (AUTH_SAME_ORIGIN_ACTIVE || USE_EMULATORS) return true;
@@ -131,7 +168,7 @@ export async function signInSugorokuWithGoogle(options: {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
     return {
       ok: false,
-      message: 'クラウド認証が未設定です（デモ環境）。運営者が Firebase 環境変数を設定すると Google ログインが有効になります。',
+      message: 'クラウド認証が未設定です（試作デモ環境）。運営者が Firebase 環境変数を設定すると Google ログインが有効になります。',
       errorCode: 'firebase_unconfigured',
     };
   }
@@ -176,8 +213,6 @@ export async function signInSugorokuWithGoogle(options: {
 
 /**
  * 学校 iPad Safari 等でポップアップがブロックされた際のリダイレクトログイン実行。
- * signInWithRedirect はページ遷移完了まで解決しない Promise を返すため、
- * 開始直後の同期/即時エラーのみ捕捉し redirecting: true を返す。
  */
 export async function triggerGoogleRedirectSignIn(): Promise<SugorokuSignInResult> {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
@@ -247,10 +282,12 @@ export async function fetchSugorokuMemberDoc(uid?: string): Promise<SugorokuMemb
 /**
  * 塾生の在籍状態（class_members の plan==='juku' クラス ＋ sugoroku_members/{uid}）を同期し、
  * 有料塾生であれば広告完全非表示（setAdFree(true) + saveJukuMemberships）を確実に適用する。
+ * 退塾・停止（active === false）されている場合は即座に Ad-Free を解除して再認証を求める。
  */
 export interface SugorokuEnrollmentStatus {
   uid: string;
   isEnrolledInJuku: boolean;
+  isSuspended: boolean;
   adFreeApplied: boolean;
   memberDoc: SugorokuMemberDoc | null;
   jukuMemberships: MembershipDetail[];
@@ -265,6 +302,7 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
     return {
       uid: '',
       isEnrolledInJuku: false,
+      isSuspended: false,
       adFreeApplied: false,
       memberDoc: null,
       jukuMemberships: [],
@@ -280,6 +318,7 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
   }
 
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
+    const suspended = isSuspendedSugorokuMember(cachedMember);
     const adFreeNow = shouldApplySugorokuAdFree({
       uid,
       memberDoc: cachedMember,
@@ -288,7 +327,8 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
     setAdFree(adFreeNow);
     return {
       uid,
-      isEnrolledInJuku: Boolean(cachedMember?.active) || cachedJuku.length > 0,
+      isEnrolledInJuku: !suspended && (Boolean(cachedMember?.active) || cachedJuku.length > 0),
+      isSuspended: suspended,
       adFreeApplied: adFreeNow,
       memberDoc: cachedMember,
       jukuMemberships: [],
@@ -301,9 +341,10 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
     fetchMyMembershipDetails().catch(() => [] as MembershipDetail[]),
   ]);
 
-  const jukuMemberships = allMemberships.filter((m) => m.plan === 'juku');
+  const suspended = isSuspendedSugorokuMember(memberDoc);
+  const jukuMemberships = suspended ? [] : allMemberships.filter((m) => m.plan === 'juku');
 
-  // 既存の useJukuAdFree / classAssignments とも完全連動させる
+  // 既存の useJukuAdFree / classAssignments とも完全連動させる（退塾時は空配列でクリア）
   saveJukuMemberships(
     uid,
     jukuMemberships.map((r) => ({
@@ -322,11 +363,12 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
   setAdFree(adFreeApplied);
 
   const isEnrolledInJuku =
-    (memberDoc?.active === true) || jukuMemberships.length > 0;
+    !suspended && ((memberDoc?.active === true) || jukuMemberships.length > 0);
 
   return {
     uid,
     isEnrolledInJuku,
+    isSuspended: suspended,
     adFreeApplied,
     memberDoc,
     jukuMemberships,
@@ -336,11 +378,13 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
 
 /**
  * 初回「すごろく招待コード（クラス参加コード）」入力・同意承認を実行する。
- *   1. コード検証（6文字、O/0・I/1 自動補正）
+ *   1. コード検証（6文字、全角英数・O/0・I/1 自動補正）
  *   2. 同意フラグ確認
  *   3. joinClassroomByCode により class_members / study_access を作成
- *   4. 参加先クラスが plan === 'juku' の場合、sugoroku_members/{uid}（role: 'student', active: true, adFree: true）を作成/更新
- *   5. 即座に Ad-Free を有効化
+ *   4. 参加先クラスが plan === 'juku' の場合:
+ *      - ルート sugoroku_members/{uid} を作成/更新
+ *      - クラス別サブコレ classrooms/{classId}/sugoroku_members/{uid} にも同期（AI 1 管理ポータル即時表示用）
+ *   5. 即座に Ad-Free を有効化し、入力ドラフトをクリア
  */
 export interface RedeemSugorokuInviteInput {
   rawCode: string;
@@ -371,8 +415,9 @@ export async function redeemSugorokuInviteCode(
     throw new Error(codeCheck.message);
   }
   const normalizedCode = normalizeSugorokuInviteCode(input.rawCode);
+  const safeDisplayName = (input.displayName || user.displayName || '').trim().slice(0, 24);
 
-  const joinResult = await joinClassroomByCode(normalizedCode, input.displayName);
+  const joinResult = await joinClassroomByCode(normalizedCode, safeDisplayName);
   const classroom = joinResult.classroom;
   const targetGrade: EikenGrade = isEikenGrade(input.targetGrade)
     ? input.targetGrade
@@ -384,30 +429,57 @@ export async function redeemSugorokuInviteCode(
 
   // 既に owner/staff の場合はロールを降格させない（講師が動作テストで参加した場合の保護）
   if (classroom.plan === 'juku' && (!memberDoc || memberDoc.role === 'student')) {
-    const existingClassIds = memberDoc?.classIds ?? [];
-    const nextClassIds = Array.from(new Set([...existingClassIds, classroom.id])).slice(0, 10);
-    const payload = {
+    const existingClassIds = (memberDoc?.classIds ?? []).filter((id) => id !== classroom.id);
+    // 今参加した塾クラスを先頭 [0] に置くことで firestore.rules の sgIsJukuClass(classIds[0]) を確実に満たす
+    const nextClassIds = [classroom.id, ...existingClassIds].slice(0, 10);
+    const nowMs = Date.now();
+    const rootPayload = {
       uid: user.uid,
+      classId: classroom.id,
       role: 'student' as const,
       targetGrade,
       active: true,
       adFree: true as const,
       classIds: nextClassIds,
-      consentAcceptedAt: Date.now(),
+      ...(safeDisplayName ? { displayName: safeDisplayName } : {}),
+      consentAcceptedAt: nowMs,
       updatedAt: serverTimestamp(),
     };
     try {
-      await setDoc(doc(db, SUGOROKU_MEMBERS_COLLECTION, user.uid), payload, { merge: true });
+      await setDoc(doc(db, SUGOROKU_MEMBERS_COLLECTION, user.uid), rootPayload, { merge: true });
       memberDoc = {
-        ...payload,
-        updatedAt: Date.now(),
+        ...rootPayload,
+        updatedAt: nowMs,
       };
       saveCachedSugorokuMember(memberDoc, user.uid);
     } catch {
       // ルール未反映環境等でも class_members 参加自体は成立しているため続行し Ad-Free を有効化する
     }
+
+    // AI 1 の管理者ポータル（classrooms/{classId}/sugoroku_members/{uid}）にも同期書き込み
+    try {
+      await setDoc(
+        doc(db, `${SUGOROKU_COLLECTIONS.classrooms}/${classroom.id}/${SUGOROKU_COLLECTIONS.sugorokuMembers}`, user.uid),
+        {
+          uid: user.uid,
+          classId: classroom.id,
+          role: 'student' as const,
+          targetGrade,
+          active: true,
+          adFree: true as const,
+          ...(safeDisplayName ? { displayName: safeDisplayName } : {}),
+          consentAcceptedAt: nowMs,
+          updatedAt: nowMs,
+          serverUpdatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+    } catch {
+      // サブコレクション未反映時でもエラーで止めない
+    }
   }
 
+  clearSugorokuInviteDraft();
   const status = await refreshSugorokuEnrollmentAndAdFree(user);
   return {
     joinResult,
@@ -440,6 +512,7 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
     const cached = loadCachedSugorokuMember(currentUser.uid);
     const decision = evaluateSugorokuAdminAccess({
       uid: currentUser.uid,
+      email: currentUser.email,
       emailVerified: currentUser.emailVerified,
       providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
       memberDoc: cached,
@@ -456,6 +529,7 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
   const ownedClassIds = myClasses.map((c) => c.id);
   const decision = evaluateSugorokuAdminAccess({
     uid: currentUser.uid,
+    email: currentUser.email,
     emailVerified: currentUser.emailVerified,
     providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
     memberDoc,

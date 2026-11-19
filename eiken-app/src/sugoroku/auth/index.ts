@@ -5,27 +5,37 @@
 export {
   SUGOROKU_MEMBERS_COLLECTION,
   SUGOROKU_MEMBER_CACHE_PREFIX,
+  SUGOROKU_INVITE_DRAFT_KEY,
   resolveSugorokuPortalMode,
+  extractInviteCodeFromSearch,
   isSugorokuStaffRole,
   isActiveSugorokuStaff,
+  isSuspendedSugorokuMember,
   hasVerifiedGoogleIdentity,
   evaluateSugorokuAdminAccess,
+  describeAdminDenyReason,
   canManageSugorokuClass,
   canReadStudentSugorokuData,
   shouldApplySugorokuAdFree,
   formatStudentDisplayName,
   isSafariOrIPadBrowser,
+  toHalfWidthAlphanumeric,
   normalizeSugorokuInviteCode,
   validateSugorokuInviteCode,
+  parseSugorokuInviteDraft,
   parseCachedSugorokuMember,
   type SugorokuPortalMode,
   type AdminAccessContext,
   type AdminAccessDecision,
+  type SugorokuInviteDraft,
 } from './sugorokuAuthCore';
 
 export {
   loadCachedSugorokuMember,
   saveCachedSugorokuMember,
+  saveSugorokuInviteDraft,
+  loadSugorokuInviteDraft,
+  clearSugorokuInviteDraft,
   canUseSugorokuRedirectSignIn,
   signInSugorokuWithGoogle,
   triggerGoogleRedirectSignIn,
@@ -43,6 +53,7 @@ export {
 
 export {
   useSugorokuPortalMode,
+  useBrowserOnline,
   useSugorokuAuthState,
   useSugorokuAdminGuard,
 } from './useSugorokuAuth';

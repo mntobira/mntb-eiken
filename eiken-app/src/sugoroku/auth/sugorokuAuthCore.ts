@@ -1,13 +1,20 @@
 /**
+ * ===================================================================
  * すごろく塾 認可・ロール判定・プライバシー保護（純粋ロジック層）
- *
+ * ===================================================================
  * Firebase SDK に直接依存しない純粋関数として定義し、
- * 単体テストで全ロール・境界ケースを高速かつ確実に検証できるようにする。
+ * 単体テストで全ロール・境界ケース・エッジケースを高速かつ確実に検証する。
  */
 
 import type { SugorokuMemberDoc, SugorokuRole } from '../shared/types';
+import { isEikenGrade, type EikenGrade } from '../../eiken/config';
 import { maskNickname, displayNicknameForNational } from '../../utils/nicknamePrivacy';
-import { resolveRosterName, normalizeJoinCode, validateJoinCodeInput } from '../../utils/classroomCore';
+import {
+  JOIN_CODE_LENGTH,
+  resolveRosterName,
+  normalizeJoinCode,
+  validateJoinCodeInput,
+} from '../../utils/classroomCore';
 
 /** Firestore コレクション名（firestoreMetered.ts 経由で eiken_ プレフィックスが付与される） */
 export const SUGOROKU_MEMBERS_COLLECTION = 'sugoroku_members';
@@ -15,13 +22,16 @@ export const SUGOROKU_MEMBERS_COLLECTION = 'sugoroku_members';
 /** ローカルキャッシュキー接頭辞（オフライン起動時の即時 Ad-Free / ゲート判定用） */
 export const SUGOROKU_MEMBER_CACHE_PREFIX = 'eiken:v1:sugoroku_member_';
 
+/** リダイレクトログイン前後のフォーム入力退避キー（sessionStorage） */
+export const SUGOROKU_INVITE_DRAFT_KEY = 'eiken:v1:sugoroku_invite_draft';
+
 /** すごろく塾ゲートモード（URLクエリまたは環境変数で有効化） */
 export type SugorokuPortalMode = 'standard' | 'juku' | 'admin';
 
 /**
  * URL クエリまたは環境変数からポータルモードを判定する。
  *   - ?portal=admin または VITE_SUGOROKU_PORTAL=admin → 'admin'（講師専用管理ポータル）
- *   - ?portal=sugoroku / ?portal=juku または VITE_SUGOROKU_PORTAL=sugoroku|juku → 'juku'（塾生専用ログイン＋招待コード必須ゲート）
+ *   - ?portal=sugoroku / ?portal=juku または ?invite=XXXXXX または VITE_SUGOROKU_PORTAL=sugoroku|juku → 'juku'
  *   - それ以外 → 'standard'（既存マナトビ英検の標準モード）
  */
 export function resolveSugorokuPortalMode(
@@ -35,6 +45,10 @@ export function resolveSugorokuPortalMode(
     if (queryPortal === 'sugoroku' || queryPortal === 'juku' || queryPortal === '1' || queryPortal === 'true') {
       return 'juku';
     }
+    // 招待リンク（?sugoroku_invite=AB23CD）から開いた場合も自動で塾生ゲートへ誘導
+    if ((params.get('sugoroku_invite') || '').trim().length > 0) {
+      return 'juku';
+    }
   } catch {
     // URLSearchParams が失敗しても環境変数を見る
   }
@@ -42,6 +56,25 @@ export function resolveSugorokuPortalMode(
   if (envVal === 'admin') return 'admin';
   if (envVal === 'sugoroku' || envVal === 'juku') return 'juku';
   return 'standard';
+}
+
+/**
+ * URL クエリ（?invite=AB23CD / ?code=AB23CD / ?sugoroku_invite=AB23CD）から
+ * すごろく招待コードを安全に抽出・正規化する。
+ */
+export function extractInviteCodeFromSearch(search: string | null | undefined): string {
+  try {
+    const params = new URLSearchParams(search || '');
+    const raw =
+      params.get('sugoroku_invite') ||
+      params.get('invite') ||
+      params.get('code') ||
+      '';
+    if (!raw.trim()) return '';
+    return normalizeSugorokuInviteCode(raw);
+  } catch {
+    return '';
+  }
 }
 
 /**
@@ -60,6 +93,13 @@ export function isActiveSugorokuStaff(member: Pick<SugorokuMemberDoc, 'role' | '
 }
 
 /**
+ * sugoroku_members/{uid} が明示的に退塾・停止（active === false）されているか判定する。
+ */
+export function isSuspendedSugorokuMember(member: Pick<SugorokuMemberDoc, 'active'> | null | undefined): boolean {
+  return Boolean(member && member.active === false);
+}
+
+/**
  * 管理者ポータル（SugorokuAdminApp）への入場・閲覧権限があるか判定する。
  *
  * 『03_AI並列開発指示書』AI 4 タスク2:
@@ -68,10 +108,11 @@ export function isActiveSugorokuStaff(member: Pick<SugorokuMemberDoc, 'role' | '
  */
 export interface AdminAccessContext {
   uid: string | null | undefined;
+  email?: string | null;
   emailVerified?: boolean;
   providerIds?: readonly string[];
   memberDoc?: Pick<SugorokuMemberDoc, 'uid' | 'role' | 'active'> | null;
-  /** 担当しているクラスの classId または teacherUid 一覧 */
+  /** 担当しているクラスの teacherUid 一覧または担当クラスID一覧 */
   ownedClassTeacherUids?: readonly string[];
   ownedJukuClassIds?: readonly string[];
 }
@@ -84,6 +125,7 @@ export interface AdminAccessDecision {
     | 'unauthenticated'
     | 'google_required'
     | 'email_unverified'
+    | 'suspended_member'
     | 'insufficient_role';
 }
 
@@ -114,6 +156,11 @@ export function evaluateSugorokuAdminAccess(ctx: AdminAccessContext): AdminAcces
     return { allowed: false, reason: 'email_unverified' };
   }
 
+  // 明示的に active === false に停止されたアカウントは即時遮断
+  if (ctx.memberDoc && ctx.memberDoc.uid === uid && ctx.memberDoc.active === false) {
+    return { allowed: false, reason: 'suspended_member' };
+  }
+
   if (ctx.memberDoc && ctx.memberDoc.uid === uid && isActiveSugorokuStaff(ctx.memberDoc)) {
     return { allowed: true, reason: 'allowed_staff_role' };
   }
@@ -130,11 +177,28 @@ export function evaluateSugorokuAdminAccess(ctx: AdminAccessContext): AdminAcces
 }
 
 /**
+ * 管理者拒否理由コードを日本語の分かりやすい診断ラベルへ変換する。
+ */
+export function describeAdminDenyReason(reason: AdminAccessDecision['reason']): string {
+  switch (reason) {
+    case 'unauthenticated':
+      return '未ログイン状態です。講師用 Google アカウントでログインしてください。';
+    case 'google_required':
+      return 'Google アカウントでの認証が必要です。';
+    case 'email_unverified':
+      return 'Google アカウントのメールアドレス確認が未完了です。';
+    case 'suspended_member':
+      return 'このアカウントの講師権限は現在停止されています。運営管理者にご確認ください。';
+    case 'insufficient_role':
+      return '講師ロール（owner / staff）または担当クラスが登録されていません。';
+    default:
+      return '';
+  }
+}
+
+/**
  * 特定のクラス（classId）の生徒実名（rosterName）や提出物（ライティング・スピーキング）に
  * アクセスできる講師かどうかを判定する。
- *   - そのクラスの担当講師（classroom.teacherUid === uid）
- *   - または sugoroku_members/{uid} が active かつ role in ['owner', 'staff']
- *     （ただし classIds が指定されている staff は担当 classId に含まれる場合のみ、owner は全塾クラス可）
  */
 export function canManageSugorokuClass(params: {
   uid: string | null | undefined;
@@ -145,6 +209,11 @@ export function canManageSugorokuClass(params: {
 }): boolean {
   const uid = (params.uid || '').trim();
   if (!uid || !params.classId) return false;
+
+  // 明示的に停止されたスタッフはクラス管理も不可
+  if (params.memberDoc && params.memberDoc.uid === uid && params.memberDoc.active === false) {
+    return false;
+  }
 
   if (params.classTeacherUid && params.classTeacherUid === uid) {
     return true;
@@ -174,6 +243,9 @@ export function canReadStudentSugorokuData(params: {
   const viewer = (params.viewerUid || '').trim();
   if (!viewer || !params.studentUid) return false;
   if (viewer === params.studentUid) return true;
+  if (params.viewerMemberDoc && params.viewerMemberDoc.uid === viewer && params.viewerMemberDoc.active === false) {
+    return false;
+  }
   if (params.hasStudyAccess === true) return true;
   if (params.classId) {
     return canManageSugorokuClass({
@@ -188,8 +260,9 @@ export function canReadStudentSugorokuData(params: {
 
 /**
  * 塾生として広告完全非表示（Ad-Free）を適用すべきか判定する。
- *   1. sugoroku_members/{uid} が active === true かつ adFree === true
- *   2. または plan === 'juku' のクラスに1つ以上在籍している
+ *   - sugoroku_members/{uid} が明示的に active === false（退塾・停止）の場合は必ず false（残留キャッシュによる不正利用防止）
+ *   - sugoroku_members/{uid} が active === true かつ adFree === true なら true
+ *   - または plan === 'juku' のクラスに1つ以上在籍していれば true
  */
 export function shouldApplySugorokuAdFree(params: {
   uid: string | null | undefined;
@@ -197,6 +270,9 @@ export function shouldApplySugorokuAdFree(params: {
   jukuClassCount?: number;
 }): boolean {
   if (!params.uid) return false;
+  if (params.memberDoc && params.memberDoc.active === false) {
+    return false;
+  }
   if (params.memberDoc?.active === true && params.memberDoc?.adFree === true) {
     return true;
   }
@@ -233,7 +309,6 @@ export function formatStudentDisplayName(params: {
 
 /**
  * iPad Safari / iOS Safari などポップアップが標準ブロックされやすい端末か判定する。
- * ポップアップ失敗時のリダイレクト切替案内に使用する。
  */
 export function isSafariOrIPadBrowser(userAgent?: string, maxTouchPoints?: number): boolean {
   const ua = userAgent ?? (typeof navigator !== 'undefined' ? navigator.userAgent || '' : '');
@@ -244,18 +319,56 @@ export function isSafariOrIPadBrowser(userAgent?: string, maxTouchPoints?: numbe
 }
 
 /**
- * すごろく招待コード（クラス参加コード）の検証（見間違えやすい 0/O, 1/I を自動補正）。
- * 例: "SUGOROKU-AB23CD" のようなプレフィックス付き表記も後半6文字へ安全に正規化する。
+ * 全角英数字・全角ハイフン・空白を半角英数字へ正規化する（iPad 日本語かなキーボード対策）。
+ */
+export function toHalfWidthAlphanumeric(input: string): string {
+  return (input || '')
+    .trim()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))
+    .replace(/[ー−―‐－_　\s]+/g, '-');
+}
+
+/**
+ * すごろく招待コード（クラス参加コード）の正規化：
+ *   - 全角英数字 → 半角大文字へ自動変換
+ *   - "SUGOROKU-AB23CD" 等のプレフィックスを自動除去
+ *   - 見間違えやすい 0→O, 1→I を自動補正し最大6文字に揃える
  */
 export function normalizeSugorokuInviteCode(rawInput: string): string {
-  const trimmed = (rawInput || '').trim().toUpperCase();
-  const strippedPrefix = trimmed.replace(/^(?:SUGOROKU|MNTB|JUKU)[\s\-_]+/i, '');
-  return normalizeJoinCode(strippedPrefix);
+  const half = toHalfWidthAlphanumeric(rawInput).replace(/^-+|-+$/g, '').toUpperCase();
+  const strippedPrefix = half.replace(/^(?:SUGOROKU|MNTB|JUKU)-+/i, '');
+  const compact = strippedPrefix.replace(/[^A-Z0-9]/g, '');
+  return normalizeJoinCode(compact).slice(0, JOIN_CODE_LENGTH);
 }
 
 export function validateSugorokuInviteCode(rawInput: string): { ok: boolean; code: string; message: string } {
   const normalized = normalizeSugorokuInviteCode(rawInput);
   return validateJoinCodeInput(normalized);
+}
+
+/**
+ * リダイレクトログイン前後で保持する招待コード入力ドラフトの検証付きシリアライズ。
+ */
+export interface SugorokuInviteDraft {
+  inviteCode: string;
+  displayName: string;
+  targetGrade: EikenGrade;
+  consentAccepted: boolean;
+}
+
+export function parseSugorokuInviteDraft(raw: string | null | undefined): SugorokuInviteDraft | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<SugorokuInviteDraft>;
+    if (!parsed || typeof parsed !== 'object') return null;
+    const inviteCode = typeof parsed.inviteCode === 'string' ? normalizeSugorokuInviteCode(parsed.inviteCode) : '';
+    const displayName = typeof parsed.displayName === 'string' ? parsed.displayName.slice(0, 24) : '';
+    const targetGrade: EikenGrade = isEikenGrade(parsed.targetGrade) ? parsed.targetGrade : 'eiken_2';
+    const consentAccepted = parsed.consentAccepted === true;
+    return { inviteCode, displayName, targetGrade, consentAccepted };
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -273,7 +386,8 @@ export function parseCachedSugorokuMember(raw: string | null | undefined, expect
       role: parsed.role,
       active: parsed.active,
       adFree: parsed.adFree === true,
-      targetGrade: parsed.targetGrade,
+      targetGrade: isEikenGrade(parsed.targetGrade) ? parsed.targetGrade : undefined,
+      classId: typeof parsed.classId === 'string' ? parsed.classId : undefined,
       classIds: Array.isArray(parsed.classIds) ? parsed.classIds.filter((c): c is string => typeof c === 'string') : undefined,
       displayName: typeof parsed.displayName === 'string' ? parsed.displayName : undefined,
       consentAcceptedAt: typeof parsed.consentAcceptedAt === 'number' ? parsed.consentAcceptedAt : undefined,

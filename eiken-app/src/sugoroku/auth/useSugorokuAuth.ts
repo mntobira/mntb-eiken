@@ -1,5 +1,7 @@
 /**
+ * ===================================================================
  * すごろく塾 認証・Ad-Free 連動・管理者ロール判定 React フック群
+ * ===================================================================
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -24,12 +26,46 @@ import {
  * 現在のポータルモード（standard / juku / admin）を返すフック。
  */
 export function useSugorokuPortalMode(): SugorokuPortalMode {
-  const [mode] = useState<SugorokuPortalMode>(() => {
+  const [mode, setMode] = useState<SugorokuPortalMode>(() => {
     const search = typeof window !== 'undefined' ? window.location.search : '';
     const envPortal = (import.meta.env as Record<string, string | undefined>).VITE_SUGOROKU_PORTAL;
     return resolveSugorokuPortalMode(search, envPortal);
   });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onPopState = () => {
+      const envPortal = (import.meta.env as Record<string, string | undefined>).VITE_SUGOROKU_PORTAL;
+      setMode(resolveSugorokuPortalMode(window.location.search, envPortal));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   return mode;
+}
+
+/**
+ * ブラウザのオンライン・オフライン状態を監視する軽量フック（校内 Wi-Fi 瞬断通知用）。
+ */
+export function useBrowserOnline(): boolean {
+  const [online, setOnline] = useState<boolean>(() =>
+    typeof navigator !== 'undefined' ? navigator.onLine !== false : true,
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return online;
 }
 
 /**
@@ -50,6 +86,7 @@ export function useSugorokuAuthState(): {
   const [status, setStatus] = useState<SugorokuEnrollmentStatus>({
     uid: auth.currentUser?.uid || '',
     isEnrolledInJuku: false,
+    isSuspended: false,
     adFreeApplied: false,
     memberDoc: null,
     jukuMemberships: [],
@@ -145,6 +182,7 @@ export function useSugorokuAdminGuard(): {
 
   useEffect(() => {
     let alive = true;
+    void consumeGoogleRedirectResult().catch(() => undefined);
     const offAuth = onAuthStateChanged(auth, (current) => {
       if (!alive) return;
       setUser(current);

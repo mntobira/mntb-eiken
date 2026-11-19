@@ -36,16 +36,24 @@ service firebase.storage {
         && firestore.get(/databases/(default)/documents/eiken_classrooms/$(classId)).data.get('plan', 'free') == 'juku';
     }
 
+    // 退塾・停止（active == false）されていないユーザーか
+    function isNotSuspendedMember(uid) {
+      return !firestore.exists(/databases/(default)/documents/eiken_sugoroku_members/$(uid))
+        || firestore.get(/databases/(default)/documents/eiken_sugoroku_members/$(uid)).data.active == true;
+    }
+
     // 生徒本人が該当クラスに在籍しているか
     function isEnrolledStudent(classId, uid) {
       return isAuthenticated()
         && request.auth.uid == uid
+        && isNotSuspendedMember(uid)
         && firestore.exists(/databases/(default)/documents/eiken_class_members/$(classId + '_' + uid));
     }
 
     // 担当クラス講師（teacherUid）または すごろく塾スタッフ（owner / staff）か
     function isAuthorizedClassReviewer(classId) {
       return isAuthenticated()
+        && isNotSuspendedMember(request.auth.uid)
         && (
           (
             firestore.exists(/databases/(default)/documents/eiken_classrooms/$(classId))
@@ -71,7 +79,7 @@ service firebase.storage {
     // ===============================================================
     // S-CBT スピーキング録音パス
     //   sugoroku_speaking/{classId}/{uid}/{submissionId}/{fileName}
-    //   - 生徒本人は自分の在籍塾クラス配下・自分の uid 配下にのみアップロード・自己再生可
+    //   - 生徒本人は自分の在籍塾クラス配下・自分の uid 配下にのみアップロード・自己再生可（停止中は拒否）
     //   - 担当クラス講師（および塾 owner / 担当 staff）のみ再生（get）可
     //   - 他生徒・他クラス講師・未認証ユーザーは読み書きとも完全拒否
     // ===============================================================
