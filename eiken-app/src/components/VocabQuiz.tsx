@@ -1,9 +1,9 @@
 import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
-import { readGoal } from '../utils/vocabGoal';
+import { readGoal, GOAL_OPTIONS } from '../utils/vocabGoal';
 import { useEffect, useMemo, useState } from 'react';
 import { CorrectBurst } from './fx/CorrectBurst';
 import { BookOpen, Check, ChevronRight, Play, RotateCcw, Volume2, X } from 'lucide-react';
-import { VOCABULARY_URL, VOCAB_LEVELS, type VocabularyData } from '../data/listeningSupport';
+import { VOCABULARY_URL, VOCAB_LEVELS, levelsOfGrade, type VocabularyData } from '../data/listeningSupport';
 import { applyQuizResult, buildQuiz, buildRangeQuiz, clampRange, COUNT_OPTIONS, QUIZ_SIZE, quizComment, rangeKey, rangeWords, readQuizPrefs, readQuizRecord, wordNumbers, writeQuizPrefs, writeQuizRecord, type QuizCount, type QuizDirection, type QuizItem, type QuizPrefs } from '../data/vocabQuiz';
 import { play, primeAudio } from '../battle/ui/feedback';
 import { recordVocabActivity } from '../battle/data/growthStore';
@@ -36,7 +36,14 @@ let cache: VocabularyData | null = null;
 export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; known: ReadonlySet<string>; onMark: (id: string, done: boolean) => void; onWordbook: () => void }) {
   const [data, setData] = useState<VocabularyData | null>(cache);
   const [err, setErr] = useState('');
-  const [level, setLevel] = useState<string>(() => readGoal() === 'custom' ? 'eiken_5' : readGoal());
+  const [gradePick, setGradePick] = useState<string>(() => {
+    const g = readGoal();
+    return g === 'custom' ? 'eiken_2' : g;
+  });
+  const [level, setLevel] = useState<string>(() => {
+    const g = readGoal();
+    return `${g === 'custom' ? 'eiken_2' : g}_a`;
+  });
   const [dir, setDir] = useState<QuizDirection>('mix');
   const [rec, setRec] = useState(() => readQuizRecord(uid));
   const [prefs, setPrefs] = useState<QuizPrefs>(() => readQuizPrefs(uid));
@@ -59,7 +66,8 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
     window.addEventListener(USER_DATA_SYNCED_EVENT, refresh); window.addEventListener('storage', refresh);
     return () => { window.removeEventListener(USER_DATA_SYNCED_EVENT, refresh); window.removeEventListener('storage', refresh); };
   }, [uid]);
-  const levels = useMemo(() => Object.keys(VOCAB_LEVELS).filter(l => data?.words.some(w => w.level === l)), [data]);
+  const gradeTabs = useMemo(() => GOAL_OPTIONS.filter(g => g.id !== 'custom'), []);
+  const levels = useMemo(() => levelsOfGrade(gradePick).filter(l => data?.words.some(w => w.level === l)), [data, gradePick]);
   const missedSet = useMemo(() => new Set(rec.missed), [rec.missed]);
   const mastered = useMemo(() => new Set(rec.mastered ?? []), [rec.mastered]);
   const numbers = useMemo(() => wordNumbers(data?.words ?? []), [data]);
@@ -223,9 +231,20 @@ export function VocabQuiz({ uid, known, onMark, onWordbook }: { uid: string; kno
       <div className="vq-seg" role="radiogroup" aria-label={label} data-vocab-set={attr}>{opts.map(([v, t]) => <button key={String(v)} type="button" role="radio" aria-checked={value === v} onClick={() => onPick(v)}>{t}</button>)}</div>
     </div>;
   return <section className="fd-panel vq-pick vq-setup" aria-label="出題の設定" data-vocab-quiz="pick">
+    <div className="fd-goal-seg" role="radiogroup" aria-label="級をえらぶ">{gradeTabs.map(g => {
+      const gLvSet = new Set(levelsOfGrade(g.id));
+      const gTotal = data.words.filter(w => gLvSet.has(w.level)).length;
+      return <button key={g.id} type="button" role="radio" aria-checked={gradePick === g.id} onClick={() => {
+        setGradePick(g.id);
+        const firstLv = levelsOfGrade(g.id)[0] ?? `${g.id}_a`;
+        setLevel(firstLv);
+        setDraft(null);
+      }}>{g.label}<small style={{ marginLeft: 3, fontWeight: 700, opacity: 0.78 }}>({gTotal})</small></button>;
+    })}</div>
     <div className="fd-levels" role="tablist" aria-label="レベル">{levels.map(l => {
       const n = data.words.filter(w => w.level === l).length;
-      return <button key={l} type="button" role="tab" aria-selected={level === l} onClick={() => { setLevel(l); setDraft(null); }}><span>{VOCAB_LEVELS[l]}</span><small>{n.toLocaleString()}語</small></button>;
+      const shortLbl = (VOCAB_LEVELS[l] ?? l).split('・')[0];
+      return <button key={l} type="button" role="tab" aria-selected={level === l} onClick={() => { setLevel(l); setDraft(null); }}><span>{shortLbl}</span><small>{n.toLocaleString()}語</small></button>;
     })}</div>
     <div className="vq-set-scroll">
       <div className="vq-set-row vq-range">

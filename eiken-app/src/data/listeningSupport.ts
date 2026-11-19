@@ -1,10 +1,22 @@
-export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261117a';
+export const VOCABULARY_URL = '/data/listeningVocabulary.json?v=eiken-wordbook-20261117-6600';
 import { perUserKey } from '../utils/userStorageKeys';
 export interface WordQuestion { id:string; prompt:string; label:string; options:string[]; answerIndex:number }
 export interface ListeningExample { chapterId:string; chapterTitle:string; problemId:string; problemIndex:number; script:string; audioUrl:string; translation:string }
 export interface ListeningWord { id:string; word:string; meaning:string; fullMeaning:string; level:string; exampleSentence?:string; exampleTranslation?:string; chapterIds:string[]; examples:ListeningExample[]; questions:WordQuestion[] }
 export interface VocabularyData { wordCount:number; questionCount:number; unitSize:number; chapters:{id:string;title:string}[]; words:ListeningWord[] }
-export const VOCAB_LEVELS: Record<string,string> = {eiken_5:'単語・英検5級',eiken_4:'単語・英検4級',eiken_3:'単語・英検3級',eiken_pre2:'単語・英検準2級',eiken_pre2plus:'単語・英検準2級プラス',eiken_2:'単語・英検2級',eiken_pre1:'単語・英検準1級',eiken_1:'単語・英検1級'};
+export const VOCAB_LEVELS: Record<string,string> = {
+  eiken_5_a:'出る度A・英検5級 最頻出コア単語', eiken_5_b:'出る度B・英検5級 重要頻出単語', eiken_5_c:'出る度C・英検5級 合格完成単語', eiken_5_i:'熟語・英検5級 必須熟語・会話表現',
+  eiken_4_a:'出る度A・英検4級 最頻出コア単語', eiken_4_b:'出る度B・英検4級 重要頻出単語', eiken_4_c:'出る度C・英検4級 合格完成単語', eiken_4_i:'熟語・英検4級 必須熟語・会話表現',
+  eiken_3_a:'出る度A・英検3級 最頻出コア単語', eiken_3_b:'出る度B・英検3級 重要頻出単語', eiken_3_c:'出る度C・英検3級 合格完成単語', eiken_3_i:'熟語・英検3級 必須熟語・会話表現',
+  eiken_pre2_a:'出る度A・英検準2級 最頻出コア単語', eiken_pre2_b:'出る度B・英検準2級 重要頻出単語', eiken_pre2_c:'出る度C・英検準2級 合格完成単語', eiken_pre2_i:'熟語・英検準2級 必須熟語・会話表現',
+  eiken_pre2plus_a:'出る度A・英検準2級プラス 最頻出コア単語', eiken_pre2plus_b:'出る度B・英検準2級プラス 重要頻出単語', eiken_pre2plus_c:'出る度C・英検準2級プラス 合格完成単語', eiken_pre2plus_i:'熟語・英検準2級プラス 必須熟語・表現',
+  eiken_2_a:'出る度A・英検2級 最頻出コア単語', eiken_2_b:'出る度B・英検2級 重要頻出単語', eiken_2_c:'出る度C・英検2級 合格完成単語', eiken_2_i:'熟語・英検2級 必須熟語・句動詞',
+  eiken_pre1_a:'出る度A・英検準1級 最頻出コア単語', eiken_pre1_b:'出る度B・英検準1級 重要頻出単語', eiken_pre1_c:'出る度C・英検準1級 合格完成単語', eiken_pre1_i:'熟語・英検準1級 必須熟語・句動詞',
+  eiken_1_a:'出る度A・英検1級 最頻出コア単語', eiken_1_b:'出る度B・英検1級 重要頻出単語', eiken_1_c:'出る度C・英検1級 合格完成単語', eiken_1_i:'熟語・英検1級 必須熟語・句動詞',
+};
+export function levelsOfGrade(gradeId: string): string[] {
+  return [`${gradeId}_a`, `${gradeId}_b`, `${gradeId}_c`, `${gradeId}_i`].filter(k => k in VOCAB_LEVELS);
+}
 export interface SupportProgress { version:1; words:string[]; grammar:string[] }
 export const supportStorageKey=(uid:string)=>perUserKey('listening_support_v1_',uid);
 export function parseSupportProgress(raw:string|null):SupportProgress {

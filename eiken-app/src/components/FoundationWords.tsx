@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, EyeOff, Headphones, Map as MapIcon, Play, Search, SlidersHorizontal, Volume2 } from 'lucide-react';
 import { chapterState, groupBlocks, nextChapter, splitChapters } from '../data/vocabChapters';
 import { Dialog } from './ui';
-import { VOCABULARY_URL, VOCAB_LEVELS, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
+import { VOCABULARY_URL, VOCAB_LEVELS, levelsOfGrade, type ListeningWord, type VocabularyData } from '../data/listeningSupport';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { stopSpeech, isSpeechSupported } from '../utils/listeningSpeech';
 import { ReadAloud, sayWord, prefetchVocabAudioIndex } from './foundationShared';
@@ -26,8 +26,8 @@ import { loadVocabPron, pronOf, type VocabPron } from '../utils/vocabPron';
  *   志望校別         … 志望校の出題に合わせてレベルを自分で選ぶ
  */
 export const PRESETS = GOAL_OPTIONS.map(goal => ({ ...goal,
-  full: goal.id === 'custom' ? '全級の重点語から選ぶ' : `英検${goal.label}の重点語`,
-  levels: goal.id === 'custom' ? null : [goal.id],
+  full: goal.id === 'custom' ? '全8級・全32レベルから選ぶ' : `英検${goal.label}（出る度A・B・C＋必須熟語）`,
+  levels: goal.id === 'custom' ? null : levelsOfGrade(goal.id),
 }));
 export type PresetId = typeof PRESETS[number]['id'];
 const PREF_KEY = VOCAB_PREF_KEY;
@@ -213,8 +213,9 @@ export function FoundationWords({ known, onMark, onPractice }: FoundationWordsPr
               {levelList.map(l => {
                 const pct = Math.round(l.learned / l.ids.length * 100);
                 const [kind, name] = l.label.split('・');
+                const kindKey = kind === '熟語' ? 'idiom' : kind === '出る度A' ? 'tier-a' : kind === '出る度B' ? 'tier-b' : 'tier-c';
                 return <li key={l.id}><button type="button" className="fd-level-go" data-fd-start={l.id} data-current={curLevel?.id === l.id || undefined} onClick={() => go(l.id)}>
-                  <span className="fd-level-kind" data-kind={kind === '熟語' ? 'idiom' : 'word'}>{kind}</span>
+                  <span className="fd-level-kind" data-kind={kindKey}>{kind}</span>
                   <span className="fd-level-body"><strong>{name ?? l.label}</strong>
                     <small>{l.ids.length.toLocaleString()}語・覚えた {pct}%</small>
                     <i aria-hidden="true"><b style={{ width: `${pct}%` }} /></i></span>

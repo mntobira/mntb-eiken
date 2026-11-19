@@ -94,8 +94,8 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
       action: { kind: 'writing' },
     },
     {
-      id: 'english_vocabulary', title: '英単語帳（暗記帳）', icon: 'letters', section: 'memorize',
-      description: '5級〜1級の重点語・例文・意味を級別に学ぶ',
+      id: 'english_vocabulary', title: '英単語・熟語帳（暗記帳）', icon: 'letters', section: 'memorize',
+      description: '5級〜1級（全8級）×4段階（出る度A・B・C＋必須熟語）を例文と学ぶ',
       meta: `${VOCABULARY_COUNT.toLocaleString()}語`, action: { kind: 'foundation', tab: 'words' },
     },
   ],

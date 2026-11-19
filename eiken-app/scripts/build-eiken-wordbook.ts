@@ -3,9 +3,10 @@ import { EIKEN_GRADES } from '../src/eiken/config';
 import { partsForGrade } from '../src/eiken/questions';
 import type { ListeningWord, VocabularyData } from '../src/data/listeningSupport';
 
-// 級別に選定した重点語と独自例文を原本にする。大学受験データの級ラベル付け替えはしない。
+// 級別×4段階レベル（出る度A・出る度B・出る度C・必須熟語）に編成した英検完全網羅マスター語彙を原本にする。
 const rows = readFileSync('src/eiken/materials/wordbook.tsv', 'utf8').split('\n')
   .filter(line => line && !line.startsWith('#')).map(line => line.split('|'));
+
 const gradeIdMap: Record<string, string> = {
   '5': 'eiken_5',
   '4': 'eiken_4',
@@ -16,44 +17,112 @@ const gradeIdMap: Record<string, string> = {
   'pre-1': 'eiken_pre1',
   '1': 'eiken_1',
 };
+
 const chapters = EIKEN_GRADES.filter(grade => grade.available).flatMap(grade => partsForGrade(grade.id).flatMap(part => part.chapters));
-const words: ListeningWord[] = rows.map(([rawGrade, word, meaning, exampleSentence, exampleTranslation], index) => {
-  if (![rawGrade, word, meaning, exampleSentence, exampleTranslation].every(Boolean)) throw new Error(`Incomplete row ${index + 1}`);
-  const grade = EIKEN_GRADES.find(g => g.id === gradeIdMap[rawGrade]);
-  if (!grade) throw new Error(`Unknown grade ${rawGrade}`);
-  const id = `eiken-word-${rawGrade}-${word.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-  const sameGrade = rows.filter(row => row[0] === rawGrade);
-  // 近い意味を正誤に混ぜない。異なる意味の離れた語から選び、正答位置も固定しない。
+
+// Pre-group rows by level (`5:a`, `2:i`, etc.) and pre-index chapters by grade for fast, low-memory build!
+const rowsByLevel = new Map<string, string[][]>();
+for (const row of rows) {
+  const lv = row[0];
+  const arr = rowsByLevel.get(lv);
+  if (arr) arr.push(row); else rowsByLevel.set(lv, [row]);
+}
+
+const chaptersByGrade = new Map<string, typeof chapters>();
+for (const grade of EIKEN_GRADES) {
+  chaptersByGrade.set(grade.id, chapters.filter(ch => ch.id.startsWith(grade.id + '_')));
+}
+
+const words: ListeningWord[] = rows.map(([rawLevel, word, meaning, exampleSentence, exampleTranslation], index) => {
+  if (![rawLevel, word, meaning, exampleSentence, exampleTranslation].every(Boolean)) throw new Error(`Incomplete row ${index + 1}`);
+  const [rawGrade, rawTier = 'a'] = rawLevel.split(':');
+  const gradeId = gradeIdMap[rawGrade];
+  const grade = EIKEN_GRADES.find(g => g.id === gradeId);
+  if (!grade) throw new Error(`Unknown grade ${rawLevel}`);
+  const levelKey = `${grade.id}_${rawTier}`;
+  const slug = word.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const id = `eiken-word-${rawGrade}-${rawTier}-${slug}`;
+
+  const sameLevel = rowsByLevel.get(rawLevel) ?? rows;
+  const selfIdx = sameLevel.findIndex(r => r[1] === word);
   const position = index % 4;
-  const distractors = [7, 13, 19].map(offset => sameGrade[(sameGrade.findIndex(row => row[1] === word) + offset) % sameGrade.length]);
-  const options = (column: number) => {
-    const result = distractors.map(row => row[column]);
-    result.splice(position, 0, column === 1 ? word : meaning);
+
+  // Pick 3 distinct distractors from the same grade+tier (guarantees single words mix with single words, idioms with idioms!)
+  const pickDistractors = (col: number): string[] => {
+    const picked: string[] = [];
+    const targetVal = col === 1 ? word : meaning;
+    const seen = new Set<string>([targetVal]);
+    for (const offset of [7, 13, 19, 29, 37, 43, 53, 61]) {
+      if (picked.length >= 3) break;
+      const cand = sameLevel[(selfIdx + offset) % sameLevel.length]?.[col];
+      if (cand && !seen.has(cand)) {
+        seen.add(cand);
+        picked.push(cand);
+      }
+    }
+    const result = [...picked];
+    result.splice(position, 0, targetVal);
     if (new Set(result).size !== 4) throw new Error(`Ambiguous options ${id}`);
     return result;
   };
+
   const pattern = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-  const examples = chapters.filter(chapter => chapter.id.startsWith(grade.id + '_')).flatMap(chapter => chapter.practiceProblems.flatMap((problem, problemIndex) => {
-    const track = problem.audioTracks?.[0];
-    const script = track?.script ?? problem.text;
-    if (!pattern.test(script)) return [];
-    return [{ chapterId: chapter.id, chapterTitle: `${grade.label} ${chapter.abstractTitle}`, problemId: problem.id, problemIndex,
-      script, audioUrl: track?.audioUrl ?? '', translation: track?.translation ?? '' }];
-  }));
-  return { id, word, meaning, fullMeaning: meaning, level: grade.id, exampleSentence, exampleTranslation,
-    chapterIds: [...new Set(examples.map(example => example.chapterId))], examples,
+  const gradeChapters = chaptersByGrade.get(grade.id) ?? [];
+  const chapterIdsSet = new Set<string>();
+  const examples: ListeningWord['examples'] = [];
+
+  for (const chapter of gradeChapters) {
+    for (let problemIndex = 0; problemIndex < chapter.practiceProblems.length; problemIndex++) {
+      const problem = chapter.practiceProblems[problemIndex]!;
+      const track = problem.audioTracks?.[0];
+      const script = track?.script ?? problem.text;
+      if (!pattern.test(script)) continue;
+      chapterIdsSet.add(chapter.id);
+      if (examples.length < 1) {
+        examples.push({
+          chapterId: chapter.id,
+          chapterTitle: `${grade.label} ${chapter.abstractTitle}`,
+          problemId: problem.id,
+          problemIndex,
+          script: script.length > 210 ? script.slice(0, 210) + '…' : script,
+          audioUrl: track?.audioUrl ?? '',
+          translation: '',
+        });
+      }
+    }
+  }
+
+  return {
+    id,
+    word,
+    meaning,
+    fullMeaning: meaning,
+    level: levelKey,
+    exampleSentence,
+    exampleTranslation,
+    chapterIds: [...chapterIdsSet],
+    examples,
     questions: [
-      { id: `${id}:e2j`, prompt: `「${word}」の意味を選んでください。`, label: word, options: options(2), answerIndex: position },
-      { id: `${id}:j2e`, prompt: `「${meaning}」を表す英語を選んでください。`, label: meaning, options: options(1), answerIndex: position },
-    ] };
+      { id: `${id}:e2j`, prompt: `「${word}」の意味を選んでください。`, label: word, options: pickDistractors(2), answerIndex: position },
+      { id: `${id}:j2e`, prompt: `「${meaning}」を表す英語を選んでください。`, label: meaning, options: pickDistractors(1), answerIndex: position },
+    ],
+  };
 });
+
 if (new Set(words.map(word => word.id)).size !== words.length) throw new Error('Duplicate word ID');
-const data: VocabularyData = { wordCount: words.length, questionCount: words.reduce((n, word) => n + word.questions.length, 0), unitSize: 30,
-  chapters: chapters.map(chapter => ({ id: chapter.id, title: `${EIKEN_GRADES.find(grade => chapter.id.startsWith(grade.id + '_'))!.label} ${chapter.abstractTitle}` })), words };
-writeFileSync('public/data/listeningVocabulary.json', JSON.stringify(data, null, 2) + '\n');
+const data: VocabularyData = {
+  wordCount: words.length,
+  questionCount: words.reduce((n, word) => n + word.questions.length, 0),
+  unitSize: 30,
+  chapters: chapters.map(chapter => ({ id: chapter.id, title: `${EIKEN_GRADES.find(grade => chapter.id.startsWith(grade.id + '_'))!.label} ${chapter.abstractTitle}` })),
+  words,
+};
+writeFileSync('public/data/listeningVocabulary.json', JSON.stringify(data) + '\n');
 writeFileSync('src/data/listeningVocabularyMeta.generated.ts', `// Generated by scripts/build-eiken-wordbook.ts\nexport const VOCABULARY_COUNT = ${words.length};\n`);
-// ホーム・単元・対戦の件数を取り違えないよう、学習索引は実教材から再生成する。
-const subjectIndex = EIKEN_GRADES.map(grade => ({ id: grade.id, label: grade.label,
+
+const subjectIndex = EIKEN_GRADES.map(grade => ({
+  id: grade.id,
+  label: grade.label,
   chapters: partsForGrade(grade.id).flatMap(part => part.chapters).map(chapter => ({
     id: chapter.id, title: chapter.title, abstractTitle: chapter.abstractTitle, realTitle: chapter.realTitle,
     problemCount: chapter.practiceProblems.length + chapter.miniTest.length,
@@ -66,4 +135,4 @@ const stats = Object.fromEntries(EIKEN_GRADES.map(grade => {
     marks: problems.reduce((count, problem) => count + problem.subQuestions.length, 0) }];
 }));
 writeFileSync('src/data/chapterIndex.generated.ts', `// Generated by scripts/build-eiken-wordbook.ts from actual Eiken materials. Do not edit.\nexport interface ChapterIndexEntry { id: string; title?: string; abstractTitle?: string; realTitle?: string; problemCount: number }\nexport interface SubjectIndexEntry { id: string; label: string; chapters: readonly ChapterIndexEntry[] }\nexport interface SubjectStatsEntry { chapters?: number; questions?: number; sections?: number; units?: number; points?: number; marks?: number }\nexport const SUBJECT_INDEX: readonly SubjectIndexEntry[] = ${JSON.stringify(subjectIndex, null, 2)};\nexport const SUBJECT_STATS: Readonly<Record<string, SubjectStatsEntry>> = ${JSON.stringify(stats, null, 2)};\nexport function getChapterIndexOfSubject(subjectId: string | null | undefined): readonly ChapterIndexEntry[] {\n  return (SUBJECT_INDEX.find(subject => subject.id === subjectId) ?? SUBJECT_INDEX[0])?.chapters ?? [];\n}\nexport function getSubjectStats(subjectId: string | null | undefined): SubjectStatsEntry { return SUBJECT_STATS[String(subjectId)] ?? {}; }\n`);
-console.log(`${words.length} grade-specific words, ${data.questionCount} quiz items, ${words.filter(word => word.examples.length).length} words linked to Eiken exercises.`);
+console.log(`${words.length} grade-tiered words/idioms, ${data.questionCount} quiz items, ${words.filter(word => word.examples.length).length} linked to Eiken exercises.`);

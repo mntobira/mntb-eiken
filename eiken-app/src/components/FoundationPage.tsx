@@ -64,7 +64,7 @@ export function FoundationPage({ tab: rawTab, onTab, uid, onBack, backLabel = '�
         {infoOpen && <div id="fd-info-pop" role="dialog" aria-label="保存と収録について" className="fd-info-pop">
           <button type="button" aria-label="説明を閉じる" onClick={() => setInfoOpen(false)}><X size={16} aria-hidden="true" /></button>
           <p>覚えた印はこの端末・アカウントに保存します（クラウド同期・コイン加算なし）。</p>
-          <p>5級〜準1級の重点語・熟語、全{VOCABULARY_COUNT.toLocaleString()}語。各語に独自例文・和訳・英日と日英の4択があります。</p>
+          <p>5級〜1級（全8級）×4段階レベル（出る度A・出る度B・出る度C・必須熟語）＝全32ステージ、計{VOCABULARY_COUNT.toLocaleString()}語・熟語を収録。各語に例文・和訳・発音記号・英日と日英の4択があります。</p>
           <p>英検用の独自編成です。問題に登場する語からは、その級のリーディング・リスニングへ進めます。</p>
           <p>級別の重点学習用です。公式の語彙一覧や全出題範囲を網羅する単語集ではありません。</p>
           <p>読み上げの声・対応状況は端末によって異なります。</p>
