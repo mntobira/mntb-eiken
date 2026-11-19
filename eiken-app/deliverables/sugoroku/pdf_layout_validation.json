@@ -1,0 +1,247 @@
+{
+  "status": "PASS",
+  "zeroOverlapVerified": true,
+  "grayscalePrintReady": true,
+  "documents": [
+    {
+      "file": "sugoroku_eiken2_12week_curriculum_route.pdf",
+      "sizeKB": 232.6,
+      "pages": 6,
+      "allPagesClean": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1519,
+          "lineCount": 59,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 2,
+          "charCount": 1647,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 3,
+          "charCount": 1549,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 4,
+          "charCount": 1665,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 5,
+          "charCount": 1137,
+          "lineCount": 47,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 6,
+          "charCount": 967,
+          "lineCount": 93,
+          "overlaps": 0,
+          "outOfBounds": 0
+        }
+      ]
+    },
+    {
+      "file": "sugoroku_eiken2_weekly_vocab_tests_12w.pdf",
+      "sizeKB": 517.4,
+      "pages": 26,
+      "allPagesClean": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1201,
+          "lineCount": 95,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 2,
+          "charCount": 1713,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 3,
+          "charCount": 1965,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 4,
+          "charCount": 1940,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 5,
+          "charCount": 1949,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 6,
+          "charCount": 1987,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 7,
+          "charCount": 1879,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 8,
+          "charCount": 2000,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 9,
+          "charCount": 1986,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 10,
+          "charCount": 1973,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 11,
+          "charCount": 1933,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 12,
+          "charCount": 2000,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 13,
+          "charCount": 1997,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 14,
+          "charCount": 2376,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 15,
+          "charCount": 2906,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 16,
+          "charCount": 2898,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 17,
+          "charCount": 2919,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 18,
+          "charCount": 2973,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 19,
+          "charCount": 2738,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 20,
+          "charCount": 2972,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 21,
+          "charCount": 2964,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 22,
+          "charCount": 2888,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 23,
+          "charCount": 2889,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 24,
+          "charCount": 2938,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 25,
+          "charCount": 3036,
+          "lineCount": 131,
+          "overlaps": 0,
+          "outOfBounds": 0
+        },
+        {
+          "page": 26,
+          "charCount": 1814,
+          "lineCount": 130,
+          "overlaps": 0,
+          "outOfBounds": 0
+        }
+      ]
+    }
+  ]
+}
