@@ -137,19 +137,17 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
         },
       }),
     );
-    expect(html).toContain('すごろく塾 管理者ポータル');
-    expect(html).toContain('今週の声掛け優先アラート');
+    expect(html).toContain('すごろく塾 管理');
     expect(html).toContain('高橋 陽斗（高2・サッカー部）');
     expect(html).toContain('山本 陸（高2・野球部）');
-    expect(html).toContain('講師用PDF教材棚');
-    // マナトビ純正UI・8大UX要素のマークアップ検証
+    expect(html).toContain('教材PDF');
+    // エッセンシャルUI・8大UX要素のマークアップ検証
     expect(html).toContain('class="kt');               // Kinetic Typography (KineticText)
     expect(html).toContain('class="mo-ring"');         // Infographic ScoreRing
     expect(html).toContain('class="mt-countup"');      // Infographic CountUp
     expect(html).toContain('study-doors');             // Infographic 7日間の学びの扉
     expect(html).toContain('data-ptr-host');           // Pull to Refresh ホスト
     expect(html).toContain('data-swipe-row');          // Swipe Action 行
-    expect(html).toContain('tobira-buddy');            // マナトビ公式バディ（トビラくん）
   });
 
   it('Skeleton Screen・Toast・Bottom Sheet・個人詳細インフォグラフィック・LINE声掛け文生成が正しく動作する', () => {
@@ -191,11 +189,13 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
 
     // Bottom Sheet
     const sheetHtml = renderToStaticMarkup(
-      createElement(
-        SugorokuBottomSheet,
-        { open: true, title: 'クイックダイジェスト', kicker: 'QUICK DIGEST', onClose: () => {} },
-        createElement('p', null, 'ボトムシート本文'),
-      ),
+      createElement(SugorokuBottomSheet, {
+        open: true,
+        title: 'クイックダイジェスト',
+        kicker: 'QUICK DIGEST',
+        onClose: () => {},
+        children: createElement('p', null, 'ボトムシート本文'),
+      }),
     );
     expect(sheetHtml).toContain('data-sugoroku-bottom-sheet');
     expect(sheetHtml).toContain('クイックダイジェスト');

@@ -1,14 +1,6 @@
 /**
- * ===================================================================
- * すごろく塾 管理者ポータル：インタラクティブUX＆インフォグラフィック部品集
- * ===================================================================
- * ご要望の8要素をマナトビ純正デザインシステム（tokens.css / motion.css）の上で実装：
- *   1. PullToRefreshHost    … 下スワイプ（ゴム抵抗ダンピング＋閾値回転）で最新ログ更新
- *   2. PortalSkeletonScreen … KPIカード4枚＋リスト行のシマー骨格スクリーン
- *   3. SugorokuToast        … スプリング入場＋タップ/スワイプ消去対応トースト
- *   4. SugorokuBottomSheet  … グラブハンドル下ドラッグで閉じられるネイティブ風ボトムシート
- *   5. SwipeableStudentItem … 左右スワイプでクイック操作（声掛けLINE文コピー・名簿編集・詳細）が現れる行
- *   6. Infographic部品      … 連続7日「扉（study-doors）」、技能別比率スタックバー、光沢進捗バー
+ * すごろく塾 管理者ポータル：インタラクティブUX＆インフォグラフィック部品（エッセンシャル設計）
+ * 配色は単色濃淡（--mt-brand 系のトーン）に統一し、余計な装飾色・説明文を排除。
  */
 
 import {
@@ -21,11 +13,11 @@ import {
   type ReactNode,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
-import { CheckCircle2, RefreshCw, Sparkles, AlertTriangle, X } from 'lucide-react';
+import { Check, RefreshCw, AlertTriangle, X } from 'lucide-react';
 import { SecondaryButton } from '../../components/ui';
 
 // ===================================================================
-// 1. Toast 状態管理フック＆コンポーネント
+// 1. Toast
 // ===================================================================
 
 export type ToastTone = 'default' | 'done' | 'warn';
@@ -44,10 +36,7 @@ export function usePortalToast() {
     window.clearTimeout(timerRef.current);
     const id = Date.now() + Math.random();
     setToast({ id, message, tone });
-    const duration = Math.min(5200, 2600 + Math.max(0, message.length - 18) * 55);
-    timerRef.current = window.setTimeout(() => {
-      setToast(null);
-    }, duration);
+    timerRef.current = window.setTimeout(() => setToast(null), 2600);
   }, []);
 
   const dismissToast = useCallback(() => {
@@ -74,16 +63,13 @@ export function SugorokuToast({
       role="status"
       aria-live="polite"
       data-sugoroku-toast={toast.tone}
-      data-tone={toast.tone === 'default' ? undefined : toast.tone}
       className="mt-toast sg-toast"
       onClick={onDismiss}
     >
-      {toast.tone === 'done' ? (
-        <CheckCircle2 size={16} aria-hidden="true" />
-      ) : toast.tone === 'warn' ? (
-        <AlertTriangle size={16} aria-hidden="true" />
+      {toast.tone === 'warn' ? (
+        <AlertTriangle size={15} aria-hidden="true" />
       ) : (
-        <Sparkles size={16} aria-hidden="true" />
+        <Check size={15} aria-hidden="true" />
       )}
       <span>{toast.message}</span>
     </div>
@@ -91,11 +77,11 @@ export function SugorokuToast({
 }
 
 // ===================================================================
-// 2. Pull to Refresh（引っ張って更新）
+// 2. Pull to Refresh
 // ===================================================================
 
-const PTR_THRESHOLD = 66;
-const PTR_MAX = 112;
+const PTR_THRESHOLD = 64;
+const PTR_MAX = 104;
 
 export function PullToRefreshHost({
   onRefresh,
@@ -129,9 +115,7 @@ export function PullToRefreshHost({
       return;
     }
     setDragging(true);
-    // ゴムのような減衰カーブ
-    const damped = Math.min(PTR_MAX, Math.round(Math.pow(dy, 0.82) * 1.6));
-    setPullPx(damped);
+    setPullPx(Math.min(PTR_MAX, Math.round(Math.pow(dy, 0.82) * 1.5)));
   };
 
   const finishPull = async () => {
@@ -145,9 +129,9 @@ export function PullToRefreshHost({
     }
   };
 
-  const indicatorHeight = refreshing ? 54 : pullPx;
+  const indicatorHeight = refreshing ? 48 : pullPx;
   const ready = pullPx >= PTR_THRESHOLD;
-  const deg = Math.min(260, Math.round((pullPx / PTR_THRESHOLD) * 180));
+  const deg = Math.min(240, Math.round((pullPx / PTR_THRESHOLD) * 180));
 
   return (
     <div
@@ -179,13 +163,7 @@ export function PullToRefreshHost({
               style={!refreshing ? { transform: `rotate(${deg}deg)` } : undefined}
               aria-hidden="true"
             />
-            <span>
-              {refreshing
-                ? '最新の学習ログを同期しています…'
-                : ready
-                  ? '指を離して最新データに更新'
-                  : '下に引っ張って学習ログを更新'}
-            </span>
+            <span>{refreshing ? '同期中' : ready ? '離して更新' : '引っ張って更新'}</span>
           </span>
         )}
       </div>
@@ -195,46 +173,43 @@ export function PullToRefreshHost({
 }
 
 // ===================================================================
-// 3. Skeleton Screen（シマー骨格スクリーン）
+// 3. Skeleton Screen
 // ===================================================================
 
 export function PortalSkeletonScreen({
   rows = 4,
-  label = '塾生の学習ログを読み込んでいます…',
+  label = '読み込み中',
 }: {
   rows?: number;
   label?: string;
 }) {
   return (
     <div className="sg-skeleton-wrap" role="status" aria-label={label} data-sugoroku-skeleton>
-      <div className="sg-skel-kpi-grid" aria-hidden="true">
-        {Array.from({ length: 4 }, (_, idx) => (
-          <div key={idx} className="sg-skel-card">
-            <i className="sg-skel-bar" style={{ width: '58%' }} />
-            <i className="sg-skel-bar" data-size="lg" style={{ width: '74%' }} />
-            <i className="sg-skel-bar" style={{ width: '44%' }} />
-          </div>
-        ))}
+      <div className="sg-skel-card" aria-hidden="true">
+        <i className="sg-skel-bar" data-size="lg" style={{ width: '48%' }} />
+        <i className="sg-skel-bar" style={{ width: '72%' }} />
       </div>
 
-      <div className="mt-skeleton-list" aria-hidden="true">
-        {Array.from({ length: rows }, (_, i) => (
-          <div key={i} className="sg-skel-card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <i className="sg-skel-circle" />
-            <div style={{ flex: 1, display: 'grid', gap: 8 }}>
-              <i className="sg-skel-bar" style={{ width: `${56 - (i % 3) * 9}%` }} />
-              <i className="sg-skel-bar" style={{ width: `${78 - (i % 2) * 14}%` }} />
-            </div>
-            <i className="sg-skel-bar" data-size="lg" style={{ width: 78 }} />
+      {Array.from({ length: rows }, (_, i) => (
+        <div
+          key={i}
+          className="sg-skel-card"
+          aria-hidden="true"
+          style={{ display: 'flex', alignItems: 'center', gap: 12 }}
+        >
+          <div style={{ flex: 1, display: 'grid', gap: 8 }}>
+            <i className="sg-skel-bar" style={{ width: `${46 - (i % 3) * 6}%` }} />
+            <i className="sg-skel-bar" style={{ width: `${68 - (i % 2) * 12}%` }} />
           </div>
-        ))}
-      </div>
+          <i className="sg-skel-circle" />
+        </div>
+      ))}
     </div>
   );
 }
 
 // ===================================================================
-// 4. Bottom Sheet（ドラッグで閉じられるボトムシート）
+// 4. Bottom Sheet
 // ===================================================================
 
 export function SugorokuBottomSheet({
@@ -277,15 +252,14 @@ export function SugorokuBottomSheet({
 
   const onGrabMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (startYRef.current === null) return;
-    const dy = Math.max(0, e.clientY - startYRef.current);
-    setDragY(dy);
+    setDragY(Math.max(0, e.clientY - startYRef.current));
   };
 
   const onGrabEnd = () => {
     if (startYRef.current === null) return;
     startYRef.current = null;
     setDragging(false);
-    if (dragY > 96) {
+    if (dragY > 88) {
       setDragY(0);
       onClose();
     } else {
@@ -324,7 +298,7 @@ export function SugorokuBottomSheet({
             {kicker && <span className="mt-kicker">{kicker}</span>}
             <h3>{title}</h3>
           </div>
-          <SecondaryButton onClick={onClose} icon={<X size={16} aria-hidden="true" />}>
+          <SecondaryButton onClick={onClose} icon={<X size={15} aria-hidden="true" />}>
             閉じる
           </SecondaryButton>
         </header>
@@ -335,11 +309,11 @@ export function SugorokuBottomSheet({
 }
 
 // ===================================================================
-// 5. Swipe Action（左右スワイプ操作付きリスト行ラッパー）
+// 5. Swipe Action
 // ===================================================================
 
-const SWIPE_SNAP_LEFT = -158;  // 左スワイプで右側の2ボタン露出
-const SWIPE_SNAP_RIGHT = 96;   // 右スワイプで左側の声掛けアクション露出
+const SWIPE_SNAP_LEFT = -152;
+const SWIPE_SNAP_RIGHT = 90;
 
 export interface SwipeActionButtonDef {
   id: string;
@@ -381,10 +355,9 @@ export function SwipeableRow({
     }
     if (st.locked !== 'x') return;
     setSwiping(true);
-    const minX = rightActions.length > 0 ? -184 : 0;
-    const maxX = leftAction ? 118 : 0;
-    const next = Math.max(minX, Math.min(maxX, st.base + dx));
-    setOffsetX(next);
+    const minX = rightActions.length > 0 ? -176 : 0;
+    const maxX = leftAction ? 110 : 0;
+    setOffsetX(Math.max(minX, Math.min(maxX, st.base + dx)));
   };
 
   const onTouchEnd = () => {
@@ -392,16 +365,16 @@ export function SwipeableRow({
     startRef.current = null;
     setSwiping(false);
     if (!st || st.locked !== 'x') return;
-    if (offsetX < -64 && rightActions.length > 0) {
+    if (offsetX < -60 && rightActions.length > 0) {
       setOffsetX(SWIPE_SNAP_LEFT);
-    } else if (offsetX > 52 && leftAction) {
+    } else if (offsetX > 48 && leftAction) {
       setOffsetX(SWIPE_SNAP_RIGHT);
     } else {
       setOffsetX(0);
     }
   };
 
-  const openState = offsetX <= -40 ? 'left' : offsetX >= 40 ? 'right' : undefined;
+  const openState = offsetX <= -36 ? 'left' : offsetX >= 36 ? 'right' : undefined;
 
   return (
     <li className="sg-swipe-shell" data-swipe-row data-swipe-open={openState}>
@@ -466,13 +439,9 @@ export function SwipeableRow({
 }
 
 // ===================================================================
-// 6. Infographic：直近7日の「学びの扉（study-doors）」＆分野構成比スタックバー
+// 6. Infographic（単色濃淡で落ち着いたインフォグラフィック）
 // ===================================================================
 
-/**
- * マナトビ motion.css の `.study-doors` アニメーション（1枚ずつ回転して開く扉）を活用し、
- * 直近7日間の日別学習有無を7枚の小さな扉で視覚化する。
- */
 export function StudyDoorsWeek({
   recentDailyLogs,
 }: {
@@ -484,7 +453,7 @@ export function StudyDoorsWeek({
     <span
       className="study-doors sg-doors"
       title={`直近7日で${openCount}日学習`}
-      aria-label={`直近7日のうち${openCount}日学習`}
+      aria-label={`直近7日で${openCount}日学習`}
     >
       {last7.map((d) => (
         <i
@@ -497,19 +466,19 @@ export function StudyDoorsWeek({
   );
 }
 
-const SKILL_PALETTE: Record<string, string> = {
-  listening: '#2458a6', // 扉の青
-  reading: '#f29a1f',   // 扉のオレンジ
-  vocab: '#1f7a4d',     // 定着の緑
-  writing: '#7a6bc4',   // ライラック
-  speaking: '#d9644a',  // コーラル
+/** 虹色を避け、マナトビの紺〜ブルーグレーの単色濃淡に統一 */
+const SKILL_SHADES: Record<string, string> = {
+  listening: '#2458a6',
+  reading: '#4973b3',
+  vocab: '#6f8fc0',
+  writing: '#95abcd',
+  speaking: '#b5c5dd',
 };
 
 export function SkillColorOf(skill: string): string {
-  return SKILL_PALETTE[skill] || '#5a6573';
+  return SKILL_SHADES[skill] || '#4973b3';
 }
 
-/** 級×技能別の時間配分を1本のカラフルなスタックバーで可視化するインフォグラフィック */
 export function SkillRatioStackBar({
   items,
 }: {
@@ -520,7 +489,7 @@ export function SkillRatioStackBar({
   if (total <= 0) return null;
 
   return (
-    <div className="sg-stack-bar" role="img" aria-label="分野別学習時間の構成比">
+    <div className="sg-stack-bar" role="img" aria-label="分野比率">
       {active.map((it) => {
         const pct = Math.max(4, Math.round((it.seconds / total) * 100));
         return (
@@ -531,7 +500,7 @@ export function SkillRatioStackBar({
               width: `${pct}%`,
               backgroundColor: SkillColorOf(it.skill),
             }}
-            title={`${it.label} (${pct}%)`}
+            title={`${it.label} ${pct}%`}
           />
         );
       })}
