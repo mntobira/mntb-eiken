@@ -88,6 +88,7 @@ import type { ChapterRunState } from './utils/quizRunState';
 import type { StudyNote } from './types/studyNote';
 import { Onboarding } from './components/Onboarding';
 import { getSubjectLabel, isSubjectId, type SubjectId } from './data/subjectLabels';
+import { subjectOfChapterId } from './data/subjects';
 /*
  * 本体に教科データを持たない教科（高校入試 理科など）の登録簿。
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
@@ -221,7 +222,12 @@ export default function App() {
     setAppState(next);
   };
   // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
-  useStudyTimeTracker(appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning), appState);
+  // 第3引数は「いま開いている章」。級×技能（2級リスニング…）への振り分けに使う。
+  useStudyTimeTracker(
+    appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning),
+    appState,
+    selectedChapterId,
+  );
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -440,6 +446,23 @@ export default function App() {
     setAppState, setAppMode, setSelectedChapterId, setQuizRange, setQuizAnswers,
     setSelectedSubject, setLastQuizResult, setBattleReturnActive, rememberBattleScroll,
   });
+  /**
+   * 「今日の宿題」カードの「今すぐ解く」→ その章の演習へ直行する。
+   *
+   * 設定画面の onStartClassChapter（同じ直行導線）とまったく同じ手順を踏む:
+   *   科目を有効か確認 → 科目を切り替え → 演習モードへ → 章を開く
+   * 章IDから科目を引くのは subjectOfChapterId（data/subjects.ts が唯一の定義）。
+   * 引けなければ何もしない（塾の宿題が別科目を指していてもホームを壊さない）。
+   */
+  const handleStartHomeworkChapter = useCallback((chapterId: string) => {
+    const subject = subjectOfChapterId(chapterId);
+    if (!subject || !isSubjectEnabled(subject)) return;
+    setSettingsTab('general');
+    setSelectedSubject(subject);
+    setAppMode('practice');
+    handleSelectChapter(chapterId, 0, false, null, 'practice');
+  }, [handleSelectChapter]);
+
 
   /*
    * ★選択中の章（単元）を探す処理は、ここから components/QuizScreens.tsx へ移した★
@@ -632,7 +655,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStartHomeworkChapter={handleStartHomeworkChapter} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { auth } from '../firebase';
 import { activeStudySeconds, addStudySeconds } from '../utils/studyTime';
 import { toDateKey } from '../utils/studySummary';
+import { recordTick, syncToday } from '../sugoroku/timelog/timelogStore';
 
 /** 学習時間を足す間隔（ms） */
 export const STUDY_TICK_MS = 15_000;
@@ -26,7 +27,11 @@ function isStudyMediaPlaying(): boolean {
  *
  * 以前は App.tsx の中に直接書かれていた（2026-10-15 にフックへ移した。挙動は同じ）。
  */
-export function useStudyTimeTracker(active: boolean, screenKey: string): void {
+export function useStudyTimeTracker(
+  active: boolean,
+  screenKey: string,
+  chapterId?: string | null,
+): void {
   // screenKey（画面の名前）が変わるたびに区切って足し直す（演習 → 解説へ移った瞬間にも端数を足す。従来どおり）
   useEffect(() => {
     if (!active) return;
@@ -39,7 +44,14 @@ export function useStudyTimeTracker(active: boolean, screenKey: string): void {
       const now = Date.now();
       if (isStudyMediaPlaying()) lastActive = now;
       if (document.visibilityState === 'visible') {
-        addStudySeconds(auth.currentUser?.uid || 'guest', activeStudySeconds(last, now, lastActive), toDateKey(now));
+        const uid = auth.currentUser?.uid || 'guest';
+        const seconds = activeStudySeconds(last, now, lastActive);
+        // 既存の合計（プロフィールカード）— 挙動は1文字も変えない
+        addStudySeconds(uid, seconds, toDateKey(now));
+        // 追加：級×技能ぶんの台帳（sugoroku/timelog）。既存の合計には影響しない
+        recordTick({ uid, seconds, to: now, chapterId: chapterId || null });
+        // ルール反映後（VITE_EIKEN_SUGOROKU_TIMELOG_SYNC=true）だけ、まとめて送る
+        void syncToday(uid, now);
       }
       last = now;
     };
@@ -49,5 +61,5 @@ export function useStudyTimeTracker(active: boolean, screenKey: string): void {
       ACTIVITY_EVENTS.forEach((ev) => window.removeEventListener(ev, markActive, { capture: true }));
       tick();
     };
-  }, [active, screenKey]);
+  }, [active, screenKey, chapterId]);
 }

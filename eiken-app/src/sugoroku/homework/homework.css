@@ -1,0 +1,268 @@
+/*
+ * ===================================================================
+ * 生徒ホーム「今日の宿題」カード
+ * ===================================================================
+ *
+ * ■ 置き場所
+ *   ホームの最上部（ヘッダーのすぐ下、とびら君のステージより上）。
+ *   「アプリを開いた瞬間に目に入る」ことが要件なので、スクロールしないと
+ *   見えない位置には置かない。
+ *
+ * ■ 見た目の方針（既存ホームに合わせる）
+ *   ・角丸22px・白地・うすい影 … 既存の home-pillar と同じ質感
+ *   ・主ボタンは水色系（対戦＝水色、演習＝金、復習＝藤色に続く4色目を足さない）
+ *      → すごろくの宿題は「やらされる」ものではなく「今日のぶん」なので、
+ *        既存の水色（前向きな色）を借りる。新しい色は増やさない。
+ *   ・文字は既存より一段大きく（運動部の生徒が教室のiPadで読むため）
+ *
+ * ■ はみ出し対策
+ *   ・横スクロールは作らない（min-width:0 / overflow-wrap）
+ *   ・長い課題名は2行で切る（それ以上は「…」）
+ */
+
+.sgr-homework {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 14px 16px 12px;
+  border: 2px solid #ffffff;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbfe 100%);
+  box-shadow: 0 4px 0 #cfe0e8, 0 0 0 1px #dbe7ec;
+  color: #1b2631;
+  text-align: left;
+  min-width: 0;
+}
+
+/* 締切超過は「責める赤」ではなく「気づかせる橙」。赤は既存のエラー表示に譲る。 */
+.sgr-homework[data-status='late'],
+.sgr-homework[data-status='behind'] {
+  background: linear-gradient(180deg, #ffffff 0%, #fff8ef 100%);
+  box-shadow: 0 4px 0 #e6d3b8, 0 0 0 1px #efe0cc;
+}
+
+.sgr-homework-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sgr-homework-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: #3c5a6e;
+}
+
+.sgr-homework-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #fff1e0;
+  border: 1px solid #f0cfa4;
+  color: #8a5b1c;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sgr-homework-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #14202b;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sgr-homework-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: #e8eff3;
+  overflow: hidden;
+}
+
+.sgr-homework-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7fc7de, #4a9dbb);
+  transition: width .35s ease;
+}
+
+.sgr-homework[data-status='late'] .sgr-homework-bar > i,
+.sgr-homework[data-status='behind'] .sgr-homework-bar > i {
+  background: linear-gradient(90deg, #f0c07a, #d99a45);
+}
+
+.sgr-homework-count {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #455260;
+}
+
+.sgr-homework-count strong {
+  font-size: 16px;
+  font-weight: 900;
+  color: #14202b;
+}
+
+.sgr-homework-sep {
+  color: #b7c2ca;
+  margin: 0 3px;
+}
+
+.sgr-homework-today,
+.sgr-homework-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 800;
+}
+
+.sgr-homework-today {
+  color: #b4642a;
+}
+
+.sgr-homework-done {
+  color: #2f7c74;
+}
+
+.sgr-homework-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7885;
+  flex-wrap: wrap;
+}
+
+.sgr-homework-msg {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #2f6684;
+  overflow-wrap: anywhere;
+}
+
+.sgr-homework-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 46px;
+  margin-top: 6px;
+  padding: 0 18px;
+  border: 2px solid #ffffff;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 20%, #f0fcff, #a9d7e7 92%);
+  box-shadow: 0 4px 0 #8fb9c8, 0 0 0 1px #b8d2dc;
+  color: #24566f;
+  font-size: 16px;
+  font-weight: 900;
+  transition: transform .12s, filter .12s;
+}
+
+.sgr-homework-start:active {
+  transform: translateY(2px);
+}
+
+@media (hover: hover) {
+  .sgr-homework-start:hover {
+    filter: brightness(1.03);
+  }
+}
+
+.sgr-homework-more {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 8px 0 0;
+  border-top: 1px dashed #dde6eb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sgr-homework-more > li > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.sgr-homework-more > li > button:disabled {
+  opacity: .55;
+}
+
+.sgr-homework-more-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sgr-homework-more-count {
+  flex-shrink: 0;
+  color: #6b7885;
+  font-weight: 800;
+}
+
+/* 低い画面では余白を詰める（既存ホームの @media (max-height:740px) と揃える） */
+@media (max-height: 740px) {
+  .sgr-homework {
+    padding: 10px 12px 9px;
+    gap: 4px;
+  }
+  .sgr-homework-title {
+    font-size: 15px;
+    -webkit-line-clamp: 1;
+  }
+  .sgr-homework-start {
+    min-height: 40px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgr-homework-bar > i,
+  .sgr-homework-start {
+    transition: none;
+  }
+}
