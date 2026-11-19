@@ -2,16 +2,16 @@
  * ===================================================================
  * すごろく塾管理者ポータル：AI 3 拡張スロット（ライティング添削・S-CBTスピーキング確認）
  * ===================================================================
- * AI 3（feat/ai3-writing-and-scbt-speaking）が実装する本格添削・音声再生モジュールを
- * `extensionSlots` Props 経由でそのまま差し込める拡張ホスト。
- *
- * AI 3 マージ前の単体動作時・試作デモ時にも、提出状況一覧・4観点AI採点補助プロンプトコピー・
- * S-CBTパート別録音メタデータ確認が完結して動作するフォールバックビューを内蔵する。
+ * マナトビ純正UI（Card / KineticText / ScoreRing / Bottom Sheet / Toast通知）で構築。
+ * AI 3 の本格モジュール統合時は `customRender` でシームレスに差し替わる。
  */
 
 import { useState } from 'react';
-import { Check, Copy, FileEdit, Mic, User } from 'lucide-react';
+import { Copy, Eye, FileEdit, Mic, User } from 'lucide-react';
+import { KineticText, ScoreRing } from '../../motion';
+import { Badge, Card, PrimaryButton, SecondaryButton } from '../../components/ui';
 import { getGradeLabel } from './adminAnalytics';
+import { SugorokuBottomSheet, type ToastTone } from './SugorokuInteractiveUi';
 import type {
   SugorokuAdminExtensionSlots,
   SugorokuSpeakingSubmissionDoc,
@@ -35,6 +35,7 @@ interface WritingExtensionHostProps {
   isDemoMode: boolean;
   submissions: SugorokuWritingSubmissionDoc[];
   onSelectStudent?: (studentUid: string) => void;
+  onToast?: (message: string, tone?: ToastTone) => void;
   customRender?: SugorokuAdminExtensionSlots['renderWritingReviewTab'];
 }
 
@@ -43,9 +44,10 @@ export function SugorokuWritingExtensionSlot({
   isDemoMode,
   submissions,
   onSelectStudent,
+  onToast,
   customRender,
 }: WritingExtensionHostProps) {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [inspectSub, setInspectSub] = useState<SugorokuWritingSubmissionDoc | null>(null);
 
   if (customRender) {
     return <>{customRender({ classId, isDemoMode, submissions, onSelectStudent })}</>;
@@ -54,106 +56,166 @@ export function SugorokuWritingExtensionSlot({
   const copyPrompt = async (sub: SugorokuWritingSubmissionDoc) => {
     try {
       await navigator.clipboard.writeText(buildAiRubricPromptForTeacher(sub));
-      setCopiedId(sub.id);
-      window.setTimeout(() => setCopiedId(null), 2000);
+      onToast?.('手元AI（Gemini/ChatGPT）用の英検4観点採点プロンプトをコピーしました！', 'done');
     } catch {
-      setCopiedId(null);
+      onToast?.('クリップボードへのコピーに失敗しました', 'warn');
     }
   };
 
   return (
-    <section aria-label="ライティング提出・添削スロット" className="space-y-3">
-      <div className="rounded-2xl border border-[#E2DDD2] bg-white p-4 sm:p-5 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <section
+      aria-label="ライティング提出・添削スロット"
+      className="sg-stagger"
+      style={{ display: 'grid', gap: 12 }}
+    >
+      <Card tone="sky">
+        <div className="sg-filter-bar">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-[#1B2631] flex items-center gap-2">
-              <FileEdit className="w-5 h-5 text-[#1D58A8] shrink-0" />
-              ライティング提出答案一覧（講師添削・AI補助プロンプト連携）
+            <span className="mt-kicker">WRITING REVIEW SLOT (AI 3 READY)</span>
+            <h2 className="mt-h2" style={{ margin: '2px 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FileEdit size={20} aria-hidden="true" />
+              <KineticText text="英作文 提出答案・添削ボックス" />
             </h2>
-            <p className="text-xs sm:text-sm text-[#4B5563] mt-0.5">
-              生徒から提出された英作文答案を確認できます（AI 3 モジュール統合時はA4添削フィードバックPDF出力が直接開きます）。
+            <p className="mt-small" style={{ margin: 0, color: 'var(--mt-ink-2)' }}>
+              API課金ゼロで講師手元のAIを下書き補助に使える「4観点プロンプト1クリックコピー」搭載（AI 3統合時にA4白黒フィードバックPDF返却が接続されます）。
             </p>
           </div>
-          <span className="rounded-full bg-[#EEF5FF] px-3 py-1 text-xs font-bold text-[#1D58A8]">
-            提出 {submissions.length} 件（未添削 {submissions.filter((s) => s.status === 'submitted').length} 件）
-          </span>
+          <Badge>
+            未添削 {submissions.filter((s) => s.status === 'submitted').length} / 全 {submissions.length} 件
+          </Badge>
         </div>
-      </div>
+      </Card>
 
       {submissions.length === 0 ? (
-        <div className="rounded-2xl border border-[#E2DDD2] bg-white p-8 text-center text-sm text-[#6B7280]">
-          現在提出されているライティング答案はありません。
-        </div>
+        <Card className="slog-empty">現在提出されているライティング答案はありません。</Card>
       ) : (
-        <div className="space-y-3">
+        <div className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
           {submissions.map((sub) => (
-            <article
-              key={sub.id}
-              className="rounded-2xl border border-[#E2DDD2] bg-white p-4 sm:p-5 space-y-3 shadow-xs"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
+            <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+              <div className="sg-filter-bar">
+                <div className="sg-student-badges">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                      sub.status === 'submitted'
-                        ? 'bg-[#FEF3D6] text-[#945608] border border-[#F3D285]'
-                        : 'bg-[#EAF7F0] text-[#16794F] border border-[#B5E2C9]'
-                    }`}
+                    className="mt-status"
+                    data-status={sub.status === 'submitted' ? 'doing' : 'done'}
                   >
-                    {sub.status === 'submitted' ? '未添削（要確認）' : '添削返却済'}
+                    {sub.status === 'submitted' ? '未添削・要確認' : '添削返却済'}
                   </span>
-                  <span className="rounded-md bg-[#F1EFE9] px-2 py-0.5 text-xs font-bold text-[#374151]">
-                    {getGradeLabel(sub.grade)} / {sub.wordCount}語
-                  </span>
+                  <Badge>
+                    {getGradeLabel(sub.grade)}・{sub.wordCount}語
+                  </Badge>
                   <button
                     type="button"
+                    className="mt-btn mt-btn-text"
+                    style={{ minHeight: 34 }}
                     onClick={() => onSelectStudent?.(sub.studentUid)}
-                    className="inline-flex items-center gap-1 text-sm font-bold text-[#1D58A8] hover:underline"
                   >
-                    <User className="w-3.5 h-3.5" />
+                    <User size={14} aria-hidden="true" />
                     {sub.studentName}
                   </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => void copyPrompt(sub)}
-                  className="min-h-[36px] inline-flex items-center gap-1.5 rounded-xl border border-[#1D58A8] bg-[#EEF5FF] px-3 py-1.5 text-xs font-bold text-[#1D58A8] hover:bg-[#DCEBFE]"
-                >
-                  {copiedId === sub.id ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      4観点採点プロンプトをコピーしました
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      手元AI用・4観点採点プロンプトをコピー
-                    </>
-                  )}
-                </button>
+
+                <div className="sg-chip-group">
+                  <SecondaryButton
+                    onClick={() => setInspectSub(sub)}
+                    icon={<Eye size={15} aria-hidden="true" />}
+                  >
+                    全文シート
+                  </SecondaryButton>
+                  <PrimaryButton
+                    onClick={() => void copyPrompt(sub)}
+                    icon={<Copy size={15} aria-hidden="true" />}
+                  >
+                    4観点採点プロンプトをコピー
+                  </PrimaryButton>
+                </div>
               </div>
 
-              <h3 className="text-sm font-bold text-[#1B2631]">
+              <strong style={{ font: '800 15px/1.35 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
                 {sub.taskTitle || sub.taskKey}
-              </h3>
+              </strong>
 
-              <div className="rounded-xl bg-[#FDFBF7] border border-[#EAE6DC] p-3 text-xs sm:text-sm text-[#1B2631] font-mono leading-relaxed whitespace-pre-wrap break-words">
+              <p
+                style={{
+                  margin: 0,
+                  padding: '10px 12px',
+                  borderRadius: 'var(--mt-radius-md)',
+                  background: 'var(--mt-bg-sunken)',
+                  font: '500 13px/1.6 var(--mt-font-body)',
+                  color: 'var(--mt-ink)',
+                  overflowWrap: 'anywhere',
+                }}
+              >
                 {sub.text}
-              </div>
+              </p>
 
               {sub.review && (
-                <div className="rounded-xl bg-[#EAF7F0] border border-[#B5E2C9] p-3 text-xs sm:text-sm text-[#145337] space-y-1">
-                  <p className="font-bold">
-                    講師添削スコア：{sub.review.score} / {sub.review.maxScore ?? 16}{' '}
-                    {sub.review.reviewerName ? `（担当：${sub.review.reviewerName}）` : ''}
-                  </p>
-                  <p className="leading-relaxed">{sub.review.comment}</p>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 12px',
+                    borderRadius: 'var(--mt-radius-md)',
+                    background: 'var(--mt-done-soft)',
+                    color: 'var(--mt-done)',
+                  }}
+                >
+                  <ScoreRing
+                    rate={sub.review.score / (sub.review.maxScore ?? 16)}
+                    size={38}
+                    stroke={5}
+                    tone="done"
+                  />
+                  <div style={{ fontSize: 13, lineHeight: 1.45 }}>
+                    <b>
+                      講師スコア {sub.review.score}/{sub.review.maxScore ?? 16}
+                    </b>
+                    ：{sub.review.comment}
+                  </div>
                 </div>
               )}
-            </article>
+            </Card>
           ))}
         </div>
       )}
+
+      <SugorokuBottomSheet
+        open={!!inspectSub}
+        kicker="WRITING SUBMISSION"
+        title={inspectSub ? `${inspectSub.studentName}の提出答案` : '提出答案'}
+        onClose={() => setInspectSub(null)}
+      >
+        {inspectSub && (
+          <div style={{ display: 'grid', gap: 12 }}>
+            <div className="sg-student-badges">
+              <Badge>{getGradeLabel(inspectSub.grade)}</Badge>
+              <Badge tone="gold">{inspectSub.wordCount} words</Badge>
+            </div>
+            <strong style={{ font: '800 15px/1.4 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+              {inspectSub.taskTitle || inspectSub.taskKey}
+            </strong>
+            <div
+              style={{
+                padding: 14,
+                borderRadius: 'var(--mt-radius-md)',
+                border: '1px solid var(--mt-line)',
+                background: '#fff',
+                font: '500 14px/1.7 var(--mt-font-body)',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+              {inspectSub.text}
+            </div>
+            <PrimaryButton
+              block
+              onClick={() => void copyPrompt(inspectSub)}
+              icon={<Copy size={16} aria-hidden="true" />}
+            >
+              手元AI用の4観点採点プロンプトをコピーする
+            </PrimaryButton>
+          </div>
+        )}
+      </SugorokuBottomSheet>
     </section>
   );
 }
@@ -186,80 +248,70 @@ export function SugorokuSpeakingExtensionSlot({
   }
 
   return (
-    <section aria-label="S-CBTスピーキング音声確認スロット" className="space-y-3">
-      <div className="rounded-2xl border border-[#E2DDD2] bg-white p-4 sm:p-5 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <section
+      aria-label="S-CBTスピーキング音声確認スロット"
+      className="sg-stagger"
+      style={{ display: 'grid', gap: 12 }}
+    >
+      <Card tone="lilac">
+        <div className="sg-filter-bar">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-[#1B2631] flex items-center gap-2">
-              <Mic className="w-5 h-5 text-[#16794F] shrink-0" />
-              S-CBT方式 スピーキング録音提出一覧
+            <span className="mt-kicker">S-CBT SPEAKING SLOT (AI 3 READY)</span>
+            <h2 className="mt-h2" style={{ margin: '2px 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Mic size={20} aria-hidden="true" />
+              <KineticText text="S-CBT方式 スピーキング録音確認" />
             </h2>
-            <p className="text-xs sm:text-sm text-[#4B5563] mt-0.5">
-              生徒が自主練習で録音したS-CBT模擬面接（音読＋No.1〜No.4）の提出状況を確認できます（AI 3 モジュール統合時は連続再生・速度変更プレイヤーが接続されます）。
+            <p className="mt-small" style={{ margin: 0, color: 'var(--mt-ink-2)' }}>
+              週2回のオンライン面接指導以外の自主練習（音読＋No.1〜No.4録音）を確認できます（AI 3統合時に連続再生・倍速プレイヤーが接続されます）。
             </p>
           </div>
-          <span className="rounded-full bg-[#EAF7F0] px-3 py-1 text-xs font-bold text-[#16794F]">
-            提出 {submissions.length} 件
-          </span>
+          <Badge>提出 {submissions.length} 件</Badge>
         </div>
-      </div>
+      </Card>
 
       {submissions.length === 0 ? (
-        <div className="rounded-2xl border border-[#E2DDD2] bg-white p-8 text-center text-sm text-[#6B7280]">
-          現在提出されているスピーキング録音はありません。
-        </div>
+        <Card className="slog-empty">現在提出されているスピーキング録音はありません。</Card>
       ) : (
-        <div className="space-y-3">
+        <div className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
           {submissions.map((sub) => (
-            <article
-              key={sub.id}
-              className="rounded-2xl border border-[#E2DDD2] bg-white p-4 sm:p-5 space-y-3 shadow-xs"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                      sub.status === 'submitted'
-                        ? 'bg-[#FEF3D6] text-[#945608] border border-[#F3D285]'
-                        : 'bg-[#EAF7F0] text-[#16794F] border border-[#B5E2C9]'
-                    }`}
-                  >
-                    {sub.status === 'submitted' ? '未評価（録音あり）' : '評価返却済'}
-                  </span>
-                  <span className="rounded-md bg-[#F1EFE9] px-2 py-0.5 text-xs font-bold text-[#374151]">
-                    {getGradeLabel(sub.grade)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onSelectStudent?.(sub.studentUid)}
-                    className="inline-flex items-center gap-1 text-sm font-bold text-[#1D58A8] hover:underline"
-                  >
-                    <User className="w-3.5 h-3.5" />
-                    {sub.studentName}
-                  </button>
-                </div>
+            <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+              <div className="sg-student-badges">
+                <span
+                  className="mt-status"
+                  data-status={sub.status === 'submitted' ? 'doing' : 'done'}
+                >
+                  {sub.status === 'submitted' ? '未評価（録音5パート到着）' : '評価返却済'}
+                </span>
+                <Badge>{getGradeLabel(sub.grade)}</Badge>
+                <button
+                  type="button"
+                  className="mt-btn mt-btn-text"
+                  style={{ minHeight: 34 }}
+                  onClick={() => onSelectStudent?.(sub.studentUid)}
+                >
+                  <User size={14} aria-hidden="true" />
+                  {sub.studentName}
+                </button>
               </div>
 
-              <h3 className="text-sm font-bold text-[#1B2631]">
+              <strong style={{ font: '800 15px/1.35 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
                 {sub.setTitle || sub.setId}
-              </h3>
+              </strong>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="slog-rows">
                 {sub.recordings.map((rec) => (
-                  <div
-                    key={rec.partId}
-                    className="rounded-xl border border-[#EAE6DC] bg-[#FDFBF7] px-3 py-2 flex items-center justify-between gap-2 text-xs"
-                  >
-                    <span className="font-bold text-[#1B2631] truncate">
-                      {SPEAKING_PART_LABELS[rec.partId] || rec.partId}
+                  <div key={rec.partId} className="slog-row">
+                    <span>
+                      <strong>{SPEAKING_PART_LABELS[rec.partId] || rec.partId}</strong>
+                      <small>
+                        形式：{rec.mimeType.includes('mp4') ? 'iOS/Safari AAC' : 'WebM/Opus'}
+                      </small>
                     </span>
-                    <span className="text-[#4B5563] shrink-0">
-                      {rec.durationSec}秒 ({rec.mimeType.includes('mp4') ? 'AAC' : 'Opus'})
-                    </span>
+                    <b>{rec.durationSec}秒</b>
                   </div>
                 ))}
               </div>
-            </article>
+            </Card>
           ))}
         </div>
       )}

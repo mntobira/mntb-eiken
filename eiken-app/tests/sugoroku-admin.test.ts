@@ -14,6 +14,15 @@ import {
 import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
 import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
 import { classifyEikenMaterial } from '../src/sugoroku/admin/SugorokuPdfShelfTab';
+import {
+  buildLineEncourageMessage,
+  SugorokuStudentDetailView,
+} from '../src/sugoroku/admin/SugorokuStudentDetailView';
+import {
+  PortalSkeletonScreen,
+  SugorokuBottomSheet,
+  SugorokuToast,
+} from '../src/sugoroku/admin/SugorokuInteractiveUi';
 import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
@@ -133,5 +142,76 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(html).toContain('高橋 陽斗（高2・サッカー部）');
     expect(html).toContain('山本 陸（高2・野球部）');
     expect(html).toContain('講師用PDF教材棚');
+    // マナトビ純正UI・8大UX要素のマークアップ検証
+    expect(html).toContain('class="kt');               // Kinetic Typography (KineticText)
+    expect(html).toContain('class="mo-ring"');         // Infographic ScoreRing
+    expect(html).toContain('class="mt-countup"');      // Infographic CountUp
+    expect(html).toContain('study-doors');             // Infographic 7日間の学びの扉
+    expect(html).toContain('data-ptr-host');           // Pull to Refresh ホスト
+    expect(html).toContain('data-swipe-row');          // Swipe Action 行
+    expect(html).toContain('tobira-buddy');            // マナトビ公式バディ（トビラくん）
+  });
+
+  it('Skeleton Screen・Toast・Bottom Sheet・個人詳細インフォグラフィック・LINE声掛け文生成が正しく動作する', () => {
+    const fixedNow = new Date(2026, 10, 20, 21, 0, 0).getTime();
+    const demo = createSugorokuDemoBundle(fixedNow);
+    const riku = buildStudentOverview({
+      member: demo.members.find((m) => m.uid === 'stu_yamamoto_riku')!,
+      logs: demo.logsByUid.stu_yamamoto_riku ?? [],
+      assignments: demo.assignments,
+      solvedByChapter: demo.solvedByUid.stu_yamamoto_riku ?? {},
+      nowMs: fixedNow,
+    });
+    const mio = buildStudentOverview({
+      member: demo.members.find((m) => m.uid === 'stu_sato_mio')!,
+      logs: demo.logsByUid.stu_sato_mio ?? [],
+      assignments: demo.assignments,
+      solvedByChapter: demo.solvedByUid.stu_sato_mio ?? {},
+      nowMs: fixedNow,
+    });
+
+    // 停滞生徒向け／順調生徒向けの声掛けメッセージ出し分け
+    expect(buildLineEncourageMessage(riku)).toContain('まずはリスニング第1部か単語10問');
+    expect(buildLineEncourageMessage(mio)).toContain('素晴らしいペースです');
+
+    // Skeleton Screen
+    const skelHtml = renderToStaticMarkup(createElement(PortalSkeletonScreen, { rows: 3 }));
+    expect(skelHtml).toContain('data-sugoroku-skeleton');
+    expect(skelHtml).toContain('sg-skel-card');
+
+    // Toast
+    const toastHtml = renderToStaticMarkup(
+      createElement(SugorokuToast, {
+        toast: { id: 1, message: '最新データを同期しました', tone: 'done' },
+        onDismiss: () => {},
+      }),
+    );
+    expect(toastHtml).toContain('mt-toast');
+    expect(toastHtml).toContain('最新データを同期しました');
+
+    // Bottom Sheet
+    const sheetHtml = renderToStaticMarkup(
+      createElement(
+        SugorokuBottomSheet,
+        { open: true, title: 'クイックダイジェスト', kicker: 'QUICK DIGEST', onClose: () => {} },
+        createElement('p', null, 'ボトムシート本文'),
+      ),
+    );
+    expect(sheetHtml).toContain('data-sugoroku-bottom-sheet');
+    expect(sheetHtml).toContain('クイックダイジェスト');
+
+    // 個人詳細インフォグラフィック画面
+    const detailHtml = renderToStaticMarkup(
+      createElement(SugorokuStudentDetailView, {
+        student: mio,
+        isDemoMode: true,
+        onBack: () => {},
+        onSaveProfile: () => {},
+      }),
+    );
+    expect(detailHtml).toContain('佐藤 美桜');
+    expect(detailHtml).toContain('sg-stack-bar');
+    expect(detailHtml).toContain('mt-progress');
+    expect(detailHtml).toContain('study-doors');
   });
 });

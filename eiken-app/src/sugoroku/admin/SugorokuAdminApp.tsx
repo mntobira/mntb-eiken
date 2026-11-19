@@ -1,22 +1,25 @@
 /**
  * ===================================================================
- * すごろく塾管理者ポータル（SugorokuAdminApp.tsx）
+ * すごろく塾 管理者ポータル（SugorokuAdminApp.tsx — マナトビ純正UI・フルモーション版）
  * ===================================================================
- * 【AI 1 担当メイン画面 — React.lazy コード分割対応】
+ * マナトビ本体（tokens.css / system.css / motion.css / TobiraBuddy / KineticText / ScoreRing / CountUp）
+ * の世界観と手触りに完全統一し、以下すべてのネイティブ級UI/UX機構を搭載：
  *
- * 1. 塾生サマリー一覧＆停滞アラート（未学習・宿題遅延生徒を最上部にハイライト表示）
- * 2. 個人別ドリルダウン画面（日別カレンダー／棒グラフ＋級×技能別の学習時間・正答率推移）
- * 3. 講師用PDF教材ダイレクト棚（ガチャ不要で全冊子・分冊を即時閲覧・DL）＆保護者面談用CSV出力
- * 4. AI 3 拡張スロット（ライティング添削タブ・S-CBTスピーキング音声確認タブ）
- * 5. 試作デモ用サンプルデータモード ⇄ Firestore実データ接続モードのワンタップ切替
- * 6. スマホ（375px）／iPad（768px）／PC（1280px+）すべてで横はみ出しゼロのレスポンシブ設計
+ *  1. Kinetic Typography … `KineticText` によるタイトル・見出しの1文字立ち上がり＆ポップ演出
+ *  2. UI/UX Animation    … `.mt-tabs` スプリング浮上、`.sg-stagger` カード順次入場、MoRipple 波紋連動
+ *  3. Infographic Anim   … `ScoreRing` 円弧描画、`CountUp` カウントアップ、`StudyDoorsWeek` 7枚扉回転、
+ *                          `SkillRatioStackBar` ＆ `.mt-progress` シャイン光沢バー
+ *  4. Pull to Refresh    … 画面上端からの下スワイプ（ゴム減衰＋回転ホイール）で最新ログを再同期
+ *  5. Skeleton Screen    … モード切替・再同期中のシマー骨格スクリーン（レイアウトシフトゼロ）
+ *  6. Toast              … コピー・CSV保存・更新・名簿保存すべての操作に対するスプリングトースト
+ *  7. Bottom Sheet       … 生徒クイックサマリーシート・名簿編集シート・PDF分冊シート（下ドラッグ閉鎖対応）
+ *  8. Swipe Action       … 塾生行の左右スワイプで「声掛け文コピー」「クイックシート」「詳細ログ」を即実行
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
   AlertTriangle,
-  ArrowLeft,
   BookOpen,
   CheckCircle2,
   ChevronRight,
@@ -24,9 +27,11 @@ import {
   Copy,
   Database,
   Download,
+  Eye,
   FileEdit,
   LogIn,
   LogOut,
+  MessageCircleHeart,
   Mic,
   RefreshCw,
   ShieldAlert,
@@ -36,6 +41,17 @@ import {
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
 import { signInWithGoogle, signOutGoogle } from '../../utils/googleAuth';
 import { PdfViewerHost } from '../../components/PdfViewer';
+import { TobiraBuddy } from '../../components/TobiraBuddy';
+import { CountUp } from '../../components/ui/CountUp';
+import {
+  BackButton,
+  Badge,
+  Card,
+  PrimaryButton,
+  SecondaryButton,
+  SectionHeader,
+} from '../../components/ui';
+import { KineticText, ScoreRing, installRipple } from '../../motion';
 import type { ClassroomDoc } from '../../utils/classroomCore';
 import type { EikenGrade } from '../../eiken/config';
 import type { SugorokuAdminExtensionSlots } from '../shared/types';
@@ -57,12 +73,26 @@ import {
   updateSugorokuStudentProfile,
   type LoadedClassPortalData,
 } from './firestoreAdminService';
-import { SugorokuStudentDetailView } from './SugorokuStudentDetailView';
+import {
+  SugorokuStudentDetailView,
+  buildLineEncourageMessage,
+} from './SugorokuStudentDetailView';
 import { SugorokuPdfShelfTab } from './SugorokuPdfShelfTab';
 import {
   SugorokuSpeakingExtensionSlot,
   SugorokuWritingExtensionSlot,
 } from './SugorokuExtensionSlots';
+import {
+  PortalSkeletonScreen,
+  PullToRefreshHost,
+  SkillRatioStackBar,
+  StudyDoorsWeek,
+  SugorokuBottomSheet,
+  SugorokuToast,
+  SwipeableRow,
+  usePortalToast,
+} from './SugorokuInteractiveUi';
+import './sugoroku-admin.css';
 
 export type SugorokuAdminTabId =
   | 'students'
@@ -71,11 +101,8 @@ export type SugorokuAdminTabId =
   | 'speaking_review';
 
 export interface SugorokuAdminAppProps {
-  /** 生徒用アプリまたは先生ダッシュボードから開いた場合の戻るコールバック */
   onBack?: () => void;
-  /** 初期データソース指定（未指定時はFirestore設定＆担当クラス有無に応じて自動選択） */
   initialDataMode?: 'auto' | 'demo' | 'firestore';
-  /** AI 3 のライティング添削・スピーキング確認モジュールを差し込む拡張スロット */
   extensionSlots?: SugorokuAdminExtensionSlots;
 }
 
@@ -90,10 +117,18 @@ export function SugorokuAdminApp({
   );
   const [activeTab, setActiveTab] = useState<SugorokuAdminTabId>('students');
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
+  const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [onlyAlerts, setOnlyAlerts] = useState(false);
 
-  // デモデータ状態（インライン名簿編集などもその場で反映可能にする）
+  // Skeleton Screen & Pull-to-Refresh 状態
+  const [skeletonTransition, setSkeletonTransition] = useState(false);
+  const [ptrRefreshing, setPtrRefreshing] = useState(false);
+
+  // Toast フック
+  const { toast, showToast, dismissToast } = usePortalToast();
+
+  // デモデータ状態
   const [demoBundle, setDemoBundle] = useState<SugorokuDemoBundle>(() =>
     createSugorokuDemoBundle(),
   );
@@ -104,8 +139,12 @@ export function SugorokuAdminApp({
   const [livePortalData, setLivePortalData] = useState<LoadedClassPortalData | null>(null);
   const [loadingLive, setLoadingLive] = useState(false);
   const [liveError, setLiveError] = useState<string | null>(null);
-  const [copiedCode, setCopiedCode] = useState(false);
   const [authBusy, setAuthBusy] = useState(false);
+
+  // マナトビ共通の波紋（MoRipple）を確実に有効化
+  useEffect(() => {
+    installRipple();
+  }, []);
 
   // Firebase Auth 購読
   useEffect(() => {
@@ -115,7 +154,6 @@ export function SugorokuAdminApp({
     });
   }, []);
 
-  // Firestore 担当クラスの読み込み
   const reloadLiveClasses = useCallback(async () => {
     if (!FIREBASE_CONFIGURED || !auth.currentUser) {
       setClassrooms([]);
@@ -151,6 +189,40 @@ export function SugorokuAdminApp({
     }
   }, [user, reloadLiveClasses]);
 
+  /** モード切替時に短時間のSkeleton Screenを挟み、視覚的な切り替わりを滑らかにする */
+  const switchDataMode = (nextMode: 'demo' | 'firestore') => {
+    if (nextMode === dataMode) return;
+    setSelectedStudentUid(null);
+    setQuickSheetStudentUid(null);
+    setSkeletonTransition(true);
+    setDataMode(nextMode);
+    window.setTimeout(() => {
+      setSkeletonTransition(false);
+      showToast(
+        nextMode === 'demo'
+          ? '試作デモデータ（6名サンプル）に切り替えました'
+          : '本番Firestore接続モードに切り替えました',
+      );
+    }, 320);
+  };
+
+  /** Pull to Refresh または更新ボタン押下時 */
+  const handlePullRefresh = async () => {
+    setPtrRefreshing(true);
+    try {
+      if (dataMode === 'demo') {
+        await new Promise((r) => window.setTimeout(r, 420));
+        setDemoBundle((prev) => ({ ...createSugorokuDemoBundle(), members: prev.members }));
+        showToast('最新の学習タイムログを集計しました', 'done');
+      } else {
+        await reloadLiveClasses();
+        showToast('Firestoreから最新の塾生ログを同期しました', 'done');
+      }
+    } finally {
+      setPtrRefreshing(false);
+    }
+  };
+
   const handleSelectLiveClass = async (classId: string) => {
     setActiveClassId(classId);
     setSelectedStudentUid(null);
@@ -161,6 +233,7 @@ export function SugorokuAdminApp({
     try {
       const portal = await loadClassPortalData(room);
       setLivePortalData(portal);
+      showToast(`「${room.className}」を読み込みました`, 'done');
     } catch (e) {
       setLiveError(e instanceof Error ? e.message : 'クラスデータの読み込みに失敗しました。');
     } finally {
@@ -168,7 +241,6 @@ export function SugorokuAdminApp({
     }
   };
 
-  // 現在有効なソース（Demo vs Firestore）から塾生一覧サマリーを組み立てる
   const sourceInfo = useMemo(() => {
     if (dataMode === 'demo') {
       return {
@@ -244,11 +316,16 @@ export function SugorokuAdminApp({
     [allStudentOverviews, selectedStudentUid],
   );
 
-  // クラス全体KPI集計
+  const quickSheetStudent = useMemo(
+    () => allStudentOverviews.find((s) => s.uid === quickSheetStudentUid) ?? null,
+    [allStudentOverviews, quickSheetStudentUid],
+  );
+
   const kpi = useMemo(() => {
     const count = allStudentOverviews.length;
     const alertStudents = allStudentOverviews.filter((s) => s.alerts.length > 0);
     const totalWeeklySec = allStudentOverviews.reduce((sum, s) => sum + s.weeklyActiveSeconds, 0);
+    const avgWeeklyMin = count > 0 ? Math.round(totalWeeklySec / count / 60) : 0;
     const avgHomeworkPct =
       count > 0
         ? Math.round(
@@ -261,15 +338,32 @@ export function SugorokuAdminApp({
     const pendingSpeaking = sourceInfo.speakingSubmissions.filter(
       (sp) => sp.status === 'submitted',
     ).length;
+
+    // クラス全体の分野別合計（全体スタックバー用）
+    const classSkillMap = new Map<string, { key: string; skill: string; label: string; seconds: number }>();
+    for (const s of allStudentOverviews) {
+      for (const g of s.gradeSkillBreakdown) {
+        const cur = classSkillMap.get(g.skill) ?? {
+          key: g.skill,
+          skill: g.skill,
+          label: g.label.replace(/^英検\S+\s+/, ''),
+          seconds: 0,
+        };
+        cur.seconds += g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds;
+        classSkillMap.set(g.skill, cur);
+      }
+    }
+
     return {
       count,
       alertCount: alertStudents.length,
       alertStudents,
       avgWeeklySec: count > 0 ? Math.round(totalWeeklySec / count) : 0,
-      totalWeeklySec,
+      avgWeeklyMin,
       avgHomeworkPct,
       pendingWriting,
       pendingSpeaking,
+      classSkillItems: [...classSkillMap.values()],
     };
   }, [allStudentOverviews, sourceInfo]);
 
@@ -286,6 +380,7 @@ export function SugorokuAdminApp({
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    showToast(`塾生${filteredStudents.length}名分の学習サマリーCSVを保存しました`, 'done');
   };
 
   const handleSaveStudentProfile = async (params: {
@@ -322,10 +417,18 @@ export function SugorokuAdminApp({
     if (!sourceInfo.joinCode) return;
     try {
       await navigator.clipboard.writeText(sourceInfo.joinCode);
-      setCopiedCode(true);
-      window.setTimeout(() => setCopiedCode(false), 1800);
+      showToast(`クラス招待コード「${sourceInfo.joinCode}」をコピーしました`, 'done');
     } catch {
-      setCopiedCode(false);
+      showToast('招待コードをコピーできませんでした', 'warn');
+    }
+  };
+
+  const handleCopyStudentLineMessage = async (st: SugorokuStudentOverview) => {
+    try {
+      await navigator.clipboard.writeText(buildLineEncourageMessage(st));
+      showToast(`「${st.rosterName}」への声掛け文をコピーしました！`, 'done');
+    } catch {
+      showToast('声掛け文のコピーに失敗しました', 'warn');
     }
   };
 
@@ -342,124 +445,99 @@ export function SugorokuAdminApp({
     }
   };
 
-  // Firestore実データモードが選ばれているのに未ログインの場合の認可ゲート表示
   const isAuthorizedForLive =
     !!user && (classrooms.length > 0 || isEmailPreAuthorizedAdmin(user.email));
 
+  const showSkeleton = skeletonTransition || (dataMode === 'firestore' && loadingLive && !livePortalData);
+
+  // とびら君バディのセリフ（状況に応じて生き生きと変化）
+  const buddyLine = useMemo(() => {
+    if (dataMode === 'demo') {
+      return `すごろく塾 管理者ポータルへようこそ！いま${kpi.alertCount}人の生徒に声掛けチャンスがあるよ。行を左右にスワイプすると声掛け文もすぐコピーできるよ！`;
+    }
+    if (kpi.alertCount > 0) {
+      return `先生おつかれさま！未学習・宿題遅れの子が${kpi.alertCount}人いるよ。上から順番に声を掛けてみよう！`;
+    }
+    return '全員いいペースで扉を開けているよ！面談用CSVやプリント棚もすぐ使えるよ！';
+  }, [dataMode, kpi.alertCount]);
+
   return (
-    <div
-      data-sugoroku-admin-portal="true"
-      className="min-h-[100dvh] w-full max-w-full overflow-x-hidden bg-[#F7F5EF] text-[#1B2631]"
-    >
-      {/* アプリ内PDFビューアホスト（?portal=admin 直起動時でもPDFプレビュー・印刷が動くように配置） */}
+    <div data-sugoroku-admin-portal="true" className="sg-screen mt-screen">
+      {/* アプリ内PDFビューアホスト */}
       <PdfViewerHost />
 
-      {/* トップヘッダーバー */}
-      <header className="sticky top-0 z-20 border-b border-[#E2DDD2] bg-white/95 backdrop-blur-xs">
-        <div className="mx-auto max-w-6xl px-3 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {onBack && (
-              <button
-                type="button"
-                onClick={onBack}
-                className="min-h-[38px] inline-flex items-center gap-1 rounded-xl border border-[#D5D1C8] bg-[#FDFBF7] px-2.5 py-1.5 text-xs font-bold text-[#374151] hover:bg-[#F1EFE9] shrink-0"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">戻る</span>
-              </button>
-            )}
-            <img
-              src="/brand/manatobi-logo-gray.png"
-              alt="マナトビ"
-              className="h-6 w-auto hidden sm:block shrink-0"
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="rounded-md bg-[#1D58A8] px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-white">
-                  すごろく塾 管理者ポータル
-                </span>
-                <span className="text-[11px] font-semibold text-[#6B7280] truncate">
-                  {sourceInfo.schoolName}
-                </span>
+      {/* ポータル共通トースト */}
+      <SugorokuToast toast={toast} onDismiss={dismissToast} />
+
+      {/* 1. 上部スティッキーヘッダー（マナトビ純正丸ゴシック＋KineticText＋セグメントタブ） */}
+      <header className="sg-topbar">
+        <div className="sg-topbar-inner">
+          <div className="sg-brand-row">
+            <div className="sg-title-group">
+              {onBack && <BackButton label="戻る" onClick={onBack} />}
+              <img
+                src="/brand/manatobi-logo-gray.png"
+                alt="マナトビ"
+                width={118}
+                height={38}
+                style={{ height: 28, width: 'auto', flexShrink: 0 }}
+              />
+              <div className="sg-title-text">
+                <span className="mt-kicker">SUGOROKU JUKU PORTAL</span>
+                <h1>
+                  <KineticText text="すごろく塾 管理者ポータル" variant="rise" />
+                </h1>
               </div>
-              <h1 className="text-sm sm:text-base font-extrabold text-[#1B2631] truncate">
-                {sourceInfo.className}
-              </h1>
+            </div>
+
+            {/* データモード切替ピル ＋ ログアウト */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+              <div className="sg-mode-pill" role="group" aria-label="データ表示モード切替">
+                <button
+                  type="button"
+                  aria-pressed={dataMode === 'demo'}
+                  onClick={() => switchDataMode('demo')}
+                >
+                  <Sparkles size={14} aria-hidden="true" />
+                  試作デモデータ
+                </button>
+                <button
+                  type="button"
+                  data-live="true"
+                  aria-pressed={dataMode === 'firestore'}
+                  onClick={() => switchDataMode('firestore')}
+                >
+                  <Database size={14} aria-hidden="true" />
+                  本番Firestore接続
+                </button>
+              </div>
+
+              {FIREBASE_CONFIGURED && user && (
+                <SecondaryButton
+                  onClick={() => void signOutGoogle()}
+                  icon={<LogOut size={15} aria-hidden="true" />}
+                  title={user.email || 'ログアウト'}
+                >
+                  ログアウト
+                </SecondaryButton>
+              )}
             </div>
           </div>
 
-          {/* モード切替（試作デモサンプル ⇄ Firestore実データ）＋アカウント状態 */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div
-              className="inline-flex rounded-xl bg-[#F1EFE9] p-0.5 border border-[#E2DDD2]"
-              role="group"
-              aria-label="データ表示モード切替"
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  setDataMode('demo');
-                  setSelectedStudentUid(null);
-                }}
-                className={`min-h-[34px] inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-colors ${
-                  dataMode === 'demo'
-                    ? 'bg-white text-[#1D58A8] shadow-xs'
-                    : 'text-[#4B5563] hover:text-[#1B2631]'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                試作デモデータ
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setDataMode('firestore');
-                  setSelectedStudentUid(null);
-                }}
-                className={`min-h-[34px] inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-colors ${
-                  dataMode === 'firestore'
-                    ? 'bg-white text-[#16794F] shadow-xs'
-                    : 'text-[#4B5563] hover:text-[#1B2631]'
-                }`}
-              >
-                <Database className="w-3.5 h-3.5 shrink-0" />
-                本番Firestore接続
-              </button>
-            </div>
-
-            {FIREBASE_CONFIGURED && user && (
-              <button
-                type="button"
-                onClick={() => void signOutGoogle()}
-                className="min-h-[34px] inline-flex items-center gap-1 rounded-xl border border-[#E2DDD2] bg-white px-2.5 py-1 text-xs font-semibold text-[#4B5563] hover:bg-[#FDECEA] hover:text-[#B42318]"
-                title={user.email || 'ログアウト'}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden md:inline max-w-[140px] truncate">{user.email}</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* メイン機能タブ（スマホ2×2折返し / タブレット・PC 1列タブ、横はみ出しゼロ） */}
-        <div className="mx-auto max-w-6xl px-3 sm:px-6 pb-2.5">
+          {/* 4つのメインタブ（マナトビ純正 .mt-tabs：選択時にスプリングで浮く） */}
           <nav
             aria-label="管理者ポータルメニュー"
-            className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 rounded-xl bg-[#EFECE4] p-1"
+            className="mt-tabs sg-nav-tabs"
           >
             <button
               type="button"
+              aria-current={activeTab === 'students' ? 'page' : undefined}
               onClick={() => setActiveTab('students')}
-              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:text-sm font-bold transition-colors ${
-                activeTab === 'students'
-                  ? 'bg-white text-[#1B2631] shadow-xs'
-                  : 'text-[#4B5563] hover:text-[#1B2631]'
-              }`}
             >
-              <Users className="w-4 h-4 shrink-0 text-[#1D58A8]" />
-              <span className="truncate">塾生ログ一覧</span>
+              <Users size={16} aria-hidden="true" />
+              <span>塾生ログ一覧</span>
               {kpi.alertCount > 0 && (
-                <span className="rounded-full bg-[#D92D20] px-1.5 py-0.2 text-[10px] font-extrabold text-white">
+                <span className="sg-tab-badge" data-tone="danger">
                   {kpi.alertCount}
                 </span>
               )}
@@ -467,57 +545,43 @@ export function SugorokuAdminApp({
 
             <button
               type="button"
+              aria-current={activeTab === 'pdf_shelf' ? 'page' : undefined}
               onClick={() => {
                 setSelectedStudentUid(null);
                 setActiveTab('pdf_shelf');
               }}
-              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:text-sm font-bold transition-colors ${
-                activeTab === 'pdf_shelf'
-                  ? 'bg-white text-[#1B2631] shadow-xs'
-                  : 'text-[#4B5563] hover:text-[#1B2631]'
-              }`}
             >
-              <BookOpen className="w-4 h-4 shrink-0 text-[#16794F]" />
-              <span className="truncate">講師用PDF教材棚</span>
+              <BookOpen size={16} aria-hidden="true" />
+              <span>講師用PDF教材棚</span>
             </button>
 
             <button
               type="button"
+              aria-current={activeTab === 'writing_review' ? 'page' : undefined}
               onClick={() => {
                 setSelectedStudentUid(null);
                 setActiveTab('writing_review');
               }}
-              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:text-sm font-bold transition-colors ${
-                activeTab === 'writing_review'
-                  ? 'bg-white text-[#1B2631] shadow-xs'
-                  : 'text-[#4B5563] hover:text-[#1B2631]'
-              }`}
             >
-              <FileEdit className="w-4 h-4 shrink-0 text-[#1D58A8]" />
-              <span className="truncate">英作文添削</span>
+              <FileEdit size={16} aria-hidden="true" />
+              <span>英作文添削</span>
               {kpi.pendingWriting > 0 && (
-                <span className="rounded-full bg-[#1D58A8] px-1.5 py-0.2 text-[10px] font-extrabold text-white">
-                  {kpi.pendingWriting}
-                </span>
+                <span className="sg-tab-badge">{kpi.pendingWriting}</span>
               )}
             </button>
 
             <button
               type="button"
+              aria-current={activeTab === 'speaking_review' ? 'page' : undefined}
               onClick={() => {
                 setSelectedStudentUid(null);
                 setActiveTab('speaking_review');
               }}
-              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:text-sm font-bold transition-colors ${
-                activeTab === 'speaking_review'
-                  ? 'bg-white text-[#1B2631] shadow-xs'
-                  : 'text-[#4B5563] hover:text-[#1B2631]'
-              }`}
             >
-              <Mic className="w-4 h-4 shrink-0 text-[#16794F]" />
-              <span className="truncate">スピーキング確認</span>
+              <Mic size={16} aria-hidden="true" />
+              <span>スピーキング確認</span>
               {kpi.pendingSpeaking > 0 && (
-                <span className="rounded-full bg-[#16794F] px-1.5 py-0.2 text-[10px] font-extrabold text-white">
+                <span className="sg-tab-badge" data-tone="done">
                   {kpi.pendingSpeaking}
                 </span>
               )}
@@ -526,440 +590,594 @@ export function SugorokuAdminApp({
         </div>
       </header>
 
-      {/* メインコンテンツ領域 */}
-      <main className="mx-auto max-w-6xl px-3 sm:px-6 py-4 sm:py-6 space-y-4">
-        {/* デモモード案内バナー */}
-        {dataMode === 'demo' && (
-          <div className="rounded-2xl border border-[#B6D4F7] bg-[#EEF5FF] px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm text-[#164788]">
-            <p className="leading-relaxed">
-              <strong>【試作デモ表示中】</strong>{' '}
-              すごろく様の想定塾生6名（運動部所属・英検2級/準2級プラス目標）のサンプルデータで動作しています。生徒をタップすると級×技能別の学習時間・日別カレンダーを確認できます（スクショ提出不要）。
-            </p>
-            {sourceInfo.joinCode && (
-              <button
-                type="button"
-                onClick={() => void handleCopyJoinCode()}
-                className="self-start sm:self-center shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-white border border-[#B6D4F7] px-2.5 py-1 text-xs font-bold text-[#1D58A8]"
+      {/* 2. Pull to Refresh 対応メインステージ */}
+      <PullToRefreshHost onRefresh={handlePullRefresh} refreshing={ptrRefreshing}>
+        <main className="sg-main">
+          {/* とびら君バディ帯（呼吸・まばたきアニメ付き＋招待コード・手動更新） */}
+          <div className="sg-buddy-banner">
+            <TobiraBuddy
+              size="sm"
+              bubble="right"
+              input={{
+                screen: 'study',
+                dueCount: kpi.alertCount,
+                streak: 5,
+                seed: activeTab.length,
+              }}
+              line={buddyLine}
+            />
+            <div className="sg-buddy-actions">
+              {sourceInfo.joinCode && (
+                <SecondaryButton
+                  onClick={() => void handleCopyJoinCode()}
+                  icon={<Copy size={15} aria-hidden="true" />}
+                >
+                  招待コード: {sourceInfo.joinCode}
+                </SecondaryButton>
+              )}
+              <SecondaryButton
+                disabled={ptrRefreshing || loadingLive}
+                onClick={() => void handlePullRefresh()}
+                icon={
+                  <RefreshCw
+                    size={15}
+                    className={ptrRefreshing || loadingLive ? 'animate-spin' : undefined}
+                    aria-hidden="true"
+                  />
+                }
               >
-                <Copy className="w-3.5 h-3.5" />
-                {copiedCode ? 'コピー済！' : `招待コード: ${sourceInfo.joinCode}`}
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Firestore実データ接続時の未認証・未構成ガード */}
-        {dataMode === 'firestore' && !FIREBASE_CONFIGURED ? (
-          <div className="rounded-2xl border border-[#F3D285] bg-[#FEF9EC] p-6 text-center space-y-3">
-            <ShieldAlert className="w-9 h-9 mx-auto text-[#945608]" />
-            <h2 className="text-base sm:text-lg font-bold text-[#1B2631]">
-              この環境ではまだクラウド接続（VITE_EIKEN_ENABLE_CLOUD）が有効化されていません
-            </h2>
-            <p className="text-xs sm:text-sm text-[#4B5563] max-w-xl mx-auto leading-relaxed">
-              英検専用Firebaseの環境変数を設定すると、指定講師Googleアカウントでのログインとリアルタイム同期が有効になります。画面構成の確認は「試作デモデータ」または「講師用PDF教材棚」で行えます。
-            </p>
-            <button
-              type="button"
-              onClick={() => setDataMode('demo')}
-              className="min-h-[40px] inline-flex items-center gap-1.5 rounded-xl bg-[#1D58A8] px-4 py-2 text-xs sm:text-sm font-bold text-white"
-            >
-              <Sparkles className="w-4 h-4" />
-              試作デモデータ表示へ切り替える
-            </button>
-          </div>
-        ) : dataMode === 'firestore' && !user ? (
-          <div className="rounded-2xl border border-[#E2DDD2] bg-white p-6 sm:p-8 text-center space-y-4 max-w-lg mx-auto">
-            <ShieldAlert className="w-10 h-10 mx-auto text-[#1D58A8]" />
-            <h2 className="text-lg font-bold text-[#1B2631]">
-              すごろく講師用 Googleログインが必要です
-            </h2>
-            <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
-              塾生の実名（名簿名）および学習ログ・提出音声を保護するため、指定された講師アカウント（またはクラス作成者）のみ閲覧できます。
-            </p>
-            {liveError && (
-              <p role="alert" className="text-xs font-semibold text-[#B42318]">
-                {liveError}
-              </p>
-            )}
-            <div className="flex flex-wrap justify-center gap-2.5">
-              <button
-                type="button"
-                disabled={authBusy}
-                onClick={() => void handleGoogleSignIn()}
-                className="min-h-[42px] inline-flex items-center gap-2 rounded-xl bg-[#1D58A8] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"
-              >
-                <LogIn className="w-4 h-4" />
-                {authBusy ? '認証処理中…' : '講師Googleアカウントでログイン'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDataMode('demo')}
-                className="min-h-[42px] inline-flex items-center gap-1.5 rounded-xl border border-[#D5D1C8] bg-[#FDFBF7] px-4 py-2.5 text-xs font-bold text-[#374151]"
-              >
-                デモ画面を見る
-              </button>
+                最新ログ更新
+              </SecondaryButton>
             </div>
           </div>
-        ) : dataMode === 'firestore' && !loadingLive && !isAuthorizedForLive ? (
-          <div className="rounded-2xl border border-[#F5C6C0] bg-[#FDECEA] p-6 text-center space-y-3 max-w-lg mx-auto">
-            <AlertTriangle className="w-9 h-9 mx-auto text-[#B42318]" />
-            <h2 className="text-base font-bold text-[#96342B]">
-              担当クラスが見つからないか、管理者権限が未登録です
-            </h2>
-            <p className="text-xs sm:text-sm text-[#96342B] leading-relaxed">
-              ログイン中：{user?.email}。先生ダッシュボードから塾クラスを作成するか、すごろく講師メールアドレスの認可登録を確認してください。
-            </p>
-            <button
-              type="button"
-              onClick={() => setDataMode('demo')}
-              className="min-h-[38px] inline-flex items-center gap-1.5 rounded-xl bg-white border border-[#F5C6C0] px-4 py-2 text-xs font-bold text-[#96342B]"
-            >
-              試作デモデータで画面を確認する
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Firestore複数クラス切替バー */}
-            {dataMode === 'firestore' && classrooms.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#E2DDD2] bg-white p-3">
-                <div className="flex flex-wrap gap-1.5">
+
+          {/* Skeleton Screen 表示中 */}
+          {showSkeleton ? (
+            <PortalSkeletonScreen rows={5} />
+          ) : dataMode === 'firestore' && !FIREBASE_CONFIGURED ? (
+            <Card tone="gold" style={{ textAlign: 'center', padding: '28px 20px', display: 'grid', gap: 12, justifyItems: 'center' }}>
+              <ShieldAlert size={36} style={{ color: 'var(--mt-accent-ink)' }} aria-hidden="true" />
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                <KineticText text="クラウド同期は環境変数設定後に有効になります" />
+              </h2>
+              <p className="mt-body" style={{ margin: 0, maxWidth: 520 }}>
+                この環境ではまだ <code>VITE_EIKEN_ENABLE_CLOUD=true</code> が未設定です。11/23・11/27の画面レビューは「試作デモデータ」または「講師用PDF教材棚」ですべての動作をご確認いただけます。
+              </p>
+              <PrimaryButton
+                tone="accent"
+                onClick={() => switchDataMode('demo')}
+                icon={<Sparkles size={16} aria-hidden="true" />}
+              >
+                試作デモデータ表示へ切り替える
+              </PrimaryButton>
+            </Card>
+          ) : dataMode === 'firestore' && !user ? (
+            <Card style={{ textAlign: 'center', padding: '28px 20px', display: 'grid', gap: 12, justifyItems: 'center', maxWidth: 520, margin: '0 auto' }}>
+              <ShieldAlert size={38} style={{ color: 'var(--mt-brand)' }} aria-hidden="true" />
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                <KineticText text="すごろく講師用 Googleログイン" />
+              </h2>
+              <p className="mt-body" style={{ margin: 0 }}>
+                塾生の実名（名簿名）および学習ログ・提出音声を保護するため、指定された講師アカウント（またはクラス担任）のみアクセスできます。
+              </p>
+              {liveError && <p className="slog-error">{liveError}</p>}
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
+                <PrimaryButton
+                  disabled={authBusy}
+                  onClick={() => void handleGoogleSignIn()}
+                  icon={<LogIn size={16} aria-hidden="true" />}
+                >
+                  {authBusy ? '認証中…' : '講師Googleアカウントでログイン'}
+                </PrimaryButton>
+                <SecondaryButton onClick={() => switchDataMode('demo')}>
+                  試作デモ画面を見る
+                </SecondaryButton>
+              </div>
+            </Card>
+          ) : dataMode === 'firestore' && !loadingLive && !isAuthorizedForLive ? (
+            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 10, justifyItems: 'center' }}>
+              <AlertTriangle size={34} style={{ color: 'var(--mt-danger)' }} aria-hidden="true" />
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                担当クラスが見つからないか、講師認可が未登録です
+              </h2>
+              <p className="mt-body" style={{ margin: 0 }}>
+                ログイン中：{user?.email}。先生ダッシュボードでクラスを作成するか、すごろく講師メールアドレス登録をご確認ください。
+              </p>
+              <SecondaryButton onClick={() => switchDataMode('demo')}>
+                試作デモデータで画面を確認する
+              </SecondaryButton>
+            </Card>
+          ) : (
+            <>
+              {/* Firestore複数クラス切替チップ */}
+              {dataMode === 'firestore' && classrooms.length > 0 && (
+                <div className="sg-chip-group" role="group" aria-label="担当クラス切替">
                   {classrooms.map((room) => (
                     <button
                       key={room.id}
                       type="button"
+                      className="sg-chip"
+                      aria-pressed={room.id === activeClassId}
                       onClick={() => void handleSelectLiveClass(room.id)}
-                      className={`min-h-[36px] rounded-xl px-3 py-1.5 text-xs font-bold border transition-colors ${
-                        room.id === activeClassId
-                          ? 'bg-[#1B2631] text-white border-[#1B2631]'
-                          : 'bg-[#F8F6F1] text-[#4B5563] border-[#E2DDD2]'
-                      }`}
                     >
                       {room.className}
                     </button>
                   ))}
                 </div>
-                <button
-                  type="button"
-                  disabled={loadingLive}
-                  onClick={() => void reloadLiveClasses()}
-                  className="min-h-[36px] inline-flex items-center gap-1.5 rounded-xl border border-[#D5D1C8] bg-[#FDFBF7] px-3 py-1.5 text-xs font-bold text-[#374151]"
+              )}
+
+              {/* タブ別コンテンツ */}
+              {activeTab === 'pdf_shelf' ? (
+                <SugorokuPdfShelfTab onToast={showToast} />
+              ) : activeTab === 'writing_review' ? (
+                <SugorokuWritingExtensionSlot
+                  classId={sourceInfo.classId}
+                  isDemoMode={sourceInfo.isDemo}
+                  submissions={sourceInfo.writingSubmissions}
+                  onToast={showToast}
+                  customRender={extensionSlots?.renderWritingReviewTab}
+                  onSelectStudent={(uid) => {
+                    setSelectedStudentUid(uid);
+                    setActiveTab('students');
+                  }}
+                />
+              ) : activeTab === 'speaking_review' ? (
+                <SugorokuSpeakingExtensionSlot
+                  classId={sourceInfo.classId}
+                  isDemoMode={sourceInfo.isDemo}
+                  submissions={sourceInfo.speakingSubmissions}
+                  customRender={extensionSlots?.renderSpeakingReviewTab}
+                  onSelectStudent={(uid) => {
+                    setSelectedStudentUid(uid);
+                    setActiveTab('students');
+                  }}
+                />
+              ) : selectedStudent ? (
+                <SugorokuStudentDetailView
+                  student={selectedStudent}
+                  isDemoMode={sourceInfo.isDemo}
+                  onBack={() => setSelectedStudentUid(null)}
+                  onSaveProfile={handleSaveStudentProfile}
+                  onToast={showToast}
+                  onOpenWritingTab={() => {
+                    setSelectedStudentUid(null);
+                    setActiveTab('writing_review');
+                  }}
+                  onOpenSpeakingTab={() => {
+                    setSelectedStudentUid(null);
+                    setActiveTab('speaking_review');
+                  }}
+                />
+              ) : (
+                /* 塾生ログ一覧＆停滞アラートメイン画面 */
+                <section
+                  aria-label="塾生サマリー一覧と停滞アラート"
+                  className="sg-stagger"
+                  style={{ display: 'grid', gap: 14 }}
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingLive ? 'animate-spin' : ''}`} />
-                  最新ログ取得
-                </button>
-              </div>
-            )}
-
-            {/* タブ別描画 */}
-            {activeTab === 'pdf_shelf' ? (
-              <SugorokuPdfShelfTab />
-            ) : activeTab === 'writing_review' ? (
-              <SugorokuWritingExtensionSlot
-                classId={sourceInfo.classId}
-                isDemoMode={sourceInfo.isDemo}
-                submissions={sourceInfo.writingSubmissions}
-                customRender={extensionSlots?.renderWritingReviewTab}
-                onSelectStudent={(uid) => {
-                  setSelectedStudentUid(uid);
-                  setActiveTab('students');
-                }}
-              />
-            ) : activeTab === 'speaking_review' ? (
-              <SugorokuSpeakingExtensionSlot
-                classId={sourceInfo.classId}
-                isDemoMode={sourceInfo.isDemo}
-                submissions={sourceInfo.speakingSubmissions}
-                customRender={extensionSlots?.renderSpeakingReviewTab}
-                onSelectStudent={(uid) => {
-                  setSelectedStudentUid(uid);
-                  setActiveTab('students');
-                }}
-              />
-            ) : selectedStudent ? (
-              <SugorokuStudentDetailView
-                student={selectedStudent}
-                isDemoMode={sourceInfo.isDemo}
-                onBack={() => setSelectedStudentUid(null)}
-                onSaveProfile={handleSaveStudentProfile}
-                onOpenWritingTab={() => {
-                  setSelectedStudentUid(null);
-                  setActiveTab('writing_review');
-                }}
-                onOpenSpeakingTab={() => {
-                  setSelectedStudentUid(null);
-                  setActiveTab('speaking_review');
-                }}
-              />
-            ) : (
-              /* 塾生サマリー一覧＆停滞アラート画面 */
-              <section aria-label="塾生サマリー一覧と停滞アラート" className="space-y-4">
-                {/* 1. 停滞・宿題遅延アラート最上部ハイライト帯 */}
-                {kpi.alertStudents.length > 0 && (
-                  <div
-                    role="region"
-                    aria-label="声掛け優先アラート"
-                    className="rounded-2xl border-2 border-[#F0B4AD] bg-[#FFF5F4] p-4 space-y-2.5 shadow-xs"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h2 className="text-sm sm:text-base font-extrabold text-[#96342B] flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-[#D92D20] shrink-0" />
-                        今週の声掛け優先アラート（未学習・宿題遅れ {kpi.alertStudents.length}名）
-                      </h2>
-                      <span className="text-xs font-semibold text-[#96342B]">
-                        タップで個人別タイムログ詳細へ
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      {kpi.alertStudents.map((st) => (
-                        <button
-                          key={st.uid}
-                          type="button"
-                          onClick={() => setSelectedStudentUid(st.uid)}
-                          className="text-left rounded-xl border border-[#F5C6C0] bg-white p-3 hover:bg-[#FEF8F7] transition-colors flex items-center justify-between gap-2 min-w-0"
-                        >
-                          <div className="min-w-0">
-                            <p className="text-xs sm:text-sm font-extrabold text-[#1B2631] truncate">
-                              {st.rosterName}
-                            </p>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {st.alerts.map((al) => (
-                                <span
-                                  key={al.reason}
-                                  className={`rounded px-1.5 py-0.5 text-[11px] font-bold ${
-                                    al.severity === 'critical'
-                                      ? 'bg-[#FDECEA] text-[#B42318]'
-                                      : 'bg-[#FEF3D6] text-[#945608]'
-                                  }`}
-                                >
-                                  {al.label}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-[#96342B] shrink-0" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. クラス全体サマリーKPI（スマホ2×2 / PC 4列） */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                  <div className="rounded-2xl border border-[#E2DDD2] bg-white p-3.5 sm:p-4">
-                    <p className="text-xs font-semibold text-[#6B7280]">在籍塾生 / 要フォロー</p>
-                    <p className="text-xl font-extrabold text-[#1B2631] mt-1">
-                      {kpi.count}名
-                      {kpi.alertCount > 0 && (
-                        <span className="ml-2 text-xs font-bold text-[#D92D20]">
-                          （注意 {kpi.alertCount}名）
-                        </span>
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-[#E2DDD2] bg-white p-3.5 sm:p-4">
-                    <p className="text-xs font-semibold text-[#6B7280] flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-[#1D58A8]" />
-                      今週の平均有効学習時間
-                    </p>
-                    <p className="text-xl font-extrabold text-[#1B2631] mt-1">
-                      {formatDurationJa(kpi.avgWeeklySec)}
-                    </p>
-                    <p className="text-[11px] text-[#6B7280]">1分以上無操作は自動除外</p>
-                  </div>
-
-                  <div className="rounded-2xl border border-[#E2DDD2] bg-white p-3.5 sm:p-4">
-                    <p className="text-xs font-semibold text-[#6B7280] flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#16794F]" />
-                      平均宿題消化率
-                    </p>
-                    <p className="text-xl font-extrabold text-[#1B2631] mt-1">
-                      {kpi.avgHomeworkPct}%
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-[#E2DDD2] bg-white p-3.5 sm:p-4 flex flex-col justify-between">
-                    <p className="text-xs font-semibold text-[#6B7280]">面談・保護者共有</p>
-                    <button
-                      type="button"
-                      disabled={filteredStudents.length === 0}
-                      onClick={handleExportSummaryCsv}
-                      className="mt-1.5 min-h-[36px] w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#16794F] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#12623F] disabled:opacity-50"
+                  {/* A. 声掛け優先アラート最上部ステージ（脈動バッジ＋ワンタップ遷移） */}
+                  {kpi.alertStudents.length > 0 && (
+                    <div
+                      role="region"
+                      aria-label="声掛け優先アラート"
+                      className="sg-alert-stage"
                     >
-                      <Download className="w-3.5 h-3.5 shrink-0" />
-                      一括CSV出力
-                    </button>
-                  </div>
-                </div>
+                      <div className="sg-alert-head">
+                        <h2>
+                          <span className="sg-alert-pulse" aria-hidden="true">
+                            <AlertTriangle size={15} />
+                          </span>
+                          <KineticText
+                            text={`今週の声掛け優先アラート（${kpi.alertStudents.length}名）`}
+                            variant="pop"
+                          />
+                        </h2>
+                        <span className="mt-small" style={{ fontWeight: 700 }}>
+                          未学習・宿題遅延の生徒を最上部に自動抽出
+                        </span>
+                      </div>
 
-                {/* 3. 絞り込みツールバー */}
-                <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#E2DDD2] bg-white px-4 py-3">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-bold text-[#4B5563] mr-1">目標級：</span>
-                    {[
-                      { id: 'all', label: '全員' },
-                      { id: 'eiken_2', label: '英検2級' },
-                      { id: 'eiken_pre2plus', label: '準2級プラス' },
-                      { id: 'eiken_pre2', label: '準2級' },
-                    ].map((g) => (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => setGradeFilter(g.id)}
-                        className={`min-h-[32px] rounded-lg px-2.5 py-1 text-xs font-bold transition-colors ${
-                          gradeFilter === g.id
-                            ? 'bg-[#1D58A8] text-white'
-                            : 'bg-[#F1EFE9] text-[#4B5563] hover:bg-[#E5E2D9]'
-                        }`}
-                      >
-                        {g.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <label className="inline-flex items-center gap-2 text-xs font-bold text-[#374151] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={onlyAlerts}
-                      onChange={(e) => setOnlyAlerts(e.target.checked)}
-                      className="rounded border-[#D5D1C8]"
-                    />
-                    未学習・宿題遅れのみ表示
-                  </label>
-                </div>
-
-                {/* 4. 塾生カード一覧（スマホ・iPad・PCすべて横スクロール不要のレスポンシブ構造） */}
-                {filteredStudents.length === 0 ? (
-                  <div className="rounded-2xl border border-[#E2DDD2] bg-white p-8 text-center text-sm text-[#6B7280]">
-                    該当する塾生がいません。
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    {filteredStudents.map((st) => {
-                      const hasCritical = st.alerts.some((a) => a.severity === 'critical');
-                      const hasWarning = !hasCritical && st.alerts.length > 0;
-                      const topSkills = st.gradeSkillBreakdown
-                        .filter((g) => g.weeklySeconds > 0 || g.totalSeconds > 0)
-                        .slice(0, 3);
-                      return (
-                        <article
-                          key={st.uid}
-                          className={`rounded-2xl border p-4 transition-colors shadow-xs ${
-                            hasCritical
-                              ? 'border-[#F0B4AD] bg-[#FFFBFB]'
-                              : hasWarning
-                                ? 'border-[#F3D285] bg-[#FFFEFA]'
-                                : 'border-[#E2DDD2] bg-white'
-                          }`}
-                        >
-                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                            {/* 左：氏名・目標級・アラート・分野別チップ */}
-                            <div className="min-w-0 flex-1 space-y-1.5">
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="rounded-md bg-[#EEF5FF] px-2 py-0.5 text-xs font-bold text-[#1D58A8]">
-                                  {getGradeLabel(st.targetGrade)}
-                                </span>
-                                <h3 className="text-sm sm:text-base font-extrabold text-[#1B2631] break-words">
-                                  {st.rosterName}
-                                </h3>
+                      <div className="sg-alert-grid">
+                        {kpi.alertStudents.map((st) => (
+                          <button
+                            key={st.uid}
+                            type="button"
+                            className="sg-alert-chip"
+                            onClick={() => setSelectedStudentUid(st.uid)}
+                          >
+                            <div style={{ minWidth: 0, display: 'grid', gap: 4 }}>
+                              <strong
+                                style={{
+                                  font: '800 14px/1.3 var(--mt-font-display)',
+                                  color: 'var(--mt-ink-warm)',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {st.rosterName}
+                              </strong>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                                 {st.alerts.map((al) => (
-                                  <span
+                                  <Badge
                                     key={al.reason}
-                                    className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
-                                      al.severity === 'critical'
-                                        ? 'bg-[#FDECEA] text-[#B42318]'
-                                        : 'bg-[#FEF3D6] text-[#945608]'
-                                    }`}
+                                    tone={al.severity === 'critical' ? 'new' : 'gold'}
                                   >
                                     {al.label}
-                                  </span>
+                                  </Badge>
                                 ))}
                               </div>
-
-                              {/* 級×技能別の直近内訳ピル（一覧上でも誰が何を何分やったか即把握可能） */}
-                              <div className="flex flex-wrap gap-1.5 text-xs">
-                                {topSkills.length === 0 ? (
-                                  <span className="text-[#9CA3AF]">今週の分野別記録なし</span>
-                                ) : (
-                                  topSkills.map((g) => (
-                                    <span
-                                      key={g.key}
-                                      className="rounded-lg bg-[#F8F6F1] border border-[#E8E4DA] px-2 py-0.5 text-[#374151]"
-                                    >
-                                      {g.label}：
-                                      <strong className="text-[#1D58A8] ml-0.5">
-                                        {toMinutesRounded(
-                                          g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
-                                        )}
-                                        分
-                                      </strong>
-                                      {g.accuracyPct !== null ? ` (${g.accuracyPct}%)` : ''}
-                                    </span>
-                                  ))
-                                )}
-                              </div>
                             </div>
+                            <ChevronRight
+                              size={18}
+                              style={{ color: 'var(--mt-danger)', flexShrink: 0 }}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                            {/* 右：今週/本日時間・宿題進捗バー・詳細ボタン */}
-                            <div className="grid grid-cols-3 sm:flex sm:items-center gap-2.5 sm:gap-4 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#F1EFE9] shrink-0">
-                              <div>
-                                <p className="text-[11px] text-[#6B7280]">今週 / 本日</p>
-                                <p className="text-xs sm:text-sm font-extrabold text-[#1B2631]">
-                                  {formatDurationJa(st.weeklyActiveSeconds)}
-                                  <span className="text-[11px] font-normal text-[#6B7280] ml-1">
-                                    ({formatDurationJa(st.todayActiveSeconds)})
-                                  </span>
-                                </p>
-                              </div>
+                  {/* B. Infographic KPI 4枚カード（CountUp + ScoreRing + 全体比率バー） */}
+                  <div className="sg-kpi-grid">
+                    <div className="sg-kpi-card" data-tone={kpi.alertCount > 0 ? 'alert' : undefined}>
+                      <p className="sg-kpi-label">
+                        <Users size={14} aria-hidden="true" />
+                        在籍塾生 / 要フォロー
+                      </p>
+                      <div className="sg-kpi-main">
+                        <span className="sg-kpi-num">
+                          <CountUp value={kpi.count} fromZero duration={600} />
+                          <span className="sg-kpi-unit">名</span>
+                        </span>
+                        {kpi.alertCount > 0 && (
+                          <Badge tone="new">要声掛け {kpi.alertCount}名</Badge>
+                        )}
+                      </div>
+                      <p className="sg-kpi-sub">{sourceInfo.className}</p>
+                    </div>
 
-                              <div className="min-w-[90px]">
-                                <div className="flex items-center justify-between text-[11px] text-[#6B7280]">
-                                  <span>宿題消化</span>
-                                  <strong className="text-[#1B2631]">
-                                    {st.homework.completionRate}%
-                                  </strong>
-                                </div>
-                                <div className="mt-1 h-2 w-full rounded-full bg-[#EAE6DC] overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full ${
-                                      st.homework.overdueCount > 0
-                                        ? 'bg-[#D92D20]'
-                                        : st.homework.completionRate >= 80
-                                          ? 'bg-[#16794F]'
-                                          : 'bg-[#1D58A8]'
-                                    }`}
-                                    style={{ width: `${st.homework.completionRate}%` }}
-                                  />
-                                </div>
-                                <p className="text-[10px] text-[#6B7280] mt-0.5">
-                                  最終: {st.lastStudiedDateKey ?? '未学習'}
-                                </p>
-                              </div>
+                    <div className="sg-kpi-card" data-tone="sky">
+                      <p className="sg-kpi-label">
+                        <Clock size={14} aria-hidden="true" />
+                        今週の平均有効学習
+                      </p>
+                      <div className="sg-kpi-main">
+                        <span className="sg-kpi-num">
+                          <CountUp value={kpi.avgWeeklyMin} fromZero duration={750} />
+                          <span className="sg-kpi-unit">分/人</span>
+                        </span>
+                      </div>
+                      <p className="sg-kpi-sub">
+                        {formatDurationJa(kpi.avgWeeklySec)}（1分以上無操作除外）
+                      </p>
+                    </div>
 
-                              <button
-                                type="button"
-                                onClick={() => setSelectedStudentUid(st.uid)}
-                                className="min-h-[38px] inline-flex items-center justify-center gap-1 rounded-xl bg-[#1B2631] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#2E3D4F] transition-colors"
-                              >
-                                詳細ログ
-                                <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    })}
+                    <div className="sg-kpi-card" data-tone="gold">
+                      <p className="sg-kpi-label">
+                        <CheckCircle2 size={14} aria-hidden="true" />
+                        クラス平均宿題消化率
+                      </p>
+                      <div className="sg-kpi-main">
+                        <span className="sg-kpi-num">
+                          <CountUp value={kpi.avgHomeworkPct} fromZero duration={800} />
+                          <span className="sg-kpi-unit">%</span>
+                        </span>
+                        <ScoreRing
+                          rate={kpi.avgHomeworkPct / 100}
+                          size={42}
+                          stroke={6}
+                          tone={kpi.avgHomeworkPct >= 80 ? 'done' : 'brand'}
+                        />
+                      </div>
+                      <SkillRatioStackBar items={kpi.classSkillItems} />
+                    </div>
+
+                    <div className="sg-kpi-card">
+                      <p className="sg-kpi-label">面談・保護者共有レポート</p>
+                      <PrimaryButton
+                        block
+                        tone="accent"
+                        disabled={filteredStudents.length === 0}
+                        onClick={handleExportSummaryCsv}
+                        icon={<Download size={16} aria-hidden="true" />}
+                      >
+                        一括CSV出力
+                      </PrimaryButton>
+                      <p className="sg-kpi-sub">Excel対応（UTF-8 BOM付）</p>
+                    </div>
                   </div>
-                )}
 
-                <p className="text-[11px] text-[#6B7280] leading-relaxed pt-1">
-                  ※プライバシー保護設計：生徒の実名（名簿名）はこの管理者ポータル内でのみ表示され、アプリ内の一般ランキングやフレンド画面には一切公開されません。また、すごろく塾クラス参加生徒の端末では広告が完全非表示（Ad-Free）となります。
-                </p>
-              </section>
+                  {/* C. 絞り込みチップバー＆スワイプガイド */}
+                  <div className="sg-filter-bar">
+                    <div className="sg-chip-group" role="group" aria-label="目標級フィルタ">
+                      {[
+                        { id: 'all', label: '全員' },
+                        { id: 'eiken_2', label: '英検2級' },
+                        { id: 'eiken_pre2plus', label: '準2級プラス' },
+                        { id: 'eiken_pre2', label: '準2級' },
+                      ].map((g) => (
+                        <button
+                          key={g.id}
+                          type="button"
+                          className="sg-chip"
+                          aria-pressed={gradeFilter === g.id}
+                          onClick={() => setGradeFilter(g.id)}
+                        >
+                          {g.label}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="sg-chip"
+                        data-tone="accent"
+                        aria-pressed={onlyAlerts}
+                        onClick={() => setOnlyAlerts((v) => !v)}
+                      >
+                        <AlertTriangle size={13} aria-hidden="true" />
+                        未学習・宿題遅れのみ
+                      </button>
+                    </div>
+
+                    <span className="mt-small" style={{ fontSize: 12 }}>
+                      💡 スマホ・iPadは行を左右スワイプで声掛けコピー・クイック表示
+                    </span>
+                  </div>
+
+                  {/* D. Swipe Action 対応 塾生カードリスト */}
+                  <SectionHeader
+                    title={<KineticText text="塾生別タイムログ・宿題進捗" />}
+                    aside={`${filteredStudents.length}名表示中`}
+                  />
+
+                  {filteredStudents.length === 0 ? (
+                    <Card className="slog-empty">条件に一致する塾生がいません。</Card>
+                  ) : (
+                    <ul className="sg-student-list sg-stagger">
+                      {filteredStudents.map((st) => {
+                        const alertLevel = st.alerts.some((a) => a.severity === 'critical')
+                          ? 'critical'
+                          : st.alerts.length > 0
+                            ? 'warning'
+                            : undefined;
+                        const topSkills = st.gradeSkillBreakdown
+                          .filter((g) => g.weeklySeconds > 0 || g.totalSeconds > 0)
+                          .slice(0, 3);
+
+                        return (
+                          <SwipeableRow
+                            key={st.uid}
+                            leftAction={{
+                              id: 'encourage',
+                              label: '声掛けコピー',
+                              icon: <MessageCircleHeart size={18} aria-hidden="true" />,
+                              onTrigger: () => void handleCopyStudentLineMessage(st),
+                            }}
+                            rightActions={[
+                              {
+                                id: 'sheet',
+                                label: 'クイック',
+                                icon: <Eye size={17} aria-hidden="true" />,
+                                onTrigger: () => setQuickSheetStudentUid(st.uid),
+                              },
+                              {
+                                id: 'detail',
+                                label: '詳細ログ',
+                                icon: <ChevronRight size={18} aria-hidden="true" />,
+                                onTrigger: () => setSelectedStudentUid(st.uid),
+                              },
+                            ]}
+                          >
+                            <article className="sg-student-card" data-alert={alertLevel}>
+                              <div className="sg-student-identity">
+                                <div className="sg-student-badges">
+                                  <Badge>{getGradeLabel(st.targetGrade)}</Badge>
+                                  <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
+                                  {st.alerts.map((al) => (
+                                    <Badge
+                                      key={al.reason}
+                                      tone={al.severity === 'critical' ? 'new' : 'gold'}
+                                    >
+                                      {al.label}
+                                    </Badge>
+                                  ))}
+                                </div>
+
+                                <div className="sg-student-name-row">
+                                  <h3 className="sg-student-name">{st.rosterName}</h3>
+                                </div>
+
+                                {/* 級×技能内訳ピル */}
+                                <div className="sg-skill-pills">
+                                  {topSkills.length === 0 ? (
+                                    <span className="mt-small" style={{ fontSize: 12 }}>
+                                      今週の分野別記録はまだありません
+                                    </span>
+                                  ) : (
+                                    topSkills.map((g) => (
+                                      <span key={g.key} className="sg-skill-pill">
+                                        {g.label}
+                                        <b>
+                                          {toMinutesRounded(
+                                            g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
+                                          )}
+                                          分
+                                        </b>
+                                        {g.accuracyPct !== null ? `(${g.accuracyPct}%)` : ''}
+                                      </span>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* 右側：今週/本日時間 ＋ ScoreRing宿題進捗 ＋ クイックシート＆詳細ボタン */}
+                              <div className="sg-student-metrics">
+                                <div className="sg-metric-col">
+                                  <small>今週 / 本日</small>
+                                  <strong>
+                                    {formatDurationJa(st.weeklyActiveSeconds)}
+                                    <span
+                                      style={{
+                                        marginLeft: 4,
+                                        fontSize: 12,
+                                        fontWeight: 600,
+                                        color: 'var(--mt-ink-3)',
+                                      }}
+                                    >
+                                      ({formatDurationJa(st.todayActiveSeconds)})
+                                    </span>
+                                  </strong>
+                                  <small>最終: {st.lastStudiedDateKey ?? '未学習'}</small>
+                                </div>
+
+                                <div className="sg-ring-stat">
+                                  <ScoreRing
+                                    rate={st.homework.completionRate / 100}
+                                    size={40}
+                                    stroke={5}
+                                    tone={
+                                      st.homework.overdueCount > 0
+                                        ? 'warn'
+                                        : st.homework.completionRate >= 80
+                                          ? 'done'
+                                          : 'brand'
+                                    }
+                                  />
+                                  <div className="sg-metric-col">
+                                    <small>宿題消化</small>
+                                    <strong>{st.homework.completionRate}%</strong>
+                                  </div>
+                                </div>
+
+                                <div className="sg-card-actions">
+                                  <SecondaryButton
+                                    onClick={() => setQuickSheetStudentUid(st.uid)}
+                                    aria-label={`${st.rosterName}のクイックサマリーを開く`}
+                                  >
+                                    サマリー
+                                  </SecondaryButton>
+                                  <PrimaryButton
+                                    onClick={() => setSelectedStudentUid(st.uid)}
+                                    icon={<ChevronRight size={16} aria-hidden="true" />}
+                                  >
+                                    詳細ログ
+                                  </PrimaryButton>
+                                </div>
+                              </div>
+                            </article>
+                          </SwipeableRow>
+                        );
+                      })}
+                    </ul>
+                  )}
+
+                  <p className="mt-small" style={{ margin: '2px 2px 0', fontSize: 12 }}>
+                    ※プライバシー保護：生徒の実名（名簿名）はこの塾管理者ポータル内でのみ表示され、一般ランキングやフレンド画面には一切公開されません。塾クラス参加生徒の端末では広告が100%非表示（Ad-Free）となります。
+                  </p>
+                </section>
+              )}
+            </>
+          )}
+        </main>
+      </PullToRefreshHost>
+
+      {/* 3. Bottom Sheet：一覧から画面遷移せずに覗ける「生徒クイックダイジェスト＆声掛けシート」 */}
+      <SugorokuBottomSheet
+        open={!!quickSheetStudent}
+        kicker="QUICK STUDENT DIGEST"
+        title={quickSheetStudent ? quickSheetStudent.rosterName : '生徒ダイジェスト'}
+        onClose={() => setQuickSheetStudentUid(null)}
+      >
+        {quickSheetStudent && (
+          <div style={{ display: 'grid', gap: 12 }}>
+            <div className="sg-student-badges">
+              <Badge>目標：{getGradeLabel(quickSheetStudent.targetGrade)}</Badge>
+              <StudyDoorsWeek recentDailyLogs={quickSheetStudent.recentDailyLogs} />
+              {quickSheetStudent.alerts.map((al) => (
+                <Badge key={al.reason} tone={al.severity === 'critical' ? 'new' : 'gold'}>
+                  {al.label}
+                </Badge>
+              ))}
+            </div>
+
+            {quickSheetStudent.note && (
+              <p
+                style={{
+                  margin: 0,
+                  padding: '10px 12px',
+                  borderRadius: 'var(--mt-radius-md)',
+                  background: 'var(--mt-bg-sunken)',
+                  font: '600 13px/1.5 var(--mt-font-body)',
+                }}
+              >
+                {quickSheetStudent.note}
+              </p>
             )}
-          </>
+
+            <div className="slog-sum">
+              <div>
+                <dt>今週の有効学習</dt>
+                <dd>{formatDurationJa(quickSheetStudent.weeklyActiveSeconds)}</dd>
+              </div>
+              <div>
+                <dt>本日の学習</dt>
+                <dd>{formatDurationJa(quickSheetStudent.todayActiveSeconds)}</dd>
+              </div>
+              <div>
+                <dt>宿題消化率</dt>
+                <dd>{quickSheetStudent.homework.completionRate}%</dd>
+              </div>
+            </div>
+
+            <SkillRatioStackBar
+              items={quickSheetStudent.gradeSkillBreakdown.map((g) => ({
+                key: g.key,
+                skill: g.skill,
+                label: g.label,
+                seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
+              }))}
+            />
+
+            <div className="slog-rows">
+              {quickSheetStudent.gradeSkillBreakdown.slice(0, 4).map((g) => (
+                <div key={g.key} className="slog-row">
+                  <span>
+                    <strong>{g.label}</strong>
+                    <small>
+                      {g.accuracyPct !== null
+                        ? `正答率 ${g.accuracyPct}%（${g.correct}/${g.totalQuestions}問）`
+                        : '記述・録音演習'}
+                    </small>
+                  </span>
+                  <b>{formatDurationJa(g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds)}</b>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <SecondaryButton
+                style={{ flex: 1 }}
+                onClick={() => void handleCopyStudentLineMessage(quickSheetStudent)}
+                icon={<MessageCircleHeart size={16} aria-hidden="true" />}
+              >
+                LINE声掛け文をコピー
+              </SecondaryButton>
+              <PrimaryButton
+                style={{ flex: 1 }}
+                onClick={() => {
+                  const uid = quickSheetStudent.uid;
+                  setQuickSheetStudentUid(null);
+                  setSelectedStudentUid(uid);
+                }}
+                icon={<ChevronRight size={16} aria-hidden="true" />}
+              >
+                14日詳細ドリルダウンを開く
+              </PrimaryButton>
+            </div>
+          </div>
         )}
-      </main>
+      </SugorokuBottomSheet>
     </div>
   );
 }

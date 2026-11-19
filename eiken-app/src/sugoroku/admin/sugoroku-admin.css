@@ -1,0 +1,1032 @@
+/*
+ * ===================================================================
+ * すごろく塾 管理者ポータル 専用スタイル（sugoroku-admin.css）
+ * ===================================================================
+ * マナトビ本体（tokens.css / system.css / motion.css / study-catalog.css / studylog.css）の
+ * 視覚文法・タイポグラフィ・カード縁影・コンポジタ限定アニメーション規則に完全準拠。
+ *
+ * ■ デザイン原則（マナトビ純正）
+ *   1. 地色は var(--mt-bg-screen)（温かいクリームの放射グラデーション）、カードは var(--mt-bg-card) + 3px縁影
+ *   2. 見出し・数値は丸ゴシック var(--mt-font-display) + tabular-nums、最小文字12px以上、タップ領域44px以上
+ *   3. アニメーションは @media (prefers-reduced-motion: no-preference) 内に閉じ込め、
+ *      GPUコンポジタで完結する opacity / translate / scale / rotate / stroke-dashoffset のみ動かす
+ *   4. Pull to Refresh / Skeleton Screen / Toast / Bottom Sheet / Swipe Action をネイティブ級の手触りで統合
+ */
+
+.sg-screen {
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--mt-bg-screen);
+  color: var(--mt-ink);
+  font-family: var(--mt-font-body);
+  padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+}
+
+.sg-screen button {
+  cursor: pointer;
+}
+
+.sg-screen :focus-visible {
+  outline: none;
+  box-shadow: var(--mt-focus);
+}
+
+/* ---------- 上部ガラス・スティッキーヘッダー ---------- */
+.sg-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(252, 245, 233, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1.5px solid var(--mt-line);
+}
+
+.sg-topbar-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 10px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .sg-topbar-inner {
+    padding: 12px 24px 12px;
+  }
+}
+
+.sg-brand-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sg-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.sg-title-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.sg-title-text .mt-kicker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mt-ink-muted);
+}
+
+.sg-title-text h1 {
+  margin: 1px 0 0;
+  font: var(--mt-text-xl);
+  color: var(--mt-ink-warm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-mode-pill {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--mt-r-pill);
+  background: var(--mt-bg-sunken);
+  box-shadow: inset 0 0 0 1px var(--mt-line);
+  flex-shrink: 0;
+}
+
+.sg-mode-pill > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--mt-r-pill);
+  background: transparent;
+  color: var(--mt-ink-2);
+  font: 700 12px/1 var(--mt-font-body);
+  white-space: nowrap;
+  transition: background-color 0.18s, color 0.18s, transform 0.1s;
+}
+
+.sg-mode-pill > button[aria-pressed="true"] {
+  background: var(--mt-bg-card);
+  color: var(--mt-brand);
+  font-weight: 800;
+  box-shadow: 0 2px 0 #e6dccb, 0 1px 4px rgba(80, 60, 30, 0.08);
+}
+
+.sg-mode-pill > button[data-live="true"][aria-pressed="true"] {
+  color: var(--mt-done);
+}
+
+/* ナビタブ（マナトビ純正 .mt-tabs 拡張：スマホ2×2、640px以上は4列1段） */
+.sg-nav-tabs.mt-tabs {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .sg-nav-tabs.mt-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.sg-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--mt-r-pill);
+  background: var(--mt-brand);
+  color: #fff;
+  font: 800 12px/1 var(--mt-font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-tab-badge[data-tone="danger"] {
+  background: var(--mt-danger);
+}
+
+.sg-tab-badge[data-tone="done"] {
+  background: var(--mt-done);
+}
+
+/* ---------- メインコンテナ ---------- */
+.sg-main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 12px 14px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .sg-main {
+    padding: 18px 24px 36px;
+    gap: 16px;
+  }
+}
+
+/* ---------- Pull to Refresh（引っ張って更新） ---------- */
+.sg-ptr-host {
+  position: relative;
+  min-height: 200px;
+}
+
+.sg-ptr-indicator {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: height 0.24s var(--mo-ease-out);
+}
+
+.sg-ptr-indicator[data-dragging="true"] {
+  transition: none;
+}
+
+.sg-ptr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--mt-r-pill);
+  border: 1.5px solid var(--mt-line);
+  background: var(--mt-bg-card);
+  box-shadow: var(--mt-shadow-card);
+  color: var(--mt-ink-warm);
+  font: 800 12px/1.2 var(--mt-font-display);
+}
+
+.sg-ptr-wheel {
+  width: 18px;
+  height: 18px;
+  color: var(--mt-brand);
+  transition: transform 0.12s linear;
+}
+
+.sg-ptr-pill[data-ready="true"] .sg-ptr-wheel {
+  color: var(--mt-accent-strong);
+}
+
+.sg-ptr-pill[data-refreshing="true"] .sg-ptr-wheel {
+  animation: mt-spin 0.8s linear infinite;
+}
+
+/* ---------- とびら君バディ帯（マナトビらしさの象徴） ---------- */
+.sg-buddy-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--mt-line);
+  border-radius: var(--mt-radius-lg);
+  background: var(--mt-bg-card);
+  box-shadow: var(--mt-shadow-card);
+}
+
+.sg-buddy-banner .tb {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.sg-buddy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Infographic KPI ステージ（4枚グリッド＋ScoreRing＋CountUp） ---------- */
+.sg-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 840px) {
+  .sg-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.sg-kpi-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--mt-line);
+  border-radius: var(--mt-radius-lg);
+  background: var(--mt-bg-card);
+  box-shadow: var(--mt-shadow-card);
+  min-width: 0;
+}
+
+.sg-kpi-card[data-tone="gold"] {
+  border-color: #e3c77f;
+  background: linear-gradient(180deg, #fffaf0 0%, #fdf2d6 100%);
+  box-shadow: 0 3px 0 #d7b865, 0 6px 14px rgba(120, 90, 20, 0.07);
+}
+
+.sg-kpi-card[data-tone="sky"] {
+  border-color: #bcd9ea;
+  background: linear-gradient(180deg, #f6fbfe 0%, #e7f3fa 100%);
+  box-shadow: 0 3px 0 #b4d2e3;
+}
+
+.sg-kpi-card[data-tone="alert"] {
+  border-color: #e9b4ad;
+  background: linear-gradient(180deg, #fff9f8 0%, #fdecea 100%);
+  box-shadow: 0 3px 0 #dfa199;
+}
+
+.sg-kpi-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font: 700 12px/1.3 var(--mt-font-body);
+  color: var(--mt-ink-3);
+}
+
+.sg-kpi-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sg-kpi-num {
+  font: 900 24px/1.1 var(--mt-font-display);
+  color: var(--mt-ink-warm);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .sg-kpi-num {
+    font-size: 27px;
+  }
+}
+
+.sg-kpi-unit {
+  margin-left: 2px;
+  font: 800 13px/1 var(--mt-font-display);
+  color: var(--mt-ink-2);
+}
+
+.sg-kpi-sub {
+  margin: 0;
+  font: 600 12px/1.35 var(--mt-font-body);
+  color: var(--mt-ink-muted);
+}
+
+/* ---------- 声掛け優先アラート・ヒーロー帯 ---------- */
+.sg-alert-stage {
+  border: 2px solid #e5a9a0;
+  border-radius: var(--mt-radius-xl);
+  background: linear-gradient(180deg, #fffaf9 0%, #fdedea 100%);
+  box-shadow: 0 4px 0 #db9a90, 0 8px 18px rgba(179, 38, 30, 0.08);
+  padding: 12px 14px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.sg-alert-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sg-alert-head h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: var(--mt-text-lg);
+  color: var(--mt-danger);
+}
+
+.sg-alert-pulse {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--mt-danger);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sg-alert-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+@media (min-width: 720px) {
+  .sg-alert-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.sg-alert-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 56px;
+  padding: 8px 12px;
+  border: 1.5px solid #ebbfb9;
+  border-radius: var(--mt-radius-md);
+  background: #fff;
+  box-shadow: 0 2px 0 #ebbfb9;
+  text-align: left;
+  color: var(--mt-ink);
+  min-width: 0;
+  transition: transform 0.12s;
+}
+
+.sg-alert-chip:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #ebbfb9;
+}
+
+/* ---------- フィルタチップ行 ---------- */
+.sg-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sg-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.sg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1.5px solid var(--mt-line);
+  border-radius: var(--mt-r-pill);
+  background: var(--mt-bg-card);
+  color: var(--mt-ink-2);
+  font: 700 13px/1 var(--mt-font-body);
+  box-shadow: var(--mt-shadow-press);
+  transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.sg-chip:active {
+  transform: translateY(1px);
+}
+
+.sg-chip[aria-pressed="true"] {
+  border-color: var(--mt-brand);
+  background: var(--mt-brand);
+  color: #fff;
+  box-shadow: 0 2px 0 var(--mt-brand-strong);
+}
+
+.sg-chip[data-tone="accent"][aria-pressed="true"] {
+  border-color: var(--mt-accent-strong);
+  background: var(--mt-accent);
+  color: var(--mt-ink);
+  box-shadow: 0 2px 0 var(--mt-accent-strong);
+}
+
+/* ---------- Swipe Action（左右スワイプ操作付き塾生カード） ---------- */
+.sg-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg-swipe-shell {
+  position: relative;
+  border-radius: var(--mt-radius-lg);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.sg-swipe-tray {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  border-radius: var(--mt-radius-lg);
+  background: var(--mt-bg-sunken);
+  pointer-events: none;
+}
+
+.sg-swipe-tray[data-open="left"],
+.sg-swipe-tray[data-open="right"] {
+  pointer-events: auto;
+}
+
+.sg-swipe-side {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 6px;
+}
+
+.sg-swipe-side-left {
+  background: linear-gradient(90deg, #1f7a4d, #2d9360);
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.sg-swipe-side-right {
+  background: linear-gradient(90deg, #2458a6, #1c4687);
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.sg-swipe-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 74px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--mt-radius-md);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font: 800 12px/1.15 var(--mt-font-body);
+}
+
+.sg-swipe-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.sg-swipe-front {
+  position: relative;
+  z-index: 1;
+  transition: translate 0.26s var(--mo-spring);
+  will-change: translate;
+}
+
+.sg-swipe-front[data-swiping="true"] {
+  transition: none;
+}
+
+/* 塾生カード本体（StudyCatalog の .sc-card と同系統のマナトビ札） */
+.sg-student-card {
+  border: 1.5px solid var(--mt-line);
+  border-radius: var(--mt-radius-lg);
+  background: var(--mt-bg-card);
+  box-shadow: var(--mt-shadow-card);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sg-student-card[data-alert="critical"] {
+  border-color: #e5a9a0;
+  background: linear-gradient(180deg, #fffdfd 0%, #fff6f5 100%);
+  box-shadow: 0 3px 0 #e2b2ab, 0 6px 14px rgba(179, 38, 30, 0.06);
+}
+
+.sg-student-card[data-alert="warning"] {
+  border-color: #e3c77f;
+  background: linear-gradient(180deg, #fffefb 0%, #fdf6e4 100%);
+  box-shadow: 0 3px 0 #d7b865;
+}
+
+.sg-student-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sg-student-identity {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.sg-student-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.sg-student-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sg-student-name {
+  margin: 0;
+  font: 800 17px/1.3 var(--mt-font-display);
+  color: var(--mt-ink-warm);
+  overflow-wrap: anywhere;
+}
+
+/* 連続学習の7枚扉ミニインジケータ（motion.css の .study-doors と連動） */
+.sg-doors {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.sg-doors > i {
+  display: inline-block;
+  width: 9px;
+  height: 13px;
+  border-radius: 3px 3px 1px 1px;
+  border: 1px solid var(--mt-line-strong);
+  background: var(--mt-surface-2);
+}
+
+.sg-doors > i[data-open] {
+  border-color: var(--mt-accent-strong);
+  background: linear-gradient(180deg, #ffd479 0%, var(--mt-accent) 100%);
+  box-shadow: 0 1px 0 var(--mt-accent-strong);
+}
+
+/* 級×技能ピル群 */
+.sg-skill-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sg-skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--mt-radius-sm);
+  border: 1px solid var(--mt-line);
+  background: var(--mt-surface);
+  font: 700 12px/1.35 var(--mt-font-body);
+  color: var(--mt-ink-2);
+}
+
+.sg-skill-pill > b {
+  color: var(--mt-brand);
+  font-family: var(--mt-font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 右側メトリクス（今週時間・ScoreRing宿題輪・クイックシート・詳細ボタン） */
+.sg-student-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--mt-line);
+}
+
+@media (min-width: 820px) {
+  .sg-student-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sg-student-metrics {
+    padding-top: 0;
+    border-top: 0;
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+}
+
+.sg-metric-col {
+  display: grid;
+  gap: 2px;
+}
+
+.sg-metric-col > small {
+  font: 700 12px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-3);
+}
+
+.sg-metric-col > strong {
+  font: 800 16px/1.2 var(--mt-font-display);
+  color: var(--mt-ink-warm);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-ring-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sg-card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* ---------- インフォグラフィック：分野別スタックバー＆14日チャート ---------- */
+.sg-stack-bar {
+  display: flex;
+  height: 14px;
+  width: 100%;
+  border-radius: var(--mt-r-pill);
+  background: var(--mt-bg-sunken);
+  box-shadow: inset 0 0 0 1px var(--mt-line);
+  overflow: hidden;
+  gap: 2px;
+  padding: 2px;
+}
+
+.sg-stack-seg {
+  height: 100%;
+  border-radius: var(--mt-r-pill);
+  transform-origin: 0 50%;
+}
+
+.sg-daily-bars {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  align-items: end;
+}
+
+@media (min-width: 680px) {
+  .sg-daily-bars {
+    grid-template-columns: repeat(14, minmax(0, 1fr));
+  }
+}
+
+.sg-day-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sg-day-min {
+  font: 800 12px/1 var(--mt-font-display);
+  color: var(--mt-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-day-track {
+  width: 100%;
+  height: 86px;
+  border-radius: 10px;
+  background: var(--mt-bg-sunken);
+  box-shadow: inset 0 0 0 1px var(--mt-line);
+  padding: 3px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.sg-day-col[data-today="true"] .sg-day-track {
+  box-shadow: inset 0 0 0 2px var(--mt-brand);
+  background: #fffdf8;
+}
+
+.sg-day-fill {
+  width: 100%;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #3b82c4 0%, var(--mt-brand) 100%);
+  transform-origin: 50% 100%;
+}
+
+.sg-day-fill[data-lv="high"] {
+  background: linear-gradient(180deg, #ffc257 0%, var(--mt-accent-strong) 100%);
+}
+
+.sg-day-date {
+  font: 700 12px/1.1 var(--mt-font-body);
+  color: var(--mt-ink-3);
+  white-space: nowrap;
+}
+
+/* ---------- Skeleton Screen（シマー骨格スクリーン） ---------- */
+.sg-skeleton-wrap {
+  display: grid;
+  gap: 12px;
+}
+
+.sg-skel-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 840px) {
+  .sg-skel-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.sg-skel-card {
+  border: 1.5px solid var(--mt-line);
+  border-radius: var(--mt-radius-lg);
+  background: var(--mt-bg-card);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.sg-skel-bar {
+  display: block;
+  height: 13px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #efe7d8 20%, #faf5eb 50%, #efe7d8 80%);
+  background-size: 200% 100%;
+}
+
+.sg-skel-bar[data-size="lg"] {
+  height: 26px;
+  border-radius: 10px;
+}
+
+.sg-skel-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #efe7d8 20%, #faf5eb 50%, #efe7d8 80%);
+  background-size: 200% 100%;
+  flex-shrink: 0;
+}
+
+/* ---------- Bottom Sheet（ドラッグ閉鎖対応ボトムシート） ---------- */
+.sg-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(28, 42, 57, 0.44);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .sg-sheet-backdrop {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.sg-sheet-panel {
+  width: min(620px, 100%);
+  max-height: min(86dvh, 720px);
+  border-radius: 26px 26px 0 0;
+  border: 1.5px solid var(--mt-line);
+  background: var(--mt-bg-card);
+  box-shadow: 0 -8px 36px rgba(28, 42, 57, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: translate 0.28s var(--mo-ease-out);
+  will-change: translate;
+}
+
+@media (min-width: 768px) {
+  .sg-sheet-panel {
+    border-radius: 26px;
+    box-shadow: 0 18px 60px rgba(28, 42, 57, 0.25);
+  }
+}
+
+.sg-sheet-panel[data-dragging="true"] {
+  transition: none;
+}
+
+.sg-sheet-grabber {
+  padding: 10px 0 6px;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.sg-sheet-grabber > i {
+  display: block;
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--mt-line-strong);
+}
+
+.sg-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 18px 12px;
+  border-bottom: 1px solid var(--mt-line);
+}
+
+.sg-sheet-head h3 {
+  margin: 0;
+  font: var(--mt-text-lg);
+  color: var(--mt-ink-warm);
+}
+
+.sg-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+/* ---------- ポータル専用 Toast（スワイプ消去・トーン対応・AppToastと同じ .mt-toast 継承） ---------- */
+.sg-toast.mt-toast {
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 110;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sg-toast[data-tone="done"] {
+  background: #1f5f3f;
+}
+
+.sg-toast[data-tone="warn"] {
+  background: #8a3a1b;
+}
+
+/* ---------- モーション定義（prefers-reduced-motion 厳守） ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .sg-stagger > * {
+    animation: mo-card-in 0.52s var(--mo-ease-out) backwards;
+    animation-delay: calc(60ms + var(--sg-i, 0) * 48ms);
+  }
+  .sg-stagger > :nth-child(1) { --sg-i: 0; }
+  .sg-stagger > :nth-child(2) { --sg-i: 1; }
+  .sg-stagger > :nth-child(3) { --sg-i: 2; }
+  .sg-stagger > :nth-child(4) { --sg-i: 3; }
+  .sg-stagger > :nth-child(5) { --sg-i: 4; }
+  .sg-stagger > :nth-child(6) { --sg-i: 5; }
+  .sg-stagger > :nth-child(n+7) { --sg-i: 6; }
+
+  .sg-stack-seg {
+    animation: mo-bar-grow 0.95s var(--mo-ease-out) 0.22s backwards;
+  }
+
+  .sg-day-fill {
+    animation: sg-bar-rise 0.85s var(--mo-spring) backwards;
+    animation-delay: calc(120ms + var(--sg-d, 0) * 32ms);
+  }
+
+  @keyframes sg-bar-rise {
+    from {
+      opacity: 0;
+      scale: 1 0;
+    }
+    to {
+      opacity: 1;
+      scale: 1 1;
+    }
+  }
+
+  .sg-alert-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.35);
+    opacity: 0;
+    animation: mo-pulse 2.4s ease-in-out 0.8s infinite;
+  }
+
+  .sg-skel-bar,
+  .sg-skel-circle {
+    animation: sg-shimmer 1.35s ease-in-out infinite;
+  }
+
+  @keyframes sg-shimmer {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
+  }
+
+  .sg-sheet-backdrop {
+    animation: mo-fade 0.22s ease-out backwards;
+  }
+
+  .sg-sheet-panel {
+    animation: sg-sheet-up 0.36s var(--mo-spring) backwards;
+  }
+
+  @keyframes sg-sheet-up {
+    from {
+      opacity: 0;
+      translate: 0 42px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @media (hover: hover) {
+    .sg-student-card,
+    .sg-kpi-card,
+    .sg-alert-chip {
+      transition: translate 0.22s var(--mo-ease-out), box-shadow 0.22s var(--mo-ease-out);
+    }
+    .sg-student-card:hover,
+    .sg-alert-chip:hover {
+      translate: 0 -2px;
+    }
+  }
+}
