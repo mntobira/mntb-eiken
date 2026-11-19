@@ -19,6 +19,7 @@
 @source "./hooks";
 @source "./utils";
 @source "./native";
+@source "./sugoroku";
 @source "./data/subjects.ts";
 @source "./data/externalSubjects.ts";
 @import "./styles/tokens.css";

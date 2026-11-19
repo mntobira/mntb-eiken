@@ -171,6 +171,8 @@ const MissionToast = React.lazy(() => import('./components/MissionToast').then(m
 const CoinCelebration = React.lazy(() => import('./components/CoinCelebration').then(m => ({ default: m.CoinCelebration })));
 // C12：章の称号ゲットのお祝い（どの画面でも画面全体に出す）
 const ChapterTitleCelebration = React.lazy(() => import('./components/ChapterTitleCelebration').then(m => ({ default: m.ChapterTitleCelebration })));
+const SugorokuAdminApp = React.lazy(() => import('./sugoroku/admin/SugorokuAdminApp').then(m => ({ default: m.SugorokuAdminApp })));
+import { isSugorokuAdminPortalLaunch } from './sugoroku/admin/portalLaunch';
 
 /**
  * 無操作でホーム画面に戻るまでの時間（30分）。
@@ -180,8 +182,9 @@ const ChapterTitleCelebration = React.lazy(() => import('./components/ChapterTit
 const IDLE_RESET_MS = 30 * 60 * 1000;
 
 export default function App() {
-  // 画面検証（?screenshot=1 / screenshot_mode）では起動画面を飛ばす
-  const [hasEntered, setHasEntered] = useState(isScreenshotLaunch);
+  const [directAdminPortal, setDirectAdminPortal] = useState(isSugorokuAdminPortalLaunch);
+  // 画面検証（?screenshot=1 / screenshot_mode）または管理者ポータル直起動では起動画面を飛ばす
+  const [hasEntered, setHasEntered] = useState(() => isScreenshotLaunch() || isSugorokuAdminPortalLaunch());
   const [finishingLaunchBgm, setFinishingLaunchBgm] = useState(false);
   const finishLaunchBgm = useCallback(() => setFinishingLaunchBgm(false), []);
   useGlobalClickSound();
@@ -502,6 +505,24 @@ export default function App() {
     setHasEntered(true);
   };
 
+  if (directAdminPortal) {
+    const canExitToStudent = (import.meta.env.VITE_SUGOROKU_PORTAL as string | undefined)?.trim().toLowerCase() !== 'admin';
+    return (
+      <React.Suspense fallback={<ScreenLoading />}>
+        <SugorokuAdminApp
+          onBack={canExitToStudent ? () => {
+            try {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('portal');
+              window.history.replaceState({}, '', url.toString());
+            } catch { /* ignore */ }
+            setDirectAdminPortal(false);
+          } : undefined}
+        />
+      </React.Suspense>
+    );
+  }
+
   return (
     <>
       {(!hasEntered || keepLaunchBgm) && (
@@ -608,9 +629,11 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
             {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
             {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
+            {/* すごろく塾管理者ポータル（React.lazyコード分割）。設定・先生欄から開いた場合も下ナビを隠して全画面表示 */}
+            {appState === 'sugoroku_admin' && <React.Suspense fallback={<ScreenLoading />}><SugorokuAdminApp onBack={() => setAppState('settings')} /></React.Suspense>}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
             {appState === 'feedback_admin' && <FeedbackAdminPanel onBack={() => setAppState('settings')} />}
 
@@ -800,7 +823,7 @@ export default function App() {
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
             {/* ★対戦中（試合が始まってから終わるまで）は下ナビを出さない（2026-10-01）★ 問題と絵を1画面に入れるため。
                  「対戦をやめる」は対戦画面の中にある。結果画面ではナビが戻る。 */}
-            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
+            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'sugoroku_admin' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
               /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
                  高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
               <BottomNavigation

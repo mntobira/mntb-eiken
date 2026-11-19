@@ -1,0 +1,137 @@
+import { describe, expect, it } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import {
+  buildStudentOverview,
+  buildSugorokuStudentDetailCsv,
+  buildSugorokuSummaryCsv,
+  detectSugorokuPortalMode,
+  formatDateKey,
+  formatDurationJa,
+  parseGradeSkillKey,
+  sortStudentsByAlertPriority,
+} from '../src/sugoroku/admin/adminAnalytics';
+import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
+import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
+import { classifyEikenMaterial } from '../src/sugoroku/admin/SugorokuPdfShelfTab';
+import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
+
+describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
+  it('URLクエリ ?portal=admin および VITE_SUGOROKU_PORTAL=admin を正しく判定する', () => {
+    expect(detectSugorokuPortalMode('?portal=admin', undefined)).toBe(true);
+    expect(detectSugorokuPortalMode('?foo=1&portal=ADMIN', undefined)).toBe(true);
+    expect(detectSugorokuPortalMode('', 'admin')).toBe(true);
+    expect(detectSugorokuPortalMode('?portal=student', '')).toBe(false);
+    expect(detectSugorokuPortalMode('', undefined)).toBe(false);
+  });
+
+  it('級×技能キーのラベル整形・秒数の日本語時間フォーマットが正確である', () => {
+    expect(parseGradeSkillKey('eiken_2:listening').label).toBe('英検2級 リスニング');
+    expect(parseGradeSkillKey('eiken_pre2plus:vocab').label).toBe('英検準2級プラス 単語・語彙');
+    expect(formatDurationJa(0)).toBe('0分');
+    expect(formatDurationJa(45)).toBe('1分未満');
+    expect(formatDurationJa(2700)).toBe('45分');
+    expect(formatDurationJa(5100)).toBe('1時間25分');
+  });
+
+  it('デモデータ6名の集計で「未学習・宿題期限超過」の生徒が最上部にアラート優先ソートされる', () => {
+    const fixedNow = new Date(2026, 10, 20, 21, 0, 0).getTime();
+    const demo = createSugorokuDemoBundle(fixedNow);
+    const overviews = sortStudentsByAlertPriority(
+      demo.members.map((m) =>
+        buildStudentOverview({
+          member: m,
+          logs: demo.logsByUid[m.uid] ?? [],
+          assignments: demo.assignments,
+          solvedByChapter: demo.solvedByUid[m.uid] ?? {},
+          writingSubmissions: demo.writingSubmissions,
+          speakingSubmissions: demo.speakingSubmissions,
+          nowMs: fixedNow,
+        }),
+      ),
+    );
+
+    expect(overviews).toHaveLength(6);
+    // 最上位2名は critical アラートを持つ 伊藤葵（初回未学習）と 山本陸（4日間未学習＋宿題期限超過）
+    expect(overviews[0].uid).toBe('stu_ito_aoi');
+    expect(overviews[0].alerts.some((a) => a.reason === 'never_studied')).toBe(true);
+
+    expect(overviews[1].uid).toBe('stu_yamamoto_riku');
+    expect(overviews[1].alerts.some((a) => a.reason === 'inactive_3days')).toBe(true);
+    expect(overviews[1].alerts.some((a) => a.reason === 'homework_overdue')).toBe(true);
+
+    // 3番目は明日締切で消化率50%未満の 小林颯太（warning: homework_behind_pace）
+    expect(overviews[2].uid).toBe('stu_kobayashi_sota');
+    expect(overviews[2].alerts.some((a) => a.reason === 'homework_behind_pace')).toBe(true);
+
+    // 順調な佐藤美桜・高橋陽斗は級×技能別の有効学習時間と正答率が算出されている
+    const mio = overviews.find((s) => s.uid === 'stu_sato_mio')!;
+    expect(mio.alerts).toHaveLength(0);
+    expect(mio.weeklyActiveSeconds).toBeGreaterThan(0);
+    expect(mio.todayActiveSeconds).toBe(2340);
+    const mioListening = mio.gradeSkillBreakdown.find((g) => g.key === 'eiken_2:listening')!;
+    expect(mioListening.weeklySeconds).toBe(1500 + 1320 + 1440);
+    expect(mioListening.accuracyPct).toBeGreaterThan(80);
+  });
+
+  it('面談・保護者共有用CSVがBOM付きCRLFで出力され、CSVインジェクションも無害化される', () => {
+    const fixedNow = new Date(2026, 10, 20, 21, 0, 0).getTime();
+    const overview = buildStudentOverview({
+      member: {
+        uid: 'stu_csv_test',
+        role: 'student',
+        rosterName: '=CMD|calc',
+        targetGrade: 'eiken_2',
+        active: true,
+        adFree: true,
+      },
+      logs: [
+        {
+          dateKey: formatDateKey(fixedNow),
+          totalActiveSeconds: 1800,
+          byGradeSkill: { 'eiken_2:listening': 1800 },
+          accuracyByGradeSkill: { 'eiken_2:listening': { correct: 12, total: 15 } },
+          solvedCount: 15,
+          updatedAt: fixedNow,
+        },
+      ],
+      assignments: [],
+      nowMs: fixedNow,
+    });
+
+    const summaryCsv = buildSugorokuSummaryCsv([overview], true);
+    expect(summaryCsv.startsWith('\uFEFF')).toBe(true);
+    expect(summaryCsv).toContain('\r\n');
+    expect(summaryCsv).toContain("'=CMD|calc");
+    expect(summaryCsv).toContain('英検2級 リスニング:30分');
+
+    const detailCsv = buildSugorokuStudentDetailCsv(overview, true);
+    expect(detailCsv.startsWith('\uFEFF')).toBe(true);
+    expect(detailCsv).toContain('80%');
+  });
+
+  it('講師用PDF教材ダイレクト棚が全英検プリントを漏れなく分類できる', () => {
+    const eikenPrints = GACHA_PRINTS.filter((p) => p.subject.startsWith('eiken_'));
+    expect(eikenPrints.length).toBeGreaterThanOrEqual(138);
+    for (const p of eikenPrints) {
+      expect(classifyEikenMaterial(p)).not.toBeNull();
+    }
+  });
+
+  it('SugorokuAdminApp がデモモードおよびAI 3拡張スロット付きでSSR描画できる', () => {
+    const html = renderToStaticMarkup(
+      createElement(SugorokuAdminApp, {
+        initialDataMode: 'demo',
+        extensionSlots: {
+          renderWritingReviewTab: () => createElement('div', null, 'AI3_WRITING_CUSTOM'),
+          renderSpeakingReviewTab: () => createElement('div', null, 'AI3_SPEAKING_CUSTOM'),
+        },
+      }),
+    );
+    expect(html).toContain('すごろく塾 管理者ポータル');
+    expect(html).toContain('今週の声掛け優先アラート');
+    expect(html).toContain('高橋 陽斗（高2・サッカー部）');
+    expect(html).toContain('山本 陸（高2・野球部）');
+    expect(html).toContain('講師用PDF教材棚');
+  });
+});
