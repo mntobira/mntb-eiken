@@ -298,7 +298,6 @@ export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, o
                       className="launch-tobira-cutout"
                       hold
                       eager
-                      skippable
                       fadeInMs={280}
                       label="とびら君の登場動画"
                       onActiveChange={active => { if (active) setPlayed(true); }}
