@@ -32,8 +32,8 @@
    - サブコレクション形式（AI 1 管理ポータル参照）とフラットコレクション形式（AI 2 オフライン一括同期参照）の双方を保護。
    - 生徒本人のみ自分の有効学習時間ログ・分野別集計を作成・更新・閲覧可能（1日 86,400 秒上限・日付形式・`logId == uid + '_' + dateKey` 厳密検証つき）。
    - 閲覧は本人、`eiken_study_access/{studentUid}_{teacherUid}` の同意を持つ担当講師、担当クラスの active `staff`、または塾 `owner` のみ許可。講師からの学習時間改ざん（書き込み）は不可。
-3. **`eiken_classrooms/{classId}/assignments/{assignmentId}`（および `eiken_class_assignments` 拡張互換）**
-   - 日次/週次ペースメーカー宿題フィールド（`targetStudentUids`, `startAt`, `dailyQuotaProblems`, `skillBreakdown`）を検証。
+3. **`eiken_classrooms/{classId}/assignments/{assignmentId}`・`eiken_sugoroku_homework_plans/{assignmentId}`（および `eiken_class_assignments` 拡張互換）**
+   - 日次/週次ペースメーカー宿題フィールド（`targetStudentUids`, `startAt`, `dailyQuotaProblems`, `skillBreakdown`, `presetId`, `presetWeek`）を検証し、サブコレクション形式とトップレベル拡張プラン形式（AI 2 連携）の双方を保護。
    - `plan == 'juku'` クラスの担当講師（`teacherUid`）または担当 `staff` / `owner` のみ作成・更新・削除可能。
    - 在籍生徒は全体宿題または `targetStudentUids` に自身の `uid` が含まれる宿題のみ閲覧可能。
 4. **`eiken_classrooms/{classId}/writing_submissions/{submissionId}`**

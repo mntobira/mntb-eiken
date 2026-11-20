@@ -1046,17 +1046,20 @@ service cloud.firestore {
       function isValidAssignment(data) {
         return data.keys().hasOnly([
             'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt', 'createdAt',
-            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown'
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek'
           ])
           && data.classId is string
           && data.teacherUid == request.auth.uid
           && data.title is string && data.title.size() > 0 && data.title.size() <= 80
           && data.chapterIds is list && data.chapterIds.size() > 0 && data.chapterIds.size() <= 30
           && data.dueAt is int && data.dueAt > 0
-          && (!('targetStudentUids' in data) || (data.targetStudentUids is list && data.targetStudentUids.size() <= 100))
+          && (!('targetStudentUids' in data) || (data.targetStudentUids is list && data.targetStudentUids.size() <= 200))
           && (!('startAt' in data) || (data.startAt is int && data.startAt > 0))
           && (!('dailyQuotaProblems' in data) || (data.dailyQuotaProblems is int && data.dailyQuotaProblems >= 1 && data.dailyQuotaProblems <= 500))
           && (!('skillBreakdown' in data) || caValidSkillBreakdown(data.skillBreakdown))
+          && (!('presetId' in data) || (data.presetId is string && data.presetId.size() <= 40))
+          && (!('presetWeek' in data) || (data.presetWeek is int && data.presetWeek >= 1 && data.presetWeek <= 24))
           && data.createdAt == request.time;
       }
 
@@ -1227,7 +1230,8 @@ service cloud.firestore {
 
     // 担当クラス講師 または すごろく塾スタッフ（ただしクラスが plan == 'juku' の塾クラスに限る）
     function sgCanManageClass(classId) {
-      return sgIsJukuClass(classId)
+      return isAuthenticated()
+        && sgIsJukuClass(classId)
         && (
           (sgIsClassTeacher(classId) && sgIsNotSuspended(request.auth.uid))
           || sgIsActiveStaffForClass(classId)
@@ -1489,6 +1493,7 @@ service cloud.firestore {
         return d.keys().hasOnly([
             'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
             'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek',
             'createdAt', 'updatedAt'
           ])
           && d.keys().hasAll(['title', 'chapterIds', 'dueAt'])
@@ -1497,10 +1502,16 @@ service cloud.firestore {
           && d.title is string && d.title.size() > 0 && d.title.size() <= 80
           && d.chapterIds is list && d.chapterIds.size() >= 1 && d.chapterIds.size() <= 30
           && d.dueAt is int && d.dueAt > 0
-          && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 100))
+          && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
           && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
           && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
-          && (!('skillBreakdown' in d) || validSkillBreakdown(d.skillBreakdown));
+          && (!('skillBreakdown' in d) || validSkillBreakdown(d.skillBreakdown))
+          && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
+          && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && dataPresetWeekValid(d.presetWeek)));
+      }
+
+      function dataPresetWeekValid(w) {
+        return w <= 24;
       }
 
       // 個別配信（targetStudentUids 指定あり）の場合は対象生徒本人のみ閲覧可、未指定/空なら在籍生徒全員閲覧可
@@ -1519,6 +1530,61 @@ service cloud.firestore {
       allow get, list: if sgCanManageClass(classId) || studentCanReadAssignment(resource.data);
       allow create, update: if sgCanManageClass(classId) && validSugorokuAssignment(request.resource.data);
       allow delete: if sgCanManageClass(classId);
+    }
+
+    // ---- 3b. 日次/週次 宿題トップレベル拡張プラン（eiken_sugoroku_homework_plans/{assignmentId}：AI 2 homeworkStore 互換） ----
+    match /eiken_sugoroku_homework_plans/{assignmentId} {
+      function validHomeworkPlanBreakdown(sb) {
+        return sb is map
+          && sb.keys().hasOnly(['reading', 'listening', 'vocab', 'writing', 'speaking'])
+          && (!('reading' in sb) || (sb.reading is int && sb.reading >= 0 && sb.reading <= 500))
+          && (!('listening' in sb) || (sb.listening is int && sb.listening >= 0 && sb.listening <= 500))
+          && (!('vocab' in sb) || (sb.vocab is int && sb.vocab >= 0 && sb.vocab <= 2000))
+          && (!('writing' in sb) || (sb.writing is int && sb.writing >= 0 && sb.writing <= 50))
+          && (!('speaking' in sb) || (sb.speaking is int && sb.speaking >= 0 && sb.speaking <= 50));
+      }
+
+      function validHomeworkPlanDoc(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek', 'createdAt', 'updatedAt'
+          ])
+          && d.keys().hasAll(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt'])
+          && (!('id' in d) || d.id == assignmentId)
+          && d.classId is string && d.classId.size() > 0 && d.classId.size() <= 80
+          && d.teacherUid == request.auth.uid
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 80
+          && d.chapterIds is list && d.chapterIds.size() >= 1 && d.chapterIds.size() <= 30
+          && d.dueAt is int && d.dueAt > 0
+          && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
+          && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
+          && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('skillBreakdown' in d) || validHomeworkPlanBreakdown(d.skillBreakdown))
+          && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
+          && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && d.presetWeek <= 24));
+      }
+
+      allow get, list: if isAuthenticated()
+        && resource != null
+        && (
+          sgCanManageClass(resource.data.classId)
+          || (
+            sgIsJukuClass(resource.data.classId)
+            && sgIsEnrolledInClass(resource.data.classId, request.auth.uid)
+            && sgIsNotSuspended(request.auth.uid)
+            && (
+              !('targetStudentUids' in resource.data)
+              || resource.data.targetStudentUids.size() == 0
+              || request.auth.uid in resource.data.targetStudentUids
+            )
+          )
+        );
+
+      allow create, update: if validHomeworkPlanDoc(request.resource.data)
+        && sgCanManageClass(request.resource.data.classId);
+
+      allow delete: if resource != null && sgCanManageClass(resource.data.classId);
     }
 
     // ---- 4. ライティング提出＆講師添削返却（eiken_classrooms/{classId}/writing_submissions/{submissionId}） ----

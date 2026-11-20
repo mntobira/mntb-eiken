@@ -669,4 +669,73 @@ test('sugoroku class member subcollection, flat study logs, and suspended member
     new Uint8Array(512),
     { contentType: 'audio/webm' },
   ));
+
+  // 後続テストに影響しないよう student_a を active: true に戻す
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const adminDb = ctx.firestore();
+    await setDoc(doc(adminDb, 'eiken_sugoroku_members/student_a'), {
+      uid: 'student_a',
+      role: 'student',
+      active: true,
+      adFree: true,
+      classIds: ['class_juku_a'],
+    });
+  });
+});
+
+test('sugoroku_homework_plans: AI 2 top-level homework plan compatibility with presetId, presetWeek, and targeted students', async () => {
+  await seedSugorokuFixtures();
+
+  const planAllPath = 'eiken_sugoroku_homework_plans/plan_week1';
+  const planTargetedPath = 'eiken_sugoroku_homework_plans/plan_targeted_other';
+
+  const basePlan = {
+    id: 'plan_week1',
+    classId: 'class_juku_a',
+    teacherUid: 'teacher_a',
+    title: '英検2級 12週ルート Week 1',
+    chapterIds: ['eiken_2_reading_01', 'eiken_2_listening_01'],
+    dueAt: 1800000000000,
+    startAt: 1799400000000,
+    dailyQuotaProblems: 15,
+    skillBreakdown: { reading: 20, listening: 15, vocab: 50 },
+    presetId: 'eiken2-12w',
+    presetWeek: 1,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+
+  // 担当講師（teacher_a）は作成・更新可能
+  await assertSucceeds(setDoc(doc(teacherA, planAllPath), basePlan));
+  await assertSucceeds(setDoc(doc(teacherA, planTargetedPath), {
+    ...basePlan,
+    id: 'plan_targeted_other',
+    targetStudentUids: ['someone_else'],
+  }));
+
+  // 生徒や別クラス講師は作成・削除不可
+  await assertFails(setDoc(doc(studentA, 'eiken_sugoroku_homework_plans/plan_spoof'), {
+    ...basePlan,
+    id: 'plan_spoof',
+    teacherUid: 'student_a',
+  }));
+  await assertFails(setDoc(doc(teacherB, 'eiken_sugoroku_homework_plans/plan_other_t'), {
+    ...basePlan,
+    id: 'plan_other_t',
+    teacherUid: 'teacher_b',
+  }));
+  await assertFails(deleteDoc(doc(studentA, planAllPath)));
+
+  // 在籍生徒（student_a）は全体向けプランを閲覧可、対象外個別配信プランは閲覧不可
+  await assertSucceeds(getDoc(doc(studentA, planAllPath)));
+  await assertFails(getDoc(doc(studentA, planTargetedPath)));
+
+  // 担当講師・担当 staff は両方とも閲覧可、他クラス生徒・未認証は閲覧不可
+  await assertSucceeds(getDoc(doc(teacherA, planTargetedPath)));
+  await assertSucceeds(getDoc(doc(staffA, planTargetedPath)));
+  await assertFails(getDoc(doc(studentB, planAllPath)));
+  await assertFails(getDoc(doc(anon, planAllPath)));
+
+  // 担当講師は削除可能
+  await assertSucceeds(deleteDoc(doc(teacherA, planTargetedPath)));
 });

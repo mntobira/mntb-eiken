@@ -37,7 +37,7 @@ import { useSignInGuard } from '../../hooks/useSignInGuard';
 import { useSuppressBannerAd } from '../../utils/adSuppress';
 import { GoogleMark } from '../../components/GoogleLinkBanner';
 import { TobiraBuddy } from '../../components/TobiraBuddy';
-import { ListSkeleton, RarityBadge } from '../../components/ui';
+import { ListSkeleton } from '../../components/ui';
 import { KineticText, installRipple } from '../../motion';
 import {
   extractInviteCodeFromSearch,
@@ -277,31 +277,30 @@ export function SugorokuGateScreen({
   return (
     <main data-testid="sugoroku-auth-gate" className="sga-screen">
       <div className="sga-shell">
-        {/* 1. ブランドヒーロー ＆ とびら君ステージ */}
+        {/* 1. ヘッダー ＆ とびら君案内 */}
         <section className="sga-hero-card sga-stagger-1" aria-label="すごろく塾 案内">
           <div className="sga-hero-top">
             <span className="sga-kicker-pill">
               <Sparkles size={13} aria-hidden="true" />
-              オンライン塾「すごろく」専用Web版
+              すごろく塾 専用Web版
             </span>
-            <RarityBadge rarity="UR" label="塾生限定プレミアム環境" />
           </div>
 
           <h1 className="sga-hero-title">
             <KineticText text="マナトビ英検 塾生ゲート" variant="rise" />
           </h1>
           <p className="sga-hero-sub">
-            高校1人1台 iPad・スマホ・PC から同じ学習記録でつながる4技能対策ステージ
+            iPad・スマホ・PC で学習履歴を同期する塾生専用の4技能学習画面
           </p>
 
-          <div className="sga-perks-row" aria-label="塾生専用特典">
+          <div className="sga-perks-row" aria-label="塾生専用仕様">
             <span className="sga-perk-chip">
               <VolumeX size={13} aria-hidden="true" />
               広告 100% 完全非表示
             </span>
             <span className="sga-perk-chip">
               <ShieldCheck size={13} aria-hidden="true" />
-              公開面は実名非表示で安心
+              公開面は実名非表示
             </span>
           </div>
 

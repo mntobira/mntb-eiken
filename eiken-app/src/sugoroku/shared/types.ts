@@ -12,6 +12,9 @@
 import type { EikenGrade } from '../../eiken/config';
 import type { ClassroomDoc } from '../../utils/classroomCore';
 
+/** 英検の級ID（既存 eiken/config.ts の EikenGrade と同一） */
+export type SugorokuGradeId = EikenGrade;
+
 /** 英検4技能＋語彙の分野キー */
 export type SugorokuSkillKey = 'reading' | 'listening' | 'writing' | 'speaking' | 'vocab';
 
@@ -34,6 +37,7 @@ export const SUGOROKU_COLLECTIONS = {
   sugorokuStudyLogs: 'sugoroku_study_logs',
   studySummaries: 'study_summaries',
   assignments: 'assignments',
+  homeworkPlans: 'sugoroku_homework_plans',
   writingSubmissions: 'writing_submissions',
   speakingSubmissions: 'speaking_submissions',
 } as const;
@@ -127,7 +131,10 @@ export interface SugorokuSkillBreakdown {
 
 /**
  * 3. 日次/週次 宿題（ペースメーカー）
- * Path: classrooms/{classId}/assignments/{assignmentId}（および既存 class_assignments 互換）
+ * Path:
+ *   - classrooms/{classId}/assignments/{assignmentId}
+ *   - sugoroku_homework_plans/{assignmentId}（AI 2 拡張プラン互換）
+ *   - class_assignments/{assignmentId}（既存互換）
  */
 export interface SugorokuAssignmentDoc {
   id: string;
@@ -145,8 +152,41 @@ export interface SugorokuAssignmentDoc {
   dailyQuotaProblems?: number;
   /** 技能別の問題数内訳 */
   skillBreakdown?: SugorokuSkillBreakdown;
+  /** 適用したプリセットID（例: 'eiken2-12w', 'eikenpre2plus-12w', 'eikenpre2-12w'） */
+  presetId?: string;
+  /** 12週ルートの週番号（1〜24） */
+  presetWeek?: number;
   createdAt?: unknown;
   updatedAt?: unknown;
+}
+
+/** AI 2 宿題プラン型（SugorokuAssignmentDoc と完全互換） */
+export type SugorokuHomeworkPlan = SugorokuAssignmentDoc;
+
+/** 生徒ホームの「今日の宿題」カード表示モデル（AI 2 純粋計算結果） */
+export interface SugorokuHomeworkTask {
+  assignmentId: string;
+  classId: string;
+  className: string;
+  title: string;
+  chapterIds: string[];
+  dueAt: number;
+  startAt?: number;
+  nextChapterId: string;
+  total: number;
+  solved: number;
+  remaining: number;
+  percent: number;
+  daysLeft: number;
+  todayQuota: number;
+  todayDone: number;
+  todayRemaining: number;
+  overPacedToday?: boolean;
+  skillBreakdown?: SugorokuSkillBreakdown;
+  status: 'done' | 'late' | 'not_started' | 'on_track' | 'behind' | 'ahead';
+  overdue: boolean;
+  perDayNeeded: number;
+  message: string;
 }
 
 /** ライティング講師添削データ */

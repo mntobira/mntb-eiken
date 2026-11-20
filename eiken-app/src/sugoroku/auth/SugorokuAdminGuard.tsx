@@ -29,7 +29,7 @@ import { FIREBASE_CONFIGURED, USE_EMULATORS } from '../../firebase';
 import { useSignInGuard } from '../../hooks/useSignInGuard';
 import { GoogleMark } from '../../components/GoogleLinkBanner';
 import { TobiraBuddy } from '../../components/TobiraBuddy';
-import { ListSkeleton, RarityBadge } from '../../components/ui';
+import { ListSkeleton } from '../../components/ui';
 import { KineticText, installRipple } from '../../motion';
 import { useSuppressBannerAd } from '../../utils/adSuppress';
 import {
@@ -130,16 +130,15 @@ export function SugorokuAdminGuard({
           <div className="sga-hero-top">
             <span className="sga-kicker-pill">
               <Lock size={13} aria-hidden="true" />
-              SUGOROKU INSTRUCTOR PORTAL
+              講師・管理者専用
             </span>
-            <RarityBadge rarity="SR" label="講師・管理者専用" />
           </div>
 
           <h1 className="sga-hero-title">
-            <KineticText text="すごろく塾 講師・管理者ポータル" variant="rise" />
+            <KineticText text="すごろく塾 管理者ポータル" variant="rise" />
           </h1>
           <p className="sga-hero-sub">
-            生徒の実名（名簿名）・個別学習ログ・提出英作文・S-CBT録音データを安全に保護するため、認可された講師アカウントのみ入場できます。
+            生徒の名簿名・学習ログ・提出答案を保護するため、登録済みの講師アカウントのみ入場できます。
           </p>
 
           <div className="sga-buddy-wrap">

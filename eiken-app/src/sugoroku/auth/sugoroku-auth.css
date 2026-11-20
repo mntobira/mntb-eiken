@@ -1,13 +1,12 @@
 /*
  * ===================================================================
- * すごろく塾 認証・招待コードゲート ＆ 管理者認可ガード 専用スタイル
- * （sugoroku-auth.css）
+ * すごろく塾 認証・招待コードゲート ＆ 管理者認可ガード（エッセンシャル設計）
  * ===================================================================
- * マナトビ本体（tokens.css / system.css / motion.css）の視覚文法に完全準拠：
- *   1. 地色は温かい紙色（var(--mt-paper)）、カードは白地＋立体3px縁影
+ * マナトビ本体（tokens.css / system.css / motion.css）および AI 1 管理者ポータルの
+ * エッセンシャル設計に完全統一：
+ *   1. 色は基本トークン（クリーム紙面 var(--mt-paper)・白カード var(--mt-surface)・ブランド紺 var(--mt-brand)・状態1色）に限定
  *   2. 見出し・コード文字は丸ゴシック var(--mt-font-display)、最小文字12px以上、タップ領域44px以上
- *   3. アニメーションは @media (prefers-reduced-motion: no-preference) 内に閉じ込め、
- *      GPUコンポジタ完結（opacity / translate / scale / rotate）で 60fps 動作を保証
+ *   3. アニメーションは @media (prefers-reduced-motion: no-preference) 内の GPU コンポジタ限定
  */
 
 .sga-screen {
@@ -15,10 +14,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 15% 8%, rgba(36, 88, 166, 0.08), transparent 44%),
-    radial-gradient(circle at 86% 12%, rgba(242, 154, 31, 0.12), transparent 42%),
-    var(--mt-bg-screen, var(--mt-paper, #fcf5e9));
+  background: var(--mt-bg-screen, var(--mt-paper, #fcf5e9));
   color: var(--mt-ink, #1c2a39);
   font-family: var(--mt-font-body);
   padding: 16px 14px calc(28px + env(safe-area-inset-bottom, 0px));
@@ -36,10 +32,10 @@
 
 .sga-shell {
   width: 100%;
-  max-width: 520px;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .sga-screen :focus-visible {
@@ -47,15 +43,13 @@
   box-shadow: var(--mt-focus);
 }
 
-/* ---------- 上部とびら君ステージ＆ブランドバナー ---------- */
+/* ---------- ヘッダーカード ---------- */
 .sga-hero-card {
-  position: relative;
-  border: 1.5px solid #e3c77f;
-  border-radius: var(--mt-radius-xl, 26px);
-  background: linear-gradient(180deg, #fffdf7 0%, #fbf0d5 100%);
-  box-shadow: 0 3px 0 #d7b865, 0 8px 20px rgba(120, 90, 20, 0.09);
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: var(--mt-radius-lg, 20px);
+  background: var(--mt-surface, #ffffff);
+  box-shadow: var(--mt-shadow-1, 0 1px 2px rgba(28, 42, 57, 0.06));
   padding: 16px 18px 14px;
-  overflow: hidden;
 }
 
 .sga-hero-top {
@@ -64,21 +58,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
 }
 
 .sga-kicker-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 26px;
-  padding: 2px 11px;
+  gap: 5px;
+  min-height: 24px;
+  padding: 2px 10px;
   border-radius: var(--mt-r-pill, 999px);
-  background: #ffffff;
-  border: 1px solid #e3c77f;
-  color: var(--mt-accent-ink, #8a4b00);
-  font: 800 12px/1.3 var(--mt-font-body);
-  letter-spacing: 0.03em;
+  background: var(--mt-surface-2, #f6efe2);
+  border: 1px solid var(--mt-line, #e3d9c8);
+  color: var(--mt-ink-2, #3e4c5b);
+  font: 700 12px/1.3 var(--mt-font-body);
 }
 
 .sga-perks-row {
@@ -95,21 +87,19 @@
   min-height: 24px;
   padding: 2px 9px;
   border-radius: var(--mt-r-pill, 999px);
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid #e5d6b0;
+  background: var(--mt-surface-2, #f6efe2);
   color: var(--mt-ink-2, #3e4c5b);
   font: 700 12px/1.3 var(--mt-font-body);
 }
 
 .sga-hero-title {
-  margin: 4px 0 0;
+  margin: 8px 0 0;
   font: var(--mt-text-xl, 800 22px/1.3 var(--mt-font-display));
   color: var(--mt-ink, #1c2a39);
-  letter-spacing: 0.01em;
 }
 
 .sga-hero-sub {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
   font: var(--mt-text-sm, 500 13px/1.5 var(--mt-font-body));
   color: var(--mt-ink-2, #3e4c5b);
 }
@@ -117,9 +107,9 @@
 .sga-buddy-wrap {
   margin-top: 10px;
   padding: 8px 10px;
-  border-radius: var(--mt-radius-lg, 20px);
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(227, 199, 127, 0.7);
+  border-radius: var(--mt-radius-md, 14px);
+  background: var(--mt-surface-2, #f6efe2);
+  border: 1px solid var(--mt-line, #e3d9c8);
 }
 
 /* ---------- 2ステップ進行バー ---------- */
@@ -130,9 +120,8 @@
   gap: 8px;
   padding: 10px 14px;
   border-radius: var(--mt-radius-lg, 20px);
-  border: 1.5px solid var(--mt-line, #e3d9c8);
+  border: 1px solid var(--mt-line, #e3d9c8);
   background: var(--mt-surface, #ffffff);
-  box-shadow: 0 2px 0 #e6dccb;
 }
 
 .sga-step-item {
@@ -144,27 +133,26 @@
 
 .sga-step-num {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
   display: grid;
   place-items: center;
   font: 800 13px/1 var(--mt-font-display);
   background: var(--mt-todo-soft, #eef0f2);
   color: var(--mt-todo, #5a6573);
-  border: 1.5px solid var(--mt-line, #e3d9c8);
+  border: 1px solid var(--mt-line, #e3d9c8);
 }
 
 .sga-step-item[data-state='active'] .sga-step-num {
   background: var(--mt-brand, #2458a6);
   border-color: var(--mt-brand-strong, #1c4687);
   color: #ffffff;
-  box-shadow: 0 2px 0 var(--mt-brand-strong, #1c4687);
 }
 
 .sga-step-item[data-state='done'] .sga-step-num {
   background: var(--mt-done, #1f7a4d);
-  border-color: #165c39;
+  border-color: var(--mt-done, #1f7a4d);
   color: #ffffff;
 }
 
@@ -183,13 +171,13 @@
 }
 
 .sga-step-label small {
-  font: 600 12px/1.25 var(--mt-font-body);
+  font: 500 12px/1.25 var(--mt-font-body);
   color: var(--mt-ink-3, #5a6573);
 }
 
 .sga-step-connector {
-  width: 22px;
-  height: 3px;
+  width: 20px;
+  height: 2px;
   border-radius: 999px;
   background: var(--mt-line, #e3d9c8);
 }
@@ -198,13 +186,13 @@
   background: var(--mt-done, #1f7a4d);
 }
 
-/* ---------- メインボディカード ---------- */
+/* ---------- メインカード ---------- */
 .sga-main-card {
-  border: 1.5px solid var(--mt-line, #e3d9c8);
-  border-radius: var(--mt-radius-xl, 26px);
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: var(--mt-radius-lg, 20px);
   background: var(--mt-surface, #ffffff);
-  box-shadow: 0 3px 0 #dfd3be, 0 10px 26px rgba(28, 42, 57, 0.08);
-  padding: 18px 18px 20px;
+  box-shadow: 0 2px 0 #e6dccb, var(--mt-shadow-1, 0 1px 2px rgba(28, 42, 57, 0.06));
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -212,36 +200,35 @@
 
 @media (min-width: 640px) {
   .sga-main-card {
-    padding: 22px 24px 24px;
+    padding: 20px 22px 22px;
   }
 }
 
-/* ---------- タクタイル立体ボタン ---------- */
+/* ---------- ボタン ---------- */
 .sga-google-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  min-height: 52px;
-  padding: 10px 18px;
-  border-radius: var(--mt-radius-lg, 20px);
-  border: 1.5px solid var(--mt-line-strong, #cbbda6);
+  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: var(--mt-radius-md, 14px);
+  border: 1px solid var(--mt-line-strong, #cbbda6);
   background: #ffffff;
   color: var(--mt-ink, #1c2a39);
-  font: 800 15px/1.3 var(--mt-font-body);
-  box-shadow: 0 3px 0 #d6c8b2, 0 4px 10px rgba(28, 42, 57, 0.06);
+  font: 700 15px/1.3 var(--mt-font-body);
+  box-shadow: 0 2px 0 #dfd3be;
   cursor: pointer;
-  transition: background-color 0.15s ease;
 }
 
 .sga-google-btn:hover:not(:disabled) {
-  background: #fdfaf3;
+  background: var(--mt-surface-2, #f6efe2);
 }
 
 .sga-google-btn:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #d6c8b2;
+  transform: translateY(1.5px);
+  box-shadow: none;
 }
 
 .sga-google-btn:disabled {
@@ -255,20 +242,19 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  min-height: 52px;
-  padding: 10px 18px;
-  border-radius: var(--mt-radius-lg, 20px);
-  border: 1.5px solid var(--mt-brand-strong, #1c4687);
-  background: linear-gradient(180deg, #2d68c4 0%, var(--mt-brand, #2458a6) 100%);
+  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: var(--mt-radius-md, 14px);
+  border: 1px solid var(--mt-brand-strong, #1c4687);
+  background: var(--mt-brand, #2458a6);
   color: #ffffff;
-  font: 800 16px/1.3 var(--mt-font-display);
-  letter-spacing: 0.02em;
-  box-shadow: 0 3px 0 var(--mt-brand-strong, #1c4687), 0 6px 14px rgba(36, 88, 166, 0.2);
+  font: 800 15px/1.3 var(--mt-font-display);
+  box-shadow: 0 3px 0 var(--mt-brand-strong, #1c4687);
   cursor: pointer;
 }
 
 .sga-primary-btn:hover:not(:disabled) {
-  background: linear-gradient(180deg, #3472d1 0%, #265eb0 100%);
+  background: var(--mt-brand-strong, #1c4687);
 }
 
 .sga-primary-btn:active:not(:disabled) {
@@ -289,11 +275,11 @@
   min-height: 44px;
   padding: 8px 14px;
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid var(--mt-line-strong, #cbbda6);
+  border: 1px solid var(--mt-line-strong, #cbbda6);
   background: #ffffff;
   color: var(--mt-ink, #1c2a39);
   font: 700 13px/1.3 var(--mt-font-body);
-  box-shadow: 0 2px 0 #dfd3be;
+  box-shadow: 0 2px 0 #e6dccb;
   cursor: pointer;
 }
 
@@ -303,7 +289,7 @@
 
 .sga-secondary-btn:active:not(:disabled) {
   transform: translateY(1.5px);
-  box-shadow: 0 0.5px 0 #dfd3be;
+  box-shadow: none;
 }
 
 .sga-secondary-btn:disabled {
@@ -311,12 +297,12 @@
   cursor: not-allowed;
 }
 
-/* ---------- 6連タクタイル招待コードスロット ---------- */
+/* ---------- 6連招待コードスロット ---------- */
 .sga-code-field-wrap {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .sga-code-stage {
@@ -338,14 +324,13 @@
 }
 
 .sga-code-slot {
-  height: 54px;
+  height: 52px;
   border-radius: var(--mt-radius-md, 14px);
-  border: 2px solid var(--mt-line-strong, #cbbda6);
+  border: 1.5px solid var(--mt-line-strong, #cbbda6);
   background: var(--mt-surface-2, #f6efe2);
-  box-shadow: inset 0 2px 3px rgba(28, 42, 57, 0.05);
   display: grid;
   place-items: center;
-  font: 800 22px/1 var(--mt-font-display);
+  font: 800 21px/1 var(--mt-font-display);
   color: var(--mt-ink, #1c2a39);
   font-variant-numeric: tabular-nums;
   text-transform: uppercase;
@@ -354,74 +339,72 @@
 .sga-code-slot[data-filled='true'] {
   background: #ffffff;
   border-color: var(--mt-brand, #2458a6);
-  color: var(--mt-brand-strong, #1c4687);
-  box-shadow: 0 2px 0 #bcd0ec;
+  color: var(--mt-brand, #2458a6);
 }
 
 .sga-code-slot[data-active='true'] {
   background: #ffffff;
-  border-color: var(--mt-accent, #f29a1f);
-  box-shadow: 0 0 0 3px rgba(242, 154, 31, 0.22);
+  border-color: var(--mt-brand, #2458a6);
+  box-shadow: 0 0 0 3px var(--mt-brand-soft, #e7eef8);
 }
 
-/* スロット群の上に重ねる透明ネイティブ input（ペースト・IME・スクリーンリーダー完全対応） */
 .sga-code-native-input {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 54px;
+  height: 52px;
   opacity: 0;
   cursor: text;
   font-size: 18px;
   letter-spacing: 0.4em;
 }
 
-/* ---------- 情報ボックス・アラート ---------- */
+/* ---------- 情報・状態ボックス ---------- */
 .sga-info-box {
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid #bcd9ea;
-  background: linear-gradient(180deg, #f4fafe 0%, #e7f3fb 100%);
-  padding: 12px 14px;
-  color: var(--mt-ink, #1c2a39);
+  border: 1px solid var(--mt-line, #e3d9c8);
+  background: var(--mt-surface-2, #f6efe2);
+  padding: 11px 13px;
+  color: var(--mt-ink-2, #3e4c5b);
   font: var(--mt-text-sm, 500 13px/1.5 var(--mt-font-body));
 }
 
 .sga-warn-box {
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid #ebbc70;
+  border: 1px solid #e3be84;
   background: var(--mt-doing-soft, #fdeedb);
-  padding: 12px 14px;
-  color: #6e3b00;
+  padding: 11px 13px;
+  color: var(--mt-doing, #b35c00);
   font: var(--mt-text-sm, 500 13px/1.5 var(--mt-font-body));
 }
 
 .sga-error-box {
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid #e6a19c;
+  border: 1px solid #e6a19c;
   background: #fdecea;
-  padding: 12px 14px;
+  padding: 11px 13px;
   color: var(--mt-danger, #b3261e);
   font: 600 13px/1.5 var(--mt-font-body);
 }
 
 .sga-done-box {
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid #8fd1ae;
+  border: 1px solid #8fd1ae;
   background: var(--mt-done-soft, #e3f3ea);
-  padding: 12px 14px;
+  padding: 11px 13px;
   color: var(--mt-done, #1f7a4d);
   font: 700 13px/1.5 var(--mt-font-body);
 }
 
 /* ---------- 共有範囲＆同意カード ---------- */
 .sga-consent-card {
-  border-radius: var(--mt-radius-lg, 20px);
-  border: 1.5px solid var(--mt-line, #e3d9c8);
-  background: #faf6ed;
-  padding: 12px 14px;
+  border-radius: var(--mt-radius-md, 14px);
+  border: 1px solid var(--mt-line, #e3d9c8);
+  background: var(--mt-surface-2, #f6efe2);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .sga-privacy-grid {
@@ -437,7 +420,7 @@
 }
 
 .sga-privacy-pill {
-  border-radius: 12px;
+  border-radius: 10px;
   background: #ffffff;
   border: 1px solid var(--mt-line, #e3d9c8);
   padding: 8px 10px;
@@ -447,7 +430,7 @@
 
 .sga-privacy-pill strong {
   display: block;
-  font: 800 12px/1.35 var(--mt-font-body);
+  font: 700 12px/1.35 var(--mt-font-body);
   color: var(--mt-ink, #1c2a39);
   margin-bottom: 2px;
 }
@@ -458,34 +441,34 @@
   gap: 10px;
   min-height: 44px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #ffffff;
-  border: 1.5px solid var(--mt-line-strong, #cbbda6);
+  border: 1px solid var(--mt-line-strong, #cbbda6);
   cursor: pointer;
 }
 
 .sga-consent-check[data-checked='true'] {
   border-color: var(--mt-done, #1f7a4d);
-  background: #f3fbf6;
+  background: var(--mt-done-soft, #e3f3ea);
 }
 
 .sga-consent-check input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-top: 2px;
   accent-color: var(--mt-done, #1f7a4d);
   flex-shrink: 0;
   cursor: pointer;
 }
 
-/* ---------- 入力コントロール ---------- */
+/* ---------- 入力欄・アカウントバー ---------- */
 .sga-input,
 .sga-select {
   width: 100%;
   min-height: 44px;
   padding: 8px 12px;
   border-radius: var(--mt-radius-md, 14px);
-  border: 1.5px solid var(--mt-line-strong, #cbbda6);
+  border: 1px solid var(--mt-line-strong, #cbbda6);
   background: #ffffff;
   color: var(--mt-ink, #1c2a39);
   font: 600 14px/1.3 var(--mt-font-body);
@@ -498,37 +481,36 @@
   box-shadow: var(--mt-focus);
 }
 
-/* ---------- アカウントバー ---------- */
 .sga-account-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: var(--mt-radius-md, 14px);
   background: var(--mt-surface-2, #f6efe2);
   border: 1px solid var(--mt-line, #e3d9c8);
 }
 
-/* ---------- モーション（prefers-reduced-motion 配慮・コンポジタ限定） ---------- */
+/* ---------- モーション（GPUコンポジタ限定） ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .sga-stagger-1 {
-    animation: sga-enter 0.45s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
+    animation: sga-enter 0.35s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
   }
   .sga-stagger-2 {
-    animation: sga-enter 0.45s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) 65ms backwards;
+    animation: sga-enter 0.35s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) 50ms backwards;
   }
   .sga-stagger-3 {
-    animation: sga-enter 0.45s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) 130ms backwards;
+    animation: sga-enter 0.35s var(--mo-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) 100ms backwards;
   }
   .sga-code-slot[data-filled='true'] {
-    animation: sga-slot-pop 0.24s var(--mo-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
+    animation: sga-slot-pop 0.2s var(--mo-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
   }
 
   @keyframes sga-enter {
     from {
       opacity: 0;
-      translate: 0 10px;
+      translate: 0 8px;
     }
     to {
       opacity: 1;
@@ -538,7 +520,7 @@
 
   @keyframes sga-slot-pop {
     0% {
-      scale: 0.86;
+      scale: 0.9;
     }
     100% {
       scale: 1;
