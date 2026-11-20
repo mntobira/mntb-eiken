@@ -739,3 +739,111 @@ test('sugoroku_homework_plans: AI 2 top-level homework plan compatibility with p
   // 担当講師は削除可能
   await assertSucceeds(deleteDoc(doc(teacherA, planTargetedPath)));
 });
+
+test('bootstrap instructor emails (mntobira@gmail.com & hirokingz0927@gmail.com): zero-touch owner bootstrap, juku class creation, and review access while rejecting unverified spoofing', async () => {
+  await seedSugorokuFixtures();
+
+  const hiroCtx = env.authenticatedContext('uid_hirokingz', {
+    email: 'hirokingz0927@gmail.com',
+    email_verified: true,
+  });
+  const mntoCtx = env.authenticatedContext('uid_mntobira', {
+    email: 'mntobira@gmail.com',
+    email_verified: true,
+  });
+  const unverifiedSpoofCtx = env.authenticatedContext('uid_spoof_hiro', {
+    email: 'hirokingz0927@gmail.com',
+    email_verified: false,
+  });
+  const randomEmailCtx = env.authenticatedContext('uid_random_gmail', {
+    email: 'somebody_else@gmail.com',
+    email_verified: true,
+  });
+
+  const hiroDb = hiroCtx.firestore();
+  const mntoDb = mntoCtx.firestore();
+  const spoofDb = unverifiedSpoofCtx.firestore();
+  const randomDb = randomEmailCtx.firestore();
+
+  // 1. 事前コンソール作業（eiken_sugoroku_members ドキュメント事前投入）なしでも、
+  //    hirokingz0927@gmail.com / mntobira@gmail.com 自身が自分の owner ドキュメントを初回自動ブートストラップ可能
+  await assertSucceeds(setDoc(doc(hiroDb, 'eiken_sugoroku_members/uid_hirokingz'), {
+    uid: 'uid_hirokingz',
+    role: 'owner',
+    active: true,
+    adFree: true,
+    email: 'hirokingz0927@gmail.com',
+    displayName: 'Hiroki',
+    updatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(setDoc(doc(mntoDb, 'eiken_sugoroku_members/uid_mntobira'), {
+    uid: 'uid_mntobira',
+    role: 'owner',
+    active: true,
+    adFree: true,
+    email: 'mntobira@gmail.com',
+    displayName: 'Manatobi',
+    updatedAt: serverTimestamp(),
+  }));
+
+  // 2. メール未確認トークン（email_verified: false）や無関係な Gmail による自己 owner 昇格は完全拒否
+  await assertFails(setDoc(doc(spoofDb, 'eiken_sugoroku_members/uid_spoof_hiro'), {
+    uid: 'uid_spoof_hiro',
+    role: 'owner',
+    active: true,
+    adFree: true,
+    email: 'hirokingz0927@gmail.com',
+  }));
+  await assertFails(setDoc(doc(randomDb, 'eiken_sugoroku_members/uid_random_gmail'), {
+    uid: 'uid_random_gmail',
+    role: 'owner',
+    active: true,
+    adFree: true,
+    email: 'somebody_else@gmail.com',
+  }));
+
+  // 3. 事前承認オーナー講師はコンソール作業なしで plan: 'juku' のクラスを新規作成＆既存クラスを juku 化可能
+  await assertSucceeds(setDoc(doc(hiroDb, 'eiken_classrooms/class_hiro_juku'), {
+    id: 'class_hiro_juku',
+    teacherUid: 'uid_hirokingz',
+    schoolName: 'すごろく塾',
+    className: '英検2級 11月体験クラス',
+    joinCode: 'HK2345',
+    subject: 'eiken_2',
+    joinOpen: true,
+    memberCount: 0,
+    plan: 'juku',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }));
+
+  // 一般教員（teacher_a）は引き続き自分で plan: 'juku' クラスを作成できない（既存セキュリティ不変）
+  await assertFails(setDoc(doc(teacherA, 'eiken_classrooms/class_illegal_juku'), {
+    id: 'class_illegal_juku',
+    teacherUid: 'teacher_a',
+    schoolName: '一般校',
+    className: '勝手塾クラス',
+    joinCode: 'ACDEF9',
+    subject: 'eiken_2',
+    joinOpen: true,
+    memberCount: 0,
+    plan: 'juku',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }));
+
+  // 4. 事前承認オーナー講師は塾クラスの生徒ログ・宿題・提出物・Storage録音も即時閲覧・管理可能
+  await assertSucceeds(getDocs(collection(hiroDb, 'eiken_classrooms/class_juku_a/sugoroku_members')));
+  await assertSucceeds(getDocs(collection(mntoDb, 'eiken_classrooms/class_juku_a/writing_submissions')));
+  await assertFails(getDocs(collection(spoofDb, 'eiken_classrooms/class_juku_a/writing_submissions')));
+
+  if (hasStorageEmulator) {
+    const stStudentA = env.authenticatedContext('student_a').storage();
+    const stHiro = hiroCtx.storage();
+    const stSpoof = unverifiedSpoofCtx.storage();
+    const audioPath = 'sugoroku_speaking/class_juku_a/student_a/spk_boot_test/q1.webm';
+    await assertSucceeds(uploadBytes(ref(stStudentA, audioPath), new Uint8Array(1024), { contentType: 'audio/webm' }));
+    await assertSucceeds(getBytes(ref(stHiro, audioPath)));
+    await assertFails(getBytes(ref(stSpoof, audioPath)));
+  }
+});

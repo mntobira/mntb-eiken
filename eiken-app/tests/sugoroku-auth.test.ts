@@ -8,6 +8,9 @@ import {
   isSugorokuStaffRole,
   isActiveSugorokuStaff,
   isSuspendedSugorokuMember,
+  getConfiguredSugorokuAdminEmails,
+  isPreAuthorizedSugorokuInstructorEmail,
+  hasVerifiedPreAuthorizedInstructorEmail,
   hasVerifiedGoogleIdentity,
   evaluateSugorokuAdminAccess,
   describeAdminDenyReason,
@@ -22,6 +25,8 @@ import {
   parseSugorokuInviteDraft,
   parseCachedSugorokuMember,
 } from '../src/sugoroku/auth/sugorokuAuthCore';
+import { SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS } from '../src/sugoroku/shared/types';
+import { CLASSROOM_PREVIEW_EMAILS, isClassroomEnabledFor } from '../src/config/features';
 import { SugorokuGateScreen } from '../src/sugoroku/auth/SugorokuAuthGate';
 import { isAdFree, setAdFree } from '../src/ads/adFree';
 
@@ -320,5 +325,95 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step2Html).toContain('英検2級');
     expect(step2Html).toContain('現在このアカウントの塾在籍が停止されています');
     expect(step2Html).toContain('公開ランキング等に本名は一切表示されません');
+  });
+
+  it('allows zero-touch instructor login & classroom preview for mntobira@gmail.com and hirokingz0927@gmail.com while rejecting unverified or unlisted emails', () => {
+    expect(SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS).toEqual([
+      'mntobira@gmail.com',
+      'hirokingz0927@gmail.com',
+    ]);
+    expect(CLASSROOM_PREVIEW_EMAILS).toContain('mntobira@gmail.com');
+    expect(CLASSROOM_PREVIEW_EMAILS).toContain('hirokingz0927@gmail.com');
+
+    // 環境変数に1件しか書かれていても既定の2アカウントは必ず維持される
+    const mergedEmails = getConfiguredSugorokuAdminEmails('extra-tutor@example.com');
+    expect(mergedEmails).toContain('mntobira@gmail.com');
+    expect(mergedEmails).toContain('hirokingz0927@gmail.com');
+    expect(mergedEmails).toContain('extra-tutor@example.com');
+
+    for (const instructorEmail of ['mntobira@gmail.com', 'HIROKINGZ0927@gmail.com']) {
+      expect(isPreAuthorizedSugorokuInstructorEmail(instructorEmail)).toBe(true);
+      expect(
+        hasVerifiedPreAuthorizedInstructorEmail({
+          email: instructorEmail,
+          emailVerified: true,
+          providerIds: ['google.com'],
+        }),
+      ).toBe(true);
+
+      // 設定画面「クラス」タブ先行解放も両アカウントで有効
+      expect(isClassroomEnabledFor({ email: instructorEmail, emailVerified: true })).toBe(true);
+      expect(isClassroomEnabledFor({ email: instructorEmail, emailVerified: false })).toBe(false);
+
+      // 初回ログイン直後（memberDoc === null, ownedJukuClassIds === []）でも即時管理者ポータル入場可
+      expect(
+        evaluateSugorokuAdminAccess({
+          uid: `first_login_${instructorEmail}`,
+          email: instructorEmail,
+          emailVerified: true,
+          providerIds: ['google.com'],
+          memberDoc: null,
+          ownedJukuClassIds: [],
+        }),
+      ).toEqual({ allowed: true, reason: 'allowed_preauthorized_email' });
+
+      // クラス管理・生徒ログ閲覧ヘルパーも即時許可
+      expect(
+        canManageSugorokuClass({
+          uid: `first_login_${instructorEmail}`,
+          email: instructorEmail,
+          emailVerified: true,
+          classId: 'class_juku_a',
+        }),
+      ).toBe(true);
+      expect(
+        canReadStudentSugorokuData({
+          viewerUid: `first_login_${instructorEmail}`,
+          viewerEmail: instructorEmail,
+          viewerEmailVerified: true,
+          studentUid: 'student_a',
+        }),
+      ).toBe(true);
+    }
+
+    // メール未確認トークンや無関係な Gmail アカウントは拒否
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'spoof_unverified',
+        email: 'hirokingz0927@gmail.com',
+        emailVerified: false,
+        providerIds: ['google.com'],
+      }),
+    ).toEqual({ allowed: false, reason: 'email_unverified' });
+
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'random_user',
+        email: 'random_student@gmail.com',
+        emailVerified: true,
+        providerIds: ['google.com'],
+      }),
+    ).toEqual({ allowed: false, reason: 'insufficient_role' });
+
+    // 仮に事前承認メールでも明示的に active === false に停止された場合は遮断される
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'suspended_instructor',
+        email: 'hirokingz0927@gmail.com',
+        emailVerified: true,
+        providerIds: ['google.com'],
+        memberDoc: { uid: 'suspended_instructor', role: 'owner', active: false },
+      }),
+    ).toEqual({ allowed: false, reason: 'suspended_member' });
   });
 });

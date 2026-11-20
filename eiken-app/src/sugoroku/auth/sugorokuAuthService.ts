@@ -43,9 +43,12 @@ import {
   joinClassroomByCode,
   fetchMyMembershipDetails,
   fetchMyClassrooms,
+  createClassroom,
+  CLASSROOMS_COLLECTION,
   type JoinResult,
   type MembershipDetail,
 } from '../../utils/classroom';
+import type { ClassroomDoc, ClassroomInput } from '../../utils/classroomCore';
 import { loadJukuMemberships, saveJukuMemberships } from '../../utils/classAssignments';
 import { setAdFree } from '../../ads/adFree';
 import { safeGetItem, safeRemoveItem } from '../../utils/safeLocalStorage';
@@ -57,6 +60,7 @@ import {
   SUGOROKU_MEMBERS_COLLECTION,
   SUGOROKU_MEMBER_CACHE_PREFIX,
   evaluateSugorokuAdminAccess,
+  hasVerifiedPreAuthorizedInstructorEmail,
   isSafariOrIPadBrowser,
   isSuspendedSugorokuMember,
   normalizeSugorokuInviteCode,
@@ -294,6 +298,87 @@ export interface SugorokuEnrollmentStatus {
   allMemberships: MembershipDetail[];
 }
 
+/**
+ * 事前承認済み講師アカウント（mntobira@gmail.com / hirokingz0927@gmail.com 等）が
+ * 初回ログインした際、手動の Firebase コンソール投入を待たずに
+ * sugoroku_members/{uid}（role: 'owner', active: true, adFree: true）を自動ブートストラップする。
+ *
+ * ※ 明示的に active === false に停止されている場合は絶対に上書きしない。
+ */
+export async function ensurePreAuthorizedInstructorMember(
+  user?: User | null,
+  existingMember?: SugorokuMemberDoc | null,
+): Promise<SugorokuMemberDoc | null> {
+  const currentUser = user ?? auth.currentUser;
+  if (!currentUser?.uid) return existingMember ?? null;
+
+  const providerIds = (currentUser.providerData || []).map((p) => p.providerId);
+  const isPreAuthorized = hasVerifiedPreAuthorizedInstructorEmail({
+    email: currentUser.email,
+    emailVerified: currentUser.emailVerified,
+    providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
+  });
+
+  if (!isPreAuthorized) {
+    return existingMember ?? null;
+  }
+
+  // 既に停止済みなら上書き禁止
+  if (existingMember && existingMember.active === false) {
+    return existingMember;
+  }
+
+  // 既に active な owner / staff ならそのまま返す
+  if (
+    existingMember &&
+    existingMember.active === true &&
+    (existingMember.role === 'owner' || existingMember.role === 'staff')
+  ) {
+    return existingMember;
+  }
+
+  const normalizedEmail = (currentUser.email || '').trim().toLowerCase();
+  const safeDisplayName = (existingMember?.displayName || currentUser.displayName || '')
+    .trim()
+    .slice(0, 32);
+  const nowMs = Date.now();
+
+  const bootstrapped: SugorokuMemberDoc = {
+    ...(existingMember ?? {}),
+    uid: currentUser.uid,
+    role: 'owner',
+    active: true,
+    adFree: true,
+    ...(normalizedEmail ? { email: normalizedEmail } : {}),
+    ...(safeDisplayName ? { displayName: safeDisplayName } : {}),
+    updatedAt: nowMs,
+  };
+
+  if (FIREBASE_CONFIGURED || USE_EMULATORS) {
+    try {
+      await setDoc(
+        doc(db, SUGOROKU_MEMBERS_COLLECTION, currentUser.uid),
+        {
+          uid: currentUser.uid,
+          role: 'owner',
+          active: true,
+          adFree: true,
+          ...(normalizedEmail ? { email: normalizedEmail } : {}),
+          ...(safeDisplayName ? { displayName: safeDisplayName } : {}),
+          ...(existingMember?.classIds ? { classIds: existingMember.classIds } : {}),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+    } catch {
+      // ルール未反映環境等でもインメモリ＆ローカルキャッシュで即時講師ログインを成立させる
+    }
+  }
+
+  saveCachedSugorokuMember(bootstrapped, currentUser.uid);
+  return bootstrapped;
+}
+
 export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Promise<SugorokuEnrollmentStatus> {
   const currentUser = user ?? auth.currentUser;
   const uid = currentUser?.uid || '';
@@ -318,28 +403,31 @@ export async function refreshSugorokuEnrollmentAndAdFree(user?: User | null): Pr
   }
 
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
-    const suspended = isSuspendedSugorokuMember(cachedMember);
+    const bootstrappedOffline = await ensurePreAuthorizedInstructorMember(currentUser, cachedMember);
+    const suspended = isSuspendedSugorokuMember(bootstrappedOffline);
     const adFreeNow = shouldApplySugorokuAdFree({
       uid,
-      memberDoc: cachedMember,
+      memberDoc: bootstrappedOffline,
       jukuClassCount: cachedJuku.length,
     });
     setAdFree(adFreeNow);
     return {
       uid,
-      isEnrolledInJuku: !suspended && (Boolean(cachedMember?.active) || cachedJuku.length > 0),
+      isEnrolledInJuku: !suspended && (Boolean(bootstrappedOffline?.active) || cachedJuku.length > 0),
       isSuspended: suspended,
       adFreeApplied: adFreeNow,
-      memberDoc: cachedMember,
+      memberDoc: bootstrappedOffline,
       jukuMemberships: [],
       allMemberships: [],
     };
   }
 
-  const [memberDoc, allMemberships] = await Promise.all([
+  const [fetchedMember, allMemberships] = await Promise.all([
     fetchSugorokuMemberDoc(uid),
     fetchMyMembershipDetails().catch(() => [] as MembershipDetail[]),
   ]);
+
+  const memberDoc = await ensurePreAuthorizedInstructorMember(currentUser, fetchedMember);
 
   const suspended = isSuspendedSugorokuMember(memberDoc);
   const jukuMemberships = suspended ? [] : allMemberships.filter((m) => m.plan === 'juku');
@@ -521,10 +609,12 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
     return { ...decision, memberDoc: cached, ownedClassIds: [] };
   }
 
-  const [memberDoc, myClasses] = await Promise.all([
+  const [fetchedMember, myClasses] = await Promise.all([
     fetchSugorokuMemberDoc(currentUser.uid),
     fetchMyClassrooms().catch(() => []),
   ]);
+
+  const memberDoc = await ensurePreAuthorizedInstructorMember(currentUser, fetchedMember);
 
   const ownedClassIds = myClasses.map((c) => c.id);
   const decision = evaluateSugorokuAdminAccess({
@@ -541,4 +631,25 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
     memberDoc,
     ownedClassIds,
   };
+}
+
+/**
+ * 事前承認済みオーナー講師または active な owner ロール保持者が、
+ * コンソール作業なしで即座に `plan: 'juku'` のすごろく塾クラスを開設（または既存クラスを塾プラン化）する。
+ */
+export async function createSugorokuJukuClassroom(input: ClassroomInput): Promise<ClassroomDoc> {
+  const created = await createClassroom(input);
+  try {
+    await setDoc(
+      doc(db, CLASSROOMS_COLLECTION, created.id),
+      {
+        plan: 'juku',
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+    return { ...created, plan: 'juku' };
+  } catch {
+    return created;
+  }
 }

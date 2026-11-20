@@ -100,25 +100,33 @@ npx firebase-tools deploy \
 ```
 
 ### Step 4: すごろく塾オーナー・講師ロールと塾クラス（`plan: 'juku'`）の初期設定
-一般教員が勝手に有料塾プランを有効化できないよう、`plan: 'juku'` および最初の `owner` ロールは運営者が Firebase Console（Firestore Database）から設定します。
+- **即時講師ログイン対応アカウント（ゼロタッチ・ブートストラップ）**：
+  - `mntobira@gmail.com`
+  - `hirokingz0927@gmail.com`
+  - 上記2つの Google アカウント（メール確認済み `email_verified == true`）については、**事前の Firebase Console 手作業なしで、初回 Google ログインと同時に自動的に `eiken_sugoroku_members/{uid}`（`role: 'owner'`, `active: true`, `adFree: true`）がブートストラップ作成**されます。
+  - さらに設定画面の「クラス」タブ（`CLASSROOM_PREVIEW_EMAILS`）も先行解放されており、`createSugorokuJukuClassroom` またはクラス設定からコンソール不要で `plan: 'juku'` クラスを開設できます。
+  - AI 1（`?portal=admin` 管理者ポータル）・AI 2（宿題配信）・AI 3（ライティング/スピーキング添削）・AI 4（認証ガード＆Firestore/Storage ルール）すべてで共通定数 `SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS` を共有して連携します。
 
-1. **すごろく代表・統括講師の `owner` / `staff` 登録**
+- **3人目以降の講師（`staff` / `owner`）を追加する場合**：
+  一般教員が勝手に有料塾プランを有効化できないよう、上記2名以外の講師ロール追加は既存のオーナー画面または Firebase Console（Firestore Database）から設定します。
+
+1. **追加講師の `owner` / `staff` 登録**
    - コレクション：`eiken_sugoroku_members`
    - ドキュメントID：対象講師の Firebase Auth `uid`（Google ログイン後に確認）
    - フィールド例：
      ```json
      {
        "uid": "<講師のUID>",
-       "role": "owner",
+       "role": "staff",
+       "classIds": ["<対象classId>"],
        "active": true,
        "adFree": true
      }
      ```
-     ※ 特定クラスのみ担当する講師の場合は `"role": "staff"`, `"classIds": ["<対象classId>"]` を設定します（`owner` が登録済みの場合はアプリ側から `staff` を追加することも可能です）。
+     ※ 全クラス統括の場合は `"role": "owner"` を指定します。`mntobira@gmail.com` / `hirokingz0927@gmail.com` でログインした状態から直接作成することも可能です。
 
 2. **すごろく用クラスの `plan: 'juku'` 化**
-   - 講師アカウントでクラスを作成すると `eiken_classrooms/{classId}` が作成され、6文字の招待コード（`joinCode`）が発行されます。
-   - Firebase Console で該当 `eiken_classrooms/{classId}` ドキュメントを開き、フィールド `plan` を `"juku"` に設定します。
+   - `mntobira@gmail.com` または `hirokingz0927@gmail.com` でクラスを作成（`createSugorokuJukuClassroom`）すると、即座に `plan: "juku"` と6文字の招待コード（`joinCode`）が付与されます（既存の標準作成モーダルで作った場合も、上記オーナーアカウントまたは Firebase Console から `plan: "juku"` に変更可能です）。
    - これにより、招待コード（または `?sugoroku_invite=XXXXXX` リンク）で参加した生徒全員に対して **広告完全非表示（Ad-Free）・宿題配信・ライティング提出・S-CBTスピーキング録音提出** が自動的に有効化されます。
 
 ### Step 5: Vercel 環境変数・配布リンクの運用（任意）

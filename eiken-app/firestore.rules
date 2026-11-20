@@ -902,9 +902,14 @@ service cloud.firestore {
       // （fetchMyClassrooms）。他人の teacherUid では静的に否定されるので列挙はできない。
       allow list: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
 
-      // plan は付けないか 'free' だけ（先生が自分で 'juku' にできない）
+      // plan は付けないか 'free' だけ（先生が自分で 'juku' にできない）。
+      // ただしメール確認済みのすごろく塾オーナー（mntobira@gmail.com / hirokingz0927@gmail.com）は
+      // 初回からコンソール作業なしで 'juku' プランのクラスを開設・有効化できる。
       allow create: if isAuthenticated() && isValidClassroom(request.resource.data)
-        && request.resource.data.get('plan', 'free') == 'free';
+        && (
+          request.resource.data.get('plan', 'free') == 'free'
+          || (request.resource.data.get('plan', 'free') == 'juku' && sgIsActiveOwner())
+        );
 
       // 担任のみ更新可。teacherUid と joinCode は変更不可
       // （コードを差し替えて他クラスの生徒を奪えないようにする）
@@ -913,8 +918,11 @@ service cloud.firestore {
         && isValidClassroom(request.resource.data)
         && request.resource.data.teacherUid == resource.data.teacherUid
         && request.resource.data.joinCode == resource.data.joinCode
-        // plan は先生からは変えられない（運営がコンソールで変える）
-        && request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free');
+        // plan は一般の先生からは変えられない（運営コンソールまたはすごろく塾オーナーのみ 'juku' 化可）
+        && (
+          request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free')
+          || (request.resource.data.get('plan', 'free') == 'juku' && sgIsActiveOwner())
+        );
 
       allow delete: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
     }
@@ -1202,6 +1210,14 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/eiken_sugoroku_members/$(uid)).data;
     }
 
+    // 事前承認済みのすごろく塾オーナー講師メール（Google メール確認済みのトークンのみ許可・未確認偽装は拒否）
+    // クライアント側の SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS と完全一致させる。
+    function sgIsBootstrapOwnerEmail() {
+      return isAuthenticated()
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.get('email', '') in ['mntobira@gmail.com', 'hirokingz0927@gmail.com'];
+    }
+
     // 退塾・停止（active == false）されていないことの確認
     function sgIsNotSuspended(uid) {
       return !sgHasMemberDoc(uid) || sgMemberData(uid).active == true;
@@ -1209,9 +1225,15 @@ service cloud.firestore {
 
     function sgIsActiveOwner() {
       return isAuthenticated()
-        && sgHasMemberDoc(request.auth.uid)
-        && sgMemberData(request.auth.uid).active == true
-        && sgMemberData(request.auth.uid).role == 'owner';
+        && sgIsNotSuspended(request.auth.uid)
+        && (
+          sgIsBootstrapOwnerEmail()
+          || (
+            sgHasMemberDoc(request.auth.uid)
+            && sgMemberData(request.auth.uid).active == true
+            && sgMemberData(request.auth.uid).role == 'owner'
+          )
+        );
     }
 
     function sgCheckStaffData(m, classId) {
@@ -1224,8 +1246,14 @@ service cloud.firestore {
 
     function sgIsActiveStaffForClass(classId) {
       return isAuthenticated()
-        && sgHasMemberDoc(request.auth.uid)
-        && sgCheckStaffData(sgMemberData(request.auth.uid), classId);
+        && sgIsNotSuspended(request.auth.uid)
+        && (
+          sgIsBootstrapOwnerEmail()
+          || (
+            sgHasMemberDoc(request.auth.uid)
+            && sgCheckStaffData(sgMemberData(request.auth.uid), classId)
+          )
+        );
     }
 
     // 担当クラス講師 または すごろく塾スタッフ（ただしクラスが plan == 'juku' の塾クラスに限る）
@@ -1748,8 +1776,11 @@ service cloud.firestore {
         && sgIsNotSuspended(request.auth.uid);
 
       allow update: if resource != null
+        && sgIsJukuClass(classId)
         && validSpeakingSubmissionMeta(request.resource.data)
         && request.resource.data.studentUid == resource.data.studentUid
+        && request.resource.data.grade == resource.data.grade
+        && request.resource.data.setId == resource.data.setId
         && (
           (
             isAuthenticated()
@@ -1761,15 +1792,12 @@ service cloud.firestore {
               request.resource.data.recordings == resource.data.recordings
               || validRecordingsList(request.resource.data.recordings, request.auth.uid)
             )
-            && sgIsJukuClass(classId)
             && sgIsEnrolledInClass(classId, request.auth.uid)
             && sgIsNotSuspended(request.auth.uid)
           )
           || (
             request.resource.data.status == 'reviewed'
             && 'review' in request.resource.data
-            && request.resource.data.grade == resource.data.grade
-            && request.resource.data.setId == resource.data.setId
             && request.resource.data.recordings == resource.data.recordings
             && request.resource.data.submittedAt == resource.data.submittedAt
             && validSpeakingReview(request.resource.data.review)

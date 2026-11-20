@@ -36,6 +36,13 @@ service firebase.storage {
         && firestore.get(/databases/(default)/documents/eiken_classrooms/$(classId)).data.get('plan', 'free') == 'juku';
     }
 
+    // 事前承認済みのすごろく塾オーナー講師メール（Google メール確認済みのトークンのみ許可）
+    function isBootstrapOwnerEmail() {
+      return isAuthenticated()
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.get('email', '') in ['mntobira@gmail.com', 'hirokingz0927@gmail.com'];
+    }
+
     // 退塾・停止（active == false）されていないユーザーか
     function isNotSuspendedMember(uid) {
       return !firestore.exists(/databases/(default)/documents/eiken_sugoroku_members/$(uid))
@@ -50,12 +57,13 @@ service firebase.storage {
         && firestore.exists(/databases/(default)/documents/eiken_class_members/$(classId + '_' + uid));
     }
 
-    // 担当クラス講師（teacherUid）または すごろく塾スタッフ（owner / staff）か
+    // 担当クラス講師（teacherUid）または すごろく塾スタッフ（owner / staff / 事前承認オーナーメール）か
     function isAuthorizedClassReviewer(classId) {
       return isAuthenticated()
         && isNotSuspendedMember(request.auth.uid)
         && (
-          (
+          isBootstrapOwnerEmail()
+          || (
             firestore.exists(/databases/(default)/documents/eiken_classrooms/$(classId))
             && firestore.get(/databases/(default)/documents/eiken_classrooms/$(classId)).data.teacherUid == request.auth.uid
           )

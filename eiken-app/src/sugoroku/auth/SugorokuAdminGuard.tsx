@@ -163,9 +163,9 @@ export function SugorokuAdminGuard({
           ) : !user ? (
             <div className="flex flex-col gap-3.5">
               <div className="sga-info-box">
-                <p className="font-bold mb-1">入場条件</p>
+                <p className="font-bold mb-1">入場条件（初回講師ログイン対応）</p>
                 <p>
-                  すごろく運営で <code>owner</code> / <code>staff</code> ロールが付与されているアカウント、または担当クラス（<code>teacherUid</code>）を持つ Google アカウントでログインしてください。
+                  事前承認済み講師アカウント（<code>mntobira@gmail.com</code> / <code>hirokingz0927@gmail.com</code>）、すごろく運営で <code>owner</code> / <code>staff</code> ロールが付与されているアカウント、または担当クラス（<code>teacherUid</code>）を持つ Google アカウントでそのままログインできます。
                 </p>
               </div>
 

@@ -6,7 +6,11 @@
  * 単体テストで全ロール・境界ケース・エッジケースを高速かつ確実に検証する。
  */
 
-import type { SugorokuMemberDoc, SugorokuRole } from '../shared/types';
+import {
+  SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS,
+  type SugorokuMemberDoc,
+  type SugorokuRole,
+} from '../shared/types';
 import { isEikenGrade, type EikenGrade } from '../../eiken/config';
 import { maskNickname, displayNicknameForNational } from '../../utils/nicknamePrivacy';
 import {
@@ -122,11 +126,60 @@ export interface AdminAccessDecision {
   reason:
     | 'allowed_staff_role'
     | 'allowed_class_teacher'
+    | 'allowed_preauthorized_email'
     | 'unauthenticated'
     | 'google_required'
     | 'email_unverified'
     | 'suspended_member'
     | 'insufficient_role';
+}
+
+/**
+ * 環境変数（VITE_SUGOROKU_ADMIN_EMAILS）＋ 既定の事前承認講師メール一覧を返す。
+ * AI 1 の firestoreAdminService.ts とも完全互換の関数シグネチャを維持する。
+ */
+export function getConfiguredSugorokuAdminEmails(envValue?: string | null): string[] {
+  const rawEnv =
+    envValue !== undefined
+      ? envValue
+      : (import.meta.env?.VITE_SUGOROKU_ADMIN_EMAILS as string | undefined);
+  const custom = String(rawEnv || '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  return Array.from(new Set([...SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS, ...custom]));
+}
+
+/**
+ * 指定メールアドレスが事前承認済みの講師・オーナーメールに含まれるか判定する。
+ */
+export function isPreAuthorizedSugorokuInstructorEmail(
+  email: string | null | undefined,
+  envValue?: string | null,
+): boolean {
+  const normalized = (email || '').trim().toLowerCase();
+  if (!normalized) return false;
+  return getConfiguredSugorokuAdminEmails(envValue).includes(normalized);
+}
+
+/**
+ * ログインユーザーが Google 確認済みメールで事前承認講師アカウントに該当するか判定する。
+ * メール未確認（emailVerified !== true）のなりすましトークンは必ず拒否する。
+ */
+export function hasVerifiedPreAuthorizedInstructorEmail(
+  input: {
+    email?: string | null;
+    emailVerified?: boolean;
+    providerIds?: readonly string[];
+  } | null | undefined,
+  envValue?: string | null,
+): boolean {
+  if (!input) return false;
+  if (input.emailVerified !== true) return false;
+  if (input.providerIds && input.providerIds.length > 0 && !input.providerIds.includes('google.com')) {
+    return false;
+  }
+  return isPreAuthorizedSugorokuInstructorEmail(input.email, envValue);
 }
 
 /**
@@ -173,6 +226,17 @@ export function evaluateSugorokuAdminAccess(ctx: AdminAccessContext): AdminAcces
     return { allowed: true, reason: 'allowed_class_teacher' };
   }
 
+  // 初回講師ログイン対応：メール確認済みの事前承認講師（mntobira@gmail.com / hirokingz0927@gmail.com）
+  if (
+    hasVerifiedPreAuthorizedInstructorEmail({
+      email: ctx.email,
+      emailVerified: ctx.emailVerified === true,
+      providerIds: ctx.providerIds,
+    })
+  ) {
+    return { allowed: true, reason: 'allowed_preauthorized_email' };
+  }
+
   return { allowed: false, reason: 'insufficient_role' };
 }
 
@@ -202,6 +266,8 @@ export function describeAdminDenyReason(reason: AdminAccessDecision['reason']): 
  */
 export function canManageSugorokuClass(params: {
   uid: string | null | undefined;
+  email?: string | null;
+  emailVerified?: boolean;
   classId: string;
   classTeacherUid?: string | null;
   classPlan?: 'free' | 'juku';
@@ -216,6 +282,15 @@ export function canManageSugorokuClass(params: {
   }
 
   if (params.classTeacherUid && params.classTeacherUid === uid) {
+    return true;
+  }
+
+  if (
+    hasVerifiedPreAuthorizedInstructorEmail({
+      email: params.email,
+      emailVerified: params.emailVerified === true,
+    })
+  ) {
     return true;
   }
 
@@ -234,6 +309,8 @@ export function canManageSugorokuClass(params: {
  */
 export function canReadStudentSugorokuData(params: {
   viewerUid: string | null | undefined;
+  viewerEmail?: string | null;
+  viewerEmailVerified?: boolean;
   studentUid: string;
   classId?: string;
   classTeacherUid?: string | null;
@@ -247,9 +324,19 @@ export function canReadStudentSugorokuData(params: {
     return false;
   }
   if (params.hasStudyAccess === true) return true;
+  if (
+    hasVerifiedPreAuthorizedInstructorEmail({
+      email: params.viewerEmail,
+      emailVerified: params.viewerEmailVerified === true,
+    })
+  ) {
+    return true;
+  }
   if (params.classId) {
     return canManageSugorokuClass({
       uid: viewer,
+      email: params.viewerEmail,
+      emailVerified: params.viewerEmailVerified,
       classId: params.classId,
       classTeacherUid: params.classTeacherUid,
       memberDoc: params.viewerMemberDoc,

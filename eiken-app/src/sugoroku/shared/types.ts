@@ -46,6 +46,16 @@ export const SUGOROKU_COLLECTIONS = {
 export const SUGOROKU_SPEAKING_STORAGE_PREFIX = 'sugoroku_speaking';
 export const SUGOROKU_SPEAKING_MAX_BYTES = 5 * 1024 * 1024;
 
+/**
+ * 初回から手動コンソール作業なしで講師・オーナーログイン可能な事前承認メールアドレス一覧。
+ * AI 1（管理者ポータル）・AI 2（宿題配信）・AI 3（ライティング/スピーキング添削）・AI 4（認証・Firestore/Storageルール）
+ * の全部屋で同一の定数を参照し、確実に連携する。
+ */
+export const SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS = [
+  'mntobira@gmail.com',
+  'hirokingz0927@gmail.com',
+] as const;
+
 /** 既存 ClassroomDoc（plan: 'juku'）を活用したすごろく塾クラス型 */
 export type SugorokuClassroomDoc = ClassroomDoc & {
   plan?: 'free' | 'juku';

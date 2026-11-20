@@ -41,6 +41,7 @@ import { ListSkeleton } from '../../components/ui';
 import { KineticText, installRipple } from '../../motion';
 import {
   extractInviteCodeFromSearch,
+  hasVerifiedPreAuthorizedInstructorEmail,
   isActiveSugorokuStaff,
   isSafariOrIPadBrowser,
   normalizeSugorokuInviteCode,
@@ -82,11 +83,19 @@ export function SugorokuAuthGate({
     return <>{children}</>;
   }
 
-  // ログイン済み かつ 停止されておらず（すごろく塾クラス在籍済み または 講師/運営ロール）なら本編を表示
+  // ログイン済み かつ 停止されておらず（すごろく塾クラス在籍済み・講師/運営ロール・または事前承認済み講師メール）なら本編を表示
+  const isPreAuthorizedInstructor =
+    user != null &&
+    hasVerifiedPreAuthorizedInstructorEmail({
+      email: user.email,
+      emailVerified: user.emailVerified,
+      providerIds: (user.providerData || []).map((p) => p.providerId),
+    });
+
   if (
     user &&
     !status.isSuspended &&
-    (status.isEnrolledInJuku || isActiveSugorokuStaff(status.memberDoc))
+    (status.isEnrolledInJuku || isActiveSugorokuStaff(status.memberDoc) || isPreAuthorizedInstructor)
   ) {
     return <>{children}</>;
   }
@@ -368,7 +377,7 @@ export function SugorokuGateScreen({
               <div className="sga-info-box">
                 <p className="font-bold mb-1">ステップ 1：Google アカウントでログイン</p>
                 <p>
-                  学校配布 iPad の Google Workspace アカウント、または個人の Gmail アカウントのどちらでも利用できます。
+                  学校配布 iPad の Google Workspace アカウント、または個人の Gmail アカウントのどちらでも利用できます（事前登録済みの講師アカウントでログインした場合は招待コード不要でそのまま入場できます）。
                 </p>
               </div>
 

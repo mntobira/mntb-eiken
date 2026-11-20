@@ -3,6 +3,10 @@
  */
 
 export {
+  SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS,
+} from '../shared/types';
+
+export {
   SUGOROKU_MEMBERS_COLLECTION,
   SUGOROKU_MEMBER_CACHE_PREFIX,
   SUGOROKU_INVITE_DRAFT_KEY,
@@ -11,6 +15,9 @@ export {
   isSugorokuStaffRole,
   isActiveSugorokuStaff,
   isSuspendedSugorokuMember,
+  getConfiguredSugorokuAdminEmails,
+  isPreAuthorizedSugorokuInstructorEmail,
+  hasVerifiedPreAuthorizedInstructorEmail,
   hasVerifiedGoogleIdentity,
   evaluateSugorokuAdminAccess,
   describeAdminDenyReason,
@@ -42,9 +49,11 @@ export {
   consumeGoogleRedirectResult,
   signOutGoogle,
   fetchSugorokuMemberDoc,
+  ensurePreAuthorizedInstructorMember,
   refreshSugorokuEnrollmentAndAdFree,
   redeemSugorokuInviteCode,
   checkCurrentUserAdminAccess,
+  createSugorokuJukuClassroom,
   type SugorokuSignInResult,
   type SugorokuEnrollmentStatus,
   type RedeemSugorokuInviteInput,
