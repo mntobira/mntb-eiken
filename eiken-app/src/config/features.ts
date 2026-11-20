@@ -146,7 +146,10 @@ export const SOCIAL_FEATURES = { classroom: false, manaClan: false } as const;
  *   ほかの人には今までどおり「準備中」。公開するときは SOCIAL_FEATURES.classroom を true にする（この一覧は消してよい）。
  *   ※画面の入口を開けるだけ。読み書きできるかは本番の firestore.rules で決まる（docs/JUKU_PLAN.md の4）。
  */
-export const CLASSROOM_PREVIEW_EMAILS: readonly string[] = [];
+export const CLASSROOM_PREVIEW_EMAILS: readonly string[] = [
+  'mntobira@gmail.com',
+  'hirokingz0927@gmail.com',
+];
 
 /** クラス機能をこの人に見せるか（公開済み、または先行確認のメールで、メール確認済みのとき） */
 export function isClassroomEnabledFor(user: { email?: string | null; emailVerified?: boolean } | null | undefined): boolean {

@@ -10,6 +10,7 @@
 @source "./styles";
 @source "./eiken";
 @source not "./eiken/materials";
+@source "./sugoroku";
 @source "./battle/ui";
 @source "./battle/core";
 @source "./features";
@@ -19,7 +20,6 @@
 @source "./hooks";
 @source "./utils";
 @source "./native";
-@source "./sugoroku";
 @source "./data/subjects.ts";
 @source "./data/externalSubjects.ts";
 @import "./styles/tokens.css";

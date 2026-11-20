@@ -902,9 +902,14 @@ service cloud.firestore {
       // （fetchMyClassrooms）。他人の teacherUid では静的に否定されるので列挙はできない。
       allow list: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
 
-      // plan は付けないか 'free' だけ（先生が自分で 'juku' にできない）
+      // plan は付けないか 'free' だけ（先生が自分で 'juku' にできない）。
+      // ただしメール確認済みのすごろく塾オーナー（mntobira@gmail.com / hirokingz0927@gmail.com）は
+      // 初回からコンソール作業なしで 'juku' プランのクラスを開設・有効化できる。
       allow create: if isAuthenticated() && isValidClassroom(request.resource.data)
-        && request.resource.data.get('plan', 'free') == 'free';
+        && (
+          request.resource.data.get('plan', 'free') == 'free'
+          || (request.resource.data.get('plan', 'free') == 'juku' && sgIsActiveOwner())
+        );
 
       // 担任のみ更新可。teacherUid と joinCode は変更不可
       // （コードを差し替えて他クラスの生徒を奪えないようにする）
@@ -913,8 +918,11 @@ service cloud.firestore {
         && isValidClassroom(request.resource.data)
         && request.resource.data.teacherUid == resource.data.teacherUid
         && request.resource.data.joinCode == resource.data.joinCode
-        // plan は先生からは変えられない（運営がコンソールで変える）
-        && request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free');
+        // plan は一般の先生からは変えられない（運営コンソールまたはすごろく塾オーナーのみ 'juku' 化可）
+        && (
+          request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free')
+          || (request.resource.data.get('plan', 'free') == 'juku' && sgIsActiveOwner())
+        );
 
       allow delete: if isAuthenticated() && resource.data.teacherUid == request.auth.uid;
     }
@@ -1034,18 +1042,47 @@ service cloud.firestore {
       function caIsJuku(classId) {
         return caRoom(classId).get('plan', 'free') == 'juku';
       }
+      function caValidSkillBreakdown(sb) {
+        return sb is map
+          && sb.keys().hasOnly(['reading', 'listening', 'vocab', 'writing', 'speaking'])
+          && (!('reading' in sb) || (sb.reading is int && sb.reading >= 0 && sb.reading <= 500))
+          && (!('listening' in sb) || (sb.listening is int && sb.listening >= 0 && sb.listening <= 500))
+          && (!('vocab' in sb) || (sb.vocab is int && sb.vocab >= 0 && sb.vocab <= 2000))
+          && (!('writing' in sb) || (sb.writing is int && sb.writing >= 0 && sb.writing <= 50))
+          && (!('speaking' in sb) || (sb.speaking is int && sb.speaking >= 0 && sb.speaking <= 50));
+      }
       function isValidAssignment(data) {
-        return data.keys().hasOnly(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt', 'createdAt'])
+        return data.keys().hasOnly([
+            'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt', 'createdAt',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek'
+          ])
           && data.classId is string
           && data.teacherUid == request.auth.uid
-          && data.title is string && data.title.size() > 0 && data.title.size() <= 40
-          && data.chapterIds is list && data.chapterIds.size() > 0 && data.chapterIds.size() <= 10
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 80
+          && data.chapterIds is list && data.chapterIds.size() > 0 && data.chapterIds.size() <= 30
           && data.dueAt is int && data.dueAt > 0
+          && (!('targetStudentUids' in data) || (data.targetStudentUids is list && data.targetStudentUids.size() <= 200))
+          && (!('startAt' in data) || (data.startAt is int && data.startAt > 0))
+          && (!('dailyQuotaProblems' in data) || (data.dailyQuotaProblems is int && data.dailyQuotaProblems >= 1 && data.dailyQuotaProblems <= 500))
+          && (!('skillBreakdown' in data) || caValidSkillBreakdown(data.skillBreakdown))
+          && (!('presetId' in data) || (data.presetId is string && data.presetId.size() <= 40))
+          && (!('presetWeek' in data) || (data.presetWeek is int && data.presetWeek >= 1 && data.presetWeek <= 24))
           && data.createdAt == request.time;
       }
 
       allow get, list: if isAuthenticated()
-        && (caIsTeacher(resource.data.classId) || caIsMember(resource.data.classId));
+        && (
+          caIsTeacher(resource.data.classId)
+          || (
+            caIsMember(resource.data.classId)
+            && (
+              !('targetStudentUids' in resource.data)
+              || resource.data.targetStudentUids.size() == 0
+              || request.auth.uid in resource.data.targetStudentUids
+            )
+          )
+        );
 
       allow create: if isValidAssignment(request.resource.data)
         && caIsTeacher(request.resource.data.classId)
@@ -1110,6 +1147,667 @@ service cloud.firestore {
         && (resource == null || resource.data.uid == request.auth.uid);
 
       allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    // ============================================================
+    // すごろく塾 拡張コレクション群（AI 4：認証・招待コード認可・4技能提出・学習時間保護）
+    //
+    // 『03_AI並列開発指示書』第2章 B ＆ 第3章 AI 4 仕様：
+    //   1. eiken_sugoroku_members/{uid}（および sugoroku_members/{uid}）
+    //      - role: 'owner' | 'staff' | 'student', targetGrade?, active: bool, adFree: true
+    //      - 生徒本人は在籍塾クラス（plan == 'juku'）があるときのみ role == 'student' で作成・更新可（自己昇格禁止）
+    //      - owner / staff ロール付与は運営（コンソール）または active な owner のみ
+    //   2. eiken_users/{uid}/sugoroku_study_logs/{dateKey} ＆ eiken_study_summaries/{uid}
+    //      - 生徒本人のみ自分のログを作成・更新・閲覧可
+    //      - 同意済み担当講師（study_access 保持者）または塾スタッフ（owner / 担当 staff）のみ閲覧可
+    //      - 他生徒・他クラス講師・未認証アクセスは完全拒否
+    //   3. eiken_classrooms/{classId}/assignments/{assignmentId}（および eiken_class_assignments 拡張互換）
+    //      - 日次/週次宿題（targetStudentUids, startAt, dailyQuotaProblems, skillBreakdown）
+    //      - 担当クラス講師（または塾 owner / 担当 staff）かつ plan == 'juku' のみ作成・更新・削除可
+    //      - 在籍生徒は閲覧（targetStudentUids 未指定 または 自分の uid が含まれるもの）可
+    //   4. eiken_classrooms/{classId}/writing_submissions/{submissionId}
+    //      - 生徒本人は在籍塾クラスに status == 'submitted'（review 無し）で提出・閲覧可
+    //      - 担当クラス講師（または塾 owner / 担当 staff）のみ閲覧 ＆ review 書き込み（status == 'reviewed'）可
+    //   5. eiken_classrooms/{classId}/speaking_submissions/{submissionId}
+    //      - S-CBT スピーキング録音メタデータ（Storage パス検証・パートID検証込み）
+    //      - 生徒本人は在籍塾クラスに status == 'submitted' で提出・閲覧可
+    //      - 担当クラス講師（または塾 owner / 担当 staff）のみ閲覧 ＆ review 書き込み可
+    // ============================================================
+
+    // ---- すごろく塾 共通認可ヘルパー ----
+    function sgIsAllEikenGrade(g) {
+      return g in ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'];
+    }
+
+    function sgClassroomExists(classId) {
+      return exists(/databases/$(database)/documents/eiken_classrooms/$(classId));
+    }
+
+    function sgClassroomData(classId) {
+      return get(/databases/$(database)/documents/eiken_classrooms/$(classId)).data;
+    }
+
+    function sgIsJukuClass(classId) {
+      return sgClassroomExists(classId)
+        && sgClassroomData(classId).get('plan', 'free') == 'juku';
+    }
+
+    function sgIsClassTeacher(classId) {
+      return isAuthenticated()
+        && sgClassroomExists(classId)
+        && sgClassroomData(classId).teacherUid == request.auth.uid;
+    }
+
+    function sgIsEnrolledInClass(classId, uid) {
+      return exists(/databases/$(database)/documents/eiken_class_members/$(classId + '_' + uid));
+    }
+
+    function sgHasMemberDoc(uid) {
+      return exists(/databases/$(database)/documents/eiken_sugoroku_members/$(uid));
+    }
+
+    function sgMemberData(uid) {
+      return get(/databases/$(database)/documents/eiken_sugoroku_members/$(uid)).data;
+    }
+
+    // 事前承認済みのすごろく塾オーナー講師メール（Google メール確認済みのトークンのみ許可・未確認偽装は拒否）
+    // クライアント側の SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS と完全一致させる。
+    function sgIsBootstrapOwnerEmail() {
+      return isAuthenticated()
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.get('email', '') in ['mntobira@gmail.com', 'hirokingz0927@gmail.com'];
+    }
+
+    // 退塾・停止（active == false）されていないことの確認
+    function sgIsNotSuspended(uid) {
+      return !sgHasMemberDoc(uid) || sgMemberData(uid).active == true;
+    }
+
+    function sgIsActiveOwner() {
+      return isAuthenticated()
+        && sgIsNotSuspended(request.auth.uid)
+        && (
+          sgIsBootstrapOwnerEmail()
+          || (
+            sgHasMemberDoc(request.auth.uid)
+            && sgMemberData(request.auth.uid).active == true
+            && sgMemberData(request.auth.uid).role == 'owner'
+          )
+        );
+    }
+
+    function sgCheckStaffData(m, classId) {
+      return m.active == true
+        && (
+          m.role == 'owner'
+          || (m.role == 'staff' && (!('classIds' in m) || classId in m.classIds))
+        );
+    }
+
+    function sgIsActiveStaffForClass(classId) {
+      return isAuthenticated()
+        && sgIsNotSuspended(request.auth.uid)
+        && (
+          sgIsBootstrapOwnerEmail()
+          || (
+            sgHasMemberDoc(request.auth.uid)
+            && sgCheckStaffData(sgMemberData(request.auth.uid), classId)
+          )
+        );
+    }
+
+    // 担当クラス講師 または すごろく塾スタッフ（ただしクラスが plan == 'juku' の塾クラスに限る）
+    function sgCanManageClass(classId) {
+      return isAuthenticated()
+        && sgIsJukuClass(classId)
+        && (
+          (sgIsClassTeacher(classId) && sgIsNotSuspended(request.auth.uid))
+          || sgIsActiveStaffForClass(classId)
+        );
+    }
+
+    // 生徒の学習ログ・集計を読める講師か：
+    //   - study_access/{studentUid}_{teacherUid} の同意がある担当講師
+    //   - または active な塾 owner
+    //   - または生徒の sugoroku_members.classIds[0] を担当する active な staff
+    function sgCanReadStudentLogs(studentUid) {
+      return isAuthenticated()
+        && sgIsNotSuspended(request.auth.uid)
+        && (
+          exists(/databases/$(database)/documents/eiken_study_access/$(studentUid + '_' + request.auth.uid))
+          || sgIsActiveOwner()
+          || (
+            sgHasMemberDoc(studentUid)
+            && 'classIds' in sgMemberData(studentUid)
+            && sgMemberData(studentUid).classIds is list
+            && sgMemberData(studentUid).classIds.size() >= 1
+            && sgCanManageClass(sgMemberData(studentUid).classIds[0])
+          )
+        );
+    }
+
+    // ---- 1a. 塾メンバーロール（ルート eiken_sugoroku_members/{uid}） ----
+    match /eiken_sugoroku_members/{uid} {
+      function validSugorokuMemberShape(d) {
+        return d.keys().hasOnly([
+            'uid', 'classId', 'role', 'targetGrade', 'active', 'adFree',
+            'classIds', 'displayName', 'rosterName', 'email', 'note',
+            'consentAcceptedAt', 'joinedAt', 'updatedAt', 'serverUpdatedAt'
+          ])
+          && d.uid == uid
+          && d.role in ['owner', 'staff', 'student']
+          && d.active is bool
+          && d.adFree is bool
+          && (!('classId' in d) || (d.classId is string && d.classId.size() <= 80))
+          && (!('targetGrade' in d) || sgIsAllEikenGrade(d.targetGrade))
+          && (!('classIds' in d) || (d.classIds is list && d.classIds.size() <= 10))
+          && (!('displayName' in d) || (d.displayName is string && d.displayName.size() <= 32))
+          && (!('rosterName' in d) || (d.rosterName is string && d.rosterName.size() <= 32))
+          && (!('email' in d) || (d.email is string && d.email.size() <= 160))
+          && (!('note' in d) || (d.note is string && d.note.size() <= 300))
+          && (!('consentAcceptedAt' in d) || (d.consentAcceptedAt is int && d.consentAcceptedAt >= 0));
+      }
+
+      // 生徒本人が自分で登録・更新できる条件：
+      //   - role は必ず 'student'（owner / staff への自己昇格は絶対不可）
+      //   - classIds の先頭に実在する自分の在籍塾クラス（plan == 'juku'）が含まれていること
+      //   - rosterName（講師用名簿名）・note（指導メモ）を生徒自身が勝手に書き換えないこと
+      function validStudentSelfEnrollment(d) {
+        return isOwner(uid)
+          && validSugorokuMemberShape(d)
+          && d.role == 'student'
+          && d.active == true
+          && d.adFree == true
+          && 'classIds' in d
+          && d.classIds is list
+          && d.classIds.size() >= 1
+          && d.classIds[0] is string
+          && sgIsJukuClass(d.classIds[0])
+          && sgIsEnrolledInClass(d.classIds[0], uid);
+      }
+
+      allow get: if isOwner(uid)
+        || sgIsActiveOwner()
+        || (
+          isAuthenticated()
+          && resource != null
+          && 'classIds' in resource.data
+          && resource.data.classIds is list
+          && resource.data.classIds.size() >= 1
+          && sgCanManageClass(resource.data.classIds[0])
+        );
+
+      allow list: if sgIsActiveOwner();
+
+      allow create: if (
+          validStudentSelfEnrollment(request.resource.data)
+          && !('rosterName' in request.resource.data)
+          && !('note' in request.resource.data)
+        )
+        || (sgIsActiveOwner() && validSugorokuMemberShape(request.resource.data));
+
+      allow update: if (
+          validStudentSelfEnrollment(request.resource.data)
+          && resource.data.role == 'student'
+          && resource.data.active == true
+          && request.resource.data.get('rosterName', null) == resource.data.get('rosterName', null)
+          && request.resource.data.get('note', null) == resource.data.get('note', null)
+        )
+        || (sgIsActiveOwner() && validSugorokuMemberShape(request.resource.data));
+
+      allow delete: if sgIsActiveOwner();
+    }
+
+    // ---- 1b. クラス別 塾生名簿・指導メモ（eiken_classrooms/{classId}/sugoroku_members/{uid}：AI 1 管理ポータル連携） ----
+    match /eiken_classrooms/{classId}/sugoroku_members/{uid} {
+      function validClassSugorokuMember(d) {
+        return d.keys().hasOnly([
+            'uid', 'classId', 'role', 'targetGrade', 'active', 'adFree',
+            'displayName', 'rosterName', 'email', 'note',
+            'consentAcceptedAt', 'joinedAt', 'updatedAt', 'serverUpdatedAt'
+          ])
+          && d.uid == uid
+          && (!('classId' in d) || d.classId == classId)
+          && d.role in ['owner', 'staff', 'student']
+          && d.active is bool
+          && d.adFree is bool
+          && (!('targetGrade' in d) || sgIsAllEikenGrade(d.targetGrade))
+          && (!('displayName' in d) || (d.displayName is string && d.displayName.size() <= 32))
+          && (!('rosterName' in d) || (d.rosterName is string && d.rosterName.size() <= 32))
+          && (!('email' in d) || (d.email is string && d.email.size() <= 160))
+          && (!('note' in d) || (d.note is string && d.note.size() <= 300))
+          && (!('consentAcceptedAt' in d) || (d.consentAcceptedAt is int && d.consentAcceptedAt >= 0));
+      }
+
+      // list は担当講師・スタッフのみ（他の生徒がクラス全員の rosterName・指導メモ note を覗き見るのを完全阻止）
+      allow get: if isOwner(uid) || sgCanManageClass(classId);
+      allow list: if sgCanManageClass(classId);
+
+      allow create: if (
+          isOwner(uid)
+          && sgIsJukuClass(classId)
+          && sgIsEnrolledInClass(classId, uid)
+          && sgIsNotSuspended(uid)
+          && validClassSugorokuMember(request.resource.data)
+          && request.resource.data.role == 'student'
+          && request.resource.data.active == true
+          && request.resource.data.adFree == true
+          && !('rosterName' in request.resource.data)
+          && !('note' in request.resource.data)
+        )
+        || (
+          sgCanManageClass(classId)
+          && validClassSugorokuMember(request.resource.data)
+          && (request.resource.data.role == 'student' || sgIsActiveOwner())
+        );
+
+      allow update: if (
+          isOwner(uid)
+          && sgIsJukuClass(classId)
+          && sgIsEnrolledInClass(classId, uid)
+          && sgIsNotSuspended(uid)
+          && resource.data.active == true
+          && resource.data.role == 'student'
+          && validClassSugorokuMember(request.resource.data)
+          && request.resource.data.role == 'student'
+          && request.resource.data.active == true
+          && request.resource.data.adFree == true
+          && request.resource.data.get('rosterName', null) == resource.data.get('rosterName', null)
+          && request.resource.data.get('note', null) == resource.data.get('note', null)
+        )
+        || (
+          sgCanManageClass(classId)
+          && validClassSugorokuMember(request.resource.data)
+          && (request.resource.data.role == 'student' || sgIsActiveOwner())
+        );
+
+      allow delete: if sgCanManageClass(classId);
+    }
+
+    // ---- 2a. 分野別学習時間ログ（サブコレクション eiken_users/{uid}/sugoroku_study_logs/{dateKey}） ----
+    match /eiken_users/{uid}/sugoroku_study_logs/{dateKey} {
+      function validStudyLog(d) {
+        return d.keys().hasOnly([
+            'uid', 'dateKey', 'totalActiveSeconds', 'byGradeSkill',
+            'accuracyByGradeSkill', 'solvedCount', 'updatedAt'
+          ])
+          && d.keys().hasAll(['dateKey', 'totalActiveSeconds', 'byGradeSkill', 'solvedCount', 'updatedAt'])
+          && (!('uid' in d) || d.uid == uid)
+          && d.dateKey == dateKey
+          && dateKey.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && d.totalActiveSeconds is int && d.totalActiveSeconds >= 0 && d.totalActiveSeconds <= 86400
+          && d.byGradeSkill is map && d.byGradeSkill.size() <= 60
+          && (!('accuracyByGradeSkill' in d) || (d.accuracyByGradeSkill is map && d.accuracyByGradeSkill.size() <= 60))
+          && d.solvedCount is int && d.solvedCount >= 0 && d.solvedCount <= 10000
+          && (d.updatedAt == request.time || (d.updatedAt is int && d.updatedAt > 0));
+      }
+
+      allow get, list: if isOwner(uid) || sgCanReadStudentLogs(uid);
+      allow create, update: if isOwner(uid) && sgIsNotSuspended(uid) && validStudyLog(request.resource.data);
+      allow delete: if false;
+    }
+
+    // ---- 2b. 分野別学習時間ログ（フラットコレクション eiken_sugoroku_study_logs/{logId}：AI 2 timelogStore 互換） ----
+    match /eiken_sugoroku_study_logs/{logId} {
+      function validFlatStudyLog(d) {
+        return d.keys().hasOnly([
+            'uid', 'dateKey', 'totalActiveSeconds', 'byGradeSkill',
+            'accuracyByGradeSkill', 'solvedCount', 'updatedAt'
+          ])
+          && d.keys().hasAll(['uid', 'dateKey', 'totalActiveSeconds', 'byGradeSkill', 'solvedCount', 'updatedAt'])
+          && d.uid == request.auth.uid
+          && d.dateKey is string
+          && d.dateKey.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && logId == d.uid + '_' + d.dateKey
+          && d.totalActiveSeconds is int && d.totalActiveSeconds >= 0 && d.totalActiveSeconds <= 86400
+          && d.byGradeSkill is map && d.byGradeSkill.size() <= 60
+          && (!('accuracyByGradeSkill' in d) || (d.accuracyByGradeSkill is map && d.accuracyByGradeSkill.size() <= 60))
+          && d.solvedCount is int && d.solvedCount >= 0 && d.solvedCount <= 10000
+          && (d.updatedAt == request.time || (d.updatedAt is int && d.updatedAt > 0));
+      }
+
+      allow get, list: if isAuthenticated()
+        && resource != null
+        && (resource.data.uid == request.auth.uid || sgCanReadStudentLogs(resource.data.uid));
+      allow create, update: if isAuthenticated()
+        && sgIsNotSuspended(request.auth.uid)
+        && validFlatStudyLog(request.resource.data);
+      allow delete: if false;
+    }
+
+    // ---- 2c. 分野別学習時間サマリー集計（eiken_study_summaries/{uid}） ----
+    match /eiken_study_summaries/{uid} {
+      function validStudySummary(d) {
+        return d.keys().hasOnly([
+            'uid', 'totalActiveSeconds', 'weekActiveSeconds', 'weeklyActiveSeconds', 'todayActiveSeconds',
+            'byGradeSkill', 'byGradeSkillTotal', 'solvedCount', 'solvedTotal',
+            'lastActiveAt', 'lastDateKey', 'lastActiveDateKey', 'updatedAt'
+          ])
+          && d.keys().hasAll(['uid', 'totalActiveSeconds', 'updatedAt'])
+          && d.uid == uid
+          && d.totalActiveSeconds is int && d.totalActiveSeconds >= 0 && d.totalActiveSeconds <= 315360000
+          && (!('weekActiveSeconds' in d) || (d.weekActiveSeconds is int && d.weekActiveSeconds >= 0 && d.weekActiveSeconds <= 604800))
+          && (!('weeklyActiveSeconds' in d) || (d.weeklyActiveSeconds is int && d.weeklyActiveSeconds >= 0 && d.weeklyActiveSeconds <= 604800))
+          && (!('todayActiveSeconds' in d) || (d.todayActiveSeconds is int && d.todayActiveSeconds >= 0 && d.todayActiveSeconds <= 86400))
+          && (!('byGradeSkill' in d) || (d.byGradeSkill is map && d.byGradeSkill.size() <= 80))
+          && (!('byGradeSkillTotal' in d) || (d.byGradeSkillTotal is map && d.byGradeSkillTotal.size() <= 80))
+          && (!('solvedCount' in d) || (d.solvedCount is int && d.solvedCount >= 0 && d.solvedCount <= 1000000))
+          && (!('solvedTotal' in d) || (d.solvedTotal is int && d.solvedTotal >= 0 && d.solvedTotal <= 1000000))
+          && (!('lastActiveAt' in d) || (d.lastActiveAt is int && d.lastActiveAt >= 0))
+          && (!('lastDateKey' in d) || (d.lastDateKey is string && d.lastDateKey.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+          && (!('lastActiveDateKey' in d) || (d.lastActiveDateKey is string && d.lastActiveDateKey.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+          && (d.updatedAt == request.time || (d.updatedAt is int && d.updatedAt > 0));
+      }
+
+      allow get: if isOwner(uid) || sgCanReadStudentLogs(uid);
+      allow list: if false;
+      allow create, update: if isOwner(uid) && sgIsNotSuspended(uid) && validStudySummary(request.resource.data);
+      allow delete: if false;
+    }
+
+    // ---- 3. 日次/週次 宿題サブコレクション（eiken_classrooms/{classId}/assignments/{assignmentId}） ----
+    match /eiken_classrooms/{classId}/assignments/{assignmentId} {
+      function validSkillBreakdown(sb) {
+        return sb is map
+          && sb.keys().hasOnly(['reading', 'listening', 'vocab', 'writing', 'speaking'])
+          && (!('reading' in sb) || (sb.reading is int && sb.reading >= 0 && sb.reading <= 500))
+          && (!('listening' in sb) || (sb.listening is int && sb.listening >= 0 && sb.listening <= 500))
+          && (!('vocab' in sb) || (sb.vocab is int && sb.vocab >= 0 && sb.vocab <= 2000))
+          && (!('writing' in sb) || (sb.writing is int && sb.writing >= 0 && sb.writing <= 50))
+          && (!('speaking' in sb) || (sb.speaking is int && sb.speaking >= 0 && sb.speaking <= 50));
+      }
+
+      function validSugorokuAssignment(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek',
+            'createdAt', 'updatedAt'
+          ])
+          && d.keys().hasAll(['title', 'chapterIds', 'dueAt'])
+          && (!('classId' in d) || d.classId == classId)
+          && (!('teacherUid' in d) || d.teacherUid == request.auth.uid)
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 80
+          && d.chapterIds is list && d.chapterIds.size() >= 1 && d.chapterIds.size() <= 30
+          && d.dueAt is int && d.dueAt > 0
+          && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
+          && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
+          && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('skillBreakdown' in d) || validSkillBreakdown(d.skillBreakdown))
+          && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
+          && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && dataPresetWeekValid(d.presetWeek)));
+      }
+
+      function dataPresetWeekValid(w) {
+        return w <= 24;
+      }
+
+      // 個別配信（targetStudentUids 指定あり）の場合は対象生徒本人のみ閲覧可、未指定/空なら在籍生徒全員閲覧可
+      function studentCanReadAssignment(d) {
+        return isAuthenticated()
+          && sgIsJukuClass(classId)
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+          && sgIsNotSuspended(request.auth.uid)
+          && (
+            !('targetStudentUids' in d)
+            || d.targetStudentUids.size() == 0
+            || request.auth.uid in d.targetStudentUids
+          );
+      }
+
+      allow get, list: if sgCanManageClass(classId) || studentCanReadAssignment(resource.data);
+      allow create, update: if sgCanManageClass(classId) && validSugorokuAssignment(request.resource.data);
+      allow delete: if sgCanManageClass(classId);
+    }
+
+    // ---- 3b. 日次/週次 宿題トップレベル拡張プラン（eiken_sugoroku_homework_plans/{assignmentId}：AI 2 homeworkStore 互換） ----
+    match /eiken_sugoroku_homework_plans/{assignmentId} {
+      function validHomeworkPlanBreakdown(sb) {
+        return sb is map
+          && sb.keys().hasOnly(['reading', 'listening', 'vocab', 'writing', 'speaking'])
+          && (!('reading' in sb) || (sb.reading is int && sb.reading >= 0 && sb.reading <= 500))
+          && (!('listening' in sb) || (sb.listening is int && sb.listening >= 0 && sb.listening <= 500))
+          && (!('vocab' in sb) || (sb.vocab is int && sb.vocab >= 0 && sb.vocab <= 2000))
+          && (!('writing' in sb) || (sb.writing is int && sb.writing >= 0 && sb.writing <= 50))
+          && (!('speaking' in sb) || (sb.speaking is int && sb.speaking >= 0 && sb.speaking <= 50));
+      }
+
+      function validHomeworkPlanDoc(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'presetId', 'presetWeek', 'createdAt', 'updatedAt'
+          ])
+          && d.keys().hasAll(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt'])
+          && (!('id' in d) || d.id == assignmentId)
+          && d.classId is string && d.classId.size() > 0 && d.classId.size() <= 80
+          && d.teacherUid == request.auth.uid
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 80
+          && d.chapterIds is list && d.chapterIds.size() >= 1 && d.chapterIds.size() <= 30
+          && d.dueAt is int && d.dueAt > 0
+          && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
+          && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
+          && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('skillBreakdown' in d) || validHomeworkPlanBreakdown(d.skillBreakdown))
+          && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
+          && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && d.presetWeek <= 24));
+      }
+
+      allow get, list: if isAuthenticated()
+        && resource != null
+        && (
+          sgCanManageClass(resource.data.classId)
+          || (
+            sgIsJukuClass(resource.data.classId)
+            && sgIsEnrolledInClass(resource.data.classId, request.auth.uid)
+            && sgIsNotSuspended(request.auth.uid)
+            && (
+              !('targetStudentUids' in resource.data)
+              || resource.data.targetStudentUids.size() == 0
+              || request.auth.uid in resource.data.targetStudentUids
+            )
+          )
+        );
+
+      allow create, update: if validHomeworkPlanDoc(request.resource.data)
+        && sgCanManageClass(request.resource.data.classId);
+
+      allow delete: if resource != null && sgCanManageClass(resource.data.classId);
+    }
+
+    // ---- 4. ライティング提出＆講師添削返却（eiken_classrooms/{classId}/writing_submissions/{submissionId}） ----
+    match /eiken_classrooms/{classId}/writing_submissions/{submissionId} {
+      function validWritingSubmissionBase(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'studentUid', 'studentName', 'grade', 'taskKey',
+            'taskTitle', 'promptSummary',
+            'wordCount', 'text', 'formatWarnings', 'status', 'submittedAt', 'review'
+          ])
+          && d.keys().hasAll([
+            'studentUid', 'studentName', 'grade', 'taskKey',
+            'wordCount', 'text', 'formatWarnings', 'status', 'submittedAt'
+          ])
+          && (!('classId' in d) || d.classId == classId)
+          && d.studentUid is string && d.studentUid.size() > 0 && d.studentUid.size() <= 128
+          && d.studentName is string && d.studentName.size() > 0 && d.studentName.size() <= 40
+          && sgIsAllEikenGrade(d.grade)
+          && d.taskKey is string && d.taskKey.size() > 0 && d.taskKey.size() <= 100
+          && (!('taskTitle' in d) || (d.taskTitle is string && d.taskTitle.size() <= 160))
+          && (!('promptSummary' in d) || (d.promptSummary is string && d.promptSummary.size() <= 600))
+          && d.wordCount is int && d.wordCount >= 0 && d.wordCount <= 2000
+          && d.text is string && d.text.size() > 0 && d.text.size() <= 12000
+          && d.formatWarnings is list && d.formatWarnings.size() <= 30
+          && d.status in ['submitted', 'reviewed'];
+      }
+
+      function validWritingReview(r) {
+        return r is map
+          && r.keys().hasOnly([
+            'reviewerUid', 'reviewerName', 'score', 'maxScore',
+            'rubricScores', 'comment', 'correctedText', 'reviewedAt'
+          ])
+          && r.keys().hasAll(['reviewerUid', 'score', 'comment', 'reviewedAt'])
+          && r.reviewerUid == request.auth.uid
+          && (!('reviewerName' in r) || (r.reviewerName is string && r.reviewerName.size() <= 40))
+          && r.score is number && r.score >= 0 && r.score <= 100
+          && (!('maxScore' in r) || (r.maxScore is number && r.maxScore >= 1 && r.maxScore <= 100))
+          && (!('rubricScores' in r) || (r.rubricScores is map && r.rubricScores.size() <= 8))
+          && r.comment is string && r.comment.size() <= 8000
+          && (!('correctedText' in r) || (r.correctedText is string && r.correctedText.size() <= 12000))
+          && (r.reviewedAt == request.time || (r.reviewedAt is int && r.reviewedAt > 0));
+      }
+
+      allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
+        || sgCanManageClass(classId);
+
+      // 生徒本人による初回提出：在籍塾クラスのみ、退塾停止中は不可、review は付けられない
+      allow create: if isAuthenticated()
+        && sgIsJukuClass(classId)
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid)
+        && validWritingSubmissionBase(request.resource.data)
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.status == 'submitted'
+        && !('review' in request.resource.data)
+        && (request.resource.data.submittedAt == request.time || (request.resource.data.submittedAt is int && request.resource.data.submittedAt > 0));
+
+      // 更新：
+      //   A) 生徒本人が未添削（status == 'submitted'）の間だけ答案を再提出する場合（review 付与は不可）
+      //   B) 担当講師が添削結果（review）を書き込み status == 'reviewed' にする場合（生徒の答案本文・語数・studentUid 等は改変不可）
+      allow update: if resource != null
+        && validWritingSubmissionBase(request.resource.data)
+        && request.resource.data.studentUid == resource.data.studentUid
+        && (
+          (
+            isAuthenticated()
+            && resource.data.studentUid == request.auth.uid
+            && resource.data.status == 'submitted'
+            && request.resource.data.status == 'submitted'
+            && !('review' in request.resource.data)
+            && sgIsJukuClass(classId)
+            && sgIsEnrolledInClass(classId, request.auth.uid)
+            && sgIsNotSuspended(request.auth.uid)
+          )
+          || (
+            request.resource.data.status == 'reviewed'
+            && 'review' in request.resource.data
+            && request.resource.data.grade == resource.data.grade
+            && request.resource.data.taskKey == resource.data.taskKey
+            && request.resource.data.wordCount == resource.data.wordCount
+            && request.resource.data.text == resource.data.text
+            && request.resource.data.formatWarnings == resource.data.formatWarnings
+            && request.resource.data.submittedAt == resource.data.submittedAt
+            && validWritingReview(request.resource.data.review)
+            && sgCanManageClass(classId)
+          )
+        );
+
+      allow delete: if isAuthenticated()
+        && resource.data.studentUid == request.auth.uid
+        && resource.data.status == 'submitted';
+    }
+
+    // ---- 5. S-CBT スピーキング録音提出＆評価（eiken_classrooms/{classId}/speaking_submissions/{submissionId}） ----
+    match /eiken_classrooms/{classId}/speaking_submissions/{submissionId} {
+      function validRecordingEntry(rec, uid) {
+        return rec is map
+          && rec.keys().hasOnly(['partId', 'storagePath', 'downloadUrl', 'mimeType', 'durationSec'])
+          && rec.partId in ['reading_aloud', 'q1', 'q2', 'q3', 'q4']
+          && rec.storagePath is string
+          && rec.storagePath.matches('^(eiken_)?sugoroku_speaking/' + classId + '/' + uid + '/' + submissionId + '/(reading_aloud|q1|q2|q3|q4)\\.(webm|m4a|mp4)$')
+          && (!('downloadUrl' in rec) || (rec.downloadUrl is string && rec.downloadUrl.size() <= 1024))
+          && rec.mimeType is string
+          && rec.mimeType.matches('^(audio/(webm|mp4|x-m4a|m4a|aac|mpeg)|video/mp4)(;.*)?$')
+          && rec.durationSec is number && rec.durationSec > 0 && rec.durationSec <= 300;
+      }
+
+      // recordings 配列（1〜5パート）の検証
+      function validRecordingsList(list, uid) {
+        return list is list
+          && list.size() >= 1 && list.size() <= 5
+          && validRecordingEntry(list[0], uid)
+          && (list.size() < 2 || validRecordingEntry(list[1], uid))
+          && (list.size() < 3 || validRecordingEntry(list[2], uid))
+          && (list.size() < 4 || validRecordingEntry(list[3], uid))
+          && (list.size() < 5 || validRecordingEntry(list[4], uid));
+      }
+
+      function validSpeakingSubmissionMeta(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'studentUid', 'studentName', 'grade', 'setId', 'setTitle',
+            'recordings', 'status', 'submittedAt', 'review'
+          ])
+          && d.keys().hasAll([
+            'studentUid', 'studentName', 'grade', 'setId',
+            'recordings', 'status', 'submittedAt'
+          ])
+          && (!('classId' in d) || d.classId == classId)
+          && d.studentUid is string && d.studentUid.size() > 0 && d.studentUid.size() <= 128
+          && d.studentName is string && d.studentName.size() > 0 && d.studentName.size() <= 40
+          && sgIsAllEikenGrade(d.grade)
+          && d.setId is string && d.setId.size() > 0 && d.setId.size() <= 100
+          && (!('setTitle' in d) || (d.setTitle is string && d.setTitle.size() <= 160))
+          && d.status in ['submitted', 'reviewed'];
+      }
+
+      function validSpeakingReview(r) {
+        return r is map
+          && r.keys().hasOnly(['reviewerUid', 'reviewerName', 'rubricScores', 'comment', 'reviewedAt'])
+          && r.keys().hasAll(['reviewerUid', 'rubricScores', 'comment', 'reviewedAt'])
+          && r.reviewerUid == request.auth.uid
+          && (!('reviewerName' in r) || (r.reviewerName is string && r.reviewerName.size() <= 40))
+          && r.rubricScores is map && r.rubricScores.size() <= 10
+          && r.comment is string && r.comment.size() <= 8000
+          && (r.reviewedAt == request.time || (r.reviewedAt is int && r.reviewedAt > 0));
+      }
+
+      allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
+        || sgCanManageClass(classId);
+
+      allow create: if isAuthenticated()
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.status == 'submitted'
+        && !('review' in request.resource.data)
+        && validSpeakingSubmissionMeta(request.resource.data)
+        && validRecordingsList(request.resource.data.recordings, request.auth.uid)
+        && (request.resource.data.submittedAt == request.time || (request.resource.data.submittedAt is int && request.resource.data.submittedAt > 0))
+        && sgIsJukuClass(classId)
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid);
+
+      allow update: if resource != null
+        && sgIsJukuClass(classId)
+        && validSpeakingSubmissionMeta(request.resource.data)
+        && request.resource.data.studentUid == resource.data.studentUid
+        && request.resource.data.grade == resource.data.grade
+        && request.resource.data.setId == resource.data.setId
+        && (
+          (
+            isAuthenticated()
+            && resource.data.studentUid == request.auth.uid
+            && resource.data.status == 'submitted'
+            && request.resource.data.status == 'submitted'
+            && !('review' in request.resource.data)
+            && (
+              request.resource.data.recordings == resource.data.recordings
+              || validRecordingsList(request.resource.data.recordings, request.auth.uid)
+            )
+            && sgIsEnrolledInClass(classId, request.auth.uid)
+            && sgIsNotSuspended(request.auth.uid)
+          )
+          || (
+            request.resource.data.status == 'reviewed'
+            && 'review' in request.resource.data
+            && request.resource.data.recordings == resource.data.recordings
+            && request.resource.data.submittedAt == resource.data.submittedAt
+            && validSpeakingReview(request.resource.data.review)
+            && sgCanManageClass(classId)
+          )
+        );
+
+      allow delete: if isAuthenticated()
+        && resource.data.studentUid == request.auth.uid
+        && resource.data.status == 'submitted';
     }
 
 // ###################################################################

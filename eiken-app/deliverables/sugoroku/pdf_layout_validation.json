@@ -1,0 +1,719 @@
+{
+  "status": "PASS",
+  "totalDocuments": 5,
+  "totalPagesVerified": 83,
+  "zeroOverlapVerified": true,
+  "zeroOutOfBoundsVerified": true,
+  "grayscalePrintReady": true,
+  "documents": [
+    {
+      "file": "sugoroku_eiken2_12week_curriculum_route.pdf",
+      "sizeKB": 235.9,
+      "pages": 6,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1505,
+          "lineCount": 57,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 1655,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 1553,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 1669,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 1353,
+          "lineCount": 73,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 967,
+          "lineCount": 94,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    },
+    {
+      "file": "sugoroku_eiken2_weekly_vocab_tests_12w.pdf",
+      "sizeKB": 552.7,
+      "pages": 26,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1274,
+          "lineCount": 94,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 2881,
+          "lineCount": 113,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 3275,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 2981,
+          "lineCount": 113,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 3281,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 3229,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 7,
+          "charCount": 2787,
+          "lineCount": 111,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 8,
+          "charCount": 3382,
+          "lineCount": 116,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 9,
+          "charCount": 3168,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 10,
+          "charCount": 3139,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 11,
+          "charCount": 3215,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 12,
+          "charCount": 3208,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 13,
+          "charCount": 3271,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 14,
+          "charCount": 2425,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 15,
+          "charCount": 2885,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 16,
+          "charCount": 2876,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 17,
+          "charCount": 2891,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 18,
+          "charCount": 2934,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 19,
+          "charCount": 2748,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 20,
+          "charCount": 2940,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 21,
+          "charCount": 2922,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 22,
+          "charCount": 2874,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 23,
+          "charCount": 2869,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 24,
+          "charCount": 2938,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 25,
+          "charCount": 3009,
+          "lineCount": 155,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 26,
+          "charCount": 1798,
+          "lineCount": 130,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    },
+    {
+      "file": "sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf",
+      "sizeKB": 550.1,
+      "pages": 25,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1500,
+          "lineCount": 95,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 2297,
+          "lineCount": 107,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 3068,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 3189,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 3230,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 3328,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 7,
+          "charCount": 3106,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 8,
+          "charCount": 3326,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 9,
+          "charCount": 3319,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 10,
+          "charCount": 3037,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 11,
+          "charCount": 3127,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 12,
+          "charCount": 3196,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 13,
+          "charCount": 3285,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 14,
+          "charCount": 2410,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 15,
+          "charCount": 2869,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 16,
+          "charCount": 2860,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 17,
+          "charCount": 2878,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 18,
+          "charCount": 2920,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 19,
+          "charCount": 2733,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 20,
+          "charCount": 2926,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 21,
+          "charCount": 2903,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 22,
+          "charCount": 2859,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 23,
+          "charCount": 2854,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 24,
+          "charCount": 2923,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 25,
+          "charCount": 2993,
+          "lineCount": 155,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    },
+    {
+      "file": "sugoroku_pre2plus_bridge_4week_pack.pdf",
+      "sizeKB": 448.7,
+      "pages": 18,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1227,
+          "lineCount": 70,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 2157,
+          "lineCount": 98,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 2533,
+          "lineCount": 112,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 3087,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 3081,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 3053,
+          "lineCount": 114,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 7,
+          "charCount": 2795,
+          "lineCount": 113,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 8,
+          "charCount": 3194,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 9,
+          "charCount": 3222,
+          "lineCount": 116,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 10,
+          "charCount": 3259,
+          "lineCount": 115,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 11,
+          "charCount": 2470,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 12,
+          "charCount": 2928,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 13,
+          "charCount": 2882,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 14,
+          "charCount": 2851,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 15,
+          "charCount": 2530,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 16,
+          "charCount": 2890,
+          "lineCount": 153,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 17,
+          "charCount": 2945,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 18,
+          "charCount": 2954,
+          "lineCount": 152,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    },
+    {
+      "file": "sugoroku_eiken2_scbt_writing_speaking_handbook.pdf",
+      "sizeKB": 243.5,
+      "pages": 8,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1050,
+          "lineCount": 40,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 1402,
+          "lineCount": 46,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 1424,
+          "lineCount": 55,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 1473,
+          "lineCount": 43,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 2150,
+          "lineCount": 106,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 1890,
+          "lineCount": 99,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 7,
+          "charCount": 1846,
+          "lineCount": 98,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 8,
+          "charCount": 1811,
+          "lineCount": 98,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    }
+  ]
+}
