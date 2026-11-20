@@ -1,5 +1,5 @@
 /**
- * すごろく塾 管理者ポータル（エッセンシャル設計）
+ * すごろく塾 管理者ポータル（エッセンシャル設計 ＆ AI 1〜AI 5 完全統合版）
  * 説明文・装飾色・重複ウィジェットを排し、必要な数値と操作だけを一瞥で扱う。
  */
 
@@ -10,14 +10,20 @@ import {
   Copy,
   Download,
   Eye,
+  Link2,
   LogIn,
   LogOut,
   MessageCircle,
+  Plus,
   RefreshCw,
   Users,
 } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
-import { signInWithGoogle, signOutGoogle } from '../../utils/googleAuth';
+import {
+  consumeGoogleRedirectResult,
+  signInWithGoogle,
+  signOutGoogle,
+} from '../../utils/googleAuth';
 import { PdfViewerHost } from '../../components/PdfViewer';
 import { CountUp } from '../../components/ui/CountUp';
 import {
@@ -28,7 +34,7 @@ import {
 } from '../../components/ui';
 import { KineticText, ScoreRing, installRipple } from '../../motion';
 import type { ClassroomDoc } from '../../utils/classroomCore';
-import type { EikenGrade } from '../../eiken/config';
+import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
 import type {
   SugorokuAdminExtensionSlots,
   SugorokuStaffInviteDoc,
@@ -45,6 +51,7 @@ import {
 import { createSugorokuDemoBundle, type SugorokuDemoBundle } from './demoData';
 import {
   buildStaffInviteId,
+  createSugorokuPortalClassroom,
   fetchManageableClassrooms,
   inviteSugorokuStaff,
   isEmailPreAuthorizedAdmin,
@@ -100,6 +107,11 @@ export function SugorokuAdminApp({
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [staffSheetOpen, setStaffSheetOpen] = useState(false);
+  const [createClassSheetOpen, setCreateClassSheetOpen] = useState(false);
+  const [newSchoolName, setNewSchoolName] = useState('オンライン個別指導塾 すごろく');
+  const [newClassName, setNewClassName] = useState('英検2級 合格クラス');
+  const [newSubject, setNewSubject] = useState<EikenGrade>('eiken_2');
+  const [creatingClass, setCreatingClass] = useState(false);
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [onlyAlerts, setOnlyAlerts] = useState(false);
 
@@ -124,37 +136,42 @@ export function SugorokuAdminApp({
 
   useEffect(() => {
     if (!FIREBASE_CONFIGURED) return;
+    void consumeGoogleRedirectResult();
     return onAuthStateChanged(auth, (current) => setUser(current));
   }, []);
 
-  const reloadLiveClasses = useCallback(async () => {
-    if (!FIREBASE_CONFIGURED || !auth.currentUser) {
-      setClassrooms([]);
-      setLivePortalData(null);
-      return;
-    }
-    setLoadingLive(true);
-    setLiveError(null);
-    try {
-      const rooms = await fetchManageableClassrooms();
-      setClassrooms(rooms);
-      if (rooms.length > 0) {
-        const nextRoom = rooms.find((r) => r.id === activeClassId) ?? rooms[0];
-        setActiveClassId(nextRoom.id);
-        const portal = await loadClassPortalData(nextRoom);
-        setLivePortalData(portal);
-        if (initialDataMode === 'auto') {
-          setDataMode('firestore');
-        }
-      } else {
+  const reloadLiveClasses = useCallback(
+    async (preferredClassId?: string) => {
+      if (!FIREBASE_CONFIGURED || !auth.currentUser) {
+        setClassrooms([]);
         setLivePortalData(null);
+        return;
       }
-    } catch (e) {
-      setLiveError(e instanceof Error ? e.message : 'データの取得に失敗しました');
-    } finally {
-      setLoadingLive(false);
-    }
-  }, [activeClassId, initialDataMode]);
+      setLoadingLive(true);
+      setLiveError(null);
+      try {
+        const rooms = await fetchManageableClassrooms();
+        setClassrooms(rooms);
+        if (rooms.length > 0) {
+          const targetId = preferredClassId ?? activeClassId;
+          const nextRoom = rooms.find((r) => r.id === targetId) ?? rooms[0];
+          setActiveClassId(nextRoom.id);
+          const portal = await loadClassPortalData(nextRoom);
+          setLivePortalData(portal);
+          if (initialDataMode === 'auto') {
+            setDataMode('firestore');
+          }
+        } else {
+          setLivePortalData(null);
+        }
+      } catch (e) {
+        setLiveError(e instanceof Error ? e.message : 'データの取得に失敗しました');
+      } finally {
+        setLoadingLive(false);
+      }
+    },
+    [activeClassId, initialDataMode],
+  );
 
   useEffect(() => {
     if (user && FIREBASE_CONFIGURED) {
@@ -179,7 +196,11 @@ export function SugorokuAdminApp({
     try {
       if (dataMode === 'demo') {
         await new Promise((r) => window.setTimeout(r, 360));
-        setDemoBundle((prev) => ({ ...createSugorokuDemoBundle(), members: prev.members }));
+        setDemoBundle((prev) => ({
+          ...createSugorokuDemoBundle(),
+          members: prev.members,
+          staffInvites: prev.staffInvites,
+        }));
       } else {
         await reloadLiveClasses();
       }
@@ -203,6 +224,29 @@ export function SugorokuAdminApp({
       setLiveError(e instanceof Error ? e.message : '読み込みに失敗しました');
     } finally {
       setLoadingLive(false);
+    }
+  };
+
+  const handleCreateClassroom = async () => {
+    if (!newClassName.trim()) {
+      showToast('クラス名を入力してください', 'warn');
+      return;
+    }
+    setCreatingClass(true);
+    setLiveError(null);
+    try {
+      const created = await createSugorokuPortalClassroom({
+        schoolName: newSchoolName.trim() || 'オンライン個別指導塾 すごろく',
+        className: newClassName.trim(),
+        subject: newSubject,
+      });
+      setCreateClassSheetOpen(false);
+      await reloadLiveClasses(created.id);
+      showToast(`クラスを作成しました（コード: ${created.joinCode}）`, 'done');
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'クラス作成に失敗しました', 'warn');
+    } finally {
+      setCreatingClass(false);
     }
   };
 
@@ -375,18 +419,24 @@ export function SugorokuAdminApp({
     await reloadLiveClasses();
   };
 
-  const handleInviteStaff = async (params: { email: string; staffName: string }) => {
+  const handleInviteStaff = async (params: {
+    email: string;
+    staffName: string;
+    staffUid?: string;
+  }) => {
     if (dataMode === 'demo') {
       const now = Date.now();
+      const key = params.email || params.staffUid || String(now);
       const next: SugorokuStaffInviteDoc = {
-        id: buildStaffInviteId(demoBundle.classId, params.email),
+        id: buildStaffInviteId(demoBundle.classId, key),
         classId: demoBundle.classId,
         className: demoBundle.className,
         schoolName: demoBundle.schoolName,
-        email: params.email,
+        email: params.email || `UID: ${params.staffUid}`,
         staffName: params.staffName,
         role: 'staff',
-        status: 'invited',
+        status: params.staffUid ? 'active' : 'invited',
+        ...(params.staffUid ? { acceptedUid: params.staffUid } : {}),
         invitedByUid: 'teacher_sugoroku_nishi',
         createdAt: now,
         updatedAt: now,
@@ -406,6 +456,7 @@ export function SugorokuAdminApp({
       },
       email: params.email,
       staffName: params.staffName,
+      staffUid: params.staffUid,
     });
     await reloadLiveClasses();
   };
@@ -423,11 +474,25 @@ export function SugorokuAdminApp({
     await reloadLiveClasses();
   };
 
+  const handleCopyStudentInviteLink = async () => {
+    if (!sourceInfo.joinCode) return;
+    const url =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/?sugoroku_invite=${encodeURIComponent(sourceInfo.joinCode)}`
+        : `/?sugoroku_invite=${sourceInfo.joinCode}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(`招待URL（${sourceInfo.joinCode}）をコピーしました`, 'done');
+    } catch {
+      showToast('コピーできませんでした', 'warn');
+    }
+  };
+
   const handleCopyJoinCode = async () => {
     if (!sourceInfo.joinCode) return;
     try {
       await navigator.clipboard.writeText(sourceInfo.joinCode);
-      showToast(`招待コード ${sourceInfo.joinCode} をコピーしました`, 'done');
+      showToast(`コード ${sourceInfo.joinCode} をコピーしました`, 'done');
     } catch {
       showToast('コピーできませんでした', 'warn');
     }
@@ -455,8 +520,8 @@ export function SugorokuAdminApp({
     }
   };
 
-  const isAuthorizedForLive =
-    !!user && (classrooms.length > 0 || isEmailPreAuthorizedAdmin(user.email));
+  const isPreAuthorizedOwner = !!user && isEmailPreAuthorizedAdmin(user.email);
+  const isAuthorizedForLive = !!user && (classrooms.length > 0 || isPreAuthorizedOwner);
 
   const showSkeleton =
     skeletonTransition || (dataMode === 'firestore' && loadingLive && !livePortalData);
@@ -478,15 +543,26 @@ export function SugorokuAdminApp({
 
             <div className="sg-head-tools">
               {sourceInfo.joinCode && (
-                <button
-                  type="button"
-                  className="sg-code-btn"
-                  onClick={() => void handleCopyJoinCode()}
-                  title="招待コードをコピー"
-                >
-                  <Copy size={13} aria-hidden="true" />
-                  {sourceInfo.joinCode}
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="sg-code-btn"
+                    onClick={() => void handleCopyJoinCode()}
+                    title="招待コードをコピー"
+                  >
+                    <Copy size={13} aria-hidden="true" />
+                    {sourceInfo.joinCode}
+                  </button>
+                  <button
+                    type="button"
+                    className="sg-icon-btn"
+                    onClick={() => void handleCopyStudentInviteLink()}
+                    aria-label="生徒招待リンクをコピー"
+                    title="生徒招待URL（自動入力リンク）をコピー"
+                  >
+                    <Link2 size={15} />
+                  </button>
+                </>
               )}
 
               {sourceInfo.classId && (
@@ -607,15 +683,37 @@ export function SugorokuAdminApp({
           {showSkeleton ? (
             <PortalSkeletonScreen rows={5} />
           ) : dataMode === 'firestore' && !FIREBASE_CONFIGURED ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center' }}>
-              <p className="mt-body" style={{ margin: 0 }}>クラウド接続が未設定です。</p>
+            <Card
+              style={{
+                textAlign: 'center',
+                padding: '24px 18px',
+                display: 'grid',
+                gap: 12,
+                justifyItems: 'center',
+              }}
+            >
+              <p className="mt-body" style={{ margin: 0 }}>
+                クラウド接続が未設定です。
+              </p>
               <SecondaryButton onClick={() => switchDataMode('demo')}>
                 デモ表示へ戻る
               </SecondaryButton>
             </Card>
           ) : dataMode === 'firestore' && !user ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center', maxWidth: 420, margin: '0 auto' }}>
-              <h2 className="mt-h2" style={{ margin: 0 }}>講師ログイン</h2>
+            <Card
+              style={{
+                textAlign: 'center',
+                padding: '24px 18px',
+                display: 'grid',
+                gap: 12,
+                justifyItems: 'center',
+                maxWidth: 420,
+                margin: '0 auto',
+              }}
+            >
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                講師ログイン
+              </h2>
               {liveError && <p className="slog-error">{liveError}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <PrimaryButton
@@ -631,17 +729,98 @@ export function SugorokuAdminApp({
               </div>
             </Card>
           ) : dataMode === 'firestore' && !loadingLive && !isAuthorizedForLive ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 10, justifyItems: 'center' }}>
+            <Card
+              style={{
+                textAlign: 'center',
+                padding: '24px 18px',
+                display: 'grid',
+                gap: 10,
+                justifyItems: 'center',
+              }}
+            >
               <p className="mt-body" style={{ margin: 0 }}>
                 担当クラスが見つかりません（{user?.email}）
               </p>
+              {user?.uid && (
+                <SecondaryButton
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(user.uid);
+                      showToast('UIDをコピーしました。代表講師へ共有してください', 'done');
+                    } catch {
+                      showToast('コピーできませんでした', 'warn');
+                    }
+                  }}
+                  icon={<Copy size={14} aria-hidden="true" />}
+                >
+                  自分の講師UIDをコピー
+                </SecondaryButton>
+              )}
               <SecondaryButton onClick={() => switchDataMode('demo')}>
                 デモ表示へ戻る
               </SecondaryButton>
             </Card>
+          ) : dataMode === 'firestore' &&
+            !loadingLive &&
+            classrooms.length === 0 &&
+            activeTab !== 'pdf_shelf' ? (
+            <Card
+              style={{
+                maxWidth: 460,
+                margin: '0 auto',
+                padding: '22px 18px',
+                display: 'grid',
+                gap: 12,
+              }}
+            >
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                最初の塾クラスを作成
+              </h2>
+              <div className="slog-form">
+                <label className="f">
+                  <span>塾名</span>
+                  <input
+                    type="text"
+                    value={newSchoolName}
+                    onChange={(e) => setNewSchoolName(e.target.value)}
+                  />
+                </label>
+                <div className="row">
+                  <label className="f">
+                    <span>クラス名</span>
+                    <input
+                      type="text"
+                      value={newClassName}
+                      onChange={(e) => setNewClassName(e.target.value)}
+                    />
+                  </label>
+                  <label className="f">
+                    <span>標準対象級</span>
+                    <select
+                      value={newSubject}
+                      onChange={(e) => setNewSubject(e.target.value as EikenGrade)}
+                    >
+                      {[...EIKEN_GRADES].reverse().map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <PrimaryButton
+                  block
+                  disabled={creatingClass || !newClassName.trim()}
+                  onClick={() => void handleCreateClassroom()}
+                  icon={<Plus size={15} aria-hidden="true" />}
+                >
+                  {creatingClass ? '作成中…' : 'クラスを作成（招待コード発行）'}
+                </PrimaryButton>
+              </div>
+            </Card>
           ) : (
             <>
-              {dataMode === 'firestore' && classrooms.length > 1 && (
+              {dataMode === 'firestore' && (classrooms.length > 1 || isPreAuthorizedOwner) && (
                 <div className="sg-chip-group" role="group" aria-label="クラス">
                   {classrooms.map((room) => (
                     <button
@@ -654,6 +833,15 @@ export function SugorokuAdminApp({
                       {room.className}
                     </button>
                   ))}
+                  {isPreAuthorizedOwner && (
+                    <button
+                      type="button"
+                      className="sg-chip"
+                      onClick={() => setCreateClassSheetOpen(true)}
+                    >
+                      ＋ クラス追加
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -662,6 +850,9 @@ export function SugorokuAdminApp({
               ) : activeTab === 'writing_review' ? (
                 <SugorokuWritingExtensionSlot
                   classId={sourceInfo.classId}
+                  classNameLabel={sourceInfo.className}
+                  reviewerUid={user?.uid}
+                  reviewerName={user?.displayName || sourceInfo.ownerName}
                   isDemoMode={sourceInfo.isDemo}
                   submissions={sourceInfo.writingSubmissions}
                   onToast={showToast}
@@ -674,6 +865,9 @@ export function SugorokuAdminApp({
               ) : activeTab === 'speaking_review' ? (
                 <SugorokuSpeakingExtensionSlot
                   classId={sourceInfo.classId}
+                  classNameLabel={sourceInfo.className}
+                  reviewerUid={user?.uid}
+                  reviewerName={user?.displayName || sourceInfo.ownerName}
                   isDemoMode={sourceInfo.isDemo}
                   submissions={sourceInfo.speakingSubmissions}
                   customRender={extensionSlots?.renderSpeakingReviewTab}
@@ -795,7 +989,11 @@ export function SugorokuAdminApp({
 
                   {/* 3. 生徒リスト（遅れ・未学習が自動で上位ソート） */}
                   {filteredStudents.length === 0 ? (
-                    <Card className="slog-empty">該当する生徒がいません</Card>
+                    <Card className="slog-empty">
+                      {allStudentOverviews.length === 0 && sourceInfo.joinCode
+                        ? `まだ生徒が参加していません（招待コード: ${sourceInfo.joinCode}）`
+                        : '該当する生徒がいません'}
+                    </Card>
                   ) : (
                     <ul className="sg-student-list sg-stagger">
                       {filteredStudents.map((st) => {
@@ -856,7 +1054,8 @@ export function SugorokuAdminApp({
                                 <div className="sg-row-sub">
                                   <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
                                   <span>
-                                    最終 {st.lastStudiedDateKey ? st.lastStudiedDateKey.slice(5) : '未学習'}
+                                    最終{' '}
+                                    {st.lastStudiedDateKey ? st.lastStudiedDateKey.slice(5) : '未学習'}
                                   </span>
                                 </div>
                               </div>
@@ -981,6 +1180,7 @@ export function SugorokuAdminApp({
         open={staffSheetOpen}
         onClose={() => setStaffSheetOpen(false)}
         viewerRole={sourceInfo.viewerRole}
+        viewerUid={user?.uid}
         ownerName={sourceInfo.ownerName}
         ownerEmail={sourceInfo.ownerEmail}
         staffInvites={sourceInfo.staffInvites}
@@ -988,6 +1188,55 @@ export function SugorokuAdminApp({
         onRevokeStaff={handleRevokeStaff}
         onToast={showToast}
       />
+
+      {/* Bottom Sheet：追加クラス作成 */}
+      <SugorokuBottomSheet
+        open={createClassSheetOpen}
+        title="塾クラスを追加"
+        onClose={() => setCreateClassSheetOpen(false)}
+      >
+        <div className="slog-form">
+          <label className="f">
+            <span>塾名</span>
+            <input
+              type="text"
+              value={newSchoolName}
+              onChange={(e) => setNewSchoolName(e.target.value)}
+            />
+          </label>
+          <div className="row">
+            <label className="f">
+              <span>クラス名</span>
+              <input
+                type="text"
+                value={newClassName}
+                onChange={(e) => setNewClassName(e.target.value)}
+              />
+            </label>
+            <label className="f">
+              <span>標準対象級</span>
+              <select
+                value={newSubject}
+                onChange={(e) => setNewSubject(e.target.value as EikenGrade)}
+              >
+                {[...EIKEN_GRADES].reverse().map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <PrimaryButton
+            block
+            disabled={creatingClass || !newClassName.trim()}
+            onClick={() => void handleCreateClassroom()}
+            icon={<Plus size={15} aria-hidden="true" />}
+          >
+            {creatingClass ? '作成中…' : 'クラスを作成'}
+          </PrimaryButton>
+        </div>
+      </SugorokuBottomSheet>
     </div>
   );
 }

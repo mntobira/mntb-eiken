@@ -1,5 +1,12 @@
 /**
- * すごろく塾管理者ポータル：Firestore 実データ取得＆複数講師（owner/staff）管理アダプタ
+ * ===================================================================
+ * すごろく塾管理者ポータル：Firestore 実データ取得 ＆ AI 2 / AI 3 / AI 4 完全連携アダプタ
+ * ===================================================================
+ * - AI 4（PR #50）の `eiken_firestore.rules`・`SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS`・
+ *   `sugoroku_members`（ルート＆クラス別サブコレクション）・`createClassroom + plan:'juku'` と完全整合
+ * - AI 2（PR #49）の宿題3系統（`class_assignments` / `sugoroku_homework_plans` / `classrooms/{id}/assignments`
+ *   ＋ローカルキャッシュ）および学習時間2系統（サブコレクション＆フラット `sugoroku_study_logs`＋ローカル台帳）を統合読取
+ * - AI 3（PR #52）のライティング・スピーキング提出（Firestore＋同一ブラウザローカル提出データ）を統合読取
  */
 
 import { auth, db, FIREBASE_CONFIGURED } from '../../firebase';
@@ -15,17 +22,25 @@ import {
 } from '../../utils/firestoreMetered';
 import {
   CLASSROOMS_COLLECTION,
+  createClassroom,
   fetchClassMembers,
   fetchMyClassrooms,
   setRosterName as setCoreRosterName,
 } from '../../utils/classroom';
-import { resolveRosterName, type ClassroomDoc } from '../../utils/classroomCore';
+import {
+  resolveRosterName,
+  type ClassroomDoc,
+  type ClassroomInput,
+} from '../../utils/classroomCore';
 import { fetchAssignments as fetchLegacyAssignments } from '../../utils/classAssignments';
 import { STUDY_PROGRESS_COLLECTION } from '../../utils/studySync';
 import type { SolvedMap } from '../../utils/studySyncCore';
+import { safeGetItem } from '../../utils/safeLocalStorage';
+import { safeSetItem } from '../../utils/storageGuard';
 import { isEikenGrade, type EikenGrade } from '../../eiken/config';
 import {
   SUGOROKU_COLLECTIONS,
+  SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS,
   type SugorokuAssignmentDoc,
   type SugorokuMemberDoc,
   type SugorokuSpeakingSubmissionDoc,
@@ -46,6 +61,11 @@ export interface LoadedClassPortalData {
   speakingSubmissions: SugorokuSpeakingSubmissionDoc[];
 }
 
+const LOCAL_STAFF_INVITES_KEY = 'eiken:v1:sugoroku_staff_invites';
+const AI2_LOCAL_PLANS_PREFIX = 'sugoroku_homework_plans_v1_';
+const AI3_LOCAL_WRITING_KEY = 'sugoroku_writing_submissions_v1';
+const AI3_LOCAL_SPEAKING_KEY = 'sugoroku_speaking_submissions_v1';
+
 export function normalizeStaffEmail(raw: string): string {
   return (raw || '').trim().toLowerCase();
 }
@@ -59,15 +79,39 @@ export function buildStaffInviteId(classId: string, rawEmail: string): string {
   return `${classId}_${normalizeStaffEmail(rawEmail)}`;
 }
 
-/** 環境変数で事前登録された初期管理者メール一覧 */
-export function getConfiguredAdminEmails(): string[] {
+function readLocalStaffInvites(): SugorokuStaffInviteDoc[] {
+  try {
+    const raw = safeGetItem(LOCAL_STAFF_INVITES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as SugorokuStaffInviteDoc[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalStaffInvites(list: SugorokuStaffInviteDoc[]): void {
+  try {
+    safeSetItem(LOCAL_STAFF_INVITES_KEY, JSON.stringify(list));
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * 事前承認済み講師メール一覧（AI 4 の SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS と完全一致）
+ * `mntobira@gmail.com` と `hirokingz0927@gmail.com` は環境変数未設定でも必ず含まれる。
+ */
+export function getConfiguredAdminEmails(envOverride?: string): string[] {
   const raw =
-    (import.meta.env.VITE_SUGOROKU_ADMIN_EMAILS as string | undefined) ||
-    'mntobira@gmail.com';
-  return raw
+    envOverride !== undefined
+      ? envOverride
+      : (import.meta.env.VITE_SUGOROKU_ADMIN_EMAILS as string | undefined) || '';
+  const extra = raw
     .split(',')
     .map((s) => normalizeStaffEmail(s))
     .filter(Boolean);
+  return Array.from(new Set([...SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS, ...extra]));
 }
 
 export function isEmailPreAuthorizedAdmin(email: string | null | undefined): boolean {
@@ -77,24 +121,105 @@ export function isEmailPreAuthorizedAdmin(email: string | null | undefined): boo
 }
 
 /**
- * 自分が管理可能なクラス一覧を取得（複数講師対応）：
- *  1) 自分が作成したクラス（teacherUid === currentUser.uid）→ role: 'owner'
- *  2) 自分のGoogleメール宛に招待されたクラス（sugoroku_staff_invites）→ 自動で sugoroku_members に昇格し role: 'staff'
+ * 事前承認オーナー（mntobira / hirokingz0927）が初回ログインした際、
+ * AI 4 の `eiken_sugoroku_members/{uid}` (role: 'owner') を自動ブートストラップする。
+ */
+export async function ensureRootInstructorBootstrap(): Promise<SugorokuMemberDoc | null> {
+  if (!FIREBASE_CONFIGURED || !auth.currentUser) return null;
+  const u = auth.currentUser;
+  const uid = u.uid;
+  const email = normalizeStaffEmail(u.email || '');
+
+  try {
+    const existingSnap = await getDoc(doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, uid));
+    if (existingSnap.exists()) {
+      const data = existingSnap.data() as SugorokuMemberDoc;
+      if (data.active === false) return { ...data, uid };
+      if (data.role === 'owner' || data.role === 'staff') {
+        return { ...data, uid };
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  if (u.emailVerified && isEmailPreAuthorizedAdmin(email)) {
+    const payload = {
+      uid,
+      role: 'owner' as const,
+      active: true,
+      adFree: true,
+      ...(email ? { email } : {}),
+      ...(u.displayName ? { displayName: u.displayName.slice(0, 32) } : {}),
+      updatedAt: serverTimestamp(),
+    };
+    try {
+      await setDoc(doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, uid), payload, { merge: true });
+      return {
+        uid,
+        role: 'owner',
+        active: true,
+        adFree: true,
+        email,
+        displayName: u.displayName || undefined,
+      };
+    } catch {
+      return {
+        uid,
+        role: 'owner',
+        active: true,
+        adFree: true,
+        email,
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * 自分が管理可能なクラス一覧を取得（AI 4 ルール完全対応）：
+ *  1) 事前承認オーナーのルート `sugoroku_members/{uid}` 自動ブートストラップ
+ *  2) 自分が作成したクラス（`teacherUid === uid`）
+ *  3) ルート `sugoroku_members/{uid}` の `role: 'owner' | 'staff'` の `classIds` に含まれるクラス
+ *  4) メール招待コレクション（`sugoroku_staff_invites`）経由の招待クラス
  */
 export async function fetchManageableClassrooms(): Promise<ClassroomDoc[]> {
   if (!FIREBASE_CONFIGURED || !auth.currentUser) return [];
-  const uid = auth.currentUser.uid;
   const email = normalizeStaffEmail(auth.currentUser.email || '');
 
   const roomMap = new Map<string, ClassroomDoc>();
 
-  // 1. 自分がオーナー（teacherUid）のクラス
+  const rootMember = await ensureRootInstructorBootstrap();
+  if (rootMember && rootMember.active === false) {
+    return [];
+  }
+
+  // 1. 自分が teacherUid のクラス
   const ownRooms = await fetchMyClassrooms().catch(() => []);
   for (const r of ownRooms) {
     roomMap.set(r.id, r);
   }
 
-  // 2. 自分のメール宛に発行されているスタッフ招待を検索し、未昇格なら sugoroku_members へ自動登録
+  // 2. AI 4 ルート sugoroku_members/{uid} の classIds（staff / owner 割当クラス）
+  if (
+    rootMember &&
+    rootMember.active &&
+    (rootMember.role === 'owner' || rootMember.role === 'staff') &&
+    Array.isArray(rootMember.classIds)
+  ) {
+    await Promise.all(
+      rootMember.classIds.map(async (cid) => {
+        if (!cid || roomMap.has(cid)) return;
+        const snap = await getDoc(doc(db, CLASSROOMS_COLLECTION, cid)).catch(() => null);
+        if (snap && snap.exists()) {
+          roomMap.set(cid, { ...(snap.data() as ClassroomDoc), id: snap.id });
+        }
+      }),
+    );
+  }
+
+  // 3. メール招待コレクション（将来ルール拡張時にもそのまま動くフォールバック）
   if (email) {
     try {
       const invSnap = await getDocs(
@@ -107,60 +232,18 @@ export async function fetchManageableClassrooms(): Promise<ClassroomDoc[]> {
         invSnap.docs.map(async (d) => {
           const inv = d.data() as SugorokuStaffInviteDoc;
           if (!inv.classId || inv.status === 'revoked') return;
-
-          // 初回ログイン時に招待を active 化し、sugoroku_members/{uid} を自動作成
-          if (inv.status === 'invited' || inv.acceptedUid !== uid) {
-            const now = Date.now();
-            await setDoc(
-              doc(
-                db,
-                `${SUGOROKU_COLLECTIONS.classrooms}/${inv.classId}/${SUGOROKU_COLLECTIONS.sugorokuMembers}`,
-                uid,
-              ),
-              {
-                uid,
-                classId: inv.classId,
-                role: 'staff',
-                rosterName: inv.staffName || auth.currentUser?.displayName || email,
-                displayName: auth.currentUser?.displayName || inv.staffName || '',
-                email,
-                targetGrade: 'eiken_2',
-                active: true,
-                adFree: true,
-                joinedAt: now,
-                updatedAt: now,
-                serverUpdatedAt: serverTimestamp(),
-              },
-              { merge: true },
-            ).catch(() => undefined);
-
-            await setDoc(
-              doc(db, SUGOROKU_COLLECTIONS.sugorokuStaffInvites, d.id),
-              {
-                status: 'active',
-                acceptedUid: uid,
-                updatedAt: now,
-                serverUpdatedAt: serverTimestamp(),
-              },
-              { merge: true },
-            ).catch(() => undefined);
-          }
-
           if (!roomMap.has(inv.classId)) {
             const roomSnap = await getDoc(doc(db, CLASSROOMS_COLLECTION, inv.classId)).catch(
               () => null,
             );
             if (roomSnap && roomSnap.exists()) {
-              roomMap.set(inv.classId, {
-                ...(roomSnap.data() as ClassroomDoc),
-                id: roomSnap.id,
-              });
+              roomMap.set(inv.classId, { ...(roomSnap.data() as ClassroomDoc), id: roomSnap.id });
             }
           }
         }),
       );
     } catch {
-      // ルール未反映時はオーナー分のみ返す
+      // AI 4 の標準ルールでは sugoroku_staff_invites 未定義のため静かにスキップ
     }
   }
 
@@ -172,11 +255,110 @@ export async function fetchManageableClassrooms(): Promise<ClassroomDoc[]> {
   });
 }
 
-/** クラスの講師招待一覧を取得 */
+/**
+ * オーナー講師が管理者ポータル内から直接 `plan: 'juku'` のすごろく塾クラスを新規作成する
+ * （AI 4 の `sgIsActiveOwner()` ルールによりコンソール手作業ゼロで `plan: 'juku'` が通る）
+ */
+export async function createSugorokuPortalClassroom(
+  input: ClassroomInput,
+): Promise<ClassroomDoc> {
+  await ensureRootInstructorBootstrap();
+  const created = await createClassroom(input);
+  try {
+    await setDoc(
+      doc(db, CLASSROOMS_COLLECTION, created.id),
+      {
+        plan: 'juku',
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+    return { ...created, plan: 'juku' };
+  } catch {
+    return created;
+  }
+}
+
+/** クラスの講師メンバー＆招待一覧を取得（AI 4 の sugoroku_members と統合） */
 export async function fetchClassStaffInvites(
   classId: string,
+  ownerUid?: string,
 ): Promise<SugorokuStaffInviteDoc[]> {
-  if (!FIREBASE_CONFIGURED || !classId) return [];
+  if (!classId) return [];
+  const byKey = new Map<string, SugorokuStaffInviteDoc>();
+
+  // ローカル保存分
+  for (const inv of readLocalStaffInvites()) {
+    if (inv.classId === classId && inv.status !== 'revoked') {
+      byKey.set(inv.id, inv);
+    }
+  }
+
+  if (!FIREBASE_CONFIGURED) {
+    return [...byKey.values()];
+  }
+
+  // 1) AI 4 ルート sugoroku_members コレクション（オーナーが list 許可されている）
+  try {
+    const rootSnap = await getDocs(collection(db, SUGOROKU_COLLECTIONS.sugorokuMembers));
+    rootSnap.docs.forEach((d) => {
+      const m = d.data() as SugorokuMemberDoc;
+      if (d.id === ownerUid) return;
+      if (m.active === false) return;
+      if (m.role !== 'owner' && m.role !== 'staff') return;
+      if (m.role === 'staff' && Array.isArray(m.classIds) && m.classIds.length > 0) {
+        if (!m.classIds.includes(classId)) return;
+      }
+      const key = `${classId}_${m.email || d.id}`;
+      byKey.set(key, {
+        id: key,
+        classId,
+        email: m.email || `UID: ${d.id}`,
+        staffName: m.rosterName || m.displayName || m.email || d.id.slice(0, 8),
+        role: m.role,
+        status: 'active',
+        acceptedUid: d.id,
+        invitedByUid: ownerUid || '',
+        createdAt: typeof m.joinedAt === 'number' ? m.joinedAt : 0,
+        updatedAt: typeof m.updatedAt === 'number' ? m.updatedAt : 0,
+      });
+    });
+  } catch {
+    // staff ログイン時はルート list が拒否されるためサブコレクション側を見る
+  }
+
+  // 2) クラス別サブコレクション classrooms/{classId}/sugoroku_members
+  try {
+    const subSnap = await getDocs(
+      collection(
+        db,
+        `${SUGOROKU_COLLECTIONS.classrooms}/${classId}/${SUGOROKU_COLLECTIONS.sugorokuMembers}`,
+      ),
+    );
+    subSnap.docs.forEach((d) => {
+      const m = d.data() as SugorokuMemberDoc;
+      if (d.id === ownerUid) return;
+      if (m.active === false) return;
+      if (m.role !== 'owner' && m.role !== 'staff') return;
+      const key = `${classId}_${m.email || d.id}`;
+      byKey.set(key, {
+        id: key,
+        classId,
+        email: m.email || `UID: ${d.id}`,
+        staffName: m.rosterName || m.displayName || m.email || d.id.slice(0, 8),
+        role: m.role,
+        status: 'active',
+        acceptedUid: d.id,
+        invitedByUid: ownerUid || '',
+        createdAt: typeof m.joinedAt === 'number' ? m.joinedAt : 0,
+        updatedAt: typeof m.updatedAt === 'number' ? m.updatedAt : 0,
+      });
+    });
+  } catch {
+    // ignore
+  }
+
+  // 3) sugoroku_staff_invites（ルール追加済み環境の場合）
   try {
     const snap = await getDocs(
       query(
@@ -184,52 +366,150 @@ export async function fetchClassStaffInvites(
         where('classId', '==', classId),
       ),
     );
-    return snap.docs
-      .map((d) => ({ ...(d.data() as SugorokuStaffInviteDoc), id: d.id }))
-      .filter((inv) => inv.status !== 'revoked')
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    snap.docs.forEach((d) => {
+      const inv = { ...(d.data() as SugorokuStaffInviteDoc), id: d.id };
+      if (inv.status !== 'revoked') {
+        byKey.set(inv.id, inv);
+      }
+    });
   } catch {
-    return [];
+    // ignore
   }
+
+  return [...byKey.values()].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 }
 
-/** オーナー講師がスタッフ講師をGoogleメールアドレスで招待追加する */
+/**
+ * オーナー講師がスタッフ講師を追加する（AI 4 の `eiken_sugoroku_members` と直接連携）：
+ *  - `staffUid` が指定されている場合（またはルートから email 一致の既存ユーザーが見つかった場合）：
+ *    AI 4 のセキュリティルールがそのまま通る `sugoroku_members/{staffUid}` ＆
+ *    `classrooms/{classId}/sugoroku_members/{staffUid}` に `role: 'staff'`, `classIds` を即時書き込む！
+ *  - まだ一度もログインしていない先生のメールアドレスのみ入力された場合：
+ *    招待台帳に保存し、その先生がログインしてUIDが分かり次第すぐ紐付けられるようにする。
+ */
 export async function inviteSugorokuStaff(params: {
   classroom: Pick<ClassroomDoc, 'id' | 'className' | 'schoolName'>;
   email: string;
   staffName: string;
+  staffUid?: string;
 }): Promise<SugorokuStaffInviteDoc> {
   const email = normalizeStaffEmail(params.email);
-  if (!isValidStaffEmail(email)) {
-    throw new Error('有効なメールアドレスを入力してください');
+  const explicitUid = (params.staffUid || '').trim();
+  if (!explicitUid && !isValidStaffEmail(email)) {
+    throw new Error('有効なGoogleメールアドレスまたは講師UIDを入力してください');
   }
-  const staffName = params.staffName.trim().slice(0, 32) || email.split('@')[0];
+
+  const staffName =
+    params.staffName.trim().slice(0, 32) ||
+    (email ? email.split('@')[0] : explicitUid.slice(0, 10));
   const now = Date.now();
-  const id = buildStaffInviteId(params.classroom.id, email);
   const invitedByUid = auth.currentUser?.uid || 'owner';
+
+  // 既存 sugoroku_members から email 一致の UID を探す（オーナー権限で検索可能）
+  let resolvedUid = explicitUid;
+  if (!resolvedUid && FIREBASE_CONFIGURED && email) {
+    try {
+      const qSnap = await getDocs(
+        query(collection(db, SUGOROKU_COLLECTIONS.sugorokuMembers), where('email', '==', email)),
+      );
+      if (!qSnap.empty) {
+        resolvedUid = qSnap.docs[0].id;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const id = buildStaffInviteId(params.classroom.id, email || resolvedUid);
+  const status: 'active' | 'invited' = resolvedUid ? 'active' : 'invited';
 
   const payload: SugorokuStaffInviteDoc = {
     id,
     classId: params.classroom.id,
     className: params.classroom.className,
     schoolName: params.classroom.schoolName,
-    email,
+    email: email || `UID: ${resolvedUid}`,
     staffName,
     role: 'staff',
-    status: 'invited',
+    status,
+    ...(resolvedUid ? { acceptedUid: resolvedUid } : {}),
     invitedByUid,
     createdAt: now,
     updatedAt: now,
   };
 
-  await setDoc(
-    doc(db, SUGOROKU_COLLECTIONS.sugorokuStaffInvites, id),
-    {
-      ...payload,
-      serverUpdatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
+  // AI 4 準拠：UID が確定していれば sugoroku_members/{uid}（ルート＆クラス別サブコレ）へ直接登録
+  if (resolvedUid && FIREBASE_CONFIGURED) {
+    let existingClassIds: string[] = [];
+    try {
+      const prev = await getDoc(doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, resolvedUid));
+      if (prev.exists()) {
+        const prevData = prev.data() as SugorokuMemberDoc;
+        if (Array.isArray(prevData.classIds)) {
+          existingClassIds = prevData.classIds;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    const nextClassIds = Array.from(new Set([params.classroom.id, ...existingClassIds])).slice(
+      0,
+      10,
+    );
+
+    await setDoc(
+      doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, resolvedUid),
+      {
+        uid: resolvedUid,
+        classId: params.classroom.id,
+        classIds: nextClassIds,
+        role: 'staff',
+        rosterName: staffName,
+        displayName: staffName,
+        ...(email ? { email } : {}),
+        active: true,
+        adFree: true,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+
+    await setDoc(
+      doc(
+        db,
+        `${SUGOROKU_COLLECTIONS.classrooms}/${params.classroom.id}/${SUGOROKU_COLLECTIONS.sugorokuMembers}`,
+        resolvedUid,
+      ),
+      {
+        uid: resolvedUid,
+        classId: params.classroom.id,
+        role: 'staff',
+        rosterName: staffName,
+        displayName: staffName,
+        ...(email ? { email } : {}),
+        active: true,
+        adFree: true,
+        updatedAt: now,
+        serverUpdatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    ).catch(() => undefined);
+  }
+
+  // メール招待コレクション（任意）＋ローカル台帳へも保存
+  if (FIREBASE_CONFIGURED) {
+    await setDoc(
+      doc(db, SUGOROKU_COLLECTIONS.sugorokuStaffInvites, id),
+      {
+        ...payload,
+        serverUpdatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    ).catch(() => undefined);
+  }
+
+  const nextLocal = [...readLocalStaffInvites().filter((x) => x.id !== id), payload];
+  writeLocalStaffInvites(nextLocal);
 
   return payload;
 }
@@ -240,17 +520,33 @@ export async function revokeSugorokuStaff(params: {
   invite: SugorokuStaffInviteDoc;
 }): Promise<void> {
   const now = Date.now();
-  await setDoc(
-    doc(db, SUGOROKU_COLLECTIONS.sugorokuStaffInvites, params.invite.id),
-    {
-      status: 'revoked',
-      updatedAt: now,
-      serverUpdatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
+
+  writeLocalStaffInvites(readLocalStaffInvites().filter((x) => x.id !== params.invite.id));
+
+  if (!FIREBASE_CONFIGURED) return;
 
   if (params.invite.acceptedUid) {
+    // ルート sugoroku_members/{uid} から該当 classId を外す（0件になれば active: false）
+    try {
+      const rootRef = doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, params.invite.acceptedUid);
+      const snap = await getDoc(rootRef);
+      if (snap.exists()) {
+        const data = snap.data() as SugorokuMemberDoc;
+        const remaining = (data.classIds || []).filter((c) => c !== params.classId);
+        await setDoc(
+          rootRef,
+          {
+            classIds: remaining,
+            active: remaining.length > 0,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
+    } catch {
+      // ignore
+    }
+
     await setDoc(
       doc(
         db,
@@ -265,18 +561,32 @@ export async function revokeSugorokuStaff(params: {
       { merge: true },
     ).catch(() => undefined);
   }
+
+  await setDoc(
+    doc(db, SUGOROKU_COLLECTIONS.sugorokuStaffInvites, params.invite.id),
+    {
+      status: 'revoked',
+      updatedAt: now,
+      serverUpdatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  ).catch(() => undefined);
 }
 
 /**
  * 指定クラスの塾生・講師一覧・学習時間ログ・宿題・提出物を一括取得する
+ * （AI 2 / AI 3 / AI 4 の全コレクション＆ローカルキャッシュと完全接続）
  */
 export async function loadClassPortalData(
   classroom: ClassroomDoc,
 ): Promise<LoadedClassPortalData> {
   const classId = classroom.id;
   const currentUid = auth.currentUser?.uid || '';
+  const currentEmail = normalizeStaffEmail(auth.currentUser?.email || '');
   const viewerRole: 'owner' | 'staff' =
-    classroom.teacherUid === currentUid ? 'owner' : 'staff';
+    classroom.teacherUid === currentUid || isEmailPreAuthorizedAdmin(currentEmail)
+      ? 'owner'
+      : 'staff';
 
   // 1. 既存 class_members と sugoroku_members サブコレクションを統合
   const baseMembers = await fetchClassMembers(classId).catch(() => []);
@@ -311,6 +621,7 @@ export async function loadClassPortalData(
   const members: SugorokuMemberDoc[] = [...memberUids]
     .filter((uid) => {
       const meta = sugorokuMetaByUid.get(uid);
+      if (meta?.active === false) return false;
       return (meta?.role ?? 'student') === 'student';
     })
     .map((uid) => {
@@ -335,15 +646,33 @@ export async function loadClassPortalData(
       };
     });
 
-  // 1b. 講師スタッフ招待一覧
-  const staffInvites = await fetchClassStaffInvites(classId);
+  // 1b. 講師スタッフ一覧
+  const staffInvites = await fetchClassStaffInvites(classId, classroom.teacherUid);
 
-  // 2. 宿題一覧
+  // 2. 宿題一覧（AI 2 の 3系統すべてを統合：class_assignments ＋ sugoroku_homework_plans ＋ classrooms/{id}/assignments ＋ ローカルキャッシュ）
   const assignmentMap = new Map<string, SugorokuAssignmentDoc>();
+
+  // 2a. AI 2 ローカルキャッシュ
+  try {
+    const localRaw = safeGetItem(`${AI2_LOCAL_PLANS_PREFIX}${encodeURIComponent(classId)}`);
+    if (localRaw) {
+      const parsed = JSON.parse(localRaw) as Record<string, SugorokuAssignmentDoc>;
+      Object.entries(parsed || {}).forEach(([id, p]) => {
+        if (p && Array.isArray(p.chapterIds)) {
+          assignmentMap.set(id, { ...p, id, classId });
+        }
+      });
+    }
+  } catch {
+    // ignore
+  }
+
+  // 2b. 既存 class_assignments
   try {
     const legacy = await fetchLegacyAssignments(classId);
     for (const a of legacy) {
       assignmentMap.set(a.id, {
+        ...(assignmentMap.get(a.id) || {}),
         id: a.id,
         classId: a.classId,
         teacherUid: a.teacherUid,
@@ -355,16 +684,16 @@ export async function loadClassPortalData(
   } catch {
     // ignore
   }
+
+  // 2c. AI 2 トップレベル sugoroku_homework_plans
   try {
-    const subAsg = await getDocs(
-      collection(
-        db,
-        `${SUGOROKU_COLLECTIONS.classrooms}/${classId}/${SUGOROKU_COLLECTIONS.assignments}`,
-      ),
+    const planSnap = await getDocs(
+      query(collection(db, SUGOROKU_COLLECTIONS.homeworkPlans), where('classId', '==', classId)),
     );
-    subAsg.docs.forEach((row) => {
+    planSnap.docs.forEach((row) => {
       const data = row.data() as Omit<SugorokuAssignmentDoc, 'id'>;
       assignmentMap.set(row.id, {
+        ...(assignmentMap.get(row.id) || {}),
         ...data,
         id: row.id,
         classId,
@@ -375,31 +704,88 @@ export async function loadClassPortalData(
     // ignore
   }
 
-  // 3. 各生徒のログと解答済み問題数
+  // 2d. 第2章B サブコレクション classrooms/{classId}/assignments
+  try {
+    const subAsg = await getDocs(
+      collection(
+        db,
+        `${SUGOROKU_COLLECTIONS.classrooms}/${classId}/${SUGOROKU_COLLECTIONS.assignments}`,
+      ),
+    );
+    subAsg.docs.forEach((row) => {
+      const data = row.data() as Omit<SugorokuAssignmentDoc, 'id'>;
+      assignmentMap.set(row.id, {
+        ...(assignmentMap.get(row.id) || {}),
+        ...data,
+        id: row.id,
+        classId,
+        chapterIds: Array.isArray(data.chapterIds) ? data.chapterIds : [],
+      });
+    });
+  } catch {
+    // ignore
+  }
+
+  // 3. 各生徒のログ（サブコレ users/{uid}/sugoroku_study_logs ＋ フラット sugoroku_study_logs フォールバック）と解答済み問題数
   const logsByUid: Record<string, SugorokuStudyLogDoc[]> = {};
   const solvedByUid: Record<string, Record<string, number>> = {};
 
   await Promise.all(
     members.map(async (member) => {
+      const byDate = new Map<string, SugorokuStudyLogDoc>();
+
+      // 3a. users/{uid}/sugoroku_study_logs
       try {
         const logSnap = await getDocs(
           collection(db, `users/${member.uid}/${SUGOROKU_COLLECTIONS.sugorokuStudyLogs}`),
         );
-        logsByUid[member.uid] = logSnap.docs.map((d) => {
+        logSnap.docs.forEach((d) => {
           const raw = d.data() as Partial<SugorokuStudyLogDoc>;
-          return {
-            dateKey: raw.dateKey || d.id,
+          const dk = raw.dateKey || d.id;
+          byDate.set(dk, {
+            uid: member.uid,
+            dateKey: dk,
             totalActiveSeconds: Number(raw.totalActiveSeconds) || 0,
             byGradeSkill: (raw.byGradeSkill as Record<string, number>) || {},
             accuracyByGradeSkill: raw.accuracyByGradeSkill,
             solvedCount: Number(raw.solvedCount) || 0,
             updatedAt: Number(raw.updatedAt) || 0,
-          };
+          });
         });
       } catch {
-        logsByUid[member.uid] = [];
+        // ignore
       }
 
+      // 3b. フラットコレクション sugoroku_study_logs（AI 4 ルール 2b 互換フォールバック）
+      if (byDate.size === 0) {
+        try {
+          const flatSnap = await getDocs(
+            query(
+              collection(db, SUGOROKU_COLLECTIONS.sugorokuStudyLogs),
+              where('uid', '==', member.uid),
+            ),
+          );
+          flatSnap.docs.forEach((d) => {
+            const raw = d.data() as Partial<SugorokuStudyLogDoc>;
+            const dk = raw.dateKey || d.id.replace(`${member.uid}_`, '');
+            byDate.set(dk, {
+              uid: member.uid,
+              dateKey: dk,
+              totalActiveSeconds: Number(raw.totalActiveSeconds) || 0,
+              byGradeSkill: (raw.byGradeSkill as Record<string, number>) || {},
+              accuracyByGradeSkill: raw.accuracyByGradeSkill,
+              solvedCount: Number(raw.solvedCount) || 0,
+              updatedAt: Number(raw.updatedAt) || 0,
+            });
+          });
+        } catch {
+          // ignore
+        }
+      }
+
+      logsByUid[member.uid] = [...byDate.values()];
+
+      // 3c. study_progress/{uid}
       const chapterCounts: Record<string, number> = {};
       try {
         const progSnap = await getDoc(doc(db, STUDY_PROGRESS_COLLECTION, member.uid));
@@ -418,8 +804,21 @@ export async function loadClassPortalData(
     }),
   );
 
-  // 4. ライティング提出一覧
-  let writingSubmissions: SugorokuWritingSubmissionDoc[] = [];
+  // 4. ライティング提出一覧（Firestore ＋ AI 3 ローカル提出キャッシュ統合）
+  const writingMap = new Map<string, SugorokuWritingSubmissionDoc>();
+  try {
+    const rawLocalW = safeGetItem(AI3_LOCAL_WRITING_KEY);
+    if (rawLocalW) {
+      const parsedW = JSON.parse(rawLocalW) as SugorokuWritingSubmissionDoc[];
+      for (const item of parsedW || []) {
+        if (item?.id && item.classId === classId) {
+          writingMap.set(item.id, item);
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
   try {
     const wSnap = await getDocs(
       query(
@@ -429,19 +828,32 @@ export async function loadClassPortalData(
         ),
       ),
     );
-    writingSubmissions = wSnap.docs
-      .map((d) => ({
+    wSnap.docs.forEach((d) => {
+      writingMap.set(d.id, {
         ...(d.data() as Omit<SugorokuWritingSubmissionDoc, 'id'>),
         id: d.id,
         classId,
-      }))
-      .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+      });
+    });
   } catch {
-    writingSubmissions = [];
+    // ignore
   }
 
-  // 5. スピーキング提出一覧
-  let speakingSubmissions: SugorokuSpeakingSubmissionDoc[] = [];
+  // 5. スピーキング提出一覧（Firestore ＋ AI 3 ローカル録音提出キャッシュ統合）
+  const speakingMap = new Map<string, SugorokuSpeakingSubmissionDoc>();
+  try {
+    const rawLocalS = safeGetItem(AI3_LOCAL_SPEAKING_KEY);
+    if (rawLocalS) {
+      const parsedS = JSON.parse(rawLocalS) as SugorokuSpeakingSubmissionDoc[];
+      for (const item of parsedS || []) {
+        if (item?.id && item.classId === classId) {
+          speakingMap.set(item.id, item);
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
   try {
     const sSnap = await getDocs(
       query(
@@ -451,15 +863,15 @@ export async function loadClassPortalData(
         ),
       ),
     );
-    speakingSubmissions = sSnap.docs
-      .map((d) => ({
+    sSnap.docs.forEach((d) => {
+      speakingMap.set(d.id, {
         ...(d.data() as Omit<SugorokuSpeakingSubmissionDoc, 'id'>),
         id: d.id,
         classId,
-      }))
-      .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+      });
+    });
   } catch {
-    speakingSubmissions = [];
+    // ignore
   }
 
   return {
@@ -470,20 +882,26 @@ export async function loadClassPortalData(
     logsByUid,
     solvedByUid,
     assignments: [...assignmentMap.values()].sort((a, b) => a.dueAt - b.dueAt),
-    writingSubmissions,
-    speakingSubmissions,
+    writingSubmissions: [...writingMap.values()].sort(
+      (a, b) => (b.submittedAt || 0) - (a.submittedAt || 0),
+    ),
+    speakingSubmissions: [...speakingMap.values()].sort(
+      (a, b) => (b.submittedAt || 0) - (a.submittedAt || 0),
+    ),
   };
 }
 
-/** 講師が生徒の実名（rosterName）・目標級・指導メモを更新する */
+/** 講師が生徒の実名（rosterName）・目標級・指導メモ・在籍状態（退塾停止対応）を更新する */
 export async function updateSugorokuStudentProfile(params: {
   classId: string;
   studentUid: string;
   rosterName: string;
   targetGrade: EikenGrade;
   note?: string;
+  active?: boolean;
 }): Promise<void> {
   const trimmedName = params.rosterName.trim().slice(0, 32);
+  const isActive = params.active !== false;
   if (trimmedName) {
     await setCoreRosterName(params.classId, params.studentUid, trimmedName).catch(() => undefined);
   }
@@ -500,11 +918,27 @@ export async function updateSugorokuStudentProfile(params: {
       rosterName: trimmedName,
       targetGrade: params.targetGrade,
       note: (params.note || '').trim().slice(0, 200),
-      active: true,
-      adFree: true,
+      active: isActive,
+      adFree: isActive,
       updatedAt: Date.now(),
       serverUpdatedAt: serverTimestamp(),
     },
     { merge: true },
   );
+
+  // オーナー権限時はルート sugoroku_members/{studentUid} の rosterName / targetGrade / active も同期
+  await setDoc(
+    doc(db, SUGOROKU_COLLECTIONS.sugorokuMembers, params.studentUid),
+    {
+      uid: params.studentUid,
+      role: 'student',
+      rosterName: trimmedName,
+      targetGrade: params.targetGrade,
+      note: (params.note || '').trim().slice(0, 200),
+      active: isActive,
+      adFree: isActive,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  ).catch(() => undefined);
 }
