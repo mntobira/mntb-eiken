@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0.0",
+  "schemaVersion": "3.0.0",
   "generatedBy": "scripts/sugoroku-vocab-audit.ts",
   "generatedFor": "オンライン塾「すごろく」× マナトビ英検（3か月英検2級短期合格カリキュラム＆準2プラス橋渡し対応）",
   "auditPolicy": {
@@ -262,12 +262,12 @@
           "C2": 0
         }
       },
-      "overLevelC1C2Count": 48,
-      "trueLowRoiC1C2Count": 48,
+      "overLevelC1C2Count": 51,
+      "trueLowRoiC1C2Count": 51,
       "passtanHighUtilityRetainedCount": 0,
       "metadataDefectCount": 575,
-      "cautionB2HighCount": 58,
-      "foundationApprovedCount": 313,
+      "cautionB2HighCount": 55,
+      "foundationApprovedCount": 311,
       "flaggedEntries": [
         {
           "id": "eiken-word-pre-2-a-quite",
@@ -663,7 +663,7 @@
           "method": "lexicon_irregular",
           "matchedHeadword": "grow",
           "freqRank": 1122,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -925,7 +925,7 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "turn",
           "freqRank": 352,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -1066,7 +1066,7 @@
           "method": "lexicon_derived",
           "matchedHeadword": "shy",
           "freqRank": 2828,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -1210,7 +1210,7 @@
           "method": "lexicon_irregular",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -2215,7 +2215,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "weed",
           "freqRank": 4080,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -2255,7 +2255,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "tidy",
           "freqRank": 7361,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -3688,14 +3688,15 @@
           "method": "corpus_frequency",
           "matchedHeadword": "contend",
           "freqRank": 20432,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "準2級の適正帯（A2〜B1前半）に対し B2後半レベルのやや難語（出る度B）"
+            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える B2 相当語（判定根拠: CorpusFreq(rank=20432)+Pool(lv2)）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【後回し推奨】準2級では出る度A/BのA2〜B1語彙が定着した後の余力学習に回す"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-b-subsidy",
@@ -3749,7 +3750,7 @@
           "method": "lexicon_derived",
           "matchedHeadword": "pose",
           "freqRank": 10091,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -3912,7 +3913,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "stumble",
           "freqRank": 13495,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -3932,13 +3933,14 @@
           "method": "lexicon_exact",
           "matchedHeadword": "compile",
           "freqRank": 31317,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
-          "severity": "caution_b2_high",
+          "severity": "exclude_foundation",
           "reasons": [
-            "準2級の適正帯（A2〜B1前半）に対し B2後半レベルのやや難語（出る度B）"
+            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:a）相当の難語"
           ],
-          "recommendation": "【後回し推奨】準2級では出る度A/BのA2〜B1語彙が定着した後の余力学習に回す"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-b-discard",
@@ -4157,7 +4159,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "rule",
           "freqRank": 1455,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -4358,7 +4360,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "extent",
           "freqRank": 6962,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -5671,7 +5673,7 @@
           "method": "corpus_frequency",
           "matchedHeadword": "liable",
           "freqRank": 9630,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -6136,7 +6138,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "digest",
           "freqRank": 12229,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -6359,13 +6361,14 @@
           "method": "lexicon_exact",
           "matchedHeadword": "coherent",
           "freqRank": 23524,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
-          "severity": "caution_b2_high",
+          "severity": "exclude_foundation",
           "reasons": [
-            "準2級の適正帯（A2〜B1前半）に対し B2後半レベルのやや難語（出る度C）"
+            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:a）相当の難語"
           ],
-          "recommendation": "【後回し推奨】準2級では出る度A/BのA2〜B1語彙が定着した後の余力学習に回す"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-c-assert",
@@ -6503,7 +6506,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "offend",
           "freqRank": 7411,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -6625,12 +6628,13 @@
           "method": "lexicon_exact",
           "matchedHeadword": "expire",
           "freqRank": 22490,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -6687,12 +6691,13 @@
           "method": "lexicon_exact",
           "matchedHeadword": "flourish",
           "freqRank": 13515,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（A2〜B1前半（高校基礎〜標準））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（pre-1:c）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -7220,7 +7225,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "endanger",
           "freqRank": 16034,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -7301,7 +7306,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "rub",
           "freqRank": 4050,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -7501,7 +7506,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "trick",
           "freqRank": 1544,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -7822,7 +7827,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "shake",
           "freqRank": 1790,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8426,7 +8431,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8466,7 +8471,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8506,7 +8511,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8666,7 +8671,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8706,7 +8711,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "bring",
           "freqRank": 319,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8726,7 +8731,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "call",
           "freqRank": 161,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8766,7 +8771,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8826,7 +8831,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -8986,7 +8991,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "number",
           "freqRank": 442,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9026,7 +9031,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "contrary",
           "freqRank": 4239,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9086,7 +9091,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "cut",
           "freqRank": 464,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9186,7 +9191,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "all",
           "freqRank": 37,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9366,7 +9371,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "all",
           "freqRank": 37,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9446,7 +9451,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9486,7 +9491,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9526,7 +9531,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9606,7 +9611,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9646,7 +9651,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9666,7 +9671,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wear",
           "freqRank": 789,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9686,7 +9691,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9766,7 +9771,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "grow",
           "freqRank": 1122,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9926,7 +9931,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9966,7 +9971,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -9986,7 +9991,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "all",
           "freqRank": 37,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10046,7 +10051,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10066,7 +10071,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10086,7 +10091,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10106,7 +10111,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10166,7 +10171,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10206,7 +10211,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "part",
           "freqRank": 380,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10386,7 +10391,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10426,7 +10431,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "go",
           "freqRank": 47,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10446,7 +10451,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10586,7 +10591,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "own",
           "freqRank": 239,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10606,7 +10611,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "part",
           "freqRank": 380,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10666,7 +10671,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "stick",
           "freqRank": 908,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10706,7 +10711,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10746,7 +10751,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "part",
           "freqRank": 380,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10786,7 +10791,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "part",
           "freqRank": 380,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10846,7 +10851,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10866,7 +10871,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "without",
           "freqRank": 273,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -10966,7 +10971,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11126,7 +11131,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "first",
           "freqRank": 141,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11186,7 +11191,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11326,7 +11331,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "call",
           "freqRank": 161,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11486,7 +11491,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "full",
           "freqRank": 526,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11506,7 +11511,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "change",
           "freqRank": 393,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11626,7 +11631,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "part",
           "freqRank": 380,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11826,7 +11831,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11846,7 +11851,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "face",
           "freqRank": 347,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11866,7 +11871,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "base",
           "freqRank": 1645,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -11946,7 +11951,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "call",
           "freqRank": 161,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12026,7 +12031,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "first",
           "freqRank": 141,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12046,7 +12051,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12066,7 +12071,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12126,7 +12131,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12186,7 +12191,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12206,7 +12211,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12306,7 +12311,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -12475,12 +12480,12 @@
           "C2": 2
         }
       },
-      "overLevelC1C2Count": 76,
-      "trueLowRoiC1C2Count": 76,
+      "overLevelC1C2Count": 82,
+      "trueLowRoiC1C2Count": 82,
       "passtanHighUtilityRetainedCount": 0,
       "metadataDefectCount": 520,
       "cautionB2HighCount": 0,
-      "foundationApprovedCount": 250,
+      "foundationApprovedCount": 249,
       "flaggedEntries": [
         {
           "id": "eiken-word-pre-2-plus-a-conversely",
@@ -12755,11 +12760,12 @@
           "method": "lexicon_exact",
           "matchedHeadword": "precision",
           "freqRank": 10009,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "exclude_foundation",
           "reasons": [
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -12875,13 +12881,15 @@
           "method": "lexicon_exact",
           "matchedHeadword": "incentive",
           "freqRank": 15113,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:a）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-a-optional",
@@ -12915,11 +12923,12 @@
           "method": "lexicon_exact",
           "matchedHeadword": "alleviate",
           "freqRank": 24998,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:c",
           "b1b2ParaphraseHint": "relieve / reduce（軽減する）",
           "severity": "exclude_foundation",
           "reasons": [
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（1:c）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外】準1級（C1）帯のため暗記不要。英作文・面接では平易な「relieve / reduce（軽減する）」で代用指導"
         },
@@ -13035,13 +13044,34 @@
           "method": "lexicon_exact",
           "matchedHeadword": "worthy",
           "freqRank": 3624,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
           ],
           "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+        },
+        {
+          "id": "eiken-word-pre-2-plus-a-consistently",
+          "gradeId": "eiken_pre2plus",
+          "rawLevel": "pre-2-plus:a",
+          "word": "consistently",
+          "meaning": "一貫して",
+          "exampleSentence": "To keep seedlings from freezing, spread straw mulch around the roots once night temperatures dip consistently below five degrees.",
+          "cefr": "B2",
+          "subBand": "B2後半",
+          "method": "lexicon_derived",
+          "matchedHeadword": "consistent",
+          "freqRank": 17557,
+          "inHigherGradeBook": "pre-1:i",
+          "b1b2ParaphraseHint": null,
+          "severity": "exclude_foundation",
+          "reasons": [
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: CEFR-J-1.5(derived)）",
+            "上位級単語帳（pre-1:i）相当の難語"
+          ],
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-a-defects",
@@ -13276,7 +13306,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "usual",
           "freqRank": 1638,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -13847,7 +13877,7 @@
           "method": "lexicon_derived",
           "matchedHeadword": "short",
           "freqRank": 862,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -14633,7 +14663,7 @@
           "method": "corpus_frequency",
           "matchedHeadword": "cue",
           "freqRank": 6182,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -14993,7 +15023,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "blind",
           "freqRank": 1436,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -15073,7 +15103,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "circuit",
           "freqRank": 5965,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -15579,11 +15609,12 @@
           "method": "lexicon_exact",
           "matchedHeadword": "reconcile",
           "freqRank": 16075,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "exclude_foundation",
           "reasons": [
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（pre-1:a）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -16201,7 +16232,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "compatible",
           "freqRank": 13982,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -16781,12 +16812,13 @@
           "method": "lexicon_derived",
           "matchedHeadword": "part",
           "freqRank": 27378,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: CEFR-J-1.5(derived)）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: CEFR-J-1.5(derived)）",
+            "上位級単語帳（pre-1:c）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -17324,7 +17356,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "acute",
           "freqRank": 10756,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -17365,7 +17397,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "probe",
           "freqRank": 7575,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -17969,13 +18001,15 @@
           "method": "corpus_frequency",
           "matchedHeadword": "frown",
           "freqRank": 14730,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: CorpusFreq(rank=14730)+Pool(lv2)）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-b-tempt",
@@ -18469,7 +18503,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "ally",
           "freqRank": 4870,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -18549,7 +18583,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "foul",
           "freqRank": 4608,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -18950,13 +18984,15 @@
           "method": "lexicon_exact",
           "matchedHeadword": "soar",
           "freqRank": 15963,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:c）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-c-yawn",
@@ -18990,7 +19026,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "confident",
           "freqRank": 3421,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20140,7 +20176,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "wit",
           "freqRank": 8224,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20180,12 +20216,13 @@
           "method": "lexicon_exact",
           "matchedHeadword": "apt",
           "freqRank": 16592,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -20481,7 +20518,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "turn",
           "freqRank": 352,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20581,7 +20618,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "despite",
           "freqRank": 2576,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20601,7 +20638,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "comparison",
           "freqRank": 8639,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20621,7 +20658,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "despite",
           "freqRank": 2576,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20641,7 +20678,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "catch",
           "freqRank": 636,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20721,7 +20758,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "catch",
           "freqRank": 636,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20741,7 +20778,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "rise",
           "freqRank": 2040,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20761,7 +20798,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pass",
           "freqRank": 741,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20801,7 +20838,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wind",
           "freqRank": 1088,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20821,7 +20858,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pass",
           "freqRank": 741,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20841,7 +20878,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hand",
           "freqRank": 367,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20861,7 +20898,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "prior",
           "freqRank": 5119,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20881,7 +20918,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "lose",
           "freqRank": 557,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20921,7 +20958,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -20941,7 +20978,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fall",
           "freqRank": 673,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21022,7 +21059,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "prior",
           "freqRank": 5119,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21042,7 +21079,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "without",
           "freqRank": 273,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21062,7 +21099,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hold",
           "freqRank": 295,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21082,7 +21119,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "step",
           "freqRank": 692,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21166,9 +21203,11 @@
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: Idiom(CEFR-J-1.5)）",
+            "上位級単語帳（pre-1:b）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-i-interfered-with",
@@ -21223,7 +21262,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "come",
           "freqRank": 58,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21243,7 +21282,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21364,7 +21403,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "back",
           "freqRank": 83,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21384,7 +21423,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fall",
           "freqRank": 673,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21424,7 +21463,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "instead",
           "freqRank": 779,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21525,7 +21564,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "instead",
           "freqRank": 779,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21545,7 +21584,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "instead",
           "freqRank": 779,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21565,7 +21604,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "look",
           "freqRank": 84,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21626,7 +21665,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "instead",
           "freqRank": 779,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21646,7 +21685,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "instead",
           "freqRank": 779,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21686,7 +21725,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "burn",
           "freqRank": 1290,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21706,7 +21745,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fit",
           "freqRank": 1184,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21746,7 +21785,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "step",
           "freqRank": 692,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21766,7 +21805,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "stand",
           "freqRank": 461,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21786,7 +21825,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "risk",
           "freqRank": 1171,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -21830,9 +21869,11 @@
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える B2 相当語（判定根拠: Idiom(CEFR-J-1.5)）",
+            "上位級単語帳（pre-1:b）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-pre-2-plus-i-dispense-with",
@@ -21846,12 +21887,13 @@
           "method": "idiom_max_content",
           "matchedHeadword": "dispense",
           "freqRank": 19595,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Idiom(Octanove-C1C2-1.0)）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C1 相当語（判定根拠: Idiom(Octanove-C1C2-1.0)）",
+            "上位級単語帳（1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -21967,12 +22009,13 @@
           "method": "idiom_max_content",
           "matchedHeadword": "adhere",
           "freqRank": 24482,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C2 相当語（判定根拠: Idiom(Octanove-C1C2-1.0)）"
+            "適正CEFR帯（B1（準2級と2級の橋渡し抽象語彙））を超える C2 相当語（判定根拠: Idiom(Octanove-C1C2-1.0)）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -22290,7 +22333,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "brush",
           "freqRank": 4041,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22410,7 +22453,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "shake",
           "freqRank": 1790,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22430,7 +22473,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "shake",
           "freqRank": 1790,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22450,7 +22493,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "ease",
           "freqRank": 3266,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22510,7 +22553,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "ease",
           "freqRank": 3266,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22550,7 +22593,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "ease",
           "freqRank": 3266,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22670,7 +22713,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "resort",
           "freqRank": 5603,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22931,7 +22974,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "score",
           "freqRank": 2408,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -22971,7 +23014,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "suffer",
           "freqRank": 2102,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23011,7 +23054,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wash",
           "freqRank": 1635,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23031,7 +23074,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wash",
           "freqRank": 1635,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23111,7 +23154,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "occur",
           "freqRank": 5897,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23291,7 +23334,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "anxious",
           "freqRank": 3985,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23351,7 +23394,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "chance",
           "freqRank": 426,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23391,7 +23434,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "blind",
           "freqRank": 1436,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23411,7 +23454,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "burn",
           "freqRank": 1290,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -23600,12 +23643,12 @@
           "C2": 4
         }
       },
-      "overLevelC1C2Count": 155,
-      "trueLowRoiC1C2Count": 142,
+      "overLevelC1C2Count": 167,
+      "trueLowRoiC1C2Count": 154,
       "passtanHighUtilityRetainedCount": 13,
       "metadataDefectCount": 736,
-      "cautionB2HighCount": 32,
-      "foundationApprovedCount": 230,
+      "cautionB2HighCount": 30,
+      "foundationApprovedCount": 229,
       "flaggedEntries": [
         {
           "id": "eiken-word-2-a-sustainable",
@@ -24052,6 +24095,27 @@
           "recommendation": "【基礎重視モード除外】準1級（C1）帯のため暗記不要。英作文・面接では平易な「smooth（継ぎ目のない・円滑な）」で代用指導"
         },
         {
+          "id": "eiken-word-2-a-corroborate",
+          "gradeId": "eiken_2",
+          "rawLevel": "2:a",
+          "word": "corroborate",
+          "meaning": "証言や事実を裏づける",
+          "exampleSentence": "A: The two witnesses described the van's color differently. B: Yes, so police sought camera footage to corroborate the facts.",
+          "cefr": "B2",
+          "subBand": "B2後半",
+          "method": "corpus_frequency",
+          "matchedHeadword": "corroborate",
+          "freqRank": 18961,
+          "inHigherGradeBook": "pre-1:a",
+          "b1b2ParaphraseHint": "confirm / support with evidence（裏づける）",
+          "severity": "exclude_foundation",
+          "reasons": [
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CorpusFreq(rank=18961)）",
+            "上位級単語帳（pre-1:a）相当の難語"
+          ],
+          "recommendation": "【基礎重視モード除外】準1級（C1）帯のため暗記不要。英作文・面接では平易な「confirm / support with evidence（裏づける）」で代用指導"
+        },
+        {
           "id": "eiken-word-2-a-attention",
           "gradeId": "eiken_2",
           "rawLevel": "2:a",
@@ -24284,11 +24348,12 @@
           "method": "corpus_frequency",
           "matchedHeadword": "mitigate",
           "freqRank": 37815,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:c",
           "b1b2ParaphraseHint": "reduce / ease（緩和する・和らげる）",
           "severity": "exclude_foundation",
           "reasons": [
-            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: CorpusFreq(rank=37815)+Pool(lv4)）"
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: CorpusFreq(rank=37815)+Pool(lv4)）",
+            "上位級単語帳（1:c）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外】準1級（C1）帯のため暗記不要。英作文・面接では平易な「reduce / ease（緩和する・和らげる）」で代用指導"
         },
@@ -24367,13 +24432,15 @@
           "method": "lexicon_derived",
           "matchedHeadword": "sight",
           "freqRank": 14811,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5(derived)）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-a-allocated",
@@ -24736,7 +24803,7 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "disrupt",
           "freqRank": 14340,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -25365,7 +25432,7 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "boast",
           "freqRank": 15065,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -25648,7 +25715,7 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "praise",
           "freqRank": 3897,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -25829,7 +25896,7 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -25849,7 +25916,7 @@
           "method": "lexicon_irregular",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -25932,13 +25999,15 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "compile",
           "freqRank": 31317,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:a）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-a-wealthy",
@@ -25993,13 +26062,15 @@
           "method": "lexicon_derived",
           "matchedHeadword": "digest",
           "freqRank": 21880,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5(derived)）",
+            "上位級単語帳（pre-1:b）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-a-restless",
@@ -26474,7 +26545,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "absence",
           "freqRank": 5194,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -27156,13 +27227,15 @@
           "method": "lexicon_inflection",
           "matchedHeadword": "obsess",
           "freqRank": 27835,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-a-ignorant",
@@ -28428,7 +28501,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "competitive",
           "freqRank": 7772,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -29620,13 +29693,15 @@
           "method": "lexicon_exact",
           "matchedHeadword": "contaminate",
           "freqRank": 25331,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:c）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-b-startle",
@@ -29760,7 +29835,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "wander",
           "freqRank": 6511,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -29900,7 +29975,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "contribution",
           "freqRank": 8468,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -30683,12 +30758,13 @@
           "method": "lexicon_exact",
           "matchedHeadword": "adhere",
           "freqRank": 24482,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -31110,7 +31186,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "impair",
           "freqRank": null,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -31872,7 +31948,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "choke",
           "freqRank": 6735,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -32158,14 +32234,15 @@
           "method": "lexicon_exact",
           "matchedHeadword": "shrug",
           "freqRank": 29263,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "2級出る度CかつB2後半（準1級境界）語彙のため、直前期の余力枠"
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（1:i）相当の難語"
           ],
-          "recommendation": "【Week 9以降の余力枠】まずは出る度A・Bおよび必須熟語（B1〜B2前半）を優先"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-c-timid",
@@ -32241,14 +32318,15 @@
           "method": "lexicon_exact",
           "matchedHeadword": "infer",
           "freqRank": 31457,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "2級出る度CかつB2後半（準1級境界）語彙のため、直前期の余力枠"
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: CEFR-J-1.5）",
+            "上位級単語帳（pre-1:b）相当の難語"
           ],
-          "recommendation": "【Week 9以降の余力枠】まずは出る度A・Bおよび必須熟語（B1〜B2前半）を優先"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-c-chore",
@@ -32387,7 +32465,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "root",
           "freqRank": 4429,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -33114,7 +33192,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "shy",
           "freqRank": 2828,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -33847,7 +33925,7 @@
           "method": "corpus_frequency",
           "matchedHeadword": "opt",
           "freqRank": 28961,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": "choose / decide（選択する）",
           "severity": "caution_b2_high",
           "reasons": [
@@ -34070,12 +34148,13 @@
           "method": "lexicon_exact",
           "matchedHeadword": "ingenuous",
           "freqRank": null,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
             "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
-            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）"
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える C2 相当語（判定根拠: Octanove-C1C2-1.0）",
+            "上位級単語帳（1:a）相当の難語"
           ],
           "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
@@ -34091,7 +34170,7 @@
           "method": "lexicon_exact",
           "matchedHeadword": "preoccupy",
           "freqRank": null,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34621,7 +34700,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "favor",
           "freqRank": 1186,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34681,7 +34760,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "get",
           "freqRank": 45,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34701,7 +34780,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "bring",
           "freqRank": 319,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34761,7 +34840,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "turn",
           "freqRank": 352,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34801,7 +34880,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "brush",
           "freqRank": 4041,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34821,7 +34900,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pass",
           "freqRank": 741,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34921,7 +35000,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "prior",
           "freqRank": 5119,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34941,7 +35020,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "call",
           "freqRank": 161,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34961,7 +35040,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -34981,7 +35060,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "turn",
           "freqRank": 352,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35042,7 +35121,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fall",
           "freqRank": 673,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35062,7 +35141,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wear",
           "freqRank": 789,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35082,7 +35161,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35102,7 +35181,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fall",
           "freqRank": 673,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35202,7 +35281,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "rule",
           "freqRank": 1455,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35222,7 +35301,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pass",
           "freqRank": 741,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35262,7 +35341,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "give",
           "freqRank": 128,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35302,7 +35381,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "cast",
           "freqRank": 2318,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35322,7 +35401,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "fall",
           "freqRank": 673,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35382,7 +35461,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "despite",
           "freqRank": 2576,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35402,7 +35481,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "despite",
           "freqRank": 2576,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35443,7 +35522,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "back",
           "freqRank": 83,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35523,7 +35602,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "speak",
           "freqRank": 472,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35563,7 +35642,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "speak",
           "freqRank": 472,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35843,7 +35922,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "aside",
           "freqRank": 2171,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35903,7 +35982,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "stick",
           "freqRank": 908,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -35923,7 +36002,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hold",
           "freqRank": 295,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36026,13 +36105,15 @@
           "method": "idiom_max_content",
           "matchedHeadword": "frown",
           "freqRank": 14730,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: Idiom(CorpusFreq(rank=14730)+Pool(lv2))）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-i-abound-in",
@@ -36111,9 +36192,11 @@
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: Idiom(CEFR-J-1.5)）",
+            "上位級単語帳（pre-1:b）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-i-make-haste",
@@ -36228,13 +36311,15 @@
           "method": "idiom_max_content",
           "matchedHeadword": "aspire",
           "freqRank": 20222,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: Idiom(CEFR-J-1.5)）",
+            "上位級単語帳（pre-1:i）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-i-discriminate-against",
@@ -36288,7 +36373,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "boast",
           "freqRank": 15065,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36548,7 +36633,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pain",
           "freqRank": 736,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36629,7 +36714,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "busy",
           "freqRank": 748,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36649,7 +36734,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "stir",
           "freqRank": 6708,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36892,7 +36977,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "indifferent",
           "freqRank": 13181,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -36992,7 +37077,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pile",
           "freqRank": 3944,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37012,7 +37097,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "burst",
           "freqRank": 4342,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:b",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37032,7 +37117,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "shy",
           "freqRank": 2828,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37076,9 +37161,11 @@
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
-            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）"
+            "例文が機械生成プレースホルダ文（文脈コロケーション学習・テスト出題に不向き）",
+            "適正CEFR帯（B1〜B2前半（高校卒業程度・『パス単2級』コア帯））を超える B2 相当語（判定根拠: Idiom(CEFR-J-1.5)）",
+            "上位級単語帳（pre-1:c）相当の難語"
           ],
-          "recommendation": "【最優先除外/修正推奨】基礎重視モードおよび小テスト出題から自動除外（訳・例文データの整備対象）"
+          "recommendation": "【基礎重視モード除外推奨】準1級（C1）以上の低ROI難語のため、3か月短期合格ルートでは暗記対象から外しコアB1〜B2語彙を優先"
         },
         {
           "id": "eiken-word-2-i-avail-oneself-of",
@@ -37252,7 +37339,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "capable",
           "freqRank": 9207,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37674,7 +37761,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "own",
           "freqRank": 239,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37734,7 +37821,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "spell",
           "freqRank": 2176,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -37914,7 +38001,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "burn",
           "freqRank": 1290,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38055,7 +38142,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "hang",
           "freqRank": 631,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38095,7 +38182,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "wave",
           "freqRank": 2524,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:c",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38115,7 +38202,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "elephant",
           "freqRank": 3774,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38135,7 +38222,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "lay",
           "freqRank": 1370,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38155,7 +38242,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "anxious",
           "freqRank": 3985,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38196,7 +38283,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "feed",
           "freqRank": 1563,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38276,7 +38363,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "bear",
           "freqRank": 1077,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38316,7 +38403,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "shape",
           "freqRank": 1975,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38356,7 +38443,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "kick",
           "freqRank": 1237,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38376,7 +38463,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "kick",
           "freqRank": 1237,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38416,7 +38503,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "contrary",
           "freqRank": 4239,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38436,7 +38523,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "contrary",
           "freqRank": 4239,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38516,7 +38603,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "stick",
           "freqRank": 908,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38616,7 +38703,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "shut",
           "freqRank": 404,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38676,7 +38763,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "rise",
           "freqRank": 2040,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:a",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38737,7 +38824,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "push",
           "freqRank": 1065,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38757,7 +38844,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "pull",
           "freqRank": 663,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38777,7 +38864,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "scale",
           "freqRank": 3625,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38959,7 +39046,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "carry",
           "freqRank": 1019,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -38999,7 +39086,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "sit",
           "freqRank": 372,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -39019,7 +39106,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "touch",
           "freqRank": 600,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -39199,7 +39286,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "worthy",
           "freqRank": 3624,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -39319,7 +39406,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "make",
           "freqRank": 114,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -39399,7 +39486,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "convinced",
           "freqRank": 2335,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [
@@ -39479,7 +39566,7 @@
           "method": "idiom_max_content",
           "matchedHeadword": "finger",
           "freqRank": 1762,
-          "inHigherGradeBook": null,
+          "inHigherGradeBook": "pre-1:i",
           "b1b2ParaphraseHint": null,
           "severity": "metadata_defect",
           "reasons": [

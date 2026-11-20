@@ -131,11 +131,14 @@ interface CorpusLexicalCoverage {
   pedagogicalInterpretation: string;
 }
 
+export type PosGroup = 'verb' | 'noun' | 'adj' | 'adv' | 'idiom';
+
 export interface CuratedTestQuestion {
   no: number;
   id: string;
   rawLevel: string;
   tierLabel: string;
+  posGroup: PosGroup;
   word: string;
   meaning: string;
   cefr: CefrBand;
@@ -151,6 +154,7 @@ export interface CuratedTestQuestion {
 
 export interface CuratedWeeklyTest {
   week: number;
+  form: 'A' | 'B';
   gradeId: string;
   phase: string;
   theme: string;
@@ -822,6 +826,31 @@ function maskTargetInSentence(sentence: string, target: string): string {
   return clean;
 }
 
+function classifyPosGroup(word: string, meaning: string, tier: 'a' | 'b' | 'c' | 'i'): PosGroup {
+  if (tier === 'i' || word.trim().includes(' ')) return 'idiom';
+  const primary = meaning.split(/[、／]/)[0]?.trim() ?? meaning.trim();
+  const w = word.trim().toLowerCase();
+  if (
+    w.endsWith('ly') &&
+    !['supply', 'apply', 'rely', 'reply', 'comply', 'multiply', 'family', 'elderly', 'friendly', 'likely', 'costly', 'lively', 'lonely', 'ugly', 'holy', 'early', 'daily'].includes(w)
+  ) {
+    return 'adv';
+  }
+  if (/(?:する|れる|られる|せる|させる|める|わる|ける|げる|てる|でる|べる|ねる|ちる|りる|きる|ぎる|びる|みる|いる|う|く|ぐ|す|つ|ぬ|ぶ|む|る)$/.test(primary) && !/(?:こと|もの|点|力|率|性|権|書|法|場|者|員|局|費|税|金|品)$/.test(primary)) {
+    if (primary.endsWith('い') && !primary.endsWith('行い') && !primary.endsWith('扱い') && !primary.endsWith('争い')) {
+      return 'adj';
+    }
+    return 'verb';
+  }
+  if (primary.endsWith('な') || primary.endsWith('の') || primary.endsWith('的な') || primary.endsWith('い')) {
+    return 'adj';
+  }
+  if (primary.endsWith('に') || primary.endsWith('く') || primary.endsWith('と')) {
+    return 'adv';
+  }
+  return 'noun';
+}
+
 function buildFourChoiceTestItems(
   rawItems: Array<{
     id: string;
@@ -836,21 +865,32 @@ function buildFourChoiceTestItems(
   }>,
   distractorPool: Array<{ tier: 'a' | 'b' | 'c' | 'i'; word: string; meaning: string }>,
   cleanMeaningFn: (m: string) => string,
+  seedOffset = 0,
 ): CuratedTestQuestion[] {
+  const annotatedPool = distractorPool.map(d => ({
+    ...d,
+    posGroup: classifyPosGroup(d.word, cleanMeaningFn(d.meaning), d.tier),
+  }));
+
   return rawItems.map((it, idx) => {
     const cleanMean = cleanMeaningFn(it.meaning);
-    const sameKindPool = distractorPool.filter(
+    const posGroup = classifyPosGroup(it.word, cleanMean, it.tier);
+    const strictPosPool = annotatedPool.filter(
+      d => d.posGroup === posGroup && d.word.toLowerCase() !== it.word.toLowerCase(),
+    );
+    const sameKindPool = annotatedPool.filter(
       d => (it.tier === 'i' ? d.tier === 'i' : d.tier !== 'i') && d.word.toLowerCase() !== it.word.toLowerCase(),
     );
-    const fallbackPool = sameKindPool.length >= 10 ? sameKindPool : distractorPool;
+    const fallbackPool =
+      strictPosPool.length >= 12 ? strictPosPool : sameKindPool.length >= 10 ? sameKindPool : annotatedPool;
 
     const pickedJa: string[] = [];
     const pickedEn: string[] = [];
     const seenJa = new Set<string>([cleanMean]);
     const seenEn = new Set<string>([it.word.toLowerCase()]);
 
-    for (const step of [5, 11, 17, 23, 31, 41, 53, 67, 79]) {
-      const cand = fallbackPool[(idx * 7 + step) % Math.max(1, fallbackPool.length)];
+    for (const step of [3, 9, 17, 25, 33, 43, 55, 69, 83, 97, 113]) {
+      const cand = fallbackPool[(idx * 11 + step + seedOffset * 13) % Math.max(1, fallbackPool.length)];
       if (!cand) continue;
       const cm = cleanMeaningFn(cand.meaning);
       if (pickedJa.length < 3 && cm && !seenJa.has(cm)) {
@@ -864,8 +904,8 @@ function buildFourChoiceTestItems(
       if (pickedJa.length >= 3 && pickedEn.length >= 3) break;
     }
 
-    const posJa = (idx * 3 + 1) % 4;
-    const posEn = (idx * 3 + 2) % 4;
+    const posJa = (idx * 3 + 1 + seedOffset) % 4;
+    const posEn = (idx * 3 + 2 + seedOffset) % 4;
     const choicesJa = [...pickedJa];
     choicesJa.splice(posJa, 0, cleanMean);
     const choicesEn = [...pickedEn];
@@ -876,6 +916,7 @@ function buildFourChoiceTestItems(
       id: it.id,
       rawLevel: it.rawLevel,
       tierLabel: it.tier === 'i' ? '熟語' : `出る度${it.tier.toUpperCase()}`,
+      posGroup,
       word: it.word,
       meaning: cleanMean,
       cefr: it.cefr,
@@ -930,7 +971,16 @@ function main() {
   const higherGradeLookup = new Map<string, string>();
   for (const r of wordbookRows) {
     if (r.gradeId === 'eiken_pre1' || r.gradeId === 'eiken_1') {
-      higherGradeLookup.set(r.word.trim().toLowerCase(), r.rawLevel);
+      const k = r.word.trim().toLowerCase();
+      higherGradeLookup.set(k, r.rawLevel);
+      const resH = resolveExpression(k);
+      if (resH.matchedHeadword) higherGradeLookup.set(resH.matchedHeadword, r.rawLevel);
+      for (const suf of ['ed', 'd', 's', 'es', 'ing']) {
+        if (k.endsWith(suf) && k.length > suf.length + 3) {
+          higherGradeLookup.set(k.slice(0, -suf.length), r.rawLevel);
+          higherGradeLookup.set(k.slice(0, -suf.length) + 'e', r.rawLevel);
+        }
+      }
     }
   }
 
@@ -1044,10 +1094,17 @@ function main() {
       tierBreakdown[r.tier][res.cefr]++;
 
       const defects = detectMetadataDefects(r.word, r.meaning, r.exampleSentence);
-      const isC1C2 = res.cefr === 'C1' || res.cefr === 'C2';
       const normalizedWord = r.word.trim().toLowerCase();
       const isPasstanUtility = EIKEN2_PASSTAN_HIGH_UTILITY_ALLOWLIST.has(normalizedWord);
       const inHigher = higherGradeLookup.get(normalizedWord) ?? higherGradeLookup.get(res.matchedHeadword) ?? null;
+      const isC1C2 =
+        res.cefr === 'C1' ||
+        res.cefr === 'C2' ||
+        (gradeId !== 'eiken_1' &&
+          gradeId !== 'eiken_pre1' &&
+          inHigher !== null &&
+          res.subBand === 'B2後半' &&
+          !isPasstanUtility);
       const paraphrase = getParaphraseHint(r.word);
 
       if (isC1C2) overLevelC1C2Count++;
@@ -1346,6 +1403,10 @@ function main() {
       if (r.meaning.trim().length < 2) return false;
       if ((r.exampleSentence.match(/[A-Za-z]+/g) ?? []).length < 5) return false;
       if (gradeId === 'eiken_2' && r.cefr === 'A1') return false;
+      if (higherGradeLookup.has(r.word.trim().toLowerCase()) && r.subBand === 'B2後半') return false;
+      const wLower = r.word.trim().toLowerCase();
+      if (/^(did |do away|would |had |should |might |could |not until|no sooner)/.test(wLower)) return false;
+      if (/^to [a-z]+$/.test(wLower)) return false;
       return true;
     });
 
@@ -1365,7 +1426,7 @@ function main() {
       .forEach((it, idx) => {
         const ans = (it.choices?.[it.answer ?? 0] ?? '').trim();
         if (!ans || FUNCTION_STOPWORDS.has(ans.toLowerCase())) return;
-        if (/^(do away|did the|would have|had the|not until|no sooner)/i.test(ans)) return;
+        if (/^(do away|did |would |had |should |might |could |not until|no sooner|to [a-z]+$)/i.test(ans)) return;
         if (/^(account|regardless|background|given|print|detail|status|might have|should|substitute|tear|so|nor|only|had)$/i.test(ans)) return;
         if (ans.split(' ').length > 3) return;
         const res = resolveExpression(ans);
@@ -1380,6 +1441,14 @@ function main() {
           extractedMeaning.length < 2 ||
           /^[るれろっゃゅょぁぃぅぇぉ]/.test(extractedMeaning) ||
           /構文|倒置|語順|対応|原形|過去|受動態|定型|連語|形容詞|^〜しない/.test(extractedMeaning)
+        ) {
+          return;
+        }
+        if (
+          /^(corroborate|stringent|mitigate|scrutiny|cordially|equilibrium|inadvertently|rectify|albeit|replenish|deplete|depleted|counteract|irreversible|defer|seamless|arid|appraisal)$/i.test(
+            ans,
+          ) ||
+          (res.subBand === 'B2後半' && !EIKEN2_PASSTAN_HIGH_UTILITY_ALLOWLIST.has(ans.toLowerCase()))
         ) {
           return;
         }
@@ -1430,7 +1499,7 @@ function main() {
   ];
 
   const allG2Distractors = [...cleanG2Rows, ...d1SupplementPool];
-  const weeklyTests: CuratedWeeklyTest[] = g2WeeklyThemes.map(spec => {
+  const rawByWeek: Array<{ spec: (typeof g2WeeklyThemes)[number]; raw20: typeof cleanG2Rows }> = g2WeeklyThemes.map(spec => {
     const rawPicked = [
       ...takeG2(tierAPool, spec.mix.a),
       ...takeG2(tierBPool, spec.mix.b),
@@ -1439,12 +1508,40 @@ function main() {
     ];
     if (rawPicked.length < 20) rawPicked.push(...takeG2(cleanG2Rows, 20 - rawPicked.length));
     if (rawPicked.length < 20) rawPicked.push(...takeG2(d1SupplementPool, 20 - rawPicked.length));
-    const items = buildFourChoiceTestItems(rawPicked.slice(0, 20), allG2Distractors, cleanMeaningDisplay);
+    return { spec, raw20: rawPicked.slice(0, 20) };
+  });
+
+  const weeklyTests: CuratedWeeklyTest[] = rawByWeek.map(({ spec, raw20 }) => {
+    const items = buildFourChoiceTestItems(raw20, allG2Distractors, cleanMeaningDisplay, spec.week);
     return {
       week: spec.week,
+      form: 'A',
       gradeId: 'eiken_2',
       phase: spec.phase,
       theme: spec.theme,
+      itemCount: items.length,
+      passingScore: 16,
+      items,
+    };
+  });
+
+  // Form B (Retest / Make-up Exam):
+  // Rotates the 20 words so former Recall items (01..08) become 4-choice Cloze (13..20),
+  // and former Cloze items (13..20) + remaining Recall (09..12) become Recall (01..12),
+  // with fresh POS-aligned distractors and shifted answer positions so answer-number memorization is impossible.
+  const weeklyRetestsFormB: CuratedWeeklyTest[] = rawByWeek.map(({ spec, raw20 }) => {
+    const rotated20 = [
+      ...raw20.slice(12, 20), // former Part B (8 items) -> now tested as Part A Recall!
+      ...raw20.slice(8, 12),  // 4 items -> Part A Recall (shuffled positions)
+      ...raw20.slice(0, 8),   // former Part A (8 items) -> now tested as Part B 4-Choice Cloze!
+    ];
+    const items = buildFourChoiceTestItems(rotated20, allG2Distractors, cleanMeaningDisplay, spec.week + 29);
+    return {
+      week: spec.week,
+      form: 'B',
+      gradeId: 'eiken_2',
+      phase: spec.phase,
+      theme: `${spec.theme}［再試Form B］`,
       itemCount: items.length,
       passingScore: 16,
       items,
@@ -1482,12 +1579,13 @@ function main() {
       if (rawPicked.length < 20) rawPicked.push(...take(cleanRows, 20 - rawPicked.length));
       return {
         week: sp.week,
+        form: 'A' as const,
         gradeId,
         phase: sp.phase,
         theme: sp.theme,
         itemCount: 20,
         passingScore: 16,
-        items: buildFourChoiceTestItems(rawPicked.slice(0, 20), cleanRows, cleanMeaningDisplay),
+        items: buildFourChoiceTestItems(rawPicked.slice(0, 20), cleanRows, cleanMeaningDisplay, sp.week + 7),
       };
     });
   };
@@ -1513,7 +1611,7 @@ function main() {
   const p2ReadCov = readingPassageCoverage.eiken_pre2;
 
   const auditReport = {
-    schemaVersion: '2.0.0',
+    schemaVersion: '3.0.0',
     generatedBy: 'scripts/sugoroku-vocab-audit.ts',
     generatedFor: 'オンライン塾「すごろく」× マナトビ英検（3か月英検2級短期合格カリキュラム＆準2プラス橋渡し対応）',
     auditPolicy: {
@@ -1557,11 +1655,11 @@ function main() {
   const reportJsonPath = resolve(OUT_DIR, 'vocab_cefr_audit_report.json');
   writeFileSync(reportJsonPath, JSON.stringify(auditReport, null, 2) + '\n', 'utf8');
 
-  // 7. Write sugoroku_foundation_vocab_filter.json
+  // 7. Write sugoroku_foundation_vocab_filter.json (v3.0.0)
   const filterJson = {
-    schemaVersion: '2.0.0',
+    schemaVersion: '3.0.0',
     description:
-      'すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 2級12週（240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター',
+      'すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 品詞一致4択対応 2級Form A/B（各240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター',
     recommendedGeneralPoolChaptersForGrade2: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'],
     excludedGeneralPoolChaptersForGrade2: ['lv4', 'ilv3'],
     b1b2ParaphraseDictionary: B1_B2_PARAPHRASE_HINTS,
@@ -1586,6 +1684,7 @@ function main() {
       },
     },
     grade2WeeklyVocabTests12Weeks: weeklyTests,
+    grade2WeeklyVocabRetestsFormB12Weeks: weeklyRetestsFormB,
     pre2PlusBridgeVocabTests4Weeks: pre2PlusBridgeTests,
     pre2FoundationVocabTests4Weeks: pre2FoundationTests,
   };
@@ -1673,18 +1772,79 @@ function main() {
     '',
     '---',
     '',
-    '## 6. 整備済み 印刷配布用PDF教材セット（全3冊・計50ページ）',
+    '## 6. 整備済み 印刷配布用PDF教材フルスイート（全5冊・計83ページ・全頁文字重なりゼロ＆純粋白黒検証済）',
     '',
-    '1. **`sugoroku_eiken2_12week_curriculum_route.pdf`（全6ページ）**：英検2級 3か月（12週間）合格モデルカリキュラム＆S-CBT逆算ルート表＋生徒用達成チェックシート',
-    '2. **`sugoroku_eiken2_weekly_vocab_tests_12w.pdf`（全26ページ）**：英検2級 必須語彙 週次確認小テスト＆解答解説（全12回・240語／記述＋文脈ヒント＋直前総点検60選）',
-    '3. **`sugoroku_pre2plus_bridge_4week_pack.pdf`（全18ページ）**：いきなり2級が厳しい生徒のための『準2級・準2級プラス 段階ブリッジ学習ルート＆基礎確認小テスト（全8回・160語）』',
+    '1. **`sugoroku_eiken2_12week_curriculum_route.pdf`（全6ページ）**：英検2級 3か月（12週間）合格モデルカリキュラム＆S-CBT逆算ルート表＋4技能CEFR実証表＋生徒用達成チェックシート',
+    '2. **`sugoroku_eiken2_weekly_vocab_tests_12w.pdf`（全26ページ）**：英検2級 必須語彙 週次確認小テスト［本試験 Form A］＆解答解説（全12回・240語／Part B全文表示・品詞一致4択・直前60選付）',
+    '3. **`sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf`（全25ページ）**：15点以下不合格者用『週次確認小テスト 再テスト別フォーム［Form B］＆解答解説』（番号丸暗記を防止するPart A/B入れ替え＆新選択肢構成）',
+    '4. **`sugoroku_pre2plus_bridge_4week_pack.pdf`（全18ページ）**：いきなり2級が厳しい生徒のための『準2級・準2級プラス 段階ブリッジ学習ルート＆基礎確認小テスト（全8回・160語）』',
+    '5. **`sugoroku_eiken2_scbt_writing_speaking_handbook.pdf`（全8ページ）**：運動部生＆個別指導講師のための『英検2級 S-CBT面接・英文要約・意見英作文 即戦力テンプレート＆大問1難問消去法ハンドブック』',
     '',
   ];
 
   const summaryMdPath = resolve(OUT_DIR, 'vocab_cefr_audit_summary.md');
   writeFileSync(summaryMdPath, mdLines.join('\n'), 'utf8');
 
-  console.log('=== Sugoroku Vocabulary & 4-Skill CEFR Audit v2 Complete ===');
+  // 9. Auto-sync lightweight TypeScript module `src/sugoroku/curriculum/vocabQuizData.ts`
+  // IMPORTANT: Keep TypeScript AST tiny (<680MB `tsc --noEmit` heap ceiling) by using explicit interfaces
+  // and `JSON.parse(...)` on single string literals rather than 640 nested TS object-literal AST nodes!
+  const tsDir = resolve(APP_ROOT, 'src/sugoroku/curriculum');
+  mkdirSync(tsDir, { recursive: true });
+  const tsLines = [
+    '// Auto-generated by scripts/sugoroku-vocab-audit.ts (v3.0.0) — DO NOT EDIT MANUALLY',
+    '',
+    'export interface SugorokuQuizItemData {',
+    '  no: number;',
+    '  id: string;',
+    '  rawLevel: string;',
+    '  tierLabel: string;',
+    '  posGroup: string;',
+    '  word: string;',
+    '  meaning: string;',
+    '  cefr: string;',
+    '  subBand: string;',
+    '  exampleSentence: string;',
+    '  exampleTranslation: string;',
+    '  clozeSentence: string;',
+    '  choicesJa: [string, string, string, string];',
+    '  answerIndexJa: number;',
+    '  choicesEn: [string, string, string, string];',
+    '  answerIndexEn: number;',
+    '}',
+    '',
+    'export interface SugorokuWeeklyQuizData {',
+    '  week: number;',
+    '  form: "A" | "B";',
+    '  gradeId: string;',
+    '  phase: string;',
+    '  theme: string;',
+    '  itemCount: number;',
+    '  passingScore: number;',
+    '  items: SugorokuQuizItemData[];',
+    '}',
+    '',
+    'export interface SugorokuGradeFilterSummary {',
+    '  totalCount: number;',
+    '  approvedCount: number;',
+    '  excludedCount: number;',
+    '  excludedWordIds: string[];',
+    '}',
+    '',
+    `export const SUGOROKU_EXCLUDED_WORDBOOK_IDS: Record<'eiken_pre2' | 'eiken_pre2plus' | 'eiken_2', SugorokuGradeFilterSummary> = JSON.parse(${JSON.stringify(JSON.stringify(filterJson.wordbookFoundationFilter))});`,
+    '',
+    `export const SUGOROKU_WEEKLY_QUIZ_BANKS: Record<'grade2FormA' | 'grade2FormB' | 'pre2PlusBridge' | 'pre2Foundation', SugorokuWeeklyQuizData[]> = JSON.parse(${JSON.stringify(
+      JSON.stringify({
+        grade2FormA: filterJson.grade2WeeklyVocabTests12Weeks,
+        grade2FormB: filterJson.grade2WeeklyVocabRetestsFormB12Weeks,
+        pre2PlusBridge: filterJson.pre2PlusBridgeVocabTests4Weeks,
+        pre2Foundation: filterJson.pre2FoundationVocabTests4Weeks,
+      }),
+    )});`,
+    '',
+  ];
+  writeFileSync(resolve(tsDir, 'vocabQuizData.ts'), tsLines.join('\n'), 'utf8');
+
+  console.log('=== Sugoroku Vocabulary & 4-Skill CEFR Audit v3 Complete ===');
   console.log(
     `  Reading B2 Coverage  : Pre-2=${p2ReadCov.cumulativeCoveragePercent.upToB2}%, Pre-2+=${p2pReadCov.cumulativeCoveragePercent.upToB2}%, Grade2=${g2ReadCov.cumulativeCoveragePercent.upToB2}%`,
   );

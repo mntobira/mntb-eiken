@@ -15,7 +15,12 @@ export interface SugorokuPrintablePdfEntry {
   title: string;
   subtitle: string;
   gradeId: SugorokuTargetGradeId;
-  category: 'curriculum_route' | 'weekly_vocab_test' | 'stepup_bridge_pack';
+  category:
+    | 'curriculum_route'
+    | 'weekly_vocab_test'
+    | 'weekly_vocab_retest_form_b'
+    | 'stepup_bridge_pack'
+    | 'scbt_strategy_handbook';
   pages: number;
   publicUrl: string;
   deliverablePath: string;
@@ -63,7 +68,7 @@ export interface SugorokuPlacementRecommendation {
   recommendedPdfIds: readonly string[];
 }
 
-/** 講師用PDF教材棚にそのまま追加できるすごろく専用白黒印刷PDF 3冊（計50ページ・文字重なりゼロ検証済） */
+/** 講師用PDF教材棚にそのまま追加できるすごろく専用白黒印刷PDF 5冊フルスイート（計83ページ・文字重なりゼロ＆純粋白黒検証済） */
 export const SUGOROKU_CURRICULUM_PDF_SHELF: readonly SugorokuPrintablePdfEntry[] = [
   {
     id: 'sugoroku_pdf_eiken2_route_12w',
@@ -78,14 +83,25 @@ export const SUGOROKU_CURRICULUM_PDF_SHELF: readonly SugorokuPrintablePdfEntry[]
   },
   {
     id: 'sugoroku_pdf_eiken2_weekly_vocab_12w',
-    title: '英検2級 必須語彙 週次確認小テスト＆解答冊子（全12回・240語）',
-    subtitle: 'Part A 意味記述12問 ＋ Part B 本番大問1形式4択空所補充8問（合格基準16/20点・直前60選付）',
+    title: '英検2級 必須語彙 週次確認小テスト［本試験 Form A］＆解答冊子（全12回・240語）',
+    subtitle: 'Part A 意味記述12問 ＋ Part B 本番大問1形式4択空所補充8問（全文掲載・品詞一致4択・直前60選付）',
     gradeId: 'eiken_2',
     category: 'weekly_vocab_test',
     pages: 26,
     publicUrl: '/sugoroku/sugoroku_eiken2_weekly_vocab_tests_12w.pdf',
     deliverablePath: 'deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_tests_12w.pdf',
     recommendedTiming: '毎週の個別指導冒頭5分（問題p.2〜13／解答p.14〜25／直前総点検p.26）',
+  },
+  {
+    id: 'sugoroku_pdf_eiken2_weekly_vocab_retest_form_b_12w',
+    title: '英検2級 週次語彙テスト『再テスト専用 別フォーム［Form B］』＆解答冊子（全12回）',
+    subtitle: '15点以下不合格者用｜番号丸暗記を防ぐ「記述⇔4択クロス入れ替え＋同品詞別選択肢」構成',
+    gradeId: 'eiken_2',
+    category: 'weekly_vocab_retest_form_b',
+    pages: 25,
+    publicUrl: '/sugoroku/sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf',
+    deliverablePath: 'deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf',
+    recommendedTiming: 'Form Aで15点以下だった生徒の次回授業冒頭・または週末オンライン再テスト',
   },
   {
     id: 'sugoroku_pdf_pre2plus_bridge_8stages',
@@ -97,6 +113,17 @@ export const SUGOROKU_CURRICULUM_PDF_SHELF: readonly SugorokuPrintablePdfEntry[]
     publicUrl: '/sugoroku/sugoroku_pre2plus_bridge_4week_pack.pdf',
     deliverablePath: 'deliverables/sugoroku/sugoroku_pre2plus_bridge_4week_pack.pdf',
     recommendedTiming: '2級初回診断40〜54%はStage 05〜08（4週）、40%未満はStage 01〜08（8週）を先行処方',
+  },
+  {
+    id: 'sugoroku_pdf_eiken2_scbt_handbook_8p',
+    title: '英検2級 S-CBT面接・新形式要約・英作文＆大問1難問消去法 実践ハンドブック',
+    subtitle: '85分時間配分・面接No.1〜4黄金型・45-55語要約3文骨格・英作文6大理由・大問1 C1全45問フォロー表',
+    gradeId: 'eiken_2',
+    category: 'scbt_strategy_handbook',
+    pages: 8,
+    publicUrl: '/sugoroku/sugoroku_eiken2_scbt_writing_speaking_handbook.pdf',
+    deliverablePath: 'deliverables/sugoroku/sugoroku_eiken2_scbt_writing_speaking_handbook.pdf',
+    recommendedTiming: 'Week 3（要約導入）・Week 5（S-CBT録音開始）・S-CBT試験直前メンタリング・講師添削時',
   },
 ] as const;
 
@@ -600,4 +627,93 @@ export function getSugorokuBridgeStagePreset(stage: number): SugorokuBridgeStage
 export function lookupB1B2ParaphraseHint(word: string): string | null {
   const key = word.trim().toLowerCase();
   return SUGOROKU_C1_TO_B1B2_PARAPHRASE_MAP[key] ?? null;
+}
+
+import { SUGOROKU_EXCLUDED_WORDBOOK_IDS, SUGOROKU_WEEKLY_QUIZ_BANKS } from './vocabQuizData';
+
+export { SUGOROKU_EXCLUDED_WORDBOOK_IDS, SUGOROKU_WEEKLY_QUIZ_BANKS };
+
+const EXCLUDED_SETS_CACHE: Record<SugorokuTargetGradeId, ReadonlySet<string>> = {
+  eiken_2: new Set<string>(SUGOROKU_EXCLUDED_WORDBOOK_IDS.eiken_2.excludedWordIds),
+  eiken_pre2plus: new Set<string>(SUGOROKU_EXCLUDED_WORDBOOK_IDS.eiken_pre2plus.excludedWordIds),
+  eiken_pre2: new Set<string>(SUGOROKU_EXCLUDED_WORDBOOK_IDS.eiken_pre2.excludedWordIds),
+};
+
+/**
+ * 単語帳エントリID（例: `eiken-word-2-a-sustainable`）がすごろく「基礎重視モード（CEFR B1〜B2前半）」で
+ * 学習対象として承認されているかを O(1) で判定する。
+ */
+export function isSugorokuFoundationApprovedWordId(
+  gradeId: SugorokuTargetGradeId,
+  wordId: string,
+): boolean {
+  return !EXCLUDED_SETS_CACHE[gradeId].has(wordId);
+}
+
+export type SugorokuQuizTrack = 'grade2FormA' | 'grade2FormB' | 'pre2PlusBridge' | 'pre2Foundation';
+
+export interface SugorokuOnlineQuizGradingResult {
+  track: SugorokuQuizTrack;
+  week: number;
+  score: number;
+  total: number;
+  passingScore: number;
+  passed: boolean;
+  nextAction: 'PASS_ADVANCE' | 'RETEST_FORM_B_REQUIRED' | 'REVIEW_STAGE_REQUIRED';
+  missedWordIds: string[];
+  missedWordsSummary: Array<{ no: number; word: string; meaning: string; exampleSentence: string }>;
+}
+
+/**
+ * アプリ画面上で週次20問テスト（4択モード：Part A は日本語4択 `choicesJa`、Part B は英語空所補充4択 `choicesEn`）を
+ * 即時自動採点し、15点以下の場合は Form B 再テスト案内と復習単語IDリストを返す。
+ */
+export function gradeSugorokuWeeklyQuiz(
+  track: SugorokuQuizTrack,
+  week: number,
+  selectedIndices: readonly number[],
+): SugorokuOnlineQuizGradingResult {
+  const bank = SUGOROKU_WEEKLY_QUIZ_BANKS[track];
+  const quiz = bank.find(q => q.week === week);
+  if (!quiz) {
+    throw new Error(`Sugoroku weekly quiz not found: track=${track}, week=${week}`);
+  }
+
+  let score = 0;
+  const missedWordIds: string[] = [];
+  const missedWordsSummary: Array<{ no: number; word: string; meaning: string; exampleSentence: string }> = [];
+
+  quiz.items.forEach((item, idx) => {
+    const expectedIdx = item.no <= 12 ? item.answerIndexJa : item.answerIndexEn;
+    if (selectedIndices[idx] === expectedIdx) {
+      score++;
+    } else {
+      missedWordIds.push(item.id);
+      missedWordsSummary.push({
+        no: item.no,
+        word: item.word,
+        meaning: item.meaning,
+        exampleSentence: item.exampleSentence,
+      });
+    }
+  });
+
+  const passed = score >= quiz.passingScore;
+  const nextAction = passed
+    ? 'PASS_ADVANCE'
+    : track === 'grade2FormA'
+      ? 'RETEST_FORM_B_REQUIRED'
+      : 'REVIEW_STAGE_REQUIRED';
+
+  return {
+    track,
+    week,
+    score,
+    total: quiz.itemCount,
+    passingScore: quiz.passingScore,
+    passed,
+    nextAction,
+    missedWordIds,
+    missedWordsSummary,
+  };
 }
