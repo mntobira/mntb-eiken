@@ -1,5 +1,8 @@
 import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
-import type { SugorokuWritingSubmissionDoc } from '../shared/types';
+import type {
+  SugorokuWritingRubricScores,
+  SugorokuWritingSubmissionDoc,
+} from '../shared/types';
 
 export interface WritingPromptContext {
   grade: EikenGrade;
@@ -13,6 +16,7 @@ export interface WritingPromptContext {
 /**
  * 講師手元の Gemini / ChatGPT にそのまま貼り付けて添削下書きを作れる
  * 「英検4観点採点＋優しい添削補助プロンプト」を生成する（API従量課金ゼロ運用）。
+ * さらに出力フォーマットを固定タグ付きにすることで、AIの返答を1クリックで添削フォームへ自動取り込み可能にしている。
  */
 export function buildWritingAiReviewPrompt(
   submission: Pick<
@@ -68,18 +72,98 @@ export function buildWritingAiReviewPrompt(
 
   lines.push(
     ``,
-    `■ 出力してほしい形式（このまま講師が最終確認・編集して生徒へ返却します）`,
-    `1. 【英検4観点スコア案（各0〜4点・合計16点満点）】`,
-    `   - 内容（Content）：□ / 4点（課題で求められた要素・理由2つ等に的確に答えているか）`,
-    `   - 構成（Structure）：□ / 4点（論理展開・接続表現 First / Second / Therefore 等が自然か）`,
-    `   - 語彙（Vocabulary）：□ / 4点（${gradeLabel}に適した語句・スペルが正確に使えているか）`,
-    `   - 文法（Grammar）：□ / 4点（主語と動詞の一致・時制・冠詞・文構造が正確か）`,
-    `   - 合計：□□ / 16点`,
-    `2. 【良かった点（褒めポイント 2点）】`,
-    `3. 【最優先で直すともっと伸びるポイント（2点に絞って具体的に）】`,
-    `4. 【生徒の元の文を活かした添削例（Corrected Version・語数明記）】`,
-    `5. 【次回授業・宿題に向けた一言アドバイス】`,
+    `■ 出力形式（管理画面への自動取り込みに対応するため、以下の見出し記号をそのまま使って出力してください）`,
+    `[SCORES]`,
+    `内容（Content）: X/4`,
+    `構成（Structure）: X/4`,
+    `語彙（Vocabulary）: X/4`,
+    `文法（Grammar）: X/4`,
+    `[/SCORES]`,
+    ``,
+    `[CORRECTED]`,
+    `（生徒の元の文を活かした自然な修正英文のみをここに記載）`,
+    `[/CORRECTED]`,
+    ``,
+    `[COMMENT]`,
+    `（生徒へ返却する温かい総合講評と、最優先で直すと伸びるポイント2点を日本語で記載）`,
+    `[/COMMENT]`,
+    ``,
+    `[STRENGTHS]`,
+    `（◎ 良かった点を1〜2行で記載）`,
+    `[/STRENGTHS]`,
+    ``,
+    `[NEXT_ACTIONS]`,
+    `（▶ 次回意識するアクションを1〜2行で記載）`,
+    `[/NEXT_ACTIONS]`,
   );
 
   return lines.join('\n');
+}
+
+export interface ParsedAiWritingDraft {
+  rubricScores: Partial<SugorokuWritingRubricScores>;
+  correctedText?: string;
+  comment?: string;
+  strengths?: string;
+  nextActions?: string;
+}
+
+function clamp0to4(val: number): number {
+  return Math.max(0, Math.min(4, Math.round(val)));
+}
+
+/**
+ * Gemini / ChatGPT からコピーした返答テキストを解析し、
+ * 4観点スコア・添削英文・講評コメント・良かった点・次回アクションを自動抽出する。
+ * タグ形式（[SCORES]..[/SCORES]）にも、自由な箇条書き形式にも柔軟に対応する。
+ */
+export function parseAiReviewResponse(rawResponse: string): ParsedAiWritingDraft {
+  const text = String(rawResponse ?? '').trim();
+  const rubricScores: Partial<SugorokuWritingRubricScores> = {};
+
+  const matchScore = (pattern: RegExp): number | undefined => {
+    const m = pattern.exec(text);
+    if (!m) return undefined;
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? clamp0to4(n) : undefined;
+  };
+
+  const c = matchScore(/(?:内容|Content)[^\d\n]{0,16}([0-4])(?:\s*\/\s*4|\s*点)?/i);
+  const s = matchScore(/(?:構成|Structure)[^\d\n]{0,16}([0-4])(?:\s*\/\s*4|\s*点)?/i);
+  const v = matchScore(/(?:語彙|Vocabulary)[^\d\n]{0,16}([0-4])(?:\s*\/\s*4|\s*点)?/i);
+  const g = matchScore(/(?:文法|Grammar)[^\d\n]{0,16}([0-4])(?:\s*\/\s*4|\s*点)?/i);
+
+  if (c !== undefined) rubricScores.content = c;
+  if (s !== undefined) rubricScores.structure = s;
+  if (v !== undefined) rubricScores.vocabulary = v;
+  if (g !== undefined) rubricScores.grammar = g;
+
+  const extractTag = (tag: string): string | undefined => {
+    const re = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i');
+    const m = re.exec(text);
+    if (!m) return undefined;
+    const cleaned = m[1].replace(/^```[a-z]*\n?/i, '').replace(/\n?```$/i, '').trim();
+    return cleaned || undefined;
+  };
+
+  const correctedText = extractTag('CORRECTED');
+  const comment = extractTag('COMMENT');
+  const strengths = extractTag('STRENGTHS');
+  const nextActions = extractTag('NEXT_ACTIONS');
+
+  // タグなしで返ってきた場合のフォールバック：全体を講評コメントとして取り込む
+  if (!comment && !correctedText && text.length > 0) {
+    return {
+      rubricScores,
+      comment: text,
+    };
+  }
+
+  return {
+    rubricScores,
+    correctedText,
+    comment,
+    strengths,
+    nextActions,
+  };
 }

@@ -1,6 +1,7 @@
 import { EIKEN_GRADES } from '../../eiken/config';
 import { wordCount } from '../../eiken/writingProgress';
 import type { SugorokuWritingSubmissionDoc } from '../shared/types';
+import { computeEnglishDiff } from './diffHighlight';
 
 export interface FeedbackSheetOptions {
   schoolName?: string;
@@ -30,9 +31,25 @@ function formatDateTimeJp(ms: number | undefined): string {
   return `${y}/${m}/${day} ${hh}:${mm}`;
 }
 
+function renderDiffMarkup(original: string, corrected: string): string {
+  const segments = computeEnglishDiff(original, corrected);
+  return segments
+    .map(seg => {
+      const safe = escapeHtml(seg.text);
+      if (seg.kind === 'removed') {
+        return `<del class="diff-del">${safe}</del>`;
+      }
+      if (seg.kind === 'added') {
+        return `<ins class="diff-ins">${safe}</ins>`;
+      }
+      return safe;
+    })
+    .join('');
+}
+
 /**
  * A4 白黒印刷・PDF保存に最適化された『ライティング添削フィードバックシート』HTMLを生成する。
- * 次回授業での配布・家庭学習での書き直し復習にそのまま使える高コントラスト設計。
+ * 次回授業での配布・家庭学習での書き直し復習にそのまま使える高コントラスト設計（単語単位の添削差分表示付き）。
  */
 export function buildFeedbackSheetHtml(
   submission: SugorokuWritingSubmissionDoc,
@@ -46,6 +63,9 @@ export function buildFeedbackSheetHtml(
   const rubric = review?.rubricScores;
   const maxScore = review?.maxScore ?? 16;
   const correctedWords = review?.correctedText ? wordCount(review.correctedText) : 0;
+  const hasDistinctCorrection =
+    Boolean(review?.correctedText) &&
+    review!.correctedText!.trim() !== submission.text.trim();
 
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -56,7 +76,7 @@ export function buildFeedbackSheetHtml(
   <style>
     @page {
       size: A4 portrait;
-      margin: 12mm 14mm;
+      margin: 11mm 13mm;
     }
     * {
       box-sizing: border-box;
@@ -69,8 +89,8 @@ export function buildFeedbackSheetHtml(
       font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
       color: #111111;
       background: #f5f5f5;
-      line-height: 1.55;
-      font-size: 10.5pt;
+      line-height: 1.52;
+      font-size: 10pt;
     }
     .toolbar {
       max-width: 190mm;
@@ -103,55 +123,55 @@ export function buildFeedbackSheetHtml(
       max-width: 190mm;
       margin: 0 auto;
       background: #ffffff;
-      padding: 12mm 13mm;
+      padding: 11mm 12mm;
       border: 1px solid #cccccc;
     }
     .sheet-header {
       border-bottom: 2.5px solid #111111;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
+      padding-bottom: 7px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       gap: 12px;
     }
     .sheet-brand {
-      font-size: 9pt;
+      font-size: 8.8pt;
       font-weight: 700;
       letter-spacing: 0.04em;
     }
     .sheet-title {
-      font-size: 15.5pt;
+      font-size: 15pt;
       font-weight: 800;
       margin: 2px 0 0;
     }
     .meta-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 12px;
-      font-size: 9.5pt;
+      margin-bottom: 10px;
+      font-size: 9.2pt;
     }
     .meta-table th,
     .meta-table td {
       border: 1px solid #222222;
-      padding: 5px 8px;
+      padding: 4px 8px;
       text-align: left;
     }
     .meta-table th {
       background: #eeeeee;
-      width: 18%;
+      width: 17%;
       font-weight: 700;
     }
     .score-grid {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 12px;
-      font-size: 9.5pt;
+      margin-bottom: 10px;
+      font-size: 9.2pt;
     }
     .score-grid th,
     .score-grid td {
       border: 1px solid #222222;
-      padding: 5px 6px;
+      padding: 4px 6px;
       text-align: center;
     }
     .score-grid th {
@@ -159,35 +179,50 @@ export function buildFeedbackSheetHtml(
       font-weight: 700;
     }
     .score-total {
-      font-size: 13pt;
+      font-size: 12.5pt;
       font-weight: 800;
     }
     .section-box {
       border: 1.2px solid #222222;
       border-radius: 4px;
-      padding: 8px 10px;
-      margin-bottom: 10px;
+      padding: 7px 10px;
+      margin-bottom: 9px;
       page-break-inside: avoid;
     }
     .section-title {
-      font-size: 10pt;
+      font-size: 9.8pt;
       font-weight: 800;
       border-bottom: 1px solid #444444;
       padding-bottom: 3px;
       margin: 0 0 6px;
       display: flex;
       justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
     }
     .en-text {
       font-family: "Times New Roman", Georgia, serif;
-      font-size: 11pt;
-      line-height: 1.68;
+      font-size: 10.8pt;
+      line-height: 1.65;
       white-space: pre-wrap;
       margin: 0;
     }
+    .diff-del {
+      text-decoration: line-through;
+      color: #444444;
+      background: #eeeeee;
+      padding: 0 2px;
+      margin-right: 2px;
+    }
+    .diff-ins {
+      text-decoration: none;
+      font-weight: 700;
+      border-bottom: 2px solid #111111;
+      padding: 0 2px;
+    }
     .jp-text {
-      font-size: 9.8pt;
-      line-height: 1.6;
+      font-size: 9.5pt;
+      line-height: 1.58;
       white-space: pre-wrap;
       margin: 0;
     }
@@ -195,23 +230,23 @@ export function buildFeedbackSheetHtml(
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .warn-list {
       margin: 4px 0 0;
       padding-left: 18px;
-      font-size: 9pt;
+      font-size: 8.8pt;
     }
     .rewrite-lines {
-      margin-top: 6px;
+      margin-top: 4px;
     }
     .rewrite-line {
-      height: 22px;
+      height: 21px;
       border-bottom: 1px dashed #666666;
     }
     .footer-note {
-      margin-top: 8px;
-      font-size: 8.5pt;
+      margin-top: 6px;
+      font-size: 8.2pt;
       color: #333333;
       text-align: right;
     }
@@ -246,7 +281,7 @@ export function buildFeedbackSheetHtml(
         <div class="sheet-brand">${escapeHtml(schoolLabel)}</div>
         <h1 class="sheet-title">英検ライティング 添削フィードバックシート</h1>
       </div>
-      <div style="text-align:right;font-size:9pt;">
+      <div style="text-align:right;font-size:8.8pt;">
         提出日時：${escapeHtml(formatDateTimeJp(submission.submittedAt))}<br />
         添削返却：${escapeHtml(formatDateTimeJp(review?.reviewedAt))}
       </div>
@@ -286,7 +321,9 @@ export function buildFeedbackSheetHtml(
           <td>${rubric ? `${rubric.grammar} / 4` : '― / 4'}</td>
           <td class="score-total">${review ? `${review.score} / ${maxScore}` : `未採点 / ${maxScore}`}</td>
           <td><strong>${submission.wordCount}</strong> words${
-    options?.targetWordsLabel ? `<br /><span style="font-size:8pt;">(${escapeHtml(options.targetWordsLabel)})</span>` : ''
+    options?.targetWordsLabel
+      ? `<br /><span style="font-size:7.8pt;">(${escapeHtml(options.targetWordsLabel)})</span>`
+      : ''
   }</td>
         </tr>
       </tbody>
@@ -317,10 +354,22 @@ export function buildFeedbackSheetHtml(
     </section>
 
     ${
+      hasDistinctCorrection
+        ? `<section class="section-box">
+      <h2 class="section-title">
+        <span>2. 添削箇所の比較（取り消し線＝削除 ／ 太字下線＝修正・追加）</span>
+        <span>Before → After</span>
+      </h2>
+      <p class="en-text" lang="en">${renderDiffMarkup(submission.text, review!.correctedText!)}</p>
+    </section>`
+        : ''
+    }
+
+    ${
       review?.correctedText
         ? `<section class="section-box">
       <h2 class="section-title">
-        <span>2. 先生の添削例・自然な書き直し案（Corrected Example）</span>
+        <span>${hasDistinctCorrection ? '3.' : '2.'} 完成版モデル英文（Corrected Clean Version）</span>
         <span>${correctedWords} words</span>
       </h2>
       <p class="en-text" lang="en">${escapeHtml(review.correctedText)}</p>
@@ -329,16 +378,16 @@ export function buildFeedbackSheetHtml(
     }
 
     <section class="section-box">
-      <h2 class="section-title"><span>3. 先生からの講評・アドバイス</span></h2>
+      <h2 class="section-title"><span>${hasDistinctCorrection ? '4.' : '3.'} 先生からの講評・アドバイス</span></h2>
       <p class="jp-text">${escapeHtml(review?.comment || '（添削コメント記入欄）')}</p>
       ${
         review?.strengths || review?.nextActions
-          ? `<div class="two-col" style="margin-top:8px;">
-          <div style="border-top:1px dotted #555;padding-top:5px;">
+          ? `<div class="two-col" style="margin-top:7px;">
+          <div style="border-top:1px dotted #555;padding-top:4px;">
             <strong>◎ 良かったポイント</strong>
             <p class="jp-text">${escapeHtml(review?.strengths || '―')}</p>
           </div>
-          <div style="border-top:1px dotted #555;padding-top:5px;">
+          <div style="border-top:1px dotted #555;padding-top:4px;">
             <strong>▶ 次回意識するアクション</strong>
             <p class="jp-text">${escapeHtml(review?.nextActions || '―')}</p>
           </div>
@@ -348,9 +397,8 @@ export function buildFeedbackSheetHtml(
     </section>
 
     <section class="section-box">
-      <h2 class="section-title"><span>4. 復習・清書トレーニング欄（直した表現を声に出しながら書いてみよう）</span></h2>
+      <h2 class="section-title"><span>復習・清書トレーニング欄（直した表現を声に出しながら書いてみよう）</span></h2>
       <div class="rewrite-lines">
-        <div class="rewrite-line"></div>
         <div class="rewrite-line"></div>
         <div class="rewrite-line"></div>
         <div class="rewrite-line"></div>
@@ -363,10 +411,6 @@ export function buildFeedbackSheetHtml(
 </html>`;
 }
 
-/**
- * 新しいウィンドウ（またはポップアップブロック時は Blob URL タブ／印刷用 iframe）で
- * 添削フィードバックシートを開き、印刷または PDF 保存を実行できるようにする。
- */
 export function openFeedbackSheetPrintWindow(
   submission: SugorokuWritingSubmissionDoc,
   options?: FeedbackSheetOptions,
@@ -382,7 +426,6 @@ export function openFeedbackSheetPrintWindow(
     return true;
   }
 
-  // iPad Safari 等でポップアップがブロックされた場合は Blob URL でダウンロード案内
   try {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);

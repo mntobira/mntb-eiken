@@ -205,15 +205,17 @@ export default function App() {
     if (typeof window === 'undefined') return;
     const portal = new URLSearchParams(window.location.search).get('portal');
     if (portal === 'review' || portal === 'writing-review' || portal === 'speaking-review') {
+      if (!auth.currentUser) setIsGuest(true);
       setHasEntered(true);
       setReviewHubInitialTab(portal === 'speaking-review' ? 'speaking' : 'writing');
       setReviewHubBackTo('home');
       setAppState('sugoroku_review');
     } else if (portal === 'speaking') {
+      if (!auth.currentUser) setIsGuest(true);
       setHasEntered(true);
       setAppState('speaking');
     }
-  }, [setAppState]);
+  }, [setAppState, setIsGuest]);
   useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });

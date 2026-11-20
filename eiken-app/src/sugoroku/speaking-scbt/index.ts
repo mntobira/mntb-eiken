@@ -33,3 +33,9 @@ export {
 } from './speakingStore';
 export { ScbtSpeakingPractice, type ScbtSpeakingPracticeProps } from './ScbtSpeakingPractice';
 export { TeacherSpeakingReviewTab } from './TeacherSpeakingReviewTab';
+export { playScbtBeep } from './scbtBeep';
+export {
+  buildSpeakingAiCoachPrompt,
+  buildSpeakingFeedbackSheetHtml,
+  openSpeakingFeedbackPrintWindow,
+} from './speakingFeedbackSheet';

@@ -2,9 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CheckCircle2,
   Clock,
+  Copy,
   FastForward,
   Pause,
   Play,
+  Printer,
   RefreshCw,
   Send,
 } from 'lucide-react';
@@ -17,6 +19,10 @@ import type {
 import { resolveSpeakingAudioUrl } from '../shared/storageClient';
 import { SUGOROKU_DEMO_CLASS_ID } from '../writing-review/writingStore';
 import { findSpeakingSetById } from './mockSpeakingSets';
+import {
+  buildSpeakingAiCoachPrompt,
+  openSpeakingFeedbackPrintWindow,
+} from './speakingFeedbackSheet';
 import {
   fetchClassSpeakingSubmissions,
   saveSpeakingReview,
@@ -53,6 +59,7 @@ export function TeacherSpeakingReviewTab({
   });
   const [comment, setComment] = useState('');
   const [teacherNameInput, setTeacherNameInput] = useState(reviewerName);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -98,7 +105,6 @@ export function TeacherSpeakingReviewTab({
     [selected],
   );
 
-  // 選択された提出の各パート音声URLを解決
   useEffect(() => {
     let cancelled = false;
     setContinuousPlaying(false);
@@ -149,7 +155,6 @@ export function TeacherSpeakingReviewTab({
     };
   }, [selected, matchedSet]);
 
-  // 再生速度変更時に即座にアクティブ audio 要素へ反映
   useEffect(() => {
     if (playerRef.current) {
       playerRef.current.playbackRate = speed;
@@ -212,6 +217,36 @@ export function TeacherSpeakingReviewTab({
     0,
   );
 
+  const handleCopySpeakingPrompt = async () => {
+    if (!selected) return;
+    const text = buildSpeakingAiCoachPrompt(selected, matchedSet, rubricScores, comment);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedPrompt(true);
+      setTimeout(() => setCopiedPrompt(false), 2500);
+    } catch {
+      setError('クリップボードへのコピーに失敗しました。');
+    }
+  };
+
+  const handlePrintSpeakingSheet = () => {
+    if (!selected) return;
+    const draftDoc: SugorokuSpeakingSubmissionDoc = {
+      ...selected,
+      review: {
+        reviewerUid: reviewerUid || 'sugoroku_staff',
+        reviewerName: teacherNameInput.trim() || reviewerName,
+        rubricScores,
+        comment: comment.trim() || selected.review?.comment || '',
+        reviewedAt: selected.review?.reviewedAt ?? Date.now(),
+      },
+    };
+    const opened = openSpeakingFeedbackPrintWindow(draftDoc, matchedSet);
+    if (!opened) {
+      setError('ブラウザのポップアップブロックを解除して再度お試しください。');
+    }
+  };
+
   const handleSave = async () => {
     if (!selected) return;
     if (!comment.trim()) {
@@ -241,8 +276,7 @@ export function TeacherSpeakingReviewTab({
 
   return (
     <div className="twr-wrap" data-sugoroku-teacher-speaking>
-      {/* シームレス連続再生用共有オーディオエンジン */}
-      <audio ref={playerRef} style={{ display: 'none' }} />
+      <audio ref={playerRef} hidden />
 
       <div className="twr-toolbar">
         <div className="twr-filters" role="group" aria-label="提出状態の絞り込み">
@@ -272,10 +306,9 @@ export function TeacherSpeakingReviewTab({
           </button>
         </div>
 
-        {/* 倍速コントロール */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+        <div className="twr-row-wrap">
           <FastForward size={15} color="#475569" aria-hidden="true" />
-          <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>再生速度：</span>
+          <small className="swr-muted-note">再生速度：</small>
           {PLAYBACK_SPEEDS.map(rate => (
             <button
               key={rate}
@@ -289,9 +322,8 @@ export function TeacherSpeakingReviewTab({
           ))}
           <button
             type="button"
-            className="twr-chip"
+            className="twr-chip twr-refresh-btn"
             onClick={() => void reload()}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
           >
             <RefreshCw size={13} aria-hidden="true" />
             更新
@@ -300,43 +332,17 @@ export function TeacherSpeakingReviewTab({
       </div>
 
       {error && (
-        <div
-          role="alert"
-          style={{
-            padding: '10px 14px',
-            borderRadius: '10px',
-            background: '#fdecea',
-            border: '1px solid #f5c6c0',
-            color: '#96342b',
-            fontSize: '13px',
-            fontWeight: 700,
-          }}
-        >
+        <div role="alert" className="twr-alert-error">
           {error}
         </div>
       )}
 
       {loading ? (
-        <p style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>
-          スピーキング録音データを読み込んでいます…
-        </p>
+        <p className="twr-loading-msg">スピーキング録音データを読み込んでいます…</p>
       ) : filtered.length === 0 ? (
-        <div
-          style={{
-            padding: '32px 20px',
-            textAlign: 'center',
-            background: '#fff',
-            borderRadius: '16px',
-            border: '1px solid #dfd9c8',
-          }}
-        >
-          <p style={{ margin: 0, fontWeight: 700, color: '#4b5563' }}>
-            該当するスピーキング提出はありません。
-          </p>
-        </div>
+        <div className="twr-empty-box">該当するスピーキング提出はありません。</div>
       ) : (
         <div className="twr-grid">
-          {/* 左：提出一覧 */}
           <div className="twr-list" role="list" aria-label="スピーキング提出一覧">
             {filtered.map(item => {
               const gLabel =
@@ -354,54 +360,22 @@ export function TeacherSpeakingReviewTab({
                   data-selected={isSelected}
                   onClick={() => setSelectedId(item.id || '')}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: '100%',
-                      gap: '6px',
-                    }}
-                  >
-                    <strong style={{ fontSize: '14px' }}>{item.studentName}</strong>
+                  <div className="twr-item-top">
+                    <strong>{item.studentName}</strong>
                     {item.status === 'reviewed' ? (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px',
-                          fontSize: '11.5px',
-                          fontWeight: 800,
-                          color: '#1f6b5c',
-                          background: '#e1f4ee',
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                        }}
-                      >
+                      <span className="twr-pill-done">
                         <CheckCircle2 size={12} /> 講評済
                       </span>
                     ) : (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px',
-                          fontSize: '11.5px',
-                          fontWeight: 800,
-                          color: '#9a3412',
-                          background: '#ffedd5',
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                        }}
-                      >
+                      <span className="twr-pill-pending">
                         <Clock size={12} /> 未確認
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: '#374151', fontWeight: 700 }}>
+                  <div className="twr-item-title">
                     [{gLabel}] {item.setTitle || item.setId}（計 {totalSec}秒）
                   </div>
-                  <div style={{ fontSize: '11.5px', color: '#6b7280' }}>
+                  <div className="twr-item-date">
                     {new Date(item.submittedAt).toLocaleString('ja-JP')}
                   </div>
                 </button>
@@ -409,51 +383,48 @@ export function TeacherSpeakingReviewTab({
             })}
           </div>
 
-          {/* 右：連続再生＆評価入力パネル */}
           {selected && (
             <section className="twr-detail" aria-label="選択した提出の音声再生と評価">
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800 }}>
-                    {selected.studentName} さんの S-CBT 録音
-                  </h3>
-                  <p style={{ margin: '3px 0 0', fontSize: '13px', color: '#4b5563' }}>
-                    {matchedSet?.title || selected.setTitle || selected.setId}
-                  </p>
+              <div className="twr-row-between">
+                <div className="twr-detail-head">
+                  <h3>{selected.studentName} さんの S-CBT 録音</h3>
+                  <p>{matchedSet?.title || selected.setTitle || selected.setId}</p>
                 </div>
 
-                {!continuousPlaying ? (
+                <div className="twr-row-wrap">
+                  {!continuousPlaying ? (
+                    <button
+                      type="button"
+                      className="scbt-primary-btn"
+                      onClick={() => void playPartAtIndex(0, true)}
+                      data-sugoroku-play-all
+                    >
+                      <Play size={16} aria-hidden="true" />
+                      全5パートを連続再生（{speed}x）
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="scbt-danger-btn"
+                      onClick={stopContinuousPlayback}
+                    >
+                      <Pause size={16} aria-hidden="true" />
+                      連続再生を停止（再生中：{activePart ? SCBT_PART_LABELS[activePart] : ''}）
+                    </button>
+                  )}
                   <button
                     type="button"
-                    className="scbt-primary-btn"
-                    onClick={() => void playPartAtIndex(0, true)}
-                    data-sugoroku-play-all
+                    className="twr-prompt-btn"
+                    onClick={() => void handleCopySpeakingPrompt()}
+                    data-sugoroku-copy-speaking-prompt
                   >
-                    <Play size={16} aria-hidden="true" />
-                    全5パートを連続再生（{speed}x）
+                    <Copy size={15} aria-hidden="true" />
+                    {copiedPrompt ? 'コピーしました！' : 'AI講評プロンプトをコピー'}
                   </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="scbt-danger-btn"
-                    onClick={stopContinuousPlayback}
-                  >
-                    <Pause size={16} aria-hidden="true" />
-                    連続再生を停止（再生中：{activePart ? SCBT_PART_LABELS[activePart] : ''}）
-                  </button>
-                )}
+                </div>
               </div>
 
-              {/* パート別音声リスト＋模範解答比較 */}
-              <div style={{ display: 'grid', gap: '8px' }}>
+              <div className="twr-list">
                 {SCBT_PART_ORDER.map((partId, idx) => {
                   const rec = selected.recordings.find(r => r.partId === partId);
                   const url = audioUrls[partId];
@@ -467,38 +438,24 @@ export function TeacherSpeakingReviewTab({
                     <div
                       key={partId}
                       className="scbt-review-part-row"
-                      style={
-                        isPlayingThis
-                          ? { borderColor: '#1f6b5c', background: '#eef9f6' }
-                          : undefined
-                      }
+                      data-playing={isPlayingThis}
                     >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          gap: '8px',
-                          flexWrap: 'wrap',
-                        }}
-                      >
+                      <div className="twr-row-between">
                         <div>
-                          <strong style={{ fontSize: '13.5px' }}>
-                            {SCBT_PART_LABELS[partId]}
-                          </strong>
+                          <strong>{SCBT_PART_LABELS[partId]}</strong>
                           {rec && (
-                            <small style={{ marginLeft: '8px', color: '#54626f' }}>
+                            <small className="swr-muted-note">
+                              {' '}
                               ({rec.durationSec}秒 ・ {rec.mimeType})
                             </small>
                           )}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <div className="twr-row-wrap">
                           {url ? (
                             <>
                               <button
                                 type="button"
-                                className="scbt-secondary-btn"
-                                style={{ minHeight: '34px', padding: '4px 10px', fontSize: '12.5px' }}
+                                className="scbt-secondary-btn swr-mini-btn"
                                 onClick={() => void playPartAtIndex(idx, false)}
                               >
                                 <Play size={13} aria-hidden="true" />
@@ -514,33 +471,29 @@ export function TeacherSpeakingReviewTab({
                               />
                             </>
                           ) : (
-                            <span style={{ fontSize: '12px', color: '#9ca3af' }}>
-                              音声読込中または未取得
-                            </span>
+                            <small className="swr-muted-note">音声読込中または未取得</small>
                           )}
                         </div>
                       </div>
 
                       {matchedSet && (
-                        <details style={{ fontSize: '12.5px', color: '#374151' }}>
-                          <summary style={{ cursor: 'pointer', fontWeight: 700, color: '#1f5c51' }}>
-                            設問文・模範解答・採点基準を表示
-                          </summary>
-                          <div style={{ marginTop: '6px', display: 'grid', gap: '4px' }}>
+                        <details className="twr-ref-details">
+                          <summary>設問文・模範解答・採点基準を表示</summary>
+                          <div className="twr-ref-body">
                             {partId === 'reading_aloud' ? (
-                              <p style={{ margin: 0 }} lang="en">
+                              <p lang="en">
                                 <strong>【音読本文】</strong> {matchedSet.passage}
                               </p>
                             ) : (
                               qSpec && (
                                 <>
-                                  <p style={{ margin: 0 }} lang="en">
+                                  <p lang="en">
                                     <strong>【質問】</strong> {qSpec.promptAudioScript}
                                   </p>
-                                  <p style={{ margin: 0, color: '#1f5c51' }} lang="en">
+                                  <p lang="en">
                                     <strong>【模範解答】</strong> {qSpec.modelAnswer}
                                   </p>
-                                  <ul style={{ margin: '2px 0 0', paddingLeft: '18px' }}>
+                                  <ul className="twr-warn-list">
                                     {qSpec.rubricPoints.map((pt, i) => (
                                       <li key={i}>{pt}</li>
                                     ))}
@@ -556,28 +509,12 @@ export function TeacherSpeakingReviewTab({
                 })}
               </div>
 
-              {/* ルーブリック点数入力 */}
               <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '6px',
-                  }}
-                >
-                  <strong style={{ fontSize: '13.5px' }}>パート別評価スコア</strong>
-                  <strong style={{ fontSize: '15px', color: '#1f5c51' }}>
-                    合計：{totalRubricScore} 点
-                  </strong>
+                <div className="twr-row-between">
+                  <strong>パート別評価スコア</strong>
+                  <strong className="swr-check-ok">合計：{totalRubricScore} 点</strong>
                 </div>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(125px, 1fr))',
-                    gap: '8px',
-                  }}
-                >
+                <div className="scbt-rubric-auto-grid">
                   {(
                     [
                       ['reading_aloud', '音読', 5],
@@ -632,20 +569,12 @@ export function TeacherSpeakingReviewTab({
                   rows={4}
                   value={comment}
                   onChange={e => setComment(e.target.value)}
-                  placeholder="発音の聞き取りやすさ、時制（過去形/現在進行形）、理由の述べ方などのフィードバックを入力してください。"
+                  placeholder="発音の聞き取りやすさ、時制（過去形/現在進行形）、理由の述べ方などのフィードバックを入力してください（上の「AI講評プロンプトをコピー」も活用できます）。"
                 />
               </div>
 
               {notice && (
-                <p
-                  role="status"
-                  style={{
-                    margin: 0,
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    color: '#1f6b5c',
-                  }}
-                >
+                <p role="status" className="twr-notice-ok">
                   {notice}
                 </p>
               )}
@@ -660,6 +589,15 @@ export function TeacherSpeakingReviewTab({
                 >
                   <Send size={15} aria-hidden="true" />
                   {saving ? '保存中…' : '評価・講評コメントを保存して生徒へ返却'}
+                </button>
+                <button
+                  type="button"
+                  className="twr-print-btn"
+                  onClick={handlePrintSpeakingSheet}
+                  data-sugoroku-print-speaking-sheet
+                >
+                  <Printer size={15} aria-hidden="true" />
+                  A4講評＆音読シート印刷 / PDF
                 </button>
               </div>
             </section>

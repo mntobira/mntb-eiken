@@ -550,6 +550,7 @@ export function EikenWriting({
             taskTitle={task.title}
             taskKind={taskKindInfo.kind}
             instruction={task.instruction}
+            sourceText={task.source}
             targetWordsLabel={task.target}
             targetRange={targetRange}
             text={current.text}

@@ -5,10 +5,13 @@ import {
   CheckCircle2,
   Mic,
   Play,
+  Printer,
   RotateCcw,
   Send,
   Square,
   Volume2,
+  VolumeX,
+  Zap,
 } from 'lucide-react';
 import { auth } from '../../firebase';
 import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
@@ -25,8 +28,10 @@ import {
   type ActiveRecordingHandle,
   type RecordedClip,
 } from './audioRecorder';
-import { SCBT_SPEAKING_SETS } from './mockSpeakingSets';
+import { findSpeakingSetById, SCBT_SPEAKING_SETS } from './mockSpeakingSets';
+import { playScbtBeep } from './scbtBeep';
 import { ScbtIllustrationCard } from './ScbtIllustrationCard';
+import { openSpeakingFeedbackPrintWindow } from './speakingFeedbackSheet';
 import {
   fetchStudentSpeakingSubmissions,
   submitSpeakingSession,
@@ -36,6 +41,7 @@ import {
   SCBT_PART_ORDER,
   type ScbtSpeakingSet,
 } from './speakingTypes';
+import '../writing-review/writing-review.css';
 import './speaking-scbt.css';
 
 type FlowStep =
@@ -51,6 +57,14 @@ type FlowStep =
 
 const STUDENT_NAME_CACHE_KEY = 'sugoroku_student_name_v1';
 
+const NEXT_STEP_AFTER_PART: Record<SugorokuSpeakingPartId, FlowStep> = {
+  reading_aloud: 'q1',
+  q1: 'q2',
+  q2: 'q3',
+  q3: 'q4',
+  q4: 'review_submit',
+};
+
 function speakEnglishPrompt(script: string, onEnd?: () => void): void {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     onEnd?.();
@@ -61,9 +75,17 @@ function speakEnglishPrompt(script: string, onEnd?: () => void): void {
     const utter = new SpeechSynthesisUtterance(script);
     utter.lang = 'en-US';
     utter.rate = 0.94;
-    utter.onend = () => onEnd?.();
-    utter.onerror = () => onEnd?.();
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      onEnd?.();
+    };
+    utter.onend = finish;
+    utter.onerror = finish;
     window.speechSynthesis.speak(utter);
+    const approxMs = Math.max(2500, Math.min(18000, script.length * 95));
+    setTimeout(finish, approxMs);
   } catch {
     onEnd?.();
   }
@@ -84,8 +106,16 @@ export function ScbtSpeakingPractice({
   onBack,
   onOpenTeacherReview,
 }: ScbtSpeakingPracticeProps) {
-  const [gradeFilter, setGradeFilter] = useState<'all' | 'eiken_2' | 'eiken_pre2'>(() =>
-    grade === 'eiken_pre2' ? 'eiken_pre2' : grade === 'eiken_2' ? 'eiken_2' : 'all',
+  const [gradeFilter, setGradeFilter] = useState<
+    'all' | 'eiken_2' | 'eiken_pre2plus' | 'eiken_pre2'
+  >(() =>
+    grade === 'eiken_pre2'
+      ? 'eiken_pre2'
+      : grade === 'eiken_pre2plus'
+      ? 'eiken_pre2plus'
+      : grade === 'eiken_2'
+      ? 'eiken_2'
+      : 'all',
   );
   const availableSets = useMemo(
     () =>
@@ -98,13 +128,15 @@ export function ScbtSpeakingPractice({
     () => availableSets[0] ?? SCBT_SPEAKING_SETS[0],
   );
   const [step, setStep] = useState<FlowStep>('select');
-  const [subPhase, setSubPhase] = useState<'idle' | 'prep' | 'recording' | 'done'>('idle');
+  const [subPhase, setSubPhase] = useState<'idle' | 'listening' | 'prep' | 'recording' | 'done'>('idle');
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
   const [micLevel, setMicLevel] = useState<number>(0);
   const [testClip, setTestClip] = useState<RecordedClip | null>(null);
   const [clips, setClips] = useState<Partial<Record<SugorokuSpeakingPartId, RecordedClip>>>({});
   const [showScriptHint, setShowScriptHint] = useState(false);
   const [showModelAnswers, setShowModelAnswers] = useState(false);
+  const [autoExamMode, setAutoExamMode] = useState<boolean>(true);
+  const [beepMuted, setBeepMuted] = useState<boolean>(false);
 
   const memberships = useMemo(() => loadJukuMemberships(uid), [uid]);
   const [selectedClassId, setSelectedClassId] = useState<string>(
@@ -125,6 +157,10 @@ export function ScbtSpeakingPractice({
   const activeHandleRef = useRef<ActiveRecordingHandle | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meterTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoAdvanceRef = useRef<boolean>(autoExamMode);
+  autoAdvanceRef.current = autoExamMode;
+  const beepMutedRef = useRef<boolean>(beepMuted);
+  beepMutedRef.current = beepMuted;
 
   const detectedFormat = useMemo(() => detectPreferredAudioMimeType(), []);
 
@@ -163,11 +199,43 @@ export function ScbtSpeakingPractice({
     void loadMySubmissions();
   }, [loadMySubmissions]);
 
+  const goToStepRef = useRef<(next: FlowStep) => void>(() => undefined);
+
+  const stopCurrentRecording = useCallback(
+    async (target: SugorokuSpeakingPartId | 'mic_test') => {
+      clearTimers();
+      const handle = activeHandleRef.current;
+      activeHandleRef.current = null;
+      if (!handle) return;
+      try {
+        const clip = await handle.stop();
+        playScbtBeep('end', beepMutedRef.current);
+        if (target === 'mic_test') {
+          setTestClip(clip);
+          setSubPhase('done');
+        } else {
+          setClips(prev => ({ ...prev, [target]: clip }));
+          setSubPhase('done');
+          if (autoAdvanceRef.current) {
+            setTimeout(() => {
+              goToStepRef.current(NEXT_STEP_AFTER_PART[target]);
+            }, 650);
+          }
+        }
+      } catch (err) {
+        setSubPhase('idle');
+        setErrorMsg(err instanceof Error ? err.message : '録音の保存に失敗しました。');
+      }
+    },
+    [clearTimers],
+  );
+
   const beginRecordingForPart = useCallback(
     async (target: SugorokuSpeakingPartId | 'mic_test', limitSeconds: number) => {
       clearTimers();
       setErrorMsg('');
       try {
+        playScbtBeep('start', beepMutedRef.current);
         const handle = await startAudioRecording();
         activeHandleRef.current = handle;
         setSubPhase('recording');
@@ -180,7 +248,6 @@ export function ScbtSpeakingPractice({
         timerRef.current = setInterval(() => {
           setSecondsLeft(prev => {
             if (prev <= 1) {
-              // 時間満了で自動停止
               void stopCurrentRecording(target);
               return 0;
             }
@@ -192,29 +259,7 @@ export function ScbtSpeakingPractice({
         setErrorMsg(err instanceof Error ? err.message : 'マイクを起動できませんでした。');
       }
     },
-    [clearTimers],
-  );
-
-  const stopCurrentRecording = useCallback(
-    async (target: SugorokuSpeakingPartId | 'mic_test') => {
-      clearTimers();
-      const handle = activeHandleRef.current;
-      activeHandleRef.current = null;
-      if (!handle) return;
-      try {
-        const clip = await handle.stop();
-        if (target === 'mic_test') {
-          setTestClip(clip);
-        } else {
-          setClips(prev => ({ ...prev, [target]: clip }));
-        }
-        setSubPhase('done');
-      } catch (err) {
-        setSubPhase('idle');
-        setErrorMsg(err instanceof Error ? err.message : '録音の保存に失敗しました。');
-      }
-    },
-    [clearTimers],
+    [clearTimers, stopCurrentRecording],
   );
 
   const startCountdownThenRecord = useCallback(
@@ -237,34 +282,57 @@ export function ScbtSpeakingPractice({
     [beginRecordingForPart, clearTimers],
   );
 
-  const goToStep = (next: FlowStep) => {
-    clearTimers();
-    activeHandleRef.current?.cancel();
-    activeHandleRef.current = null;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setErrorMsg('');
-    setShowScriptHint(false);
-    setSubPhase('idle');
-    setStep(next);
+  const goToStep = useCallback(
+    (next: FlowStep) => {
+      clearTimers();
+      activeHandleRef.current?.cancel();
+      activeHandleRef.current = null;
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setErrorMsg('');
+      setShowScriptHint(false);
+      setSubPhase('idle');
+      setStep(next);
 
-    if (next === 'silent_read') {
-      setSubPhase('prep');
-      setSecondsLeft(selectedSet.silentReadSeconds);
-      timerRef.current = setInterval(() => {
-        setSecondsLeft(prev => {
-          if (prev <= 1) {
-            clearTimers();
-            setStep('read_aloud');
-            setSubPhase('idle');
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-  };
+      if (next === 'silent_read') {
+        setSubPhase('prep');
+        setSecondsLeft(selectedSet.silentReadSeconds);
+        timerRef.current = setInterval(() => {
+          setSecondsLeft(prev => {
+            if (prev <= 1) {
+              clearTimers();
+              setStep('read_aloud');
+              setSubPhase('idle');
+              if (autoAdvanceRef.current) {
+                void beginRecordingForPart('reading_aloud', selectedSet.readAloudSeconds);
+              }
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        return;
+      }
+
+      if (
+        autoAdvanceRef.current &&
+        (next === 'q1' || next === 'q2' || next === 'q3' || next === 'q4')
+      ) {
+        const q = selectedSet.questions.find(item => item.partId === next);
+        if (q) {
+          setSubPhase('listening');
+          const script = [q.introAudioScript, q.promptAudioScript].filter(Boolean).join(' ');
+          speakEnglishPrompt(script, () => {
+            startCountdownThenRecord(q.partId, q.prepSeconds, q.recordSeconds);
+          });
+        }
+      }
+    },
+    [beginRecordingForPart, clearTimers, selectedSet, startCountdownThenRecord],
+  );
+
+  goToStepRef.current = goToStep;
 
   const currentQuestion = useMemo(() => {
     if (step === 'q1' || step === 'q2' || step === 'q3' || step === 'q4') {
@@ -299,7 +367,7 @@ export function ScbtSpeakingPractice({
       });
       await loadMySubmissions();
       setSubmittedNotice(
-        '全5パートの録音を先生へ提出しました！先生が聴取・評価するとこの画面にフィードバックが届きます。',
+        '全5パートの録音を先生へ提出しました！先生が聴取・評価すると講評シートをA4印刷・PDF保存できます。',
       );
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : '提出に失敗しました。');
@@ -313,7 +381,7 @@ export function ScbtSpeakingPractice({
   return (
     <main className="scbt-page" data-sugoroku-speaking>
       <header className="scbt-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="twr-row-wrap">
           <button
             type="button"
             className="scbt-back-btn"
@@ -326,64 +394,65 @@ export function ScbtSpeakingPractice({
             {step === 'select' ? '学習へ戻る' : 'セット一覧へ'}
           </button>
           <div>
-            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 800 }}>
-              英検 S-CBT スピーキング模擬演習
-            </h1>
-            <small style={{ color: '#54626f', fontWeight: 700 }}>
-              本番準拠タイマー＆自動録音（形式：{detectedFormat.label}）
+            <h1 className="srh-title">英検 S-CBT スピーキング模擬演習</h1>
+            <small className="swr-muted-note">
+              本番準拠タイマー＆ビープ音自動録音（形式：{detectedFormat.label}）
             </small>
           </div>
         </div>
-        {onOpenTeacherReview && (
+        <div className="twr-row-wrap">
+          <button
+            type="button"
+            className={
+              autoExamMode
+                ? 'scbt-secondary-btn scbt-auto-btn-active'
+                : 'scbt-secondary-btn'
+            }
+            onClick={() => setAutoExamMode(v => !v)}
+            title="ONにすると本番S-CBT同様に黙読→音読→質問音声→準備→録音まで自動で進みます"
+            data-scbt-auto-mode={autoExamMode}
+          >
+            <Zap size={15} aria-hidden="true" />
+            {autoExamMode ? '本番ノンストップ進行：ON' : '手動ステップ練習：ON'}
+          </button>
           <button
             type="button"
             className="scbt-secondary-btn"
-            onClick={onOpenTeacherReview}
+            onClick={() => setBeepMuted(v => !v)}
+            title="録音開始時の「ピッ」という合図音のON/OFF"
           >
-            講師の音声確認画面を開く
+            {beepMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+            {beepMuted ? '合図音OFF' : '合図音ON'}
           </button>
-        )}
+          {onOpenTeacherReview && (
+            <button
+              type="button"
+              className="scbt-secondary-btn"
+              onClick={onOpenTeacherReview}
+            >
+              講師の音声確認画面を開く
+            </button>
+          )}
+        </div>
       </header>
 
       {errorMsg && (
-        <div
-          role="alert"
-          style={{
-            padding: '12px 14px',
-            borderRadius: '12px',
-            background: '#fff1f2',
-            border: '1px solid #fecdd3',
-            color: '#9f1239',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '8px',
-            fontSize: '13.5px',
-            fontWeight: 700,
-          }}
-        >
-          <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+        <div role="alert" className="scbt-alert-box">
+          <AlertTriangle size={18} />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* Step 0: セット選択画面 */}
       {step === 'select' && (
         <section className="scbt-card" aria-label="スピーキング模擬セット選択">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '10px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div className="twr-row-between">
+            <div className="twr-row-wrap">
               {(
                 [
-                  ['all', 'すべて（2級・準2級）'],
-                  ['eiken_2', '英検2級（S-CBT）'],
-                  ['eiken_pre2', '英検準2級（S-CBT）'],
+                  ['all', 'すべて（全6セット）'],
+                  ['eiken_2', '英検2級（2セット）'],
+                  ['eiken_pre2plus', '英検準2級プラス（2セット）'],
+                  ['eiken_pre2', '英検準2級（2セット）'],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -395,24 +464,17 @@ export function ScbtSpeakingPractice({
                     setGradeFilter(id);
                     if (id !== 'all') onGrade?.(id);
                   }}
-                  style={{ cursor: 'pointer' }}
                 >
                   {label}
                 </button>
               ))}
             </div>
-            <span style={{ fontSize: '12.5px', color: '#4b5563', fontWeight: 700 }}>
-              完全オリジナル模擬課題（過去問・市販書流用なし）
-            </span>
+            <small className="swr-muted-note">
+              完全オリジナル模擬課題（過去問・市販書流用なし／準2級プラス対応）
+            </small>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '12px',
-            }}
-          >
+          <div className="scbt-set-grid">
             {availableSets.map(item => {
               const gLabel =
                 EIKEN_GRADES.find(g => g.id === item.grade)?.label ?? item.grade;
@@ -420,43 +482,22 @@ export function ScbtSpeakingPractice({
               return (
                 <div
                   key={item.id}
-                  style={{
-                    border: isCurrent ? '2px solid #1f6b5c' : '1.5px solid #d7d2c4',
-                    borderRadius: '14px',
-                    padding: '14px 16px',
-                    background: isCurrent ? '#f1faf7' : '#fffefb',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    gap: '10px',
-                  }}
+                  className="scbt-set-card"
+                  data-current={isCurrent}
+                  onClick={() => setSelectedSet(item)}
                 >
                   <div>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        fontSize: '11.5px',
-                        fontWeight: 800,
-                        background: '#e1f4ee',
-                        color: '#1f5c51',
-                        borderRadius: '999px',
-                        padding: '2px 9px',
-                        marginBottom: '6px',
-                      }}
-                    >
+                    <span className="scbt-set-badge">
                       {gLabel} ・ Set {item.setNumber}
                     </span>
-                    <h2 style={{ margin: '0 0 6px', fontSize: '16px', fontWeight: 800 }}>
-                      {item.title}
-                    </h2>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#4b5563' }}>
-                      {item.themeSummaryJp}
-                    </p>
+                    <h2 className="scbt-set-title">{item.title}</h2>
+                    <p className="scbt-set-desc">{item.themeSummaryJp}</p>
                   </div>
                   <button
                     type="button"
                     className="scbt-primary-btn"
-                    onClick={() => {
+                    onClick={e => {
+                      e.stopPropagation();
                       setSelectedSet(item);
                       setClips({});
                       setSubmittedNotice('');
@@ -473,53 +514,39 @@ export function ScbtSpeakingPractice({
             })}
           </div>
 
-          {/* 返却済みの講師フィードバック表示 */}
           {history.length > 0 && (
-            <div
-              style={{
-                marginTop: '6px',
-                borderTop: '1px dashed #d5d0c3',
-                paddingTop: '12px',
-              }}
-            >
-              <h3 style={{ margin: '0 0 8px', fontSize: '15px', fontWeight: 800 }}>
+            <div className="scbt-history-wrap">
+              <h3 className="scbt-set-title">
                 選択中セット（{selectedSet.title}）の提出・講師フィードバック履歴
               </h3>
               {history.slice(0, 3).map(sub => (
-                <div
-                  key={sub.id}
-                  style={{
-                    border: '1px solid #bcd8d1',
-                    borderRadius: '12px',
-                    padding: '10px 14px',
-                    background: '#f7fbfa',
-                    marginBottom: '8px',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: '6px',
-                      fontWeight: 800,
-                      fontSize: '13.5px',
-                    }}
-                  >
-                    <span>
+                <div key={sub.id} className="scbt-history-card">
+                  <div className="twr-row-between">
+                    <strong>
                       {sub.status === 'reviewed'
                         ? '先生から音声講評が届いています！'
                         : '提出済み（先生の音声確認待ち）'}
-                    </span>
-                    <small style={{ color: '#54626f' }}>
-                      {new Date(sub.submittedAt).toLocaleString('ja-JP')}
-                    </small>
+                    </strong>
+                    <div className="twr-row-wrap">
+                      <small className="swr-muted-note">
+                        {new Date(sub.submittedAt).toLocaleString('ja-JP')}
+                      </small>
+                      <button
+                        type="button"
+                        className="scbt-secondary-btn swr-mini-btn"
+                        onClick={() =>
+                          openSpeakingFeedbackPrintWindow(
+                            sub,
+                            findSpeakingSetById(sub.setId) ?? selectedSet,
+                          )
+                        }
+                      >
+                        <Printer size={13} aria-hidden="true" />
+                        A4復習シート印刷/PDF
+                      </button>
+                    </div>
                   </div>
-                  {sub.review && (
-                    <p style={{ margin: '6px 0 0', fontSize: '13.5px', whiteSpace: 'pre-wrap' }}>
-                      {sub.review.comment}
-                    </p>
-                  )}
+                  {sub.review && <p className="swr-comment-body">{sub.review.comment}</p>}
                 </div>
               ))}
             </div>
@@ -527,7 +554,6 @@ export function ScbtSpeakingPractice({
         </section>
       )}
 
-      {/* 演習中プログレスステッパー */}
       {step !== 'select' && (
         <nav className="scbt-stepper" aria-label="S-CBT進行ステップ">
           {(
@@ -558,7 +584,6 @@ export function ScbtSpeakingPractice({
                 data-active={step === id}
                 data-done={isPartDone}
                 onClick={() => goToStep(id)}
-                style={{ cursor: 'pointer' }}
               >
                 {label}
               </button>
@@ -567,32 +592,28 @@ export function ScbtSpeakingPractice({
         </nav>
       )}
 
-      {/* Step 1: マイク音量チェック */}
       {step === 'mic_check' && (
         <section className="scbt-card" aria-label="マイク確認">
-          <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
-            Step 1：マイク音量・録音テスト（S-CBT本番形式）
-          </h2>
-          <p style={{ margin: 0, fontSize: '14px', color: '#374151', lineHeight: 1.7 }}>
+          <h2 className="scbt-set-title">Step 1：マイク音量・録音テスト（S-CBT本番形式）</h2>
+          <p className="scbt-set-desc">
             本番の S-CBT と同じように、最初に声がしっかり録音されるかテストします。
-            下のボタンを押して <strong>&ldquo;Hello, my name is ...&rdquo;</strong> と話してみてください。
+            下のボタンを押して「ピッ」と鳴ったら{' '}
+            <strong>&ldquo;Hello, I am ready for the speaking test.&rdquo;</strong>{' '}
+            と話してみてください。
           </p>
 
           <div className="scbt-timer-box" data-recording={subPhase === 'recording'}>
             <div>
-              <strong style={{ display: 'block', fontSize: '13.5px' }}>
+              <strong>
                 {subPhase === 'recording'
-                  ? 'テスト録音中… 声を出してバーが動くか確認してください'
+                  ? 'テスト録音中… 声を出して緑のレベルバーが動くか確認してください'
                   : 'マイク入力レベル'}
               </strong>
-              <div className="scbt-meter-track" style={{ marginTop: '6px' }}>
-                <div
-                  className="scbt-meter-fill"
-                  style={{ width: `${micLevel}%` }}
-                />
+              <div className="scbt-meter-track">
+                <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="twr-row-wrap">
               {subPhase !== 'recording' ? (
                 <button
                   type="button"
@@ -616,28 +637,16 @@ export function ScbtSpeakingPractice({
           </div>
 
           {testClip && (
-            <div
-              style={{
-                padding: '12px 14px',
-                background: '#f1faf7',
-                border: '1px solid #9fd4c5',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '12px',
-                flexWrap: 'wrap',
-              }}
-            >
-              <span style={{ fontSize: '13.5px', fontWeight: 700, color: '#1f5c51' }}>
-                <CheckCircle2 size={16} style={{ verticalAlign: 'text-bottom' }} />{' '}
-                テスト録音OK（{testClip.durationSec}秒・{Math.round(testClip.sizeBytes / 1024)}KB）
-              </span>
+            <div className="scbt-ok-bar">
+              <strong className="swr-check-ok">
+                <CheckCircle2 size={16} /> テスト録音OK（{testClip.durationSec}秒・
+                {Math.round(testClip.sizeBytes / 1024)}KB）
+              </strong>
               <audio controls src={testClip.objectUrl} preload="metadata" />
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+          <div className="twr-importer-actions">
             <button
               type="button"
               className="scbt-primary-btn"
@@ -649,23 +658,27 @@ export function ScbtSpeakingPractice({
         </section>
       )}
 
-      {/* Step 2 & 3: パッセージ黙読 ＆ 音読録音 */}
       {(step === 'silent_read' || step === 'read_aloud') && (
         <section className="scbt-card" aria-label="パッセージ黙読と音読">
           <div className="scbt-timer-box" data-recording={subPhase === 'recording'}>
             <div>
-              <strong style={{ fontSize: '14.5px', display: 'block' }}>
+              <strong>
                 {step === 'silent_read'
-                  ? '【黙読タイム】声に出さず、パッセージ全体に目を通してください'
+                  ? '【黙読タイム】声に出さず、パッセージ全体に目を通してください（終了後に音読へ移ります）'
                   : subPhase === 'recording'
-                  ? '【音読録音中】タイトルから最後までハキハキと音読してください'
+                  ? '【音読録音中】タイトルから最後までハキハキと音読してください！'
                   : '【音読パート】録音ボタンを押してタイトルから音読してください'}
               </strong>
-              <small style={{ color: '#4b5563' }}>
-                制限時間目安：{selectedSet.readAloudSeconds}秒（早く読み終えたら「録音完了」を押せます）
-              </small>
+              <div className="swr-muted-note">
+                制限時間目安：{selectedSet.readAloudSeconds}秒（読み終えたら「録音完了」を押せます）
+              </div>
+              {subPhase === 'recording' && (
+                <div className="scbt-meter-track">
+                  <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
+                </div>
+              )}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="twr-row-wrap">
               {(step === 'silent_read' || subPhase === 'recording') && (
                 <span className="scbt-timer-num">{secondsLeft}s</span>
               )}
@@ -673,9 +686,19 @@ export function ScbtSpeakingPractice({
                 <button
                   type="button"
                   className="scbt-secondary-btn"
-                  onClick={() => goToStep('read_aloud')}
+                  onClick={() => {
+                    clearTimers();
+                    setStep('read_aloud');
+                    setSubPhase('idle');
+                    if (autoExamMode) {
+                      void beginRecordingForPart(
+                        'reading_aloud',
+                        selectedSet.readAloudSeconds,
+                      );
+                    }
+                  }}
                 >
-                  すぐ音読へ進む
+                  すぐ音読録音へ進む
                 </button>
               )}
               {step === 'read_aloud' && subPhase !== 'recording' && (
@@ -711,21 +734,9 @@ export function ScbtSpeakingPractice({
             <p className="scbt-passage-text">{selectedSet.passage}</p>
           </article>
 
-          {clips.reading_aloud && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '10px',
-                flexWrap: 'wrap',
-                padding: '10px 14px',
-                background: '#f1faf7',
-                borderRadius: '12px',
-                border: '1px solid #9fd4c5',
-              }}
-            >
-              <strong style={{ fontSize: '13.5px', color: '#1f5c51' }}>
+          {clips.reading_aloud && subPhase !== 'recording' && (
+            <div className="scbt-ok-bar">
+              <strong className="swr-check-ok">
                 音読を録音しました（{clips.reading_aloud.durationSec}秒）
               </strong>
               <audio controls src={clips.reading_aloud.objectUrl} preload="metadata" />
@@ -741,23 +752,14 @@ export function ScbtSpeakingPractice({
         </section>
       )}
 
-      {/* Step 4〜7: No.1 〜 No.4 質問＆録音 */}
       {currentQuestion && (
         <section className="scbt-card" aria-label={currentQuestion.numberLabel}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '10px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
+          <div className="twr-row-between">
+            <h2 className="scbt-set-title">
               {currentQuestion.numberLabel}（準備 {currentQuestion.prepSeconds}秒 → 回答{' '}
               {currentQuestion.recordSeconds}秒）
             </h2>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="twr-row-wrap">
               <button
                 type="button"
                 className="scbt-secondary-btn"
@@ -770,7 +772,7 @@ export function ScbtSpeakingPractice({
                 }
               >
                 <Volume2 size={16} aria-hidden="true" />
-                面接官の質問音声を聞く
+                面接官の質問音声をもう一度聞く
               </button>
               {!currentQuestion.showPromptOnScreenByDefault && (
                 <button
@@ -784,7 +786,6 @@ export function ScbtSpeakingPractice({
             </div>
           </div>
 
-          {/* No.1〜No.3 では問題カード（パッセージ／イラスト）を表示 */}
           {currentQuestion.partId === 'q1' && (
             <article className="scbt-passage-card" lang="en">
               <h3 className="scbt-passage-title">{selectedSet.cardTitle}</h3>
@@ -799,86 +800,73 @@ export function ScbtSpeakingPractice({
           )}
 
           {currentQuestion.starterSentence && (
-            <div
-              style={{
-                padding: '10px 14px',
-                background: '#fffbeb',
-                border: '1px solid #fde68a',
-                borderRadius: '10px',
-                fontSize: '14px',
-              }}
-            >
-              <strong style={{ color: '#92400e', display: 'block', fontSize: '12px' }}>
-                最初の文（この文に続けてストーリーを話してください）：
-              </strong>
-              <span lang="en" style={{ fontWeight: 800 }}>
-                {currentQuestion.starterSentence}
+            <div className="scbt-starter-box">
+              <span className="scbt-starter-label">
+                最初の文（この文を声に出してから続けて話してください）：
               </span>
+              <strong lang="en">{currentQuestion.starterSentence}</strong>
             </div>
           )}
 
           {(currentQuestion.showPromptOnScreenByDefault || showScriptHint) && (
-            <div
-              lang="en"
-              style={{
-                padding: '12px 14px',
-                background: '#f8fafc',
-                borderLeft: '4px solid #2f7c74',
-                borderRadius: '0 10px 10px 0',
-                fontSize: '15px',
-                fontWeight: 700,
-              }}
-            >
+            <div lang="en" className="scbt-prompt-box">
               {currentQuestion.promptAudioScript}
             </div>
           )}
 
-          {/* 準備タイマー＆録音バー */}
           <div className="scbt-timer-box" data-recording={subPhase === 'recording'}>
             <div>
-              <strong style={{ fontSize: '14px', display: 'block' }}>
-                {subPhase === 'prep'
-                  ? '【準備カウントダウン】話す内容を頭の中で組み立ててください…'
+              <strong>
+                {subPhase === 'listening'
+                  ? '【面接官の質問読み上げ中】よく聞いてください（終了後自動で準備タイマーが始まります）'
+                  : subPhase === 'prep'
+                  ? '【準備カウントダウン】話す内容を組み立ててください（0秒でピッと鳴り録音開始）'
                   : subPhase === 'recording'
-                  ? '【回答録音中】英語で回答を話してください！'
-                  : '質問音声を聞いたら「準備タイマー開始」または「すぐ録音」を押してください'}
+                  ? '【回答録音中】英語でハキハキと回答を話してください！'
+                  : '「準備→自動録音」または「すぐ回答を録音」を押してください'}
               </strong>
               {subPhase === 'recording' && (
-                <div className="scbt-meter-track" style={{ marginTop: '6px' }}>
+                <div className="scbt-meter-track">
                   <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
                 </div>
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div className="twr-row-wrap">
               {(subPhase === 'prep' || subPhase === 'recording') && (
                 <span className="scbt-timer-num">{secondsLeft}s</span>
               )}
-              {subPhase === 'idle' || subPhase === 'done' ? (
+              {subPhase === 'idle' || subPhase === 'done' || subPhase === 'listening' ? (
                 <>
                   <button
                     type="button"
                     className="scbt-secondary-btn"
-                    onClick={() =>
+                    onClick={() => {
+                      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                      }
                       startCountdownThenRecord(
                         currentQuestion.partId,
                         currentQuestion.prepSeconds,
                         currentQuestion.recordSeconds,
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Play size={15} aria-hidden="true" />
-                    本番通り準備（{currentQuestion.prepSeconds}秒）→自動録音
+                    準備（{currentQuestion.prepSeconds}秒）→自動録音
                   </button>
                   <button
                     type="button"
                     className="scbt-primary-btn"
-                    onClick={() =>
+                    onClick={() => {
+                      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                      }
                       void beginRecordingForPart(
                         currentQuestion.partId,
                         currentQuestion.recordSeconds,
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Mic size={16} aria-hidden="true" />
                     {clips[currentQuestion.partId] ? '録り直す' : 'すぐ回答を録音'}
@@ -910,21 +898,9 @@ export function ScbtSpeakingPractice({
             </div>
           </div>
 
-          {clips[currentQuestion.partId] && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '10px',
-                flexWrap: 'wrap',
-                padding: '10px 14px',
-                background: '#f1faf7',
-                borderRadius: '12px',
-                border: '1px solid #9fd4c5',
-              }}
-            >
-              <strong style={{ fontSize: '13.5px', color: '#1f5c51' }}>
+          {clips[currentQuestion.partId] && subPhase !== 'recording' && (
+            <div className="scbt-ok-bar">
+              <strong className="swr-check-ok">
                 {currentQuestion.numberLabel} を録音しました（
                 {clips[currentQuestion.partId]!.durationSec}秒）
               </strong>
@@ -936,15 +912,7 @@ export function ScbtSpeakingPractice({
               <button
                 type="button"
                 className="scbt-primary-btn"
-                onClick={() => {
-                  const nextMap: Record<'q1' | 'q2' | 'q3' | 'q4', FlowStep> = {
-                    q1: 'q2',
-                    q2: 'q3',
-                    q3: 'q4',
-                    q4: 'review_submit',
-                  };
-                  goToStep(nextMap[currentQuestion.partId]);
-                }}
+                onClick={() => goToStep(NEXT_STEP_AFTER_PART[currentQuestion.partId])}
               >
                 {currentQuestion.partId === 'q4'
                   ? '自己再生確認・先生への提出へ →'
@@ -955,37 +923,56 @@ export function ScbtSpeakingPractice({
         </section>
       )}
 
-      {/* Step 8: 全5パート自己再生確認・模範解答・講師への提出 */}
       {step === 'review_submit' && (
         <section className="scbt-card" aria-label="自己再生確認と先生への提出">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '10px',
-              flexWrap: 'wrap',
-            }}
-          >
+          <div className="twr-row-between">
             <div>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
-                全パート自己再生確認 ＆ 先生へ提出
-              </h2>
-              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#4b5563' }}>
-                自分の録音を聴き直し、気になるパートは何度でも録り直せます（録音済み：
+              <h2 className="scbt-set-title">全パート自己再生確認 ＆ 先生へ提出</h2>
+              <p className="scbt-set-desc">
+                自分の録音を聴き直し、気になるパートだけ個別に録り直すこともできます（録音済み：
                 <strong> {recordedCount} / 5 パート</strong>）。
               </p>
             </div>
-            <button
-              type="button"
-              className="scbt-secondary-btn"
-              onClick={() => setShowModelAnswers(v => !v)}
-            >
-              {showModelAnswers ? '模範解答・ポイントを閉じる' : '模範解答・ポイントを見る'}
-            </button>
+            <div className="twr-row-wrap">
+              <button
+                type="button"
+                className="scbt-secondary-btn"
+                onClick={() => setShowModelAnswers(v => !v)}
+              >
+                {showModelAnswers ? '模範解答・ポイントを閉じる' : '模範解答・ポイントを見る'}
+              </button>
+              <button
+                type="button"
+                className="scbt-secondary-btn"
+                onClick={() =>
+                  openSpeakingFeedbackPrintWindow(
+                    {
+                      classId: selectedClassId,
+                      studentUid: uid,
+                      studentName: studentName.trim() || 'すごろく塾生',
+                      grade: selectedSet.grade,
+                      setId: selectedSet.id,
+                      setTitle: selectedSet.title,
+                      recordings: SCBT_PART_ORDER.filter(p => Boolean(clips[p])).map(p => ({
+                        partId: p,
+                        storagePath: '',
+                        mimeType: clips[p]!.mimeType,
+                        durationSec: clips[p]!.durationSec,
+                      })),
+                      status: 'submitted',
+                      submittedAt: Date.now(),
+                    },
+                    selectedSet,
+                  )
+                }
+              >
+                <Printer size={15} aria-hidden="true" />
+                音読＆模範解答シート印刷
+              </button>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gap: '10px' }}>
+          <div className="twr-list">
             {SCBT_PART_ORDER.map(partId => {
               const clip = clips[partId];
               const qSpec =
@@ -997,87 +984,54 @@ export function ScbtSpeakingPractice({
 
               return (
                 <div key={partId} className="scbt-review-part-row">
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: '10px',
-                      flexWrap: 'wrap',
-                    }}
-                  >
+                  <div className="twr-row-between">
                     <div>
-                      <strong style={{ fontSize: '14px' }}>
-                        {SCBT_PART_LABELS[partId]}
-                      </strong>
+                      <strong>{SCBT_PART_LABELS[partId]}</strong>{' '}
                       {clip ? (
-                        <span
-                          style={{
-                            marginLeft: '8px',
-                            fontSize: '12px',
-                            color: '#1f6b5c',
-                            fontWeight: 800,
-                          }}
-                        >
+                        <span className="twr-pill-done">
                           録音済（{clip.durationSec}秒・{Math.round(clip.sizeBytes / 1024)}KB）
                         </span>
                       ) : (
-                        <span
-                          style={{
-                            marginLeft: '8px',
-                            fontSize: '12px',
-                            color: '#b45309',
-                            fontWeight: 800,
-                          }}
-                        >
-                          未録音
-                        </span>
+                        <span className="twr-pill-pending">未録音</span>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      {clip && (
-                        <audio controls src={clip.objectUrl} preload="metadata" />
-                      )}
+                    <div className="twr-row-wrap">
+                      {clip && <audio controls src={clip.objectUrl} preload="metadata" />}
                       <button
                         type="button"
                         className="scbt-secondary-btn"
-                        onClick={() => goToStep(targetStep)}
+                        onClick={() => {
+                          setAutoExamMode(false);
+                          goToStep(targetStep);
+                        }}
                       >
                         <RotateCcw size={14} aria-hidden="true" />
-                        {clip ? '録り直す' : '録音する'}
+                        {clip ? 'このパートだけ録り直す' : '録音する'}
                       </button>
                     </div>
                   </div>
 
                   {showModelAnswers && (
-                    <div
-                      style={{
-                        borderTop: '1px dashed #d8d2c3',
-                        paddingTop: '8px',
-                        fontSize: '13px',
-                        display: 'grid',
-                        gap: '4px',
-                      }}
-                    >
+                    <div className="scbt-model-box">
                       {partId === 'reading_aloud' ? (
                         <>
-                          <p style={{ margin: 0 }} lang="en">
+                          <p lang="en">
                             <strong>【本文】</strong> {selectedSet.passage}
                           </p>
-                          <p style={{ margin: 0, color: '#4b5563' }}>
+                          <p className="swr-muted-note">
                             <strong>【和訳】</strong> {selectedSet.passageTranslation}
                           </p>
                         </>
                       ) : (
                         qSpec && (
                           <>
-                            <p style={{ margin: 0 }} lang="en">
+                            <p lang="en">
                               <strong>【質問】</strong> {qSpec.promptAudioScript}
                             </p>
-                            <p style={{ margin: 0, color: '#1f5c51' }} lang="en">
+                            <p lang="en" className="swr-check-ok">
                               <strong>【模範解答例】</strong> {qSpec.modelAnswer}
                             </p>
-                            <p style={{ margin: 0, color: '#4b5563' }}>
+                            <p className="swr-muted-note">
                               <strong>【和訳】</strong> {qSpec.modelTranslation}
                             </p>
                           </>
@@ -1090,28 +1044,13 @@ export function ScbtSpeakingPractice({
             })}
           </div>
 
-          <div
-            style={{
-              borderTop: '1.5px solid #e2ddd0',
-              paddingTop: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              flexWrap: 'wrap',
-            }}
-          >
+          <div className="scbt-submit-footer">
             {memberships.length > 1 && (
               <select
                 aria-label="提出先クラス"
+                className="scbt-input"
                 value={selectedClassId}
                 onChange={e => setSelectedClassId(e.target.value)}
-                style={{
-                  minHeight: '40px',
-                  borderRadius: '10px',
-                  border: '1px solid #b8cec9',
-                  padding: '6px 10px',
-                  fontWeight: 700,
-                }}
               >
                 {memberships.map(m => (
                   <option key={m.classId} value={m.classId}>
@@ -1122,18 +1061,12 @@ export function ScbtSpeakingPractice({
             )}
             <input
               type="text"
+              className="scbt-input"
               aria-label="提出者氏名"
               placeholder="氏名（例：山田 太郎）"
               value={studentName}
               maxLength={40}
               onChange={e => setStudentName(e.target.value)}
-              style={{
-                minHeight: '40px',
-                borderRadius: '10px',
-                border: '1px solid #b8cec9',
-                padding: '6px 12px',
-                fontSize: '14px',
-              }}
             />
             <button
               type="button"
@@ -1152,15 +1085,7 @@ export function ScbtSpeakingPractice({
           </div>
 
           {submittedNotice && (
-            <p
-              role="status"
-              style={{
-                margin: 0,
-                fontSize: '13.5px',
-                fontWeight: 800,
-                color: '#1f6b5c',
-              }}
-            >
+            <p role="status" className="twr-notice-ok">
               {submittedNotice}
             </p>
           )}

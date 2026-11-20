@@ -2,7 +2,10 @@ import { validateSpeakingSet, type ScbtSpeakingSet } from './speakingTypes';
 
 /**
  * ============================================================================
- * 完全オリジナル 英検S-CBT方式 スピーキング模擬課題（2級×2セット・準2級×2セット）
+ * 完全オリジナル 英検S-CBT方式 スピーキング模擬課題（計6セット）
+ *   - 英検2級 × 2セット
+ *   - 英検準2級プラス（新設級）× 2セット
+ *   - 英検準2級 × 2セット
  * ============================================================================
  * - すべて origin: 'manatobi-original' で新規書き起こし（過去問・市販参考書の流用ゼロ）
  * - 語彙帯は CEFR A2〜B1/B2前半（『パス単』2級・準2級コア語彙）に厳密制御し、不要なC1難語を排除
@@ -66,8 +69,8 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
         recordSeconds: 25,
         maxScore: 5,
         rubricPoints: [
-          'By using / borrowing clean used equipment from community centers for free. の趣旨を主語＋動詞（または By ~ing）で答えているか',
-          '本文の文を丸読みするだけでなく、代名詞（they など）を適切に補えているか',
+          'By borrowing / using clean used equipment from community centers for free. の趣旨を主語＋動詞（または By ~ing）で答えているか',
+          '本文の文を丸読みするだけでなく、必要な語を適切に補えているか',
         ],
         modelAnswer:
           'By borrowing clean used equipment from community centers for free.',
@@ -89,7 +92,7 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
         recordSeconds: 40,
         maxScore: 10,
         rubricPoints: [
-          '過去時制（joined, learned, repaired, practiced など）を一貫して使えているか',
+          '過去時制（found, visited, taught, practiced など）を一貫して使えているか',
           '3コマすべての出来事と因果関係（壊れていた→修理講座に参加→新入部員と練習できた）が伝わるか',
         ],
         modelAnswer:
@@ -265,6 +268,254 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
   },
 
   // ==========================================================================
+  // 英検準2級プラス（新設級）オリジナル模擬 Set 1
+  // ==========================================================================
+  {
+    id: 'scbt_pre2plus_set01',
+    origin: 'manatobi-original',
+    grade: 'eiken_pre2plus',
+    setNumber: 1,
+    title: '準2級プラス S-CBT模擬 第1回：駅のシェア傘スタンドと忘れ物対策',
+    themeSummaryJp: '急な雨の日に駅で借りて後日返せるシェア傘制度とプラスチック削減',
+    cardTitle: 'Shared Umbrellas at Train Stations',
+    passage:
+      'On rainy evenings, many commuters buy cheap plastic umbrellas at convenience stores near train stations. As a result, thousands of forgotten umbrellas collect at lost-and-found offices every month. Recently, several railway companies have placed shared umbrella stands at station exits. Passengers can borrow an umbrella with a train card and return it at another station the next day.',
+    passageTranslation:
+      '雨の夕方、多くの通勤・通学客が駅近くのコンビニで安価なビニール傘を買います。その結果、毎月何千本もの忘れられた傘が遺失物取扱所に集まります。最近、いくつかの鉄道会社が駅の出口にシェア傘スタンドを設置しました。乗客は交通系ICカードで傘を借り、翌日に別の駅へ返却することができます。',
+    silentReadSeconds: 20,
+    readAloudSeconds: 45,
+    readAloudMaxScore: 5,
+    illustrations: [
+      {
+        frameLabel: '1コマ目（昨日の夕方・駅改札前）',
+        captionEn: 'Yesterday evening — Sudden Rain',
+        sceneDescriptionJp:
+          '部活帰りの陽菜（Hina）が駅を出ようとしたら急な雨が降っており、改札横の「Shared Umbrella」スタンドを見つけた場面。',
+        svgType: 'station_umbrella',
+        frameIndex: 0,
+      },
+      {
+        frameLabel: '2コマ目（帰宅途中・雨の歩道）',
+        captionEn: 'On the way home — Staying Dry',
+        sceneDescriptionJp:
+          '交通系ICカードで傘を借りた陽菜が、バッグの教科書を濡らさずに歩いて帰宅している場面。',
+        svgType: 'station_umbrella',
+        frameIndex: 1,
+      },
+      {
+        frameLabel: '3コマ目（今朝・学校最寄り駅）',
+        captionEn: 'This morning — Easy Return',
+        sceneDescriptionJp:
+          '晴れた翌朝、学校の最寄り駅のスタンドへ傘を差し込んで簡単に返却している場面。',
+        svgType: 'station_umbrella',
+        frameIndex: 2,
+      },
+    ],
+    questions: [
+      {
+        partId: 'q1',
+        numberLabel: 'No. 1',
+        questionType: 'passage_comprehension',
+        promptAudioScript:
+          'According to the passage, why do thousands of forgotten umbrellas collect at lost-and-found offices every month?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 5,
+        recordSeconds: 25,
+        maxScore: 5,
+        rubricPoints: [
+          'Because many commuters buy cheap plastic umbrellas (at convenience stores on rainy evenings). と因果関係を正しく答えられているか',
+        ],
+        modelAnswer:
+          'Because many commuters buy cheap plastic umbrellas at convenience stores on rainy evenings.',
+        modelTranslation:
+          '雨の夕方に多くの通勤・通学客が駅近くのコンビニで安価なビニール傘を買うからです。',
+      },
+      {
+        partId: 'q2',
+        numberLabel: 'No. 2',
+        questionType: 'picture_narration_3step',
+        introAudioScript:
+          'Now, please look at the picture and describe the situation. You have 20 seconds to prepare. Your story should begin with the sentence on the screen.',
+        promptAudioScript:
+          'Please begin your story with: Yesterday evening, Hina noticed that it was raining hard outside the station.',
+        starterSentence:
+          'Yesterday evening, Hina noticed that it was raining hard outside the station.',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 20,
+        recordSeconds: 40,
+        maxScore: 10,
+        rubricPoints: [
+          '急な雨でスタンドを発見→ICカードで借りて濡れずに帰宅→翌朝別の駅に返却、の流れを過去形で話せているか',
+        ],
+        modelAnswer:
+          'Yesterday evening, Hina noticed that it was raining hard outside the station. She found a shared umbrella stand near the ticket gate and borrowed one with her train card. On the way home, she stayed dry and kept her textbooks safe. This morning, she easily returned the umbrella to the stand at the station near her school.',
+        modelTranslation:
+          '昨日の夕方、陽菜は駅の外で強い雨が降っていることに気づきました。彼女は改札近くでシェア傘スタンドを見つけ、交通系カードで1本借りました。帰り道、彼女は濡れずに教科書を守ることができました。今朝、彼女は学校の最寄り駅のスタンドへ簡単に傘を返しました。',
+      },
+      {
+        partId: 'q3',
+        numberLabel: 'No. 3',
+        questionType: 'social_topic_opinion',
+        introAudioScript: 'Now, I will ask you a question about daily life.',
+        promptAudioScript:
+          'Some people say that stores should charge extra money for disposable plastic forks and spoons. What do you think about that?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 10,
+        recordSeconds: 35,
+        maxScore: 5,
+        rubricPoints: [
+          '賛成／反対の立場を示し、マイ箸の持参促進やゴミ削減（または外出時の不便さ）などの理由を2文以上で述べているか',
+        ],
+        modelAnswer:
+          'I agree with that idea. Many people accept plastic spoons even when they eat lunch at home and throw them away unused. Charging a small fee will encourage customers to refuse unnecessary plastic items.',
+        modelTranslation:
+          '私はその考えに賛成です。多くの人は自宅で昼食を食べるときでさえプラスチックのスプーンを受け取り、使わずに捨ててしまいます。少額を有料化すれば、客が不要なプラスチック製品を断るきっかけになります。',
+      },
+      {
+        partId: 'q4',
+        numberLabel: 'No. 4',
+        questionType: 'personal_opinion',
+        promptAudioScript:
+          'Do you check the weather forecast every morning before leaving home? Yes or No — Please tell me why.',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 10,
+        recordSeconds: 30,
+        maxScore: 5,
+        rubricPoints: [
+          'Yes / No に続けて具体的な行動（服装選び・自転車通学の判断・折りたたみ傘など）を話せているか',
+        ],
+        modelAnswer:
+          'Yes, I check it on my smartphone every morning. I ride my bicycle to school, so I need to know if I should bring a raincoat or leave home ten minutes earlier.',
+        modelTranslation:
+          'はい、毎朝スマートフォンで確認しています。私は自転車で通学しているので、レインコートを持っていくべきか、いつもより10分早く家を出るべきか知る必要があるからです。',
+      },
+    ],
+  },
+
+  // ==========================================================================
+  // 英検準2級プラス（新設級）オリジナル模擬 Set 2
+  // ==========================================================================
+  {
+    id: 'scbt_pre2plus_set02',
+    origin: 'manatobi-original',
+    grade: 'eiken_pre2plus',
+    setNumber: 2,
+    title: '準2級プラス S-CBT模擬 第2回：高校と地域の共同農園プロジェクト',
+    themeSummaryJp: '放課後のボランティア園芸活動を通じた世代間交流と地産地消',
+    cardTitle: 'School and Neighborhood Garden Projects',
+    passage:
+      'In urban neighborhoods, children and teenagers rarely have a chance to grow vegetables by themselves. To change this situation, some high schools have created small rooftop or courtyard gardens with help from local farmers. Students water the plants between classes and learn how seasonal crops grow, while older volunteers enjoy sharing their farming skills with young people.',
+    passageTranslation:
+      '都市部の地域では、子どもや十代の若者が自分で野菜を育てる機会はめったにありません。この状況を変えるため、地域の農家の協力を得て屋上や中庭に小さな菜園を作った高校もあります。生徒は休み時間に水やりをして季節の作物の育ち方を学び、高齢のボランティアは若者に栽培技術を伝えることを楽しんでいます。',
+    silentReadSeconds: 20,
+    readAloudSeconds: 45,
+    readAloudMaxScore: 5,
+    illustrations: [
+      {
+        frameLabel: '1コマ目（5月・学校中庭の花壇）',
+        captionEn: 'In May — Planting Seeds',
+        sceneDescriptionJp:
+          '健（Ken）たち生徒が、地域の農家のおじいさんからトマトの苗の植え方を教わっている場面。',
+        svgType: 'community_garden',
+        frameIndex: 0,
+      },
+      {
+        frameLabel: '2コマ目（7月・放課後の水やり）',
+        captionEn: 'In July — Watering Every Day',
+        sceneDescriptionJp:
+          '暑い夏の放課後、部活前に健と友人が交代で大きく育ったトマトに水をやっている場面。',
+        svgType: 'community_garden',
+        frameIndex: 1,
+      },
+      {
+        frameLabel: '3コマ目（8月・調理室での試食会）',
+        captionEn: 'In August — Fresh Salad Party',
+        sceneDescriptionJp:
+          '収穫した新鮮なトマトでサラダを作り、教えてくれた農家さんを招いて一緒に食べている場面。',
+        svgType: 'community_garden',
+        frameIndex: 2,
+      },
+    ],
+    questions: [
+      {
+        partId: 'q1',
+        numberLabel: 'No. 1',
+        questionType: 'passage_comprehension',
+        promptAudioScript:
+          'According to the passage, how have some high schools created small rooftop or courtyard gardens?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 5,
+        recordSeconds: 25,
+        maxScore: 5,
+        rubricPoints: [
+          'With help from local farmers. / They have created them with help from local farmers. と正確に答えられているか',
+        ],
+        modelAnswer: 'They have created them with help from local farmers.',
+        modelTranslation: '地域の農家の協力を得て作りました。',
+      },
+      {
+        partId: 'q2',
+        numberLabel: 'No. 2',
+        questionType: 'picture_narration_3step',
+        introAudioScript:
+          'Now, please look at the picture and describe the situation. You have 20 seconds to prepare. Your story should begin with the sentence on the screen.',
+        promptAudioScript:
+          'Please begin your story with: In May, Ken and his classmates learned how to plant tomato seedlings from a local farmer.',
+        starterSentence:
+          'In May, Ken and his classmates learned how to plant tomato seedlings from a local farmer.',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 20,
+        recordSeconds: 40,
+        maxScore: 10,
+        rubricPoints: [
+          '5月に苗植え→7月に毎日水やり→8月に収穫して農家さんとサラダを食べた、の3段階を過去形で語れているか',
+        ],
+        modelAnswer:
+          'In May, Ken and his classmates learned how to plant tomato seedlings from a local farmer. In July, Ken and his friend took turns watering the plants every day after classes. In August, they harvested many fresh tomatoes, made salad in the cooking room, and enjoyed eating it together with the farmer.',
+        modelTranslation:
+          '5月、健とクラスメートは地域の農家からトマトの苗の植え方を学びました。7月、健と友人は放課後に毎日交代で水やりをしました。8月、彼らはたくさんの新鮮なトマトを収穫し、調理室でサラダを作って農家の方と一緒に楽しく食べました。',
+      },
+      {
+        partId: 'q3',
+        numberLabel: 'No. 3',
+        questionType: 'social_topic_opinion',
+        introAudioScript: 'Now, I will ask you a question about education.',
+        promptAudioScript:
+          'Some people say that high school students should have more classes about cooking and nutrition. What do you think about that?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 10,
+        recordSeconds: 35,
+        maxScore: 5,
+        rubricPoints: [
+          '賛否と具体的な理由（一人暮らしへの備え・スポーツや勉強のための体調管理など）を2文以上で述べているか',
+        ],
+        modelAnswer:
+          'I agree with that opinion. Many students will live alone when they enter university, so basic cooking skills are essential. Also, understanding nutrition helps teenage athletes stay strong and avoid getting tired.',
+        modelTranslation:
+          '私はその意見に賛成です。多くの生徒は大学進学時に一人暮らしをするため、基本的な料理技術は不可欠です。また、栄養を理解することは十代の運動部生が体を強く保ち疲労を防ぐのにも役立ちます。',
+      },
+      {
+        partId: 'q4',
+        numberLabel: 'No. 4',
+        questionType: 'personal_opinion',
+        promptAudioScript:
+          'Would you like to join a volunteer activity in your town in the future? Yes or No — Please tell me why.',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 10,
+        recordSeconds: 30,
+        maxScore: 5,
+        rubricPoints: [
+          'Yes / No の後に、やってみたい活動（子ども向けスポーツ教室・清掃など）や理由を明確に述べているか',
+        ],
+        modelAnswer:
+          'Yes, I would like to join one. I play soccer in my school club, so I want to help teach soccer to elementary school children in my town. Meeting people of different ages will also give me new perspectives.',
+        modelTranslation:
+          'はい、参加してみたいです。私は学校の部活でサッカーをしているので、町の小学生にサッカーを教える手伝いをしたいです。さまざまな年代の人と出会うことで新しい視点も得られると思います。',
+      },
+    ],
+  },
+
+  // ==========================================================================
   // 英検準2級 オリジナル模擬 Set 1
   // ==========================================================================
   {
@@ -304,7 +555,7 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
         recordSeconds: 20,
         maxScore: 5,
         rubricPoints: [
-          'So riders / cyclists know where to go safely. または Because narrow streets can be dangerous... を正しく応答できているか',
+          'So riders / cyclists know where to go safely. を正しく応答できているか',
         ],
         modelAnswer: 'So riders know where to go safely.',
         modelTranslation: '自転車に乗る人が安全に走る場所がわかるようにするためです。',
@@ -427,7 +678,7 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
         recordSeconds: 30,
         maxScore: 5,
         rubricPoints: [
-          'is returning / is putting / is writing / is using a computer など現在進行形で正確に描写できているか',
+          'is returning / is putting / is writing / is searching など現在進行形で正確に描写できているか',
         ],
         modelAnswer:
           'A boy is returning a book at the counter. A student is putting books on a shelf. A girl near the window is writing in her notebook, and another student is searching for a book on a computer.',
@@ -475,7 +726,6 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
   },
 ];
 
-// 起動・読み込み時に全セットのスキーマ整合性を検証
 for (const set of SCBT_SPEAKING_SETS) {
   validateSpeakingSet(set);
 }
@@ -487,9 +737,5 @@ export function findSpeakingSetById(setId: string): ScbtSpeakingSet | undefined 
 export function speakingSetsForGrade(grade: string): ScbtSpeakingSet[] {
   const exact = SCBT_SPEAKING_SETS.filter(s => s.grade === grade);
   if (exact.length > 0) return exact;
-  // 準2級プラス選択時は2級・準2級の両方を練習候補として提示
-  if (grade === 'eiken_pre2plus') {
-    return [...SCBT_SPEAKING_SETS];
-  }
   return [...SCBT_SPEAKING_SETS];
 }

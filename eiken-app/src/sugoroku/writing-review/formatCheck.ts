@@ -13,18 +13,21 @@ export interface FormatCheckIssue {
     | 'fullwidth_punctuation'
     | 'repeated_word'
     | 'spelling_suspect'
-    | 'email_questions_shortage';
+    | 'email_questions_shortage'
+    | 'summary_verbatim_copy'
+    | 'essay_signpost_hint';
   severity: 'warn' | 'info';
   message: string;
 }
 
 export interface FormatCheckResult {
   words: number;
+  sentenceCount: number;
   inTargetRange: boolean;
   issues: FormatCheckIssue[];
   /** Firestore writing_submissions.formatWarnings にそのまま保存する文字列配列 */
   formatWarnings: string[];
-  /** すべてクリアしているか */
+  /** すべてクリアしているか（warn が 0 件か） */
   passedAll: boolean;
 }
 
@@ -80,17 +83,45 @@ const COMMON_MISSPELLINGS: Readonly<Record<string, string>> = {
   recomend: 'recommend',
   exersise: 'exercise',
   excercise: 'exercise',
-  practise_noun_jp: 'practice',
+  benifit: 'benefit',
+  benifits: 'benefits',
+  tecnology: 'technology',
+  technorogy: 'technology',
+  communicaton: 'communication',
+  futhermore: 'furthermore',
+  howerver: 'however',
+  therfore: 'therefore',
 };
 
+function findLongVerbatimOverlap(answerText: string, sourceText: string, minWords = 8): string | null {
+  const norm = (s: string) =>
+    (s.toLowerCase().replace(/’/g, "'").match(/[a-z]+(?:['-][a-z]+)*/g) ?? []);
+  const srcWords = norm(sourceText);
+  const ansWords = norm(answerText);
+  if (srcWords.length < minWords || ansWords.length < minWords) return null;
+
+  const srcPhrases = new Set<string>();
+  for (let i = 0; i + minWords <= srcWords.length; i++) {
+    srcPhrases.add(srcWords.slice(i, i + minWords).join(' '));
+  }
+  for (let i = 0; i + minWords <= ansWords.length; i++) {
+    const candidate = ansWords.slice(i, i + minWords).join(' ');
+    if (srcPhrases.has(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
 /**
- * 生徒の英作文に対するリアルタイム形式・スペルセルフチェックを行う。
- * 採点（内容評価）ではなく、提出前に自分で気づけるケアレスミス防止に特化。
+ * 生徒の英作文に対するリアルタイム形式・スペル・課題別セルフチェックを行う。
+ * 採点（内容評価）ではなく、提出前に自分で気づける減点予防に特化。
  */
 export function analyzeWritingFormat(
   rawText: string,
   targetRange: [number, number] | null,
   taskKind: WritingTaskKind = 'essay',
+  sourceText?: string,
 ): FormatCheckResult {
   const text = String(rawText ?? '');
   const trimmed = text.trim();
@@ -105,12 +136,15 @@ export function analyzeWritingFormat(
     });
     return {
       words: 0,
+      sentenceCount: 0,
       inTargetRange: false,
       issues,
       formatWarnings: issues.map(i => i.message),
       passedAll: false,
     };
   }
+
+  const sentenceCount = (trimmed.match(/[.?!]+(?=\s|$|["'”’)])/g) ?? []).length;
 
   let inTargetRange = true;
   if (targetRange) {
@@ -137,7 +171,8 @@ export function analyzeWritingFormat(
     issues.push({
       code: 'fullwidth_punctuation',
       severity: 'warn',
-      message: '全角の句読点（。、！？）または全角英数字が含まれています。半角の「.」「,」「?」に直しましょう。',
+      message:
+        '全角の句読点（。、！？）または全角英数字が含まれています。半角の「.」「,」「?」に直しましょう。',
     });
   }
 
@@ -208,7 +243,7 @@ export function analyzeWritingFormat(
     });
   }
 
-  // Eメール返信課題の場合、相手への質問（?）が含まれているか軽く助言
+  // Eメール返信課題：相手への質問（?）の数チェック
   if (taskKind === 'email') {
     const questionMarks = (trimmed.match(/\?/g) ?? []).length;
     if (questionMarks < 2) {
@@ -220,8 +255,36 @@ export function analyzeWritingFormat(
     }
   }
 
+  // 英文要約課題：元の本文からの丸写し（8語以上の完全一致）注意チェック
+  if (taskKind === 'summary' && sourceText) {
+    const copied = findLongVerbatimOverlap(trimmed, sourceText, 8);
+    if (copied) {
+      issues.push({
+        code: 'summary_verbatim_copy',
+        severity: 'warn',
+        message: `元の英文から8語以上そのまま抜き出している箇所があります（"${copied}..."）。英検要約では自分の言葉への言い換え（パラフレーズ）が重要です。`,
+      });
+    }
+  }
+
+  // 意見論述課題：理由の接続表現（First / Second 等）の案内（30語以上書いていて未含有の場合）
+  if (taskKind === 'essay' && words >= 30) {
+    const hasSignposts = /\b(first|firstly|second|secondly|moreover|furthermore|in addition|also)\b/i.test(
+      trimmed,
+    );
+    if (!hasSignposts) {
+      issues.push({
+        code: 'essay_signpost_hint',
+        severity: 'info',
+        message:
+          '構成ヒント：「First, ...」「Second, ...」などのつなぎ言葉を入れると、2つの理由の区切りが採点者に伝わりやすくなります。',
+      });
+    }
+  }
+
   return {
     words,
+    sentenceCount,
     inTargetRange,
     issues,
     formatWarnings: issues.map(i => i.message),

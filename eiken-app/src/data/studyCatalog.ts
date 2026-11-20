@@ -96,8 +96,8 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
     },
     {
       id: 'eiken_speaking_scbt', title: '英検スピーキング（S-CBT録音演習）', icon: 'headphones', badge: 'NEW', section: 'memorize',
-      description: '2級・準2級の本番準拠タイマー＆マイク録音練習・自己再生確認・先生への提出',
-      meta: '2級・準2級 模擬4セット',
+      description: '2級・準2級プラス・準2級の本番準拠タイマー＆自動録音・自己再生・先生への提出',
+      meta: '2級・準2級プラス・準2級 全6セット',
       action: { kind: 'speaking' },
     },
     {

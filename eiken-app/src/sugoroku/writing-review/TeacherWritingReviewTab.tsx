@@ -3,6 +3,7 @@ import {
   Check,
   CheckCircle2,
   ClipboardCopy,
+  ClipboardPaste,
   Clock,
   Printer,
   RefreshCw,
@@ -15,7 +16,11 @@ import type {
   SugorokuWritingRubricScores,
   SugorokuWritingSubmissionDoc,
 } from '../shared/types';
-import { buildWritingAiReviewPrompt } from './promptBuilder';
+import { computeEnglishDiff } from './diffHighlight';
+import {
+  buildWritingAiReviewPrompt,
+  parseAiReviewResponse,
+} from './promptBuilder';
 import { openFeedbackSheetPrintWindow } from './printFeedbackSheet';
 import {
   fetchClassWritingSubmissions,
@@ -40,11 +45,12 @@ export function TeacherWritingReviewTab({
   const [gradeFilter, setGradeFilter] = useState<EikenGrade | 'all'>('all');
   const [selectedId, setSelectedId] = useState<string>('');
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [showAiImporter, setShowAiImporter] = useState(false);
+  const [aiPasteBuffer, setAiPasteBuffer] = useState('');
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
 
-  // 添削フォーム状態
   const [rubric, setRubric] = useState<SugorokuWritingRubricScores>({
     content: 3,
     structure: 3,
@@ -93,11 +99,12 @@ export function TeacherWritingReviewTab({
     [filtered, selectedId],
   );
 
-  // 選択答案が変わったらフォームへ初期値をロード
   useEffect(() => {
     if (!selected) return;
     setNotice('');
     setCopiedPrompt(false);
+    setShowAiImporter(false);
+    setAiPasteBuffer('');
     if (selected.review) {
       setRubric(
         selected.review.rubricScores ?? {
@@ -128,6 +135,13 @@ export function TeacherWritingReviewTab({
     [selected],
   );
 
+  const liveDiff = useMemo(() => {
+    if (!selected || !correctedText.trim() || correctedText.trim() === selected.text.trim()) {
+      return [];
+    }
+    return computeEnglishDiff(selected.text, correctedText);
+  }, [selected, correctedText]);
+
   const totalScore = rubric.content + rubric.structure + rubric.vocabulary + rubric.grammar;
 
   const handleCopyPrompt = async () => {
@@ -143,10 +157,33 @@ export function TeacherWritingReviewTab({
     try {
       await navigator.clipboard.writeText(prompt);
       setCopiedPrompt(true);
+      setShowAiImporter(true);
       setTimeout(() => setCopiedPrompt(false), 2500);
     } catch {
       setError('クリップボードへのコピーに失敗しました。ブラウザの権限を確認してください。');
     }
+  };
+
+  const handleApplyAiDraft = () => {
+    if (!aiPasteBuffer.trim()) {
+      setError('Gemini / ChatGPT からの出力テキストを貼り付けてください。');
+      return;
+    }
+    const parsed = parseAiReviewResponse(aiPasteBuffer);
+    setRubric(prev => ({
+      content: parsed.rubricScores.content ?? prev.content,
+      structure: parsed.rubricScores.structure ?? prev.structure,
+      vocabulary: parsed.rubricScores.vocabulary ?? prev.vocabulary,
+      grammar: parsed.rubricScores.grammar ?? prev.grammar,
+    }));
+    if (parsed.correctedText) setCorrectedText(parsed.correctedText);
+    if (parsed.comment) setComment(parsed.comment);
+    if (parsed.strengths) setStrengths(parsed.strengths);
+    if (parsed.nextActions) setNextActions(parsed.nextActions);
+    setShowAiImporter(false);
+    setAiPasteBuffer('');
+    setError('');
+    setNotice('AI下書きを各欄へ自動反映しました！内容を確認・微調整して生徒へ返却してください。');
   };
 
   const handleSaveReview = async () => {
@@ -171,7 +208,9 @@ export function TeacherWritingReviewTab({
         nextActions,
       });
       setItems(prev => prev.map(row => (row.id === updated.id ? updated : row)));
-      setNotice('添削結果を保存・返却しました！そのまま右のボタンからA4フィードバックシートを印刷/PDF保存できます。');
+      setNotice(
+        '添削結果を保存・返却しました！そのまま右のボタンからA4フィードバックシートを印刷/PDF保存できます。',
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : '添削の保存に失敗しました。');
     } finally {
@@ -239,17 +278,9 @@ export function TeacherWritingReviewTab({
           </button>
           <select
             aria-label="級で絞り込み"
+            className="twr-grade-select"
             value={gradeFilter}
             onChange={e => setGradeFilter(e.target.value as EikenGrade | 'all')}
-            style={{
-              minHeight: '36px',
-              borderRadius: '10px',
-              border: '1px solid #d2cec2',
-              padding: '4px 10px',
-              fontSize: '12.5px',
-              fontWeight: 700,
-              background: '#fff',
-            }}
           >
             <option value="all">すべての級</option>
             {EIKEN_GRADES.map(g => (
@@ -261,9 +292,8 @@ export function TeacherWritingReviewTab({
         </div>
         <button
           type="button"
-          className="twr-chip"
+          className="twr-chip twr-refresh-btn"
           onClick={() => void reload()}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
         >
           <RefreshCw size={14} aria-hidden="true" />
           更新
@@ -271,43 +301,17 @@ export function TeacherWritingReviewTab({
       </div>
 
       {error && (
-        <div
-          role="alert"
-          style={{
-            padding: '10px 14px',
-            borderRadius: '10px',
-            background: '#fdecea',
-            border: '1px solid #f5c6c0',
-            color: '#96342b',
-            fontSize: '13px',
-            fontWeight: 700,
-          }}
-        >
+        <div role="alert" className="twr-alert-error">
           {error}
         </div>
       )}
 
       {loading ? (
-        <p style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>
-          提出答案を読み込んでいます…
-        </p>
+        <p className="twr-loading-msg">提出答案を読み込んでいます…</p>
       ) : filtered.length === 0 ? (
-        <div
-          style={{
-            padding: '32px 20px',
-            textAlign: 'center',
-            background: '#fff',
-            borderRadius: '16px',
-            border: '1px solid #dfd9c8',
-          }}
-        >
-          <p style={{ margin: 0, fontWeight: 700, color: '#4b5563' }}>
-            該当するライティング提出答案はありません。
-          </p>
-        </div>
+        <div className="twr-empty-box">該当するライティング提出答案はありません。</div>
       ) : (
         <div className="twr-grid">
-          {/* 左：提出一覧 */}
           <div className="twr-list" role="list" aria-label="提出答案一覧">
             {filtered.map(item => {
               const gLabel =
@@ -322,55 +326,22 @@ export function TeacherWritingReviewTab({
                   data-selected={isSelected}
                   onClick={() => setSelectedId(item.id || '')}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: '6px',
-                      width: '100%',
-                    }}
-                  >
-                    <strong style={{ fontSize: '14px' }}>{item.studentName}</strong>
+                  <div className="twr-item-top">
+                    <strong>{item.studentName}</strong>
                     {item.status === 'reviewed' ? (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px',
-                          fontSize: '11.5px',
-                          fontWeight: 800,
-                          color: '#1f6b5c',
-                          background: '#e1f4ee',
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                        }}
-                      >
-                        <CheckCircle2 size={12} /> 添削済 ({item.review?.score ?? '-'}
-                        /16)
+                      <span className="twr-pill-done">
+                        <CheckCircle2 size={12} /> 添削済 ({item.review?.score ?? '-'}/16)
                       </span>
                     ) : (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px',
-                          fontSize: '11.5px',
-                          fontWeight: 800,
-                          color: '#9a3412',
-                          background: '#ffedd5',
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                        }}
-                      >
+                      <span className="twr-pill-pending">
                         <Clock size={12} /> 未添削
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: '#374151', fontWeight: 700 }}>
+                  <div className="twr-item-title">
                     [{gLabel}] {item.taskTitle || item.taskKey}（{item.wordCount}語）
                   </div>
-                  <div style={{ fontSize: '11.5px', color: '#6b7280' }}>
+                  <div className="twr-item-date">
                     {new Date(item.submittedAt).toLocaleString('ja-JP')}
                   </div>
                 </button>
@@ -378,108 +349,113 @@ export function TeacherWritingReviewTab({
             })}
           </div>
 
-          {/* 右：詳細＆添削パネル */}
           {selected && (
             <section className="twr-detail" aria-label="選択した答案の添削">
-              <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: '10px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800 }}>
-                      {selected.studentName} さんの提出答案
-                    </h3>
-                    <p style={{ margin: '3px 0 0', fontSize: '13px', color: '#4b5563' }}>
-                      {matchedTask?.title || selected.taskTitle || selected.taskKey} ・{' '}
-                      <strong>{selected.wordCount} words</strong>
-                      {matchedTask?.target ? `（${matchedTask.target}）` : ''}
-                    </p>
-                  </div>
-                </div>
+              <div className="twr-detail-head">
+                <h3>{selected.studentName} さんの提出答案</h3>
+                <p>
+                  {matchedTask?.title || selected.taskTitle || selected.taskKey} ・{' '}
+                  <strong>{selected.wordCount} words</strong>
+                  {matchedTask?.target ? `（${matchedTask.target}）` : ''}
+                </p>
               </div>
 
-              {/* 1クリック AIプロンプトコピー（API課金ゼロ運用） */}
               <div className="twr-ai-box">
-                <div style={{ flex: 1, minWidth: '200px' }}>
-                  <strong style={{ fontSize: '13px', color: '#1e3a8a', display: 'block' }}>
-                    手元AI（Gemini / ChatGPT）下書き補助（API課金ゼロ）
+                <div className="twr-ai-copy-info">
+                  <strong>
+                    手元AI（Gemini / ChatGPT）往復90秒ワークフロー（API課金ゼロ）
                   </strong>
-                  <span style={{ fontSize: '12px', color: '#3b4e6b' }}>
-                    問題文・模範解答・生徒答案・英検4観点ルーブリックを1クリックでコピーできます。
+                  <span>
+                    ①プロンプトをコピーしてAIへ貼る → ②AIの返答を貼り付けると4観点スコア・添削文・講評へ一括反映します。
                   </span>
                 </div>
-                <button
-                  type="button"
-                  className="twr-copy-btn"
-                  onClick={() => void handleCopyPrompt()}
-                  data-sugoroku-copy-ai-prompt
-                >
-                  {copiedPrompt ? (
-                    <>
-                      <Check size={15} aria-hidden="true" />
-                      採点プロンプトをコピーしました！
-                    </>
-                  ) : (
-                    <>
-                      <ClipboardCopy size={15} aria-hidden="true" />
-                      英検4観点採点プロンプトをコピー
-                    </>
-                  )}
-                </button>
+                <div className="twr-row-wrap">
+                  <button
+                    type="button"
+                    className="twr-copy-btn"
+                    onClick={() => void handleCopyPrompt()}
+                    data-sugoroku-copy-ai-prompt
+                  >
+                    {copiedPrompt ? (
+                      <>
+                        <Check size={15} aria-hidden="true" />
+                        コピー完了！
+                      </>
+                    ) : (
+                      <>
+                        <ClipboardCopy size={15} aria-hidden="true" />
+                        ① 採点プロンプトをコピー
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="twr-outline-blue-btn"
+                    onClick={() => setShowAiImporter(v => !v)}
+                  >
+                    <ClipboardPaste size={15} aria-hidden="true" />
+                    ② AIの返答を一括反映
+                  </button>
+                </div>
               </div>
 
+              {showAiImporter && (
+                <div className="twr-importer-box">
+                  <label htmlFor="twr-ai-paste">
+                    Gemini / ChatGPT の出力をそのままここに貼り付けてください：
+                  </label>
+                  <textarea
+                    id="twr-ai-paste"
+                    rows={5}
+                    value={aiPasteBuffer}
+                    onChange={e => setAiPasteBuffer(e.target.value)}
+                    placeholder="[SCORES] ... [/SCORES] 形式のAI出力を貼り付けると、下の全入力欄へ自動で振り分けます"
+                  />
+                  <div className="twr-importer-actions">
+                    <button
+                      type="button"
+                      className="twr-chip"
+                      onClick={() => setShowAiImporter(false)}
+                    >
+                      閉じる
+                    </button>
+                    <button
+                      type="button"
+                      className="twr-copy-btn"
+                      onClick={handleApplyAiDraft}
+                    >
+                      各入力欄へ自動反映する
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {matchedTask && (
-                <details style={{ fontSize: '13px', color: '#374151' }}>
-                  <summary style={{ cursor: 'pointer', fontWeight: 800, color: '#1f5c51' }}>
-                    問題文・参考模範解答を確認する
-                  </summary>
-                  <div
-                    style={{
-                      marginTop: '8px',
-                      padding: '10px 12px',
-                      background: '#f6f8f7',
-                      borderRadius: '10px',
-                      display: 'grid',
-                      gap: '8px',
-                    }}
-                  >
-                    <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
+                <details className="twr-ref-details">
+                  <summary>問題文・参考模範解答を確認する</summary>
+                  <div className="twr-ref-body">
+                    <p>
                       <strong>【指示文】</strong> {matchedTask.instruction}
                     </p>
                     {matchedTask.source && (
-                      <p style={{ margin: 0, whiteSpace: 'pre-wrap' }} lang="en">
+                      <p lang="en">
                         <strong>【元文】</strong> {matchedTask.source}
                       </p>
                     )}
-                    <p style={{ margin: 0, whiteSpace: 'pre-wrap' }} lang="en">
+                    <p lang="en">
                       <strong>【参考解答】</strong> {matchedTask.model}
                     </p>
                   </div>
                 </details>
               )}
 
-              <div>
-                <strong style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>
-                  生徒の提出英文（{selected.wordCount} words）
-                </strong>
+              <div className="twr-field">
+                <label>生徒の提出英文（{selected.wordCount} words）</label>
                 <div className="twr-student-text" lang="en">
                   {selected.text}
                 </div>
                 {selected.formatWarnings.length > 0 && (
-                  <ul
-                    style={{
-                      margin: '8px 0 0',
-                      paddingLeft: '18px',
-                      fontSize: '12px',
-                      color: '#92400e',
-                    }}
-                  >
+                  <ul className="twr-warn-list">
                     {selected.formatWarnings.map((w, idx) => (
                       <li key={idx}>自動形式検出：{w}</li>
                     ))}
@@ -487,22 +463,10 @@ export function TeacherWritingReviewTab({
                 )}
               </div>
 
-              {/* 4観点スコア入力 */}
               <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '6px',
-                  }}
-                >
-                  <strong style={{ fontSize: '13.5px' }}>
-                    英検4観点スコア（各0〜4点）
-                  </strong>
-                  <strong style={{ fontSize: '15px', color: '#1f5c51' }}>
-                    合計：{totalScore} / 16 点
-                  </strong>
+                <div className="twr-row-between">
+                  <strong>英検4観点スコア（各0〜4点）</strong>
+                  <strong className="swr-check-ok">合計：{totalScore} / 16 点</strong>
                 </div>
                 <div className="twr-rubric-grid">
                   {(
@@ -549,7 +513,7 @@ export function TeacherWritingReviewTab({
 
               <div className="twr-field">
                 <label htmlFor="twr-corrected">
-                  添削英文・書き直し例（生徒の元の文をベースに修正）
+                  添削英文・書き直し例（生徒の元の文をベースに修正すると下に単語差分が自動表示されます）
                 </label>
                 <textarea
                   id="twr-corrected"
@@ -559,6 +523,26 @@ export function TeacherWritingReviewTab({
                   onChange={e => setCorrectedText(e.target.value)}
                   placeholder="生徒の英文を活かした自然な修正例を入力"
                 />
+                {liveDiff.length > 0 && (
+                  <div className="twr-diff-preview" lang="en" aria-label="添削差分プレビュー">
+                    <small lang="ja" className="twr-diff-caption">
+                      リアルタイム添削差分プレビュー（A4シートにも白黒出力されます）：
+                    </small>
+                    {liveDiff.map((seg, i) =>
+                      seg.kind === 'removed' ? (
+                        <del key={i} className="swr-diff-del">
+                          {seg.text}
+                        </del>
+                      ) : seg.kind === 'added' ? (
+                        <ins key={i} className="swr-diff-ins">
+                          {seg.text}
+                        </ins>
+                      ) : (
+                        <span key={i}>{seg.text}</span>
+                      ),
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="twr-field">
@@ -572,13 +556,7 @@ export function TeacherWritingReviewTab({
                 />
               </div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '10px',
-                }}
-              >
+              <div className="twr-two-col">
                 <div className="twr-field">
                   <label htmlFor="twr-strengths">◎ 良かった点（任意・シート欄）</label>
                   <textarea
@@ -602,15 +580,7 @@ export function TeacherWritingReviewTab({
               </div>
 
               {notice && (
-                <p
-                  role="status"
-                  style={{
-                    margin: 0,
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    color: '#1f6b5c',
-                  }}
-                >
+                <p role="status" className="twr-notice-ok">
                   {notice}
                 </p>
               )}

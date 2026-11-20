@@ -18,7 +18,12 @@ import {
   SCBT_SPEAKING_SETS,
   speakingSetsForGrade,
 } from '../src/sugoroku/speaking-scbt/mockSpeakingSets';
+import { playScbtBeep } from '../src/sugoroku/speaking-scbt/scbtBeep';
 import { ScbtSpeakingPractice } from '../src/sugoroku/speaking-scbt/ScbtSpeakingPractice';
+import {
+  buildSpeakingAiCoachPrompt,
+  buildSpeakingFeedbackSheetHtml,
+} from '../src/sugoroku/speaking-scbt/speakingFeedbackSheet';
 import {
   fetchStudentSpeakingSubmissions,
   saveSpeakingReview,
@@ -26,9 +31,13 @@ import {
 } from '../src/sugoroku/speaking-scbt/speakingStore';
 import { validateSpeakingSet } from '../src/sugoroku/speaking-scbt/speakingTypes';
 import { TeacherSpeakingReviewTab } from '../src/sugoroku/speaking-scbt/TeacherSpeakingReviewTab';
+import { computeEnglishDiff } from '../src/sugoroku/writing-review/diffHighlight';
 import { analyzeWritingFormat } from '../src/sugoroku/writing-review/formatCheck';
 import { buildFeedbackSheetHtml } from '../src/sugoroku/writing-review/printFeedbackSheet';
-import { buildWritingAiReviewPrompt } from '../src/sugoroku/writing-review/promptBuilder';
+import {
+  buildWritingAiReviewPrompt,
+  parseAiReviewResponse,
+} from '../src/sugoroku/writing-review/promptBuilder';
 import { TeacherWritingReviewTab } from '../src/sugoroku/writing-review/TeacherWritingReviewTab';
 import {
   fetchClassWritingSubmissions,
@@ -64,13 +73,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('AI 3: Writing self-check, submission, review prompt & A4 feedback sheet', () => {
-  it('detects word range, lowercase sentence starts, lowercase "i", missing periods, fullwidth punctuation, and common misspellings', () => {
+describe('AI 3: Writing self-check, word-diff, AI draft importer, submission & A4 feedback sheet', () => {
+  it('detects word range, lowercase starts, lowercase "i", missing periods, fullwidth punctuation, misspellings, summary verbatim copy, and essay signposts', () => {
     const cleanText =
       'I think that students should read more books in school. First, reading helps us learn many useful expressions. Second, it broadens our ideas about society.';
     const okResult = analyzeWritingFormat(cleanText, [20, 35], 'essay');
     expect(okResult.passedAll).toBe(true);
     expect(okResult.inTargetRange).toBe(true);
+    expect(okResult.sentenceCount).toBe(3);
     expect(okResult.formatWarnings).toEqual([]);
 
     const flawedText = 'first, i beleive enviroment is very importent。 Because it helps us';
@@ -85,13 +95,74 @@ describe('AI 3: Writing self-check, submission, review prompt & A4 feedback shee
     expect(codes).toContain('lowercase_pronoun_i');
     expect(codes).toContain('spelling_suspect');
     expect(codes).toContain('email_questions_shortage');
+
+    // 要約問題の「原文8語以上の連続丸写し」検出テスト
+    const sourcePassage =
+      'Many municipal libraries have recently introduced quiet evening study rooms for high school students.';
+    const copiedSummary =
+      'Many municipal libraries have recently introduced quiet evening study rooms for teenagers, and students enjoy them.';
+    const summaryResult = analyzeWritingFormat(
+      copiedSummary,
+      [12, 30],
+      'summary',
+      sourcePassage,
+    );
+    expect(summaryResult.issues.map(i => i.code)).toContain('summary_verbatim_copy');
+
+    // 意見論述で理由の構成語が無い場合のヒント検出（30語以上）
+    const noSignpostEssay =
+      'I think school gardens are great for high school students today. Students can learn about growing fresh vegetables every week with classmates. Working outdoors makes everyone smile together after difficult classes.';
+    const essayHintResult = analyzeWritingFormat(noSignpostEssay, [25, 40], 'essay');
+    expect(essayHintResult.issues.map(i => i.code)).toContain('essay_signpost_hint');
   });
 
-  it('builds a zero-API-cost AI grading prompt and an XSS-safe A4 monochrome feedback sheet without touching personal local writing format', async () => {
+  it('computes word-level LCS diff and parses Gemini/ChatGPT structured AI review responses', () => {
+    const diff = computeEnglishDiff(
+      'I agree with the idea because sports build teamwork.',
+      'I strongly agree with this idea because playing sports builds teamwork.',
+    );
+    expect(diff.some(seg => seg.kind === 'added' && seg.text.includes('strongly'))).toBe(true);
+    expect(diff.some(seg => seg.kind === 'removed' && seg.text.includes('the'))).toBe(true);
+    expect(diff.some(seg => seg.kind === 'added' && seg.text.includes('this'))).toBe(true);
+
+    const sampleAiReply = `
+Here is the draft evaluation:
+[SCORES]
+content: 4
+structure: 3
+vocabulary: 3
+grammar: 4
+[/SCORES]
+[CORRECTED]
+I strongly agree with this idea because playing team sports helps high school students cooperate with one another.
+[/CORRECTED]
+[COMMENT]
+主張と2つの理由が明確に書けていて素晴らしいです！単数主語（playing sports）に対応する三単現の -s を意識するとさらに得点が安定します。
+[/COMMENT]
+[STRENGTHS]
+First / Second の構成がとても分かりやすい|具体例が説得力を持っている
+[/STRENGTHS]
+[NEXT_ACTIONS]
+動名詞主語の三単現 -s を確認する|修正例を2回書き写して暗唱する
+[/NEXT_ACTIONS]
+`;
+    const parsed = parseAiReviewResponse(sampleAiReply);
+    expect(parsed.rubricScores).toEqual({
+      content: 4,
+      structure: 3,
+      vocabulary: 3,
+      grammar: 4,
+    });
+    expect(parsed.correctedText).toContain('I strongly agree with this idea');
+    expect(parsed.comment).toContain('素晴らしいです');
+    expect(parsed.strengths).toContain('First / Second');
+    expect(parsed.nextActions).toContain('三単現');
+  });
+
+  it('builds a zero-API-cost AI grading prompt and an XSS-safe A4 monochrome diff feedback sheet without touching personal local writing format', async () => {
     const store = new MemoryStorage();
     vi.stubGlobal('localStorage', store);
 
-    // 既存の個人用ローカル保存レコードを先に置き、提出・添削操作後も一切破壊されないことを検証
     const personalRecord = JSON.stringify({
       ...emptyWriting(),
       drafts: {
@@ -126,10 +197,8 @@ describe('AI 3: Writing self-check, submission, review prompt & A4 feedback shee
       modelAnswer: 'Sample model answer.',
     });
     expect(prompt).toContain('英検2級');
-    expect(prompt).toContain('内容（Content）');
-    expect(prompt).toContain('構成（Structure）');
-    expect(prompt).toContain('語彙（Vocabulary）');
-    expect(prompt).toContain('文法（Grammar）');
+    expect(prompt).toContain('[SCORES]');
+    expect(prompt).toContain('[CORRECTED]');
     expect(prompt).toContain('I agree with the idea because sports build teamwork.');
 
     const reviewed = await saveWritingReview(SUGOROKU_DEMO_CLASS_ID, submitted, {
@@ -161,10 +230,12 @@ describe('AI 3: Writing self-check, submission, review prompt & A4 feedback shee
     });
     expect(sheetHtml).toContain('@page');
     expect(sheetHtml).toContain('13 / 16');
+    expect(sheetHtml).toContain('Before → After');
+    expect(sheetHtml).toContain('diff-ins');
+    expect(sheetHtml).toContain('diff-del');
     expect(sheetHtml).not.toContain('<script>alert(1)</script>');
     expect(sheetHtml).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
 
-    // 個人学習用ローカル保存形式が完全に無傷であることを検証
     expect(store.getItem(writingKey('student_01'))).toBe(personalRecord);
     expect(parseWriting(store.getItem(writingKey('student_01'))).drafts.eiken_2_writing_opinion.text).toBe(
       'My personal draft stays intact.',
@@ -172,7 +243,7 @@ describe('AI 3: Writing self-check, submission, review prompt & A4 feedback shee
   });
 });
 
-describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contract & original mock sets', () => {
+describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contract & 6 original mock sets (incl. Pre-2 Plus)', () => {
   it('selects WebM/Opus on PC/Android Chrome and MP4/M4A on iPad/iPhone Safari', () => {
     const chromeMime = detectPreferredAudioMimeType(
       mime => mime === 'audio/webm;codecs=opus' || mime === 'audio/webm',
@@ -188,7 +259,6 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     expect(iosSafariMime.mimeType).toBe('audio/mp4;codecs=mp4a.40.2');
     expect(iosSafariMime.extension).toBe('m4a');
 
-    // MediaRecorder が特定コーデック文字列すべて false を返した場合の iOS / PC 既定分岐
     const iosFallback = detectPreferredAudioMimeType(
       () => false,
       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Version/17.5 Mobile Safari/604.1',
@@ -216,7 +286,10 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     expect(busy.guidance).toContain('他のアプリ');
   });
 
-  it('enforces exact Storage path contract and 5MB audio size cap', () => {
+  it('enforces exact Storage path contract and 5MB audio size cap, and safely no-ops beep on SSR', () => {
+    expect(() => playScbtBeep('start', false)).not.toThrow();
+    expect(() => playScbtBeep('end', true)).not.toThrow();
+
     const pathWebm = buildSpeakingStoragePath('cls_01', 'uid_abc', 'sub_001', 'reading_aloud', 'webm');
     expect(pathWebm).toBe('sugoroku_speaking/cls_01/uid_abc/sub_001/reading_aloud.webm');
 
@@ -236,9 +309,10 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     ).not.toThrow();
   });
 
-  it('ships 2 Grade-2 sets and 2 Grade-Pre2 sets with zero 8-gram overlap against legacy fingerprints', () => {
-    expect(SCBT_SPEAKING_SETS).toHaveLength(4);
+  it('ships 6 original sets (Grade 2 x2, Grade Pre-2 Plus x2, Grade Pre-2 x2) with zero 8-gram overlap against legacy fingerprints', () => {
+    expect(SCBT_SPEAKING_SETS).toHaveLength(6);
     expect(speakingSetsForGrade('eiken_2')).toHaveLength(2);
+    expect(speakingSetsForGrade('eiken_pre2plus')).toHaveLength(2);
     expect(speakingSetsForGrade('eiken_pre2')).toHaveLength(2);
 
     const legacy = JSON.parse(
@@ -270,18 +344,18 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     }
   });
 
-  it('submits a full 5-part speaking session and saves instructor review end-to-end', async () => {
+  it('submits a full 5-part speaking session, saves instructor review, and generates A4 monochrome speaking shadowing sheet & AI coach prompt', async () => {
     const store = new MemoryStorage();
     vi.stubGlobal('localStorage', store);
 
-    const set = SCBT_SPEAKING_SETS[0];
+    const set = speakingSetsForGrade('eiken_pre2plus')[0];
     const dummyBlob = new Blob([new Uint8Array(512)], { type: 'audio/mp4' });
 
     const submitted = await submitSpeakingSession({
       classId: SUGOROKU_DEMO_CLASS_ID,
       studentUid: 'student_sp_01',
       studentName: '高橋 陸（高2）',
-      grade: 'eiken_2',
+      grade: 'eiken_pre2plus',
       set,
       clips: {
         reading_aloud: {
@@ -310,6 +384,20 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     });
     expect(reviewed.status).toBe('reviewed');
 
+    const coachPrompt = buildSpeakingAiCoachPrompt(
+      reviewed,
+      set,
+      reviewed.review?.rubricScores,
+      '過去形の語尾が明瞭',
+    );
+    expect(coachPrompt).toContain('準2級プラス');
+    expect(coachPrompt).toContain('過去形の語尾が明瞭');
+
+    const speakingSheetHtml = buildSpeakingFeedbackSheetHtml(reviewed, set);
+    expect(speakingSheetHtml).toContain('@page');
+    expect(speakingSheetHtml).toContain('29 / 33');
+    expect(speakingSheetHtml).toContain(set.cardTitle);
+
     const myRows = await fetchStudentSpeakingSubmissions(
       SUGOROKU_DEMO_CLASS_ID,
       'student_sp_01',
@@ -323,12 +411,13 @@ describe('AI 3: S-CBT Speaking MIME branching, mic error handling, Storage contr
     const speakingHtml = renderToStaticMarkup(
       createElement(ScbtSpeakingPractice, {
         uid: 'guest',
-        grade: 'eiken_2',
+        grade: 'eiken_pre2plus',
         onBack: () => {},
       }),
     );
     expect(speakingHtml).toContain('英検 S-CBT スピーキング模擬演習');
-    expect(speakingHtml).toContain('地域のスポーツ用具シェアリング');
+    expect(speakingHtml).toContain('英検準2級プラス');
+    expect(speakingHtml).toContain('本番ノンストップ進行');
 
     const teacherWritingHtml = renderToStaticMarkup(
       createElement(TeacherWritingReviewTab, {

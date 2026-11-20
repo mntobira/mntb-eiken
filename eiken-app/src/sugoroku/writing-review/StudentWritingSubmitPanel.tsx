@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
   CheckCircle2,
+  GitCompare,
   Printer,
   Send,
   Sparkles,
@@ -11,6 +12,7 @@ import { loadJukuMemberships } from '../../utils/classAssignments';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
 import type { EikenGrade } from '../../eiken/config';
 import type { SugorokuWritingSubmissionDoc } from '../shared/types';
+import { computeEnglishDiff } from './diffHighlight';
 import { analyzeWritingFormat, type WritingTaskKind } from './formatCheck';
 import { openFeedbackSheetPrintWindow } from './printFeedbackSheet';
 import {
@@ -29,6 +31,7 @@ export interface StudentWritingSubmitPanelProps {
   taskTitle: string;
   taskKind: WritingTaskKind;
   instruction: string;
+  sourceText?: string;
   targetWordsLabel: string;
   targetRange: [number, number] | null;
   text: string;
@@ -42,6 +45,7 @@ export function StudentWritingSubmitPanel({
   taskTitle,
   taskKind,
   instruction,
+  sourceText,
   targetWordsLabel,
   targetRange,
   text,
@@ -58,6 +62,7 @@ export function StudentWritingSubmitPanel({
   });
   const [history, setHistory] = useState<SugorokuWritingSubmissionDoc[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [showDiffMode, setShowDiffMode] = useState(true);
   const [statusMsg, setStatusMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -68,8 +73,8 @@ export function StudentWritingSubmitPanel({
   }, [memberships, selectedClassId]);
 
   const check = useMemo(
-    () => analyzeWritingFormat(text, targetRange, taskKind),
-    [text, targetRange, taskKind],
+    () => analyzeWritingFormat(text, targetRange, taskKind, sourceText),
+    [text, targetRange, taskKind, sourceText],
   );
 
   const loadHistory = useCallback(async () => {
@@ -116,6 +121,10 @@ export function StudentWritingSubmitPanel({
   };
 
   const latest = history[0] ?? null;
+  const diffSegments = useMemo(() => {
+    if (!latest?.review?.correctedText) return [];
+    return computeEnglishDiff(latest.text, latest.review.correctedText);
+  }, [latest]);
 
   return (
     <section className="swr-panel" aria-label="すごろく塾 ライティング形式チェックと先生への提出">
@@ -127,15 +136,14 @@ export function StudentWritingSubmitPanel({
         {onOpenTeacherPreview && (
           <button
             type="button"
+            className="swr-mini-btn"
             onClick={onOpenTeacherPreview}
-            style={{ fontSize: '12px', minHeight: '34px', padding: '4px 10px' }}
           >
             講師の添削画面を開く
           </button>
         )}
       </div>
 
-      {/* 形式セルフチェック */}
       <div className="swr-check-box" data-sugoroku-format-check>
         <p className="swr-check-title">
           {check.passedAll ? (
@@ -143,11 +151,16 @@ export function StudentWritingSubmitPanel({
           ) : (
             <AlertCircle size={16} color="#b45309" aria-hidden="true" />
           )}
-          提出前の形式・スペル自動チェック
+          提出前の形式・スペル・課題ルール自動チェック
+          {check.words > 0 && (
+            <small className="swr-muted-note">
+              （{check.words}語 ・ {check.sentenceCount}文）
+            </small>
+          )}
         </p>
         {check.words === 0 ? (
-          <p className="swr-check-ok" style={{ color: '#5c6b73' }}>
-            上の入力欄に英文を書くと、語数範囲・文頭大文字・ピリオド・頻出スペルミスを自動点検します。
+          <p className="swr-muted-note">
+            上の入力欄に英文を書くと、語数範囲・文頭大文字・ピリオド・頻出スペル・要約丸写し注意などを自動点検します。
           </p>
         ) : check.passedAll ? (
           <p className="swr-check-ok">
@@ -162,7 +175,6 @@ export function StudentWritingSubmitPanel({
         )}
       </div>
 
-      {/* 提出操作 */}
       <div className="swr-submit-row">
         {memberships.length > 1 && (
           <select
@@ -199,10 +211,17 @@ export function StudentWritingSubmitPanel({
         </button>
       </div>
 
-      {statusMsg && <p className="swr-status-msg" role="status">{statusMsg}</p>}
-      {errorMsg && <p className="swr-error-msg" role="alert">{errorMsg}</p>}
+      {statusMsg && (
+        <p className="swr-status-msg" role="status">
+          {statusMsg}
+        </p>
+      )}
+      {errorMsg && (
+        <p className="swr-error-msg" role="alert">
+          {errorMsg}
+        </p>
+      )}
 
-      {/* 最新の提出・添削返却パネル */}
       {latest && (
         <div className="swr-review-card" data-sugoroku-writing-status={latest.status}>
           <div className="swr-review-top">
@@ -216,9 +235,7 @@ export function StudentWritingSubmitPanel({
                 スコア {latest.review.score} / {latest.review.maxScore ?? 16} 点
               </span>
             ) : (
-              <small style={{ color: '#54626f', fontWeight: 700 }}>
-                提出：{latest.wordCount} words
-              </small>
+              <small className="swr-muted-note">提出：{latest.wordCount} words</small>
             )}
           </div>
 
@@ -240,16 +257,40 @@ export function StudentWritingSubmitPanel({
                   </span>
                 </div>
               )}
-              <p style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: '13.5px' }}>
-                {latest.review.comment}
-              </p>
+              <p className="swr-comment-body">{latest.review.comment}</p>
               {latest.review.correctedText && (
                 <div>
-                  <strong style={{ fontSize: '12.5px', color: '#1f5c51' }}>
-                    先生の添削例・自然な書き直し案：
-                  </strong>
+                  <div className="twr-row-between">
+                    <strong className="swr-check-ok">
+                      {showDiffMode
+                        ? '先生の添削比較（取り消し線＝削除 ／ 下線太字＝修正・追加）：'
+                        : '完成版モデル英文（クリーン表示）：'}
+                    </strong>
+                    <button
+                      type="button"
+                      className="swr-mini-btn"
+                      onClick={() => setShowDiffMode(v => !v)}
+                    >
+                      <GitCompare size={13} aria-hidden="true" />
+                      {showDiffMode ? '完成文のみ表示' : '添削の変更箇所を表示'}
+                    </button>
+                  </div>
                   <div className="swr-corrected-box" lang="en">
-                    {latest.review.correctedText}
+                    {showDiffMode
+                      ? diffSegments.map((seg, i) =>
+                          seg.kind === 'removed' ? (
+                            <del key={i} className="swr-diff-del">
+                              {seg.text}
+                            </del>
+                          ) : seg.kind === 'added' ? (
+                            <ins key={i} className="swr-diff-ins">
+                              {seg.text}
+                            </ins>
+                          ) : (
+                            <span key={i}>{seg.text}</span>
+                          ),
+                        )
+                      : latest.review.correctedText}
                   </div>
                 </div>
               )}
@@ -270,7 +311,7 @@ export function StudentWritingSubmitPanel({
               </div>
             </>
           ) : (
-            <p style={{ margin: 0, fontSize: '12.5px', color: '#54626f' }}>
+            <p className="swr-muted-note">
               提出日時：{new Date(latest.submittedAt).toLocaleString('ja-JP')} —
               次回の個別指導までに先生が確認・添削します。
             </p>

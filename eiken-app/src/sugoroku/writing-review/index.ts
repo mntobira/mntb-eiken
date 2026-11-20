@@ -1,5 +1,11 @@
+export { computeEnglishDiff, type DiffSegment } from './diffHighlight';
 export { analyzeWritingFormat, type FormatCheckIssue, type FormatCheckResult, type WritingTaskKind } from './formatCheck';
-export { buildWritingAiReviewPrompt, type WritingPromptContext } from './promptBuilder';
+export {
+  buildWritingAiReviewPrompt,
+  parseAiReviewResponse,
+  type ParsedAiWritingDraft,
+  type WritingPromptContext,
+} from './promptBuilder';
 export { buildFeedbackSheetHtml, openFeedbackSheetPrintWindow, type FeedbackSheetOptions } from './printFeedbackSheet';
 export {
   DEMO_WRITING_SUBMISSIONS,
