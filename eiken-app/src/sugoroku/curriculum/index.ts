@@ -1,12 +1,31 @@
 /**
  * すごろく塾 × マナトビ英検：
- * カリキュラムルート・段階ブリッジ判定・基礎重視語彙フィルタ連携ヘルパー（AI 5担当）
+ * カリキュラムルート・段階ブリッジ判定・基礎重視語彙フィルタ＆宿題ペイロード生成ヘルパー（AI 5担当 v4）
  *
  * 【競合ゼロ設計】
  * - `src/sugoroku/curriculum/` 配下に完全独立配置（`App.tsx` / `index.css` / `sugoroku/shared/types.ts` への変更なし）
- * - AI 1（管理者ポータル・講師用PDF棚）および AI 2（週次宿題コンポーザー）から
- *   import するだけで、12週標準ルート・準2級/準2級プラス8週段階ブリッジ・配布PDF一覧・C1言い換え辞書を即時利用可能。
+ * - AI 1（管理者ポータル・講師用PDF棚）、AI 2（週次宿題コンポーザー）、AI 3（ライティング・スピーキング添削）から
+ *   import するだけで、初回25問診断テスト・12週標準ルート・準2級/準2級プラス8週段階ブリッジ・
+ *   配布PDF全6冊（計89ページ）・C1言い換え辞書・AI 2互換の宿題ドキュメント生成を即時利用可能。
  */
+
+import {
+  SUGOROKU_ENTRY_DIAGNOSTIC_TEST,
+  SUGOROKU_EXCLUDED_WORDBOOK_IDS,
+  SUGOROKU_WEEKLY_QUIZ_BANKS,
+} from './vocabQuizData';
+
+export {
+  SUGOROKU_ENTRY_DIAGNOSTIC_TEST,
+  SUGOROKU_EXCLUDED_WORDBOOK_IDS,
+  SUGOROKU_WEEKLY_QUIZ_BANKS,
+};
+
+export type {
+  SugorokuGradeFilterSummary,
+  SugorokuQuizItemData,
+  SugorokuWeeklyQuizData,
+} from './vocabQuizData';
 
 export type SugorokuTargetGradeId = 'eiken_2' | 'eiken_pre2plus' | 'eiken_pre2';
 
@@ -16,6 +35,7 @@ export interface SugorokuPrintablePdfEntry {
   subtitle: string;
   gradeId: SugorokuTargetGradeId;
   category:
+    | 'placement_diagnostic_test'
     | 'curriculum_route'
     | 'weekly_vocab_test'
     | 'weekly_vocab_retest_form_b'
@@ -68,8 +88,19 @@ export interface SugorokuPlacementRecommendation {
   recommendedPdfIds: readonly string[];
 }
 
-/** 講師用PDF教材棚にそのまま追加できるすごろく専用白黒印刷PDF 5冊フルスイート（計83ページ・文字重なりゼロ＆純粋白黒検証済） */
+/** 講師用PDF教材棚にそのまま追加できるすごろく専用白黒印刷PDF 6冊フルスイート（計89ページ・文字重なりゼロ＆純粋白黒検証済） */
 export const SUGOROKU_CURRICULUM_PDF_SHELF: readonly SugorokuPrintablePdfEntry[] = [
+  {
+    id: 'sugoroku_pdf_eiken2_placement_diagnostic_6p',
+    title: '入塾初回15分 英検2級スタートライン診断テスト＆A/B/C処方箋シート（全25問）',
+    subtitle: '準2級基礎8問＋準2プラス橋渡し8問＋2級コア9問で「2級直行／4週ブリッジ／8週土台」を即判定',
+    gradeId: 'eiken_2',
+    category: 'placement_diagnostic_test',
+    pages: 6,
+    publicUrl: '/sugoroku/sugoroku_eiken2_placement_diagnostic_test.pdf',
+    deliverablePath: 'deliverables/sugoroku/sugoroku_eiken2_placement_diagnostic_test.pdf',
+    recommendedTiming: '無料体験授業・入塾初回カウンセリング冒頭15分（三者面談の学習ルート合意用）',
+  },
   {
     id: 'sugoroku_pdf_eiken2_route_12w',
     title: '英検2級 3か月（12週間）合格モデルカリキュラム＆学習ルート表',
@@ -629,10 +660,6 @@ export function lookupB1B2ParaphraseHint(word: string): string | null {
   return SUGOROKU_C1_TO_B1B2_PARAPHRASE_MAP[key] ?? null;
 }
 
-import { SUGOROKU_EXCLUDED_WORDBOOK_IDS, SUGOROKU_WEEKLY_QUIZ_BANKS } from './vocabQuizData';
-
-export { SUGOROKU_EXCLUDED_WORDBOOK_IDS, SUGOROKU_WEEKLY_QUIZ_BANKS };
-
 const EXCLUDED_SETS_CACHE: Record<SugorokuTargetGradeId, ReadonlySet<string>> = {
   eiken_2: new Set<string>(SUGOROKU_EXCLUDED_WORDBOOK_IDS.eiken_2.excludedWordIds),
   eiken_pre2plus: new Set<string>(SUGOROKU_EXCLUDED_WORDBOOK_IDS.eiken_pre2plus.excludedWordIds),
@@ -650,7 +677,23 @@ export function isSugorokuFoundationApprovedWordId(
   return !EXCLUDED_SETS_CACHE[gradeId].has(wordId);
 }
 
-export type SugorokuQuizTrack = 'grade2FormA' | 'grade2FormB' | 'pre2PlusBridge' | 'pre2Foundation';
+export type SugorokuQuizTrack =
+  | 'placementDiagnostic25'
+  | 'grade2FormA'
+  | 'grade2FormB'
+  | 'pre2PlusBridge'
+  | 'pre2Foundation';
+
+export interface SugorokuDiagnosticSubscores {
+  pre2FoundationCorrect: number;
+  pre2FoundationTotal: number;
+  pre2PlusBridgeCorrect: number;
+  pre2PlusBridgeTotal: number;
+  grade2CoreCorrect: number;
+  grade2CoreTotal: number;
+  percent: number;
+  placement: SugorokuPlacementRecommendation;
+}
 
 export interface SugorokuOnlineQuizGradingResult {
   track: SugorokuQuizTrack;
@@ -659,34 +702,53 @@ export interface SugorokuOnlineQuizGradingResult {
   total: number;
   passingScore: number;
   passed: boolean;
-  nextAction: 'PASS_ADVANCE' | 'RETEST_FORM_B_REQUIRED' | 'REVIEW_STAGE_REQUIRED';
+  nextAction:
+    | 'PASS_ADVANCE'
+    | 'RETEST_FORM_B_REQUIRED'
+    | 'REVIEW_STAGE_REQUIRED'
+    | 'PLACEMENT_DECIDED';
   missedWordIds: string[];
   missedWordsSummary: Array<{ no: number; word: string; meaning: string; exampleSentence: string }>;
+  diagnosticBreakdown?: SugorokuDiagnosticSubscores;
 }
 
 /**
- * アプリ画面上で週次20問テスト（4択モード：Part A は日本語4択 `choicesJa`、Part B は英語空所補充4択 `choicesEn`）を
- * 即時自動採点し、15点以下の場合は Form B 再テスト案内と復習単語IDリストを返す。
+ * アプリ画面上で週次20問テストまたは初回25問ステージ診断テスト（Part A: 日本語4択 `choicesJa`、Part B: 英語空所4択 `choicesEn`）を
+ * 即時自動採点する。
+ * - `placementDiagnostic25` の場合は準2級基礎(8問)・準2プラス橋渡し(8問)・2級コア(9問)の層別得点と A/B/C ステージ判定も同時返却
+ * - `grade2FormA` で 15点以下の場合は `RETEST_FORM_B_REQUIRED` と復習単語IDリストを返却
  */
 export function gradeSugorokuWeeklyQuiz(
   track: SugorokuQuizTrack,
   week: number,
   selectedIndices: readonly number[],
 ): SugorokuOnlineQuizGradingResult {
-  const bank = SUGOROKU_WEEKLY_QUIZ_BANKS[track];
-  const quiz = bank.find(q => q.week === week);
+  const quiz =
+    track === 'placementDiagnostic25'
+      ? SUGOROKU_ENTRY_DIAGNOSTIC_TEST
+      : SUGOROKU_WEEKLY_QUIZ_BANKS[track].find(q => q.week === week);
+
   if (!quiz) {
     throw new Error(`Sugoroku weekly quiz not found: track=${track}, week=${week}`);
   }
 
   let score = 0;
+  let pre2Correct = 0;
+  let pre2PlusCorrect = 0;
+  let g2Correct = 0;
   const missedWordIds: string[] = [];
   const missedWordsSummary: Array<{ no: number; word: string; meaning: string; exampleSentence: string }> = [];
 
   quiz.items.forEach((item, idx) => {
     const expectedIdx = item.no <= 12 ? item.answerIndexJa : item.answerIndexEn;
-    if (selectedIndices[idx] === expectedIdx) {
+    const isCorrect = selectedIndices[idx] === expectedIdx;
+    if (isCorrect) {
       score++;
+      if (track === 'placementDiagnostic25') {
+        if (item.tierLabel.startsWith('準2級基礎')) pre2Correct++;
+        else if (item.tierLabel.startsWith('準2プラス')) pre2PlusCorrect++;
+        else g2Correct++;
+      }
     } else {
       missedWordIds.push(item.id);
       missedWordsSummary.push({
@@ -697,6 +759,32 @@ export function gradeSugorokuWeeklyQuiz(
       });
     }
   });
+
+  if (track === 'placementDiagnostic25') {
+    const percent = Math.round((score / quiz.itemCount) * 100);
+    const placement = evaluateSugorokuPlacement(percent);
+    return {
+      track,
+      week: 0,
+      score,
+      total: quiz.itemCount,
+      passingScore: quiz.passingScore,
+      passed: score >= quiz.passingScore,
+      nextAction: 'PLACEMENT_DECIDED',
+      missedWordIds,
+      missedWordsSummary,
+      diagnosticBreakdown: {
+        pre2FoundationCorrect: pre2Correct,
+        pre2FoundationTotal: 8,
+        pre2PlusBridgeCorrect: pre2PlusCorrect,
+        pre2PlusBridgeTotal: 8,
+        grade2CoreCorrect: g2Correct,
+        grade2CoreTotal: 9,
+        percent,
+        placement,
+      },
+    };
+  }
 
   const passed = score >= quiz.passingScore;
   const nextAction = passed
@@ -717,3 +805,148 @@ export function gradeSugorokuWeeklyQuiz(
     missedWordsSummary,
   };
 }
+
+/**
+ * AI 2 の `SugorokuAssignmentDoc`（`classrooms/{classId}/assignments/{assignmentId}`）と 100% フィールド互換の
+ * 週次宿題ペイロード型（`sugoroku/shared/types.ts` を変更せずにそのまま渡せる構造的部分型）
+ */
+export interface SugorokuCompatibleAssignmentPayload {
+  id: string;
+  classId: string;
+  teacherUid: string;
+  title: string;
+  chapterIds: string[];
+  dueAt: number;
+  startAt: number;
+  targetStudentUids?: string[];
+  /** 「4日進行＋2日調整」ペースメーカーに基づく1日あたりの推奨演習問数 */
+  dailyQuotaProblems: number;
+  skillBreakdown: {
+    reading: number;
+    listening: number;
+    vocab: number;
+    writing: number;
+    speaking: number;
+  };
+  presetId: 'eiken2-12w' | 'eikenpre2plus-bridge' | 'eikenpre2-foundation';
+  presetWeek: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface BuildSugorokuAssignmentOptions {
+  classId: string;
+  teacherUid: string;
+  mode: 'grade2_12w' | 'bridge_8stage';
+  /** `grade2_12w` の場合は 1〜12、`bridge_8stage` の場合は 1〜8 */
+  stepNumber: number;
+  startAtMs?: number;
+  dueInDays?: number;
+  /** 1週間のうち新規演習を進める日数（すごろく標準「4日進行＋2日調整」＝デフォルト 4日） */
+  activeAdvanceDays?: number;
+  targetStudentUids?: string[];
+}
+
+function estimateChapterQuestionCount(chapterId: string): { skill: 'reading' | 'listening'; count: number } {
+  if (chapterId.endsWith('_short')) {
+    return { skill: 'reading', count: chapterId.includes('pre2_') ? 20 : 17 };
+  }
+  if (chapterId.endsWith('_cloze')) {
+    return { skill: 'reading', count: chapterId.includes('pre2_') ? 7 : 6 };
+  }
+  if (chapterId.endsWith('_reading')) {
+    return { skill: 'reading', count: chapterId.includes('pre2_') ? 10 : 8 };
+  }
+  return { skill: 'listening', count: 15 };
+}
+
+/**
+ * 西様要望「運動部でもパンクしない 4日進行＋2日調整」の週次カリキュラムから、
+ * AI 2 の `SugorokuAssignmentDoc` そのままの週次宿題データをワンクリック生成する。
+ */
+export function buildSugorokuWeeklyAssignmentPayload(
+  opts: BuildSugorokuAssignmentOptions,
+): SugorokuCompatibleAssignmentPayload {
+  const now = opts.startAtMs ?? Date.now();
+  const dueInDays = Math.max(1, opts.dueInDays ?? 7);
+  const advanceDays = Math.max(1, opts.activeAdvanceDays ?? 4);
+  const dueAt = now + dueInDays * 86_400_000;
+
+  if (opts.mode === 'grade2_12w') {
+    const preset = getSugorokuGrade2WeekPreset(opts.stepNumber);
+    if (!preset) {
+      throw new Error(`Invalid Grade 2 week number: ${opts.stepNumber} (expected 1..12)`);
+    }
+    let reading = 0;
+    let listening = 0;
+    for (const cid of preset.chapterIds) {
+      const est = estimateChapterQuestionCount(cid);
+      if (est.skill === 'reading') reading += est.count;
+      else listening += est.count;
+    }
+    const vocab = 20; // 週次確認テスト対象の厳選20語（日々の単語帳ノルマの中核）
+    const writing = 1;
+    const speaking = preset.week >= 3 ? 1 : 0;
+    const dailyQuotaProblems = Math.max(8, Math.ceil((reading + listening) / advanceDays));
+
+    return {
+      id: `sugoroku_g2_w${String(preset.week).padStart(2, '0')}_${now}`,
+      classId: opts.classId,
+      teacherUid: opts.teacherUid,
+      title: `【英検2級 Week ${preset.week}】${preset.goal.split('＋')[0].trim()}`,
+      chapterIds: [...preset.chapterIds],
+      startAt: now,
+      dueAt,
+      ...(opts.targetStudentUids && opts.targetStudentUids.length > 0
+        ? { targetStudentUids: [...opts.targetStudentUids] }
+        : {}),
+      dailyQuotaProblems,
+      skillBreakdown: { reading, listening, vocab, writing, speaking },
+      presetId: 'eiken2-12w',
+      presetWeek: preset.week,
+      createdAt: now,
+      updatedAt: now,
+    };
+  }
+
+  const stagePreset = getSugorokuBridgeStagePreset(opts.stepNumber);
+  if (!stagePreset) {
+    throw new Error(`Invalid Bridge stage number: ${opts.stepNumber} (expected 1..8)`);
+  }
+  let reading = 0;
+  let listening = 0;
+  for (const cid of stagePreset.chapterIds) {
+    const est = estimateChapterQuestionCount(cid);
+    if (est.skill === 'reading') reading += est.count;
+    else listening += est.count;
+  }
+  const dailyQuotaProblems = Math.max(6, Math.ceil((reading + listening) / advanceDays));
+
+  return {
+    id: `sugoroku_bridge_s${String(stagePreset.stage).padStart(2, '0')}_${now}`,
+    classId: opts.classId,
+    teacherUid: opts.teacherUid,
+    title: `【${stagePreset.weekLabel}】${stagePreset.goal}`,
+    chapterIds: [...stagePreset.chapterIds],
+    startAt: now,
+    dueAt,
+    ...(opts.targetStudentUids && opts.targetStudentUids.length > 0
+      ? { targetStudentUids: [...opts.targetStudentUids] }
+      : {}),
+    dailyQuotaProblems,
+    skillBreakdown: {
+      reading,
+      listening,
+      vocab: 20,
+      writing: 1,
+      speaking: stagePreset.stage >= 3 ? 1 : 0,
+    },
+    presetId: stagePreset.gradeId === 'eiken_pre2plus' ? 'eikenpre2plus-bridge' : 'eikenpre2-foundation',
+    presetWeek: stagePreset.stage,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+export { SugorokuWeeklyVocabQuizWidget } from './SugorokuWeeklyVocabQuizWidget';
+export type { SugorokuWeeklyVocabQuizWidgetProps } from './SugorokuWeeklyVocabQuizWidget';
