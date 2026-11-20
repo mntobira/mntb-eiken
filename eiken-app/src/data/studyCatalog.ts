@@ -23,6 +23,7 @@ export type StudyAction =
   | { kind: 'vocabQuiz' }                         // 英単語の4択演習（2026-10-01）
   | { kind: 'reading' }
   | { kind: 'writing' }                           // 英検ライティング練習
+  | { kind: 'speaking' }                          // 英検S-CBT方式 スピーキング録音演習
   | { kind: 'mock' };                             // 一次筆記 通し模試モード
 
 export type StudyIcon = 'headphones' | 'pen' | 'letters' | 'book' | 'flask' | 'sigma' | 'globe' | 'briefcase';
@@ -89,9 +90,15 @@ export const STUDY_CATALOG: readonly StudySubject[] = [{
     },
     {
       id: 'eiken_writing', title: '英検ライティング', icon: 'pen', section: 'memorize',
-      description: '3級〜1級の返信・意見・要約。下書き保存と自己点検',
+      description: '3級〜1級の返信・意見・要約。形式セルフチェック＆塾添削提出対応',
       meta: `6級別・${EIKEN_UNITS.reduce((n, unit) => n + unit.writing.length, 0) + bookletWritingTasks().length}課題`,
       action: { kind: 'writing' },
+    },
+    {
+      id: 'eiken_speaking_scbt', title: '英検スピーキング（S-CBT録音演習）', icon: 'headphones', badge: 'NEW', section: 'memorize',
+      description: '3級・準2級・準2級プラス・2級の本番準拠タイマー＆発話率計測・先生への提出',
+      meta: '3級〜2級 全8セット',
+      action: { kind: 'speaking' },
     },
     {
       id: 'english_vocabulary', title: '英単語・熟語帳（暗記帳）', icon: 'letters', section: 'memorize',
