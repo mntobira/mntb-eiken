@@ -32,12 +32,16 @@ export function useAuthRouting({ isGuest, setIsGuest, setAppState, appState }: {
 
       if (!user) {
         // ログイン必須（2026-10-19）。起動時に未ログインならログイン画面へ。
-        // 例外：ログインできずに「この端末だけで続ける」を選んだ人・スクリーンショット撮影
-        if (!isGuest && !(wasFirstLoad && isScreenshotLaunch())) {
+        // 例外：ログインできずに「この端末だけで続ける」を選んだ人・スクリーンショット撮影・管理者ログインガード中
+        if (!isGuest && appStateRef.current !== 'teacher_dashboard' && !(wasFirstLoad && isScreenshotLaunch())) {
           setAppState('onboarding');
         }
       } else {
         setIsGuest(false);
+        // タイトル画面「管理者ログインをする」等から先生・管理者画面を開いている最中は勝手に onboarding / home へ飛ばさない
+        if (appStateRef.current === 'teacher_dashboard' || appStateRef.current === 'feedback_admin') {
+          return;
+        }
         try {
           // Firestoreの代わりにlocalStorageを使用
           const localProfile = safeGetItem(profileKey(user.uid));

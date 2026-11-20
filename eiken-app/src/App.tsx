@@ -9,6 +9,7 @@ import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
+import { SugorokuAdminGuard, SugorokuAuthGate, useSugorokuPortalMode } from './sugoroku/auth';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -252,6 +253,7 @@ export default function App() {
   const pdfOpen = usePdfOpen();
   const bannerAdSuppressed = useBannerAdSuppressed();
   useJukuAdFree(); // 塾クラスの生徒には広告を出さない（2026-11-04）
+  const sugorokuPortalMode = useSugorokuPortalMode();
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogSubject));
@@ -530,10 +532,26 @@ export default function App() {
     setHasEntered(true);
   };
 
+  /**
+   * タイトル画面「はじめる」直下の「管理者ログインをする」ボタンからの直行導線。
+   * - ?portal=admin 等が使える統合環境では管理者ポータルへ遷移しつつ、
+   *   未ログイン時は SugorokuAdminGuard で講師 Google ログイン（mntobira / hirokingz0927 即通過）を実行し、
+   *   認証完了後すぐに先生・クラス管理画面（TeacherDashboard）を開く。
+   */
+  const enterAdminLogin = () => {
+    battleAudio().unlock();
+    setHasInteracted(true);
+    setFinishingLaunchBgm(false);
+    setSettingsTab('class');
+    setPrevAppState('home');
+    setAppState('teacher_dashboard');
+    setHasEntered(true);
+  };
+
   return (
-    <>
+    <SugorokuAuthGate enforce={sugorokuPortalMode === 'juku'}>
       {(!hasEntered || keepLaunchBgm) && (
-        <LaunchScreen onStart={enter} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
+        <LaunchScreen onStart={enter} onAdminLogin={enterAdminLogin} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
           finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
       )}
       {hasEntered && <>
@@ -637,8 +655,20 @@ export default function App() {
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
             {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
-            {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
-            {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
+            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
+            {appState === 'teacher_dashboard' && (
+              <SugorokuAdminGuard
+                onBackToStudentApp={() => {
+                  if (auth.currentUser) {
+                    setAppState('settings');
+                  } else {
+                    setHasEntered(false);
+                  }
+                }}
+              >
+                <TeacherDashboard onBack={() => setAppState('settings')} />
+              </SugorokuAdminGuard>
+            )}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
             {appState === 'feedback_admin' && <FeedbackAdminPanel onBack={() => setAppState('settings')} />}
 
@@ -884,6 +914,6 @@ export default function App() {
       </React.Suspense>
 
       </>}
-    </>
+    </SugorokuAuthGate>
   );
 }
