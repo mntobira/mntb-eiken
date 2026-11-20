@@ -172,7 +172,8 @@ export async function signInSugorokuWithGoogle(options: {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
     return {
       ok: false,
-      message: 'クラウド認証が未設定です（試作デモ環境）。運営者が Firebase 環境変数を設定すると Google ログインが有効になります。',
+      message:
+        '現在この配信URLではクラウド認証が有効化されていません。本番URL（mntb-eiken.vercel.app）からアクセスしてください。',
       errorCode: 'firebase_unconfigured',
     };
   }

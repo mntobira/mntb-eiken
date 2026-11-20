@@ -28,6 +28,7 @@ import {
 import { SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS } from '../src/sugoroku/shared/types';
 import { CLASSROOM_PREVIEW_EMAILS, isClassroomEnabledFor } from '../src/config/features';
 import { SugorokuGateScreen } from '../src/sugoroku/auth/SugorokuAuthGate';
+import { SugorokuAdminGuard } from '../src/sugoroku/auth/SugorokuAdminGuard';
 import { isAdFree, setAdFree } from '../src/ads/adFree';
 
 describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
@@ -286,14 +287,12 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(parseSugorokuInviteDraft('invalid')).toBeNull();
   });
 
-  it('renders Manatobi-authentic SugorokuGateScreen for both unauthenticated and signed-in code states', () => {
+  it('renders Manatobi-authentic SugorokuGateScreen and SugorokuAdminGuard with zero demo bypasses or leaked emails', () => {
     const step1Html = renderToStaticMarkup(
       createElement(SugorokuGateScreen, {
         user: null,
         loading: false,
         onlineReady: true,
-        allowDemoBypass: false,
-        onDemoBypass: () => {},
         onEnrolled: async () => {},
       }),
     );
@@ -301,6 +300,10 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step1Html).toContain('Google アカウントでログイン');
     expect(step1Html).toContain('広告 100% 完全非表示');
     expect(step1Html).toContain('data-tobira-buddy');
+    expect(step1Html).not.toContain('デモデータモード');
+    expect(step1Html).not.toContain('試作デモ');
+    expect(step1Html).not.toContain('mntobira@gmail.com');
+    expect(step1Html).not.toContain('hirokingz0927@gmail.com');
 
     const mockUser = {
       uid: 'student_01',
@@ -314,8 +317,6 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         loading: false,
         isSuspended: true,
         onlineReady: true,
-        allowDemoBypass: false,
-        onDemoBypass: () => {},
         onEnrolled: async () => {},
       }),
     );
@@ -325,6 +326,26 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step2Html).toContain('英検2級');
     expect(step2Html).toContain('現在このアカウントの塾在籍が停止されています');
     expect(step2Html).toContain('公開ランキング等に本名は一切表示されません');
+
+    // SugorokuAdminGuard: must NOT expose 入場条件, pre-authorized instructor emails, internal role names, or demo bypass buttons
+    const adminGuardHtml = renderToStaticMarkup(
+      createElement(SugorokuAdminGuard, {
+        onBackToStudentApp: () => {},
+        children: createElement('div', { 'data-testid': 'protected-admin-child' }, 'SECRET'),
+      }),
+    );
+    expect(adminGuardHtml).toContain('sugoroku-admin-guard');
+    expect(adminGuardHtml).toContain('管理者ログイン');
+    expect(adminGuardHtml).not.toContain('SECRET');
+    expect(adminGuardHtml).not.toContain('入場条件');
+    expect(adminGuardHtml).not.toContain('デモデータモード');
+    expect(adminGuardHtml).not.toContain('試作デモ');
+    expect(adminGuardHtml).not.toContain('mntobira@gmail.com');
+    expect(adminGuardHtml).not.toContain('hirokingz0927@gmail.com');
+    expect(adminGuardHtml).not.toContain('teacherUid');
+
+    expect(describeAdminDenyReason('insufficient_role')).not.toContain('owner');
+    expect(describeAdminDenyReason('insufficient_role')).not.toContain('staff');
   });
 
   it('allows zero-touch instructor login & classroom preview for mntobira@gmail.com and hirokingz0927@gmail.com while rejecting unverified or unlisted emails', () => {
