@@ -9,6 +9,7 @@ import { PdfViewerHost } from './components/PdfViewer';
 import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
+import { SugorokuAdminGuard, SugorokuAuthGate, useSugorokuPortalMode } from './sugoroku/auth';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -88,6 +89,7 @@ import type { ChapterRunState } from './utils/quizRunState';
 import type { StudyNote } from './types/studyNote';
 import { Onboarding } from './components/Onboarding';
 import { getSubjectLabel, isSubjectId, type SubjectId } from './data/subjectLabels';
+import { subjectOfChapterId } from './data/subjects';
 /*
  * 本体に教科データを持たない教科（高校入試 理科など）の登録簿。
  * ★何も import しない葉ファイルなので、ここから読んでも問題データは付いてこない★
@@ -220,8 +222,6 @@ export default function App() {
     setBattleReturnActive(false);
     setAppState(next);
   };
-  // 学習時間の計測（演習・解説の画面にいる間だけ）。中身は hooks/useStudyTimeTracker.ts
-  useStudyTimeTracker(appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning), appState);
   // ユーザーエージェントによるモバイル端末判定（初回のみ・不変）。
   // 画面幅の判定は共有フック useIsMobile に一元化する（C2）。
   const isMobileUserAgent = useRef(
@@ -237,10 +237,23 @@ export default function App() {
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'reading' | 'grammar' | 'more'>('words');
+  // 学習時間の計測（既存のプロフィール合計は quiz/explanation/mock 実行中のみ。すごろく分野別台帳は writing/foundation も対象）
+  useStudyTimeTracker(
+    appState === 'quiz' || appState === 'explanation' || (appState === 'mock' && mockRunning),
+    appState,
+    {
+      chapterId: selectedChapterId,
+      screenKey: appState,
+      subjectId: selectedSubject,
+      foundationTab,
+      mockKind: mockInitialKind,
+    },
+  );
   /** アプリ内の PDF ビューが開いているか（開いている間は広告を出さない） */
   const pdfOpen = usePdfOpen();
   const bannerAdSuppressed = useBannerAdSuppressed();
   useJukuAdFree(); // 塾クラスの生徒には広告を出さない（2026-11-04）
+  const sugorokuPortalMode = useSugorokuPortalMode();
   const [foundationBackTo, setFoundationBackTo] = useState<'home' | 'study'>('home');
   // 演習する（科目→コンテンツ）。選んだ科目・前回のコンテンツは端末に覚えておく
   const [studyCatalogSubject, setStudyCatalogSubject] = useState<string | null>(() => safeGetItem(STORAGE_KEYS.studyCatalogSubject));
@@ -440,6 +453,23 @@ export default function App() {
     setAppState, setAppMode, setSelectedChapterId, setQuizRange, setQuizAnswers,
     setSelectedSubject, setLastQuizResult, setBattleReturnActive, rememberBattleScroll,
   });
+  /**
+   * 「今日の宿題」カードの「今すぐ解く」→ その章の演習へ直行する。
+   *
+   * 設定画面の onStartClassChapter（同じ直行導線）とまったく同じ手順を踏む:
+   *   科目を有効か確認 → 科目を切り替え → 演習モードへ → 章を開く
+   * 章IDから科目を引くのは subjectOfChapterId（data/subjects.ts が唯一の定義）。
+   * 引けなければ何もしない（塾の宿題が別科目を指していてもホームを壊さない）。
+   */
+  const handleStartHomeworkChapter = useCallback((chapterId: string) => {
+    const subject = subjectOfChapterId(chapterId);
+    if (!subject || !isSubjectEnabled(subject)) return;
+    setSettingsTab('general');
+    setSelectedSubject(subject);
+    setAppMode('practice');
+    handleSelectChapter(chapterId, 0, false, null, 'practice');
+  }, [handleSelectChapter]);
+
 
   /*
    * ★選択中の章（単元）を探す処理は、ここから components/QuizScreens.tsx へ移した★
@@ -502,10 +532,26 @@ export default function App() {
     setHasEntered(true);
   };
 
+  /**
+   * タイトル画面「はじめる」直下の「管理者ログインをする」ボタンからの直行導線。
+   * - ?portal=admin 等が使える統合環境では管理者ポータルへ遷移しつつ、
+   *   未ログイン時は SugorokuAdminGuard で講師 Google ログイン（mntobira / hirokingz0927 即通過）を実行し、
+   *   認証完了後すぐに先生・クラス管理画面（TeacherDashboard）を開く。
+   */
+  const enterAdminLogin = () => {
+    battleAudio().unlock();
+    setHasInteracted(true);
+    setFinishingLaunchBgm(false);
+    setSettingsTab('class');
+    setPrevAppState('home');
+    setAppState('teacher_dashboard');
+    setHasEntered(true);
+  };
+
   return (
-    <>
+    <SugorokuAuthGate enforce={sugorokuPortalMode === 'juku'}>
       {(!hasEntered || keepLaunchBgm) && (
-        <LaunchScreen onStart={enter} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
+        <LaunchScreen onStart={enter} onAdminLogin={enterAdminLogin} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
           finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
       )}
       {hasEntered && <>
@@ -609,8 +655,20 @@ export default function App() {
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
             {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
-            {/* 先生ダッシュボード。戻る先を設定にしているのは、入ってきた経路と揃えるため。 */}
-            {appState === 'teacher_dashboard' && <TeacherDashboard onBack={() => setAppState('settings')} />}
+            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
+            {appState === 'teacher_dashboard' && (
+              <SugorokuAdminGuard
+                onBackToStudentApp={() => {
+                  if (auth.currentUser) {
+                    setAppState('settings');
+                  } else {
+                    setHasEntered(false);
+                  }
+                }}
+              >
+                <TeacherDashboard onBack={() => setAppState('settings')} />
+              </SugorokuAdminGuard>
+            )}
             {/* フィードバック管理（運営専用）。入口は設定内の運営専用ボタン。 */}
             {appState === 'feedback_admin' && <FeedbackAdminPanel onBack={() => setAppState('settings')} />}
 
@@ -632,7 +690,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStartHomeworkChapter={handleStartHomeworkChapter} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -856,6 +914,6 @@ export default function App() {
       </React.Suspense>
 
       </>}
-    </>
+    </SugorokuAuthGate>
   );
 }
