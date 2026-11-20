@@ -2,6 +2,9 @@
 
 本書は、『マナトビ英検（`mntobira/mntb-eiken`）』のオンライン塾「すごろく」向け拡張において、**Google アカウント限定ゲート・招待コード認可・Firestore / Firebase Storage セキュリティルール・塾生広告完全非表示（Ad-Free）** を本番環境へ安全に反映するための運用手順書です。
 
+> **現場の先生・運営担当者向けログイン＆日常運用マニュアル**  
+> 実際の講師ログイン方法（`mntobira@gmail.com` / `hirokingz0927@gmail.com`）、クラス開設、6文字招待コードの配布、宿題配信、添削、iPad トラブル対処については **👉 [`SUGOROKU_INSTRUCTOR_LOGIN_GUIDE.md`](./SUGOROKU_INSTRUCTOR_LOGIN_GUIDE.md)** をご覧ください。
+
 > **重要制約（厳守）**
 > - 本リポジトリのコード変更・PR マージだけでは、本番 Firebase プロジェクトの `firestore.rules` / `storage.rules` は自動更新されません。
 > - 大学受験版・リスニング本体プロジェクト（`mntb-listening` / `mntb-4ef06` 等）には絶対にデプロイしないでください。必ず英検専用プロジェクト（`manatobi-eiken` または `manatobi-eiken-*`）であることを確認してから反映してください。
