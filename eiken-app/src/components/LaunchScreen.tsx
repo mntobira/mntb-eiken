@@ -184,6 +184,28 @@ export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, o
 
   const [played, setPlayed] = useState(false);
   const [walkReady, setWalkReady] = useState(false);
+  const equippedSpriteSrc = progress ? equippedPoseSrc(progress) : '/mascots/basic.webp';
+
+  // エンブレム／OP再生中にとびら君の待機スプライト・背景プレート・終了プレートを事前デコードし、
+  // ジャンプ着地から待機ポーズへのクロスフェードでデコード遅延によるブラーや一瞬の空白を出さない
+  useEffect(() => {
+    const urls = [
+      '/cinematics/title-plate.webp',
+      ALPHA_CINEMATIC_CLIPS.battleCountdown.poster,
+      ALPHA_CINEMATIC_CLIPS.battleCountdown.endPlate,
+      '/mascots/walking.webp',
+      equippedSpriteSrc,
+    ];
+    urls.forEach((src) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = src;
+      if (src === '/mascots/walking.webp') {
+        img.onload = () => setWalkReady(true);
+      }
+      void img.decode?.().catch(() => {});
+    });
+  }, [equippedSpriteSrc]);
 
   useEffect(() => {
     if (phase !== 'crossfade') return;
@@ -283,8 +305,8 @@ export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, o
                   {phase !== 'intro' && (
                     <div className={`launch-arrival ${walk && walkReady ? 'walk-ready' : ''} ${!walk ? 'is-idle' : ''}`}>
                       <div className="launch-gait">
-                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" draggable={false} onLoad={() => setWalkReady(true)} />
-                        <img className="launch-equipped-pose" src={progress ? equippedPoseSrc(progress) : '/mascots/basic.webp'} alt="" draggable={false} />
+                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" decoding="sync" draggable={false} onLoad={() => setWalkReady(true)} />
+                        <img className="launch-equipped-pose" src={equippedSpriteSrc} alt="" decoding="sync" draggable={false} />
                         {progress && <TobiraAccessories progress={progress} />}
                       </div>
                     </div>

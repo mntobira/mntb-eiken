@@ -13,7 +13,7 @@
  *   をマナトビ純正デザイン（丸ゴシック・タップ44px以上・横はみ出しゼロ）で提供する。
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BookOpen,
   Calendar,
@@ -98,6 +98,17 @@ export function SugorokuHomeworkComposerModal({
   const [appliedPresetTag, setAppliedPresetTag] = useState<{ id: string; week: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const onKeyDown = (ev: KeyboardEvent) => {
+      if (ev.key === 'Escape' && !busy) {
+        ev.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [busy, onClose]);
 
   const allTotals = useMemo(() => {
     const base = { ...chapterTotals() };
@@ -290,7 +301,7 @@ export function SugorokuHomeworkComposerModal({
                           setPresetId(preset.id);
                           applyRouteWeek(selectedWeek, preset.id);
                         }}
-                        className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
+                        className={`min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
                           active
                             ? 'bg-[#2458A6] text-white border-[#2458A6]'
                             : 'bg-white text-[#3E4C5B] border-[#C9D8EC] hover:bg-[#EBF2FC]'
@@ -422,7 +433,7 @@ export function SugorokuHomeworkComposerModal({
                     key={n}
                     type="button"
                     onClick={() => setCustomQuota(n)}
-                    className={`min-h-[40px] px-3 rounded-xl text-xs font-extrabold border ${
+                    className={`min-h-[44px] px-3 rounded-xl text-xs font-extrabold border ${
                       customQuota === n
                         ? 'bg-[#D97E06] text-white border-[#B35C00]'
                         : 'bg-white text-[#3E4C5B] border-[#E3D9C8]'

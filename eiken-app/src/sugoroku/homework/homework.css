@@ -115,17 +115,41 @@
 }
 
 .sgr-homework-refresh {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -7px -6px -7px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--mt-ink-3, #5a6573);
+  cursor: pointer;
+}
+
+.sgr-homework-refresh::before {
+  content: '';
+  position: absolute;
   width: 30px;
   height: 30px;
-  padding: 0;
   border: 1px solid var(--mt-line, #e3d9c8);
   border-radius: 50%;
   background: #ffffff;
-  color: var(--mt-ink-3, #5a6573);
-  cursor: pointer;
+  z-index: -1;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sgr-homework-refresh:hover::before {
+  background: #faf6ee;
+  border-color: #cbbda6;
+}
+
+.sgr-homework button:focus-visible {
+  outline: none;
+  box-shadow: var(--mt-focus, 0 0 0 3px rgba(36, 88, 166, 0.32));
 }
 
 .sgr-spin {
@@ -386,9 +410,10 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 36px;
-  padding: 2px 4px;
+  min-height: 44px;
+  padding: 4px 6px;
   border: 0;
+  border-radius: 10px;
   background: transparent;
   color: var(--mt-ink-2, #3e4c5b);
   font-size: 12px;
@@ -406,7 +431,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .sgr-homework-more > li > button {
@@ -414,16 +439,22 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 40px;
-  padding: 6px 10px;
+  min-height: 44px;
+  padding: 6px 12px;
   border: 1px solid var(--mt-line, #e3d9c8);
-  border-radius: 11px;
+  border-radius: 12px;
   background: #ffffff;
   color: var(--mt-ink, #1c2a39);
   font-size: 12.5px;
   font-weight: 700;
   text-align: left;
   cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.sgr-homework-more > li > button:hover:not(:disabled) {
+  background: #f6f9fd;
+  border-color: #bcd0ea;
 }
 
 .sgr-homework-more > li > button:disabled {
