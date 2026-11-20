@@ -1,46 +1,109 @@
 import type { EikenGrade } from '../../eiken/config';
+import type { ClassroomDoc } from '../../utils/classroomCore';
 
 /**
  * ============================================================================
- * すごろく×マナトビ英検 共通データ契約（AI 1 〜 AI 5 共通インターフェース）
+ * すごろく×マナトビ英検 共通データ契約（AI 1 〜 AI 5 完全統合インターフェース）
  * ============================================================================
  * 『03_AI並列開発指示書』第2章 Table 3 の Firestore パス・フィールド仕様に厳密準拠。
- * 他AIが拡張する場合も後方互換（optional フィールド追加のみ）を維持すること。
+ * AI 1（管理ポータル）・AI 2（宿題/学習時間）・AI 3（ライティング/S-CBTスピーキング）・
+ * AI 4（認証/セキュリティルール）・AI 5（語彙/カリキュラム）すべてと 100% 型互換。
  */
+
+export type SugorokuGradeId = EikenGrade;
+export type SugorokuSkillKey = 'reading' | 'listening' | 'writing' | 'speaking' | 'vocab';
+export type SugorokuSkill = SugorokuSkillKey;
+export type GradeSkillKey = `${EikenGrade}:${SugorokuSkillKey}` | string;
+export type SugorokuRole = 'owner' | 'staff' | 'student';
+
+export const SUGOROKU_COLLECTIONS = {
+  classrooms: 'classrooms',
+  sugorokuMembers: 'sugoroku_members',
+  sugorokuStaffInvites: 'sugoroku_staff_invites',
+  sugorokuStudyLogs: 'sugoroku_study_logs',
+  studySummaries: 'study_summaries',
+  assignments: 'assignments',
+  homeworkPlans: 'sugoroku_homework_plans',
+  writingSubmissions: 'writing_submissions',
+  speakingSubmissions: 'speaking_submissions',
+} as const;
+
+export const SUGOROKU_SPEAKING_STORAGE_PREFIX = 'sugoroku_speaking';
+export const SUGOROKU_SPEAKING_MAX_BYTES = 5 * 1024 * 1024;
+
+export const SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS = [
+  'mntobira@gmail.com',
+  'hirokingz0927@gmail.com',
+] as const;
+
+export type SugorokuClassroomDoc = ClassroomDoc & {
+  plan?: 'free' | 'juku';
+};
+
+export interface SugorokuStaffInviteDoc {
+  id: string;
+  classId: string;
+  className?: string;
+  schoolName?: string;
+  email: string;
+  staffName: string;
+  role: 'owner' | 'staff';
+  status: 'invited' | 'active' | 'revoked';
+  acceptedUid?: string;
+  invitedByUid: string;
+  createdAt: number;
+  updatedAt: number;
+}
 
 // ----------------------------------------------------------------------------
 // 1. 塾クラス・ロール（classrooms/{classId}, sugoroku_members/{uid}）
 // ----------------------------------------------------------------------------
 
-export type SugorokuRole = 'owner' | 'staff' | 'student';
-
 export interface SugorokuMemberDoc {
   uid: string;
+  classId?: string;
+  classIds?: string[];
   role: SugorokuRole;
-  targetGrade?: EikenGrade;
+  rosterName?: string;
+  displayName?: string;
+  targetGrade: EikenGrade;
   active: boolean;
   adFree: boolean;
-  displayName?: string;
-  rosterName?: string;
   email?: string;
-  classIds?: string[];
+  note?: string;
+  consentAcceptedAt?: number;
+  joinedAt?: number;
   updatedAt?: number;
+  serverUpdatedAt?: unknown;
 }
 
 // ----------------------------------------------------------------------------
 // 2. 分野別学習時間ログ（users/{uid}/sugoroku_study_logs/{dateKey}）
 // ----------------------------------------------------------------------------
 
-export type SugorokuSkill = 'reading' | 'listening' | 'writing' | 'speaking' | 'vocab';
-
-/** キー形式例: 'eiken_2:listening', 'eiken_2:reading', 'eiken_2:vocab' */
-export type GradeSkillKey = `${EikenGrade}:${SugorokuSkill}` | string;
-
 export interface SugorokuStudyLogDoc {
+  uid?: string;
   dateKey: string; // 'YYYY-MM-DD'
   totalActiveSeconds: number;
   byGradeSkill: Record<GradeSkillKey, number>;
   solvedCount: number;
+  accuracyByGradeSkill?: Record<GradeSkillKey, { correct: number; total: number }>;
+  updatedAt: number;
+}
+
+export interface SugorokuStudySummaryDoc {
+  uid: string;
+  totalActiveSeconds: number;
+  weeklyActiveSeconds?: number;
+  weekActiveSeconds?: number;
+  todayActiveSeconds?: number;
+  byGradeSkill?: Record<GradeSkillKey, number>;
+  byGradeSkillTotal?: Record<GradeSkillKey, number>;
+  solvedTotal: number;
+  solvedCount?: number;
+  lastActiveAt?: number;
+  lastDateKey?: string;
+  lastActiveDateKey?: string;
   updatedAt: number;
 }
 
@@ -57,17 +120,47 @@ export interface SugorokuSkillBreakdown {
 }
 
 export interface SugorokuAssignmentDoc {
-  id?: string;
-  classId?: string;
-  teacherUid?: string;
+  id: string;
+  classId: string;
+  teacherUid: string;
   title: string;
   chapterIds: string[];
   dueAt: number;
-  targetStudentUids?: string[];
   startAt?: number;
+  targetStudentUids?: string[];
   dailyQuotaProblems?: number;
   skillBreakdown?: SugorokuSkillBreakdown;
+  presetId?: string;
+  presetWeek?: number;
   createdAt?: number;
+  updatedAt?: number;
+}
+
+export type SugorokuHomeworkPlan = SugorokuAssignmentDoc;
+
+export interface SugorokuHomeworkTask {
+  assignmentId: string;
+  classId: string;
+  className: string;
+  title: string;
+  chapterIds: string[];
+  dueAt: number;
+  startAt?: number;
+  nextChapterId: string;
+  total: number;
+  solved: number;
+  remaining: number;
+  percent: number;
+  daysLeft: number;
+  todayQuota: number;
+  todayDone: number;
+  todayRemaining: number;
+  overPacedToday?: boolean;
+  skillBreakdown?: SugorokuSkillBreakdown;
+  status: 'done' | 'late' | 'not_started' | 'on_track' | 'behind' | 'ahead';
+  overdue: boolean;
+  perDayNeeded: number;
+  message: string;
 }
 
 // ----------------------------------------------------------------------------
@@ -82,14 +175,15 @@ export interface SugorokuWritingRubricScores {
   structure: number; // 構成 (0-4)
   vocabulary: number; // 語彙 (0-4)
   grammar: number; // 文法 (0-4)
+  organization?: number; // AI 1 互換エイリアス
 }
 
 export interface SugorokuWritingReview {
   reviewerUid: string;
   reviewerName?: string;
-  score: number; // 合計スコア（例: 0〜16点）
-  maxScore?: number; // 既定 16
-  rubricScores?: SugorokuWritingRubricScores;
+  score: number;
+  maxScore?: number;
+  rubricScores?: Partial<SugorokuWritingRubricScores>;
   comment: string;
   correctedText?: string;
   strengths?: string;
@@ -98,13 +192,14 @@ export interface SugorokuWritingReview {
 }
 
 export interface SugorokuWritingSubmissionDoc {
-  id?: string;
+  id: string;
   classId?: string;
   studentUid: string;
   studentName: string;
   grade: EikenGrade;
   taskKey: string;
   taskTitle?: string;
+  promptSummary?: string;
   wordCount: number;
   text: string;
   formatWarnings: string[];
@@ -126,21 +221,36 @@ export type SugorokuSpeakingAudioExt = 'webm' | 'm4a';
 export interface SugorokuSpeakingRecordingItem {
   partId: SugorokuSpeakingPartId;
   storagePath: string;
+  downloadUrl?: string;
   mimeType: string;
   durationSec: number;
   sizeBytes?: number;
+  /** 録音時間に対する有効発話フレーム率（0〜100%） */
+  speechRatio?: number;
+  /** 録音中の最長連続無音秒数（沈黙フリーズ検知用） */
+  maxSilenceSec?: number;
+  /** ブラウザ標準 SpeechRecognition による英語自動書き起こし（任意・API課金ゼロ） */
+  transcript?: string;
 }
 
 export interface SugorokuSpeakingReview {
   reviewerUid: string;
   reviewerName?: string;
-  rubricScores: Record<string, number>;
+  rubricScores: {
+    readingAloud?: number;
+    response?: number;
+    pronunciation?: number;
+    grammarVocab?: number;
+    attitude?: number;
+    total?: number;
+    [key: string]: number | undefined;
+  };
   comment: string;
   reviewedAt: number;
 }
 
 export interface SugorokuSpeakingSubmissionDoc {
-  id?: string;
+  id: string;
   classId?: string;
   studentUid: string;
   studentName: string;
@@ -163,6 +273,22 @@ export interface SugorokuAdminReviewTabProps {
   reviewerUid?: string;
   reviewerName?: string;
   demoMode?: boolean;
+  onSelectStudent?: (studentUid: string) => void;
+}
+
+export interface SugorokuAdminExtensionSlots {
+  renderWritingReviewTab?: (ctx: {
+    classId: string;
+    isDemoMode: boolean;
+    submissions: SugorokuWritingSubmissionDoc[];
+    onSelectStudent?: (studentUid: string) => void;
+  }) => import('react').ReactNode;
+  renderSpeakingReviewTab?: (ctx: {
+    classId: string;
+    isDemoMode: boolean;
+    submissions: SugorokuSpeakingSubmissionDoc[];
+    onSelectStudent?: (studentUid: string) => void;
+  }) => import('react').ReactNode;
 }
 
 /**
@@ -183,8 +309,8 @@ export function buildSpeakingStoragePath(
     }
     return trimmed;
   };
-  return `sugoroku_speaking/${safeSeg(classId, 'classId')}/${safeSeg(uid, 'uid')}/${safeSeg(
-    submissionId,
-    'submissionId',
-  )}/${partId}.${ext}`;
+  return `${SUGOROKU_SPEAKING_STORAGE_PREFIX}/${safeSeg(classId, 'classId')}/${safeSeg(
+    uid,
+    'uid',
+  )}/${safeSeg(submissionId, 'submissionId')}/${partId}.${ext}`;
 }

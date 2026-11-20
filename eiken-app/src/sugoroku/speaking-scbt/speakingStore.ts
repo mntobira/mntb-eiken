@@ -20,13 +20,130 @@ import {
 } from '../shared/types';
 import { uploadSpeakingAudio } from '../shared/storageClient';
 import { SUGOROKU_DEMO_CLASS_ID } from '../writing-review/writingStore';
+import type { RecordedClip } from './audioRecorder';
 import { SCBT_PART_ORDER, type ScbtSpeakingSet } from './speakingTypes';
 
 const LOCAL_SPEAKING_SUBMISSIONS_KEY = 'sugoroku_speaking_submissions_v1';
+const DRAFT_IDB_NAME = 'sugoroku_speaking_drafts_v1';
+const DRAFT_IDB_STORE = 'draft_clips';
+
+const memoryDraftFallback = new Map<string, Omit<RecordedClip, 'objectUrl'>>();
+
+function draftKey(uid: string, setId: string, partId: SugorokuSpeakingPartId): string {
+  return `${uid || 'guest'}::${setId}::${partId}`;
+}
+
+function openDraftIdb(): Promise<IDBDatabase | null> {
+  if (typeof indexedDB === 'undefined') return Promise.resolve(null);
+  return new Promise(resolve => {
+    try {
+      const req = indexedDB.open(DRAFT_IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const database = req.result;
+        if (!database.objectStoreNames.contains(DRAFT_IDB_STORE)) {
+          database.createObjectStore(DRAFT_IDB_STORE);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
 
 /**
- * 講師レビュー画面のデモ・初期確認用サンプル提出（合成デモ音声URLと接続）
+ * iPad / スマホでの画面ロックや誤リロード事故を防ぐため、
+ * 1パート録音完了ごとに IndexedDB へ途中録音を自動退避する。
  */
+export async function saveDraftSpeakingClip(
+  uid: string,
+  setId: string,
+  partId: SugorokuSpeakingPartId,
+  clip: RecordedClip,
+): Promise<void> {
+  const key = draftKey(uid, setId, partId);
+  const record: Omit<RecordedClip, 'objectUrl'> = {
+    blob: clip.blob,
+    mimeType: clip.mimeType,
+    extension: clip.extension,
+    durationSec: clip.durationSec,
+    sizeBytes: clip.sizeBytes,
+    speechRatio: clip.speechRatio,
+    maxSilenceSec: clip.maxSilenceSec,
+    transcript: clip.transcript,
+  };
+  memoryDraftFallback.set(key, record);
+
+  const idb = await openDraftIdb();
+  if (!idb) return;
+  await new Promise<void>(resolve => {
+    try {
+      const tx = idb.transaction(DRAFT_IDB_STORE, 'readwrite');
+      tx.objectStore(DRAFT_IDB_STORE).put(record, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch {
+      resolve();
+    }
+  });
+}
+
+export async function loadDraftSpeakingClips(
+  uid: string,
+  setId: string,
+): Promise<Partial<Record<SugorokuSpeakingPartId, RecordedClip>>> {
+  const restored: Partial<Record<SugorokuSpeakingPartId, RecordedClip>> = {};
+  const idb = await openDraftIdb();
+
+  for (const partId of SCBT_PART_ORDER) {
+    const key = draftKey(uid, setId, partId);
+    let stored: Omit<RecordedClip, 'objectUrl'> | undefined = memoryDraftFallback.get(key);
+    if (!stored && idb) {
+      stored = await new Promise<Omit<RecordedClip, 'objectUrl'> | undefined>(resolve => {
+        try {
+          const tx = idb.transaction(DRAFT_IDB_STORE, 'readonly');
+          const req = tx.objectStore(DRAFT_IDB_STORE).get(key);
+          req.onsuccess = () =>
+            resolve(req.result as Omit<RecordedClip, 'objectUrl'> | undefined);
+          req.onerror = () => resolve(undefined);
+        } catch {
+          resolve(undefined);
+        }
+      });
+    }
+    if (stored && stored.blob && stored.blob.size > 0) {
+      const objectUrl =
+        typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function'
+          ? URL.createObjectURL(stored.blob)
+          : '';
+      restored[partId] = { ...stored, objectUrl };
+    }
+  }
+  return restored;
+}
+
+export async function clearDraftSpeakingClips(uid: string, setId: string): Promise<void> {
+  for (const partId of SCBT_PART_ORDER) {
+    memoryDraftFallback.delete(draftKey(uid, setId, partId));
+  }
+  const idb = await openDraftIdb();
+  if (!idb) return;
+  await new Promise<void>(resolve => {
+    try {
+      const tx = idb.transaction(DRAFT_IDB_STORE, 'readwrite');
+      const store = tx.objectStore(DRAFT_IDB_STORE);
+      for (const partId of SCBT_PART_ORDER) {
+        store.delete(draftKey(uid, setId, partId));
+      }
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch {
+      resolve();
+    }
+  });
+}
+
 export const DEMO_SPEAKING_SUBMISSIONS: readonly SugorokuSpeakingSubmissionDoc[] = [
   {
     id: 'demo_sp_001',
@@ -42,30 +159,50 @@ export const DEMO_SPEAKING_SUBMISSIONS: readonly SugorokuSpeakingSubmissionDoc[]
         storagePath: 'demo://scbt_g2_set01/sato/reading_aloud',
         mimeType: 'audio/wav',
         durationSec: 34.2,
+        speechRatio: 78,
+        maxSilenceSec: 1.4,
+        transcript:
+          'Sharing Sports Gear in Communities. Many teenagers want to try new sports at school, but buying rackets, shoes, and uniforms can be expensive for their families.',
       },
       {
         partId: 'q1',
         storagePath: 'demo://scbt_g2_set01/sato/q1',
         mimeType: 'audio/wav',
         durationSec: 11.5,
+        speechRatio: 71,
+        maxSilenceSec: 1.9,
+        transcript:
+          'By holding weekend workshops where experienced players teach students how to take care of their gear.',
       },
       {
         partId: 'q2',
         storagePath: 'demo://scbt_g2_set01/sato/q2',
         mimeType: 'audio/wav',
         durationSec: 36.8,
+        speechRatio: 64,
+        maxSilenceSec: 4.3,
+        transcript:
+          'Last month Misaki and her teacher were looking at a torn practice net. The next Saturday Misaki went to a free repair workshop at the city gym. Two weeks later Misaki was happy to practice with new members.',
       },
       {
         partId: 'q3',
         storagePath: 'demo://scbt_g2_set01/sato/q3',
         mimeType: 'audio/wav',
         durationSec: 27.4,
+        speechRatio: 68,
+        maxSilenceSec: 2.6,
+        transcript:
+          'Yes. Borrowing sports equipment helps students try different sports without spending too much money.',
       },
       {
         partId: 'q4',
         storagePath: 'demo://scbt_g2_set01/sato/q4',
         mimeType: 'audio/wav',
         durationSec: 29.0,
+        speechRatio: 62,
+        maxSilenceSec: 4.8,
+        transcript:
+          'Yes, I think public gyms should stay open later at night because high school students finish club activities late.',
       },
     ],
     status: 'submitted',
@@ -85,30 +222,40 @@ export const DEMO_SPEAKING_SUBMISSIONS: readonly SugorokuSpeakingSubmissionDoc[]
         storagePath: 'demo://scbt_pre2_set01/yamamoto/reading_aloud',
         mimeType: 'audio/wav',
         durationSec: 28.5,
+        speechRatio: 82,
+        maxSilenceSec: 1.1,
       },
       {
         partId: 'q1',
         storagePath: 'demo://scbt_pre2_set01/yamamoto/q1',
         mimeType: 'audio/wav',
         durationSec: 9.2,
+        speechRatio: 75,
+        maxSilenceSec: 1.5,
       },
       {
         partId: 'q2',
         storagePath: 'demo://scbt_pre2_set01/yamamoto/q2',
         mimeType: 'audio/wav',
         durationSec: 24.0,
+        speechRatio: 73,
+        maxSilenceSec: 2.0,
       },
       {
         partId: 'q3',
         storagePath: 'demo://scbt_pre2_set01/yamamoto/q3',
         mimeType: 'audio/wav',
         durationSec: 19.6,
+        speechRatio: 58,
+        maxSilenceSec: 4.5,
       },
       {
         partId: 'q4',
         storagePath: 'demo://scbt_pre2_set01/yamamoto/q4',
         mimeType: 'audio/wav',
         durationSec: 23.1,
+        speechRatio: 74,
+        maxSilenceSec: 1.8,
       },
     ],
     status: 'reviewed',
@@ -175,6 +322,9 @@ export interface PartClipUploadInput {
   mimeType: string;
   extension: SugorokuSpeakingAudioExt;
   durationSec: number;
+  speechRatio?: number;
+  maxSilenceSec?: number;
+  transcript?: string;
 }
 
 export interface SubmitSpeakingInput {
@@ -186,10 +336,6 @@ export interface SubmitSpeakingInput {
   clips: Record<SugorokuSpeakingPartId, PartClipUploadInput | undefined>;
 }
 
-/**
- * 生徒：全5パート（音読＋No.1〜No.4）の録音データを Storage へ保存し、
- * Firestore `classrooms/{classId}/speaking_submissions/{submissionId}` に提出レコードを作成する。
- */
 export async function submitSpeakingSession(
   input: SubmitSpeakingInput,
 ): Promise<SugorokuSpeakingSubmissionDoc> {
@@ -200,7 +346,9 @@ export async function submitSpeakingSession(
 
   const missing = SCBT_PART_ORDER.filter(partId => !input.clips[partId]);
   if (missing.length > 0) {
-    throw new Error(`未録音のパートがあります（残り ${missing.length} パート）。すべて録音してから提出してください。`);
+    throw new Error(
+      `未録音のパートがあります（残り ${missing.length} パート）。すべて録音してから提出してください。`,
+    );
   }
 
   const recordings: SugorokuSpeakingRecordingItem[] = [];
@@ -220,6 +368,9 @@ export async function submitSpeakingSession(
       mimeType: clip.mimeType,
       durationSec: clip.durationSec,
       sizeBytes: uploaded.sizeBytes,
+      speechRatio: clip.speechRatio,
+      maxSilenceSec: clip.maxSilenceSec,
+      transcript: clip.transcript?.trim() || undefined,
     });
   }
 
@@ -237,6 +388,7 @@ export async function submitSpeakingSession(
   };
 
   upsertLocalSpeakingSubmission(payload);
+  await clearDraftSpeakingClips(uid, input.set.id);
 
   if (cloudEnabledForClass(classId)) {
     const ref = doc(db, 'classrooms', classId, 'speaking_submissions', submissionId);
@@ -246,12 +398,18 @@ export async function submitSpeakingSession(
       grade: payload.grade,
       setId: payload.setId,
       setTitle: payload.setTitle || input.set.title,
-      recordings: payload.recordings.map(r => ({
-        partId: r.partId,
-        storagePath: r.storagePath,
-        mimeType: r.mimeType,
-        durationSec: r.durationSec,
-      })),
+      recordings: payload.recordings.map(r => {
+        const row: Record<string, unknown> = {
+          partId: r.partId,
+          storagePath: r.storagePath,
+          mimeType: r.mimeType,
+          durationSec: r.durationSec,
+        };
+        if (typeof r.speechRatio === 'number') row.speechRatio = r.speechRatio;
+        if (typeof r.maxSilenceSec === 'number') row.maxSilenceSec = r.maxSilenceSec;
+        if (r.transcript) row.transcript = r.transcript;
+        return row;
+      }),
       status: payload.status,
       submittedAt: payload.submittedAt,
     });
@@ -260,9 +418,6 @@ export async function submitSpeakingSession(
   return payload;
 }
 
-/**
- * 生徒：自分のスピーキング提出＆講師講評履歴を取得する
- */
 export async function fetchStudentSpeakingSubmissions(
   classId: string,
   studentUid: string,
@@ -297,9 +452,6 @@ export async function fetchStudentSpeakingSubmissions(
   }
 }
 
-/**
- * 講師：クラス全体の S-CBT スピーキング録音提出一覧を取得する
- */
 export async function fetchClassSpeakingSubmissions(
   classId: string,
   options?: { includeDemoSamples?: boolean },
@@ -336,9 +488,6 @@ export async function fetchClassSpeakingSubmissions(
   return [...merged.values()].sort((a, b) => b.submittedAt - a.submittedAt);
 }
 
-/**
- * 講師：スピーキング評価スコア・講評コメントを保存して生徒へ返却する
- */
 export async function saveSpeakingReview(
   classId: string,
   submission: SugorokuSpeakingSubmissionDoc,

@@ -16,7 +16,9 @@ export type ScbtSvgSceneType =
   | 'station_umbrella'
   | 'community_garden'
   | 'cycling_park'
-  | 'morning_library';
+  | 'morning_library'
+  | 'school_festival'
+  | 'bookshop_gift';
 
 export interface ScbtIllustrationFrame {
   frameLabel: string;

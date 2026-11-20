@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CheckCircle2,
+  ClipboardPaste,
   Clock,
   Copy,
+  Download,
   FastForward,
   Pause,
   Play,
@@ -11,6 +13,10 @@ import {
   Send,
 } from 'lucide-react';
 import { EIKEN_GRADES } from '../../eiken/config';
+import {
+  buildSpeakingSubmissionsCsv,
+  downloadUtf8BomCsv,
+} from '../shared/csvExport';
 import type {
   SugorokuAdminReviewTabProps,
   SugorokuSpeakingPartId,
@@ -22,6 +28,7 @@ import { findSpeakingSetById } from './mockSpeakingSets';
 import {
   buildSpeakingAiCoachPrompt,
   openSpeakingFeedbackPrintWindow,
+  parseSpeakingAiReviewResponse,
 } from './speakingFeedbackSheet';
 import {
   fetchClassSpeakingSubmissions,
@@ -60,6 +67,8 @@ export function TeacherSpeakingReviewTab({
   const [comment, setComment] = useState('');
   const [teacherNameInput, setTeacherNameInput] = useState(reviewerName);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [showAiImporter, setShowAiImporter] = useState(false);
+  const [aiPasteBuffer, setAiPasteBuffer] = useState('');
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -110,6 +119,8 @@ export function TeacherSpeakingReviewTab({
     setContinuousPlaying(false);
     setActivePart(null);
     setNotice('');
+    setShowAiImporter(false);
+    setAiPasteBuffer('');
     if (playerRef.current) {
       playerRef.current.pause();
     }
@@ -119,7 +130,13 @@ export function TeacherSpeakingReviewTab({
     }
 
     if (selected.review) {
-      setRubricScores(selected.review.rubricScores);
+      const normalizedScores: Record<string, number> = {};
+      for (const [k, v] of Object.entries(selected.review.rubricScores)) {
+        if (typeof v === 'number' && Number.isFinite(v)) {
+          normalizedScores[k] = v;
+        }
+      }
+      setRubricScores(normalizedScores);
       setComment(selected.review.comment);
       if (selected.review.reviewerName) {
         setTeacherNameInput(selected.review.reviewerName);
@@ -142,7 +159,7 @@ export function TeacherSpeakingReviewTab({
         try {
           resolved[rec.partId] = await resolveSpeakingAudioUrl(rec.storagePath);
         } catch {
-          // 未解決パートはスキップ
+          // ignore
         }
       }
       if (!cancelled) {
@@ -223,10 +240,38 @@ export function TeacherSpeakingReviewTab({
     try {
       await navigator.clipboard.writeText(text);
       setCopiedPrompt(true);
+      setShowAiImporter(true);
       setTimeout(() => setCopiedPrompt(false), 2500);
     } catch {
       setError('クリップボードへのコピーに失敗しました。');
     }
+  };
+
+  const handleApplyAiDraft = () => {
+    if (!aiPasteBuffer.trim()) {
+      setError('Gemini / ChatGPT からの出力テキストを貼り付けてください。');
+      return;
+    }
+    const parsed = parseSpeakingAiReviewResponse(
+      aiPasteBuffer,
+      matchedSet?.questions[1]?.maxScore ?? 10,
+      matchedSet?.questions[3]?.maxScore ?? 5,
+    );
+    if (Object.keys(parsed.rubricScores).length > 0) {
+      setRubricScores(prev => ({ ...prev, ...parsed.rubricScores }));
+    }
+    if (parsed.comment) {
+      setComment(parsed.comment);
+    }
+    setShowAiImporter(false);
+    setAiPasteBuffer('');
+    setError('');
+    setNotice('AI音声講評案を各スコア・コメント欄へ反映しました！');
+  };
+
+  const handleExportCsv = () => {
+    const csv = buildSpeakingSubmissionsCsv(filtered);
+    downloadUtf8BomCsv(csv, `sugoroku_speaking_${effectiveClassId}.csv`);
   };
 
   const handlePrintSpeakingSheet = () => {
@@ -323,6 +368,15 @@ export function TeacherSpeakingReviewTab({
           <button
             type="button"
             className="twr-chip twr-refresh-btn"
+            onClick={handleExportCsv}
+            data-sugoroku-export-speaking-csv
+          >
+            <Download size={13} aria-hidden="true" />
+            CSV出力
+          </button>
+          <button
+            type="button"
+            className="twr-chip twr-refresh-btn"
             onClick={() => void reload()}
           >
             <RefreshCw size={13} aria-hidden="true" />
@@ -414,15 +468,54 @@ export function TeacherSpeakingReviewTab({
                   )}
                   <button
                     type="button"
-                    className="twr-prompt-btn"
+                    className="twr-copy-btn"
                     onClick={() => void handleCopySpeakingPrompt()}
                     data-sugoroku-copy-speaking-prompt
                   >
                     <Copy size={15} aria-hidden="true" />
-                    {copiedPrompt ? 'コピーしました！' : 'AI講評プロンプトをコピー'}
+                    {copiedPrompt ? 'コピー完了！' : '① AI講評プロンプト'}
+                  </button>
+                  <button
+                    type="button"
+                    className="twr-outline-blue-btn"
+                    onClick={() => setShowAiImporter(v => !v)}
+                  >
+                    <ClipboardPaste size={15} aria-hidden="true" />
+                    ② AI返答を一括反映
                   </button>
                 </div>
               </div>
+
+              {showAiImporter && (
+                <div className="twr-importer-box">
+                  <label htmlFor="sp-ai-paste">
+                    Gemini / ChatGPT からの出力（[SCORES]..[/SCORES] / [COMMENT]..[/COMMENT]）を貼り付け：
+                  </label>
+                  <textarea
+                    id="sp-ai-paste"
+                    rows={4}
+                    value={aiPasteBuffer}
+                    onChange={e => setAiPasteBuffer(e.target.value)}
+                    placeholder="AIの出力を貼り付けるとパート別スコアと講評コメントへ自動反映します"
+                  />
+                  <div className="twr-importer-actions">
+                    <button
+                      type="button"
+                      className="twr-chip"
+                      onClick={() => setShowAiImporter(false)}
+                    >
+                      閉じる
+                    </button>
+                    <button
+                      type="button"
+                      className="twr-copy-btn"
+                      onClick={handleApplyAiDraft}
+                    >
+                      スコア・講評欄へ反映する
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="twr-list">
                 {SCBT_PART_ORDER.map((partId, idx) => {
@@ -433,6 +526,8 @@ export function TeacherSpeakingReviewTab({
                       ? null
                       : matchedSet?.questions.find(q => q.partId === partId);
                   const isPlayingThis = activePart === partId;
+                  const longSilence =
+                    typeof rec?.maxSilenceSec === 'number' && rec.maxSilenceSec >= 4.0;
 
                   return (
                     <div
@@ -441,13 +536,22 @@ export function TeacherSpeakingReviewTab({
                       data-playing={isPlayingThis}
                     >
                       <div className="twr-row-between">
-                        <div>
+                        <div className="twr-row-wrap">
                           <strong>{SCBT_PART_LABELS[partId]}</strong>
                           {rec && (
                             <small className="swr-muted-note">
-                              {' '}
-                              ({rec.durationSec}秒 ・ {rec.mimeType})
+                              ({rec.durationSec}秒
+                              {typeof rec.speechRatio === 'number'
+                                ? ` ・ 発話率 ${rec.speechRatio}%`
+                                : ''}
+                              {typeof rec.maxSilenceSec === 'number'
+                                ? ` ・ 最長無音 ${rec.maxSilenceSec}秒`
+                                : ''}
+                              )
                             </small>
+                          )}
+                          {longSilence && (
+                            <span className="twr-pill-pending">4秒超ポーズ</span>
                           )}
                         </div>
                         <div className="twr-row-wrap">
@@ -475,6 +579,12 @@ export function TeacherSpeakingReviewTab({
                           )}
                         </div>
                       </div>
+
+                      {rec?.transcript && (
+                        <div lang="en" className="swr-muted-note">
+                          <strong>【音声認識参考テキスト】</strong> &ldquo;{rec.transcript}&rdquo;
+                        </div>
+                      )}
 
                       {matchedSet && (
                         <details className="twr-ref-details">
@@ -569,7 +679,7 @@ export function TeacherSpeakingReviewTab({
                   rows={4}
                   value={comment}
                   onChange={e => setComment(e.target.value)}
-                  placeholder="発音の聞き取りやすさ、時制（過去形/現在進行形）、理由の述べ方などのフィードバックを入力してください（上の「AI講評プロンプトをコピー」も活用できます）。"
+                  placeholder="発音の聞き取りやすさ、時制（過去形/現在進行形）、理由の述べ方などのフィードバックを入力してください（上の「① AI講評プロンプト」も活用できます）。"
                 />
               </div>
 

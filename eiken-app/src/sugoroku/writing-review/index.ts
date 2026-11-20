@@ -1,5 +1,12 @@
 export { computeEnglishDiff, type DiffSegment } from './diffHighlight';
-export { analyzeWritingFormat, type FormatCheckIssue, type FormatCheckResult, type WritingTaskKind } from './formatCheck';
+export {
+  analyzeWritingFormat,
+  buildWritingIssueHighlights,
+  type FormatCheckIssue,
+  type FormatCheckResult,
+  type HighlightTokenSegment,
+  type WritingTaskKind,
+} from './formatCheck';
 export {
   buildWritingAiReviewPrompt,
   parseAiReviewResponse,

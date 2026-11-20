@@ -14,6 +14,7 @@ export {
 export {
   PREFERRED_AUDIO_CANDIDATES,
   classifyMediaError,
+  computeVoiceActivityMetrics,
   detectPreferredAudioMimeType,
   startAudioRecording,
   type ActiveRecordingHandle,
@@ -24,8 +25,11 @@ export {
 } from './audioRecorder';
 export {
   DEMO_SPEAKING_SUBMISSIONS,
+  clearDraftSpeakingClips,
   fetchClassSpeakingSubmissions,
   fetchStudentSpeakingSubmissions,
+  loadDraftSpeakingClips,
+  saveDraftSpeakingClip,
   saveSpeakingReview,
   submitSpeakingSession,
   type PartClipUploadInput,
@@ -38,4 +42,5 @@ export {
   buildSpeakingAiCoachPrompt,
   buildSpeakingFeedbackSheetHtml,
   openSpeakingFeedbackPrintWindow,
+  parseSpeakingAiReviewResponse,
 } from './speakingFeedbackSheet';

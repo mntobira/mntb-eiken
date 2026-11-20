@@ -291,3 +291,72 @@ export function analyzeWritingFormat(
     passedAll: issues.length === 0,
   };
 }
+
+export interface HighlightTokenSegment {
+  kind: 'ok' | 'issue';
+  text: string;
+  hint?: string;
+}
+
+/**
+ * 生徒の英文中の「スペル注意語・小文字の i・全角記号・要約8語丸写し箇所」を
+ * ピンポイントで色分け表示するためのセグメント配列を生成する。
+ */
+export function buildWritingIssueHighlights(
+  rawText: string,
+  taskKind: WritingTaskKind = 'essay',
+  sourceText?: string,
+): HighlightTokenSegment[] {
+  const text = String(rawText ?? '');
+  if (!text.trim()) return [];
+
+  const copiedPhrase =
+    taskKind === 'summary' && sourceText
+      ? findLongVerbatimOverlap(text, sourceText, 8)
+      : null;
+
+  // トークン単位（空白・全角記号・英単語・半角記号）に分割して検査
+  const parts =
+    text.match(/\s+|[。、！？．，「」『』（）Ａ-Ｚａ-ｚ０-９]+|[A-Za-z]+(?:['’-][A-Za-z]+)*|./g) ??
+    [];
+
+  const rawSegments: HighlightTokenSegment[] = parts.map((part): HighlightTokenSegment => {
+    if (/^\s+$/.test(part)) return { kind: 'ok', text: part };
+    if (/[。、！？．，「」『』（）Ａ-Ｚａ-ｚ０-９]/.test(part)) {
+      return { kind: 'issue', text: part, hint: '全角文字 → 半角に修正' };
+    }
+    const lower = part.toLowerCase().replace(/’/g, "'");
+    if (/^i(?:'(?:m|ve|ll|d))?$/.test(part)) {
+      return { kind: 'issue', text: part, hint: '一人称は大文字の "I"' };
+    }
+    const typoFix = COMMON_MISSPELLINGS[lower];
+    if (typoFix) {
+      return { kind: 'issue', text: part, hint: `スペル候補: ${typoFix}` };
+    }
+    return { kind: 'ok', text: part };
+  });
+
+  // 要約丸写しフレーズが含まれる場合は該当範囲（大文字小文字無視）にも注意マークを付与
+  if (copiedPhrase) {
+    const firstWord = copiedPhrase.split(' ')[0];
+    for (const seg of rawSegments) {
+      if (seg.kind === 'ok' && seg.text.toLowerCase() === firstWord) {
+        seg.kind = 'issue';
+        seg.hint = '原文からの連続抜き出し注意（自分の言葉で言い換えよう）';
+        break;
+      }
+    }
+  }
+
+  // 連続する 'ok' セグメントを結合して軽量化
+  const merged: HighlightTokenSegment[] = [];
+  for (const seg of rawSegments) {
+    const prev = merged[merged.length - 1];
+    if (seg.kind === 'ok' && prev && prev.kind === 'ok') {
+      prev.text += seg.text;
+    } else {
+      merged.push({ ...seg });
+    }
+  }
+  return merged;
+}

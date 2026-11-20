@@ -660,6 +660,65 @@
   font-size: 13.5px;
 }
 
+.swr-pace-wrap {
+  margin: 6px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.swr-pace-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #334e48;
+}
+
+.swr-pace-track {
+  height: 8px;
+  width: 100%;
+  background: #e5ecea;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.swr-pace-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #10b981;
+  transition: width 0.15s ease;
+}
+
+.swr-pace-fill[data-state="under"] {
+  background: #f59e0b;
+}
+
+.swr-pace-fill[data-state="over"] {
+  background: #ef4444;
+}
+
+.swr-inline-highlight-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #fffbeb;
+  border: 1px dashed #f59e0b;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.swr-issue-mark {
+  background: #fde68a;
+  color: #92400e;
+  font-weight: 800;
+  border-bottom: 2px solid #d97706;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
 /* SugorokuReviewHub */
 .srh-main {
   min-height: 100%;

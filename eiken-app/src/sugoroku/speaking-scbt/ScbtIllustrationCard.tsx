@@ -177,6 +177,38 @@ export function buildFrameSvgMarkup(frame: ScbtIllustrationFrame): string {
     </svg>`;
   }
 
+  if (frame.svgType === 'school_festival') {
+    return `<svg viewBox="0 0 360 158" width="100%" role="img" aria-label="${label}">
+      <rect x="8" y="8" width="344" height="142" rx="6" fill="#fff" stroke="#334155" stroke-width="2" />
+      <rect x="74" y="14" width="212" height="22" rx="4" fill="#f1f5f9" stroke="#1e293b" stroke-width="1.6" />
+      <text x="180" y="29" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0f172a">AUTUMN MUSIC FESTIVAL</text>
+      ${personSvg(58, 72, 'Girl (Guitar)')}
+      <ellipse cx="70" cy="90" rx="12" ry="6" fill="#fff" stroke="#1e293b" stroke-width="1.8" />
+      <rect x="134" y="48" width="54" height="36" fill="#f8fafc" stroke="#1e293b" stroke-width="1.8" />
+      <text x="161" y="68" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f172a">POSTER</text>
+      ${personSvg(161, 96, 'Boy (Poster)')}
+      ${personSvg(274, 72, 'Teacher (Photo)')}
+      <rect x="286" y="68" width="16" height="11" fill="#fff" stroke="#1e293b" stroke-width="1.8" />
+      <circle cx="294" cy="73.5" r="3" fill="none" stroke="#1e293b" stroke-width="1.4" />
+    </svg>`;
+  }
+
+  if (frame.svgType === 'bookshop_gift') {
+    return `<svg viewBox="0 0 360 158" width="100%" role="img" aria-label="${label}">
+      <rect x="8" y="8" width="344" height="142" rx="6" fill="#fff" stroke="#334155" stroke-width="2" />
+      <text x="180" y="25" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0f172a">GREEN TOWN BOOKSHOP — Open 9:30 AM</text>
+      <rect x="24" y="42" width="84" height="78" fill="#f8fafc" stroke="#1e293b" stroke-width="1.8" />
+      <line x1="24" y1="68" x2="108" y2="68" stroke="#1e293b" stroke-width="1.5" />
+      <line x1="24" y1="94" x2="108" y2="94" stroke="#1e293b" stroke-width="1.5" />
+      <text x="66" y="59" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f172a">TRAVEL GUIDES</text>
+      ${personSvg(134, 78, 'Mother')}
+      <rect x="190" y="88" width="86" height="32" fill="#e2e8f0" stroke="#1e293b" stroke-width="1.8" />
+      <text x="233" y="108" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#0f172a">GIFT WRAPPING</text>
+      ${personSvg(233, 56, 'Clerk')}
+      ${personSvg(312, 78, 'Boy (Calendar)')}
+    </svg>`;
+  }
+
   return `<svg viewBox="0 0 360 158" width="100%" role="img" aria-label="${label}">
     <rect x="8" y="8" width="344" height="142" rx="6" fill="#fff" stroke="#334155" stroke-width="2" />
     <text x="180" y="25" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">SCHOOL LIBRARY — 8:00 AM</text>

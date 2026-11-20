@@ -724,6 +724,182 @@ export const SCBT_SPEAKING_SETS: readonly ScbtSpeakingSet[] = [
       },
     ],
   },
+
+  // ==========================================================================
+  // 英検3級 オリジナル模擬 Set 1
+  // ==========================================================================
+  {
+    id: 'scbt_g3_set01',
+    origin: 'manatobi-original',
+    grade: 'eiken_3',
+    setNumber: 1,
+    title: '3級 S-CBT模擬 第1回：学校の秋の音楽フェスティバル',
+    themeSummaryJp: '体育館で開かれる学校音楽祭の準備風景と好きな音楽についての質問',
+    cardTitle: 'Autumn School Music Festival',
+    passage:
+      'Every October, students hold an autumn music festival in the school gym. Many clubs practice songs for weeks before the big day. Parents and neighbors also come to listen and enjoy the lively performances together.',
+    passageTranslation:
+      '毎年10月、生徒たちは学校の体育館で秋の音楽フェスティバルを開きます。多くのクラブが当日に向けて何週間も曲を練習します。保護者や地域の人々も聴きに訪れ、活気ある演奏を一緒に楽しみます。',
+    silentReadSeconds: 20,
+    readAloudSeconds: 35,
+    readAloudMaxScore: 5,
+    illustrations: [
+      {
+        frameLabel: '場面イラスト：音楽祭の準備をする生徒と先生',
+        captionEn: 'Preparing for the Music Festival',
+        sceneDescriptionJp:
+          '①ギターを弾いている女子生徒、②壁にポスターを貼っている男子生徒、③カメラで写真を撮っている先生の3人が描かれた場面。',
+        svgType: 'school_festival',
+        frameIndex: 0,
+      },
+    ],
+    questions: [
+      {
+        partId: 'q1',
+        numberLabel: 'No. 1',
+        questionType: 'passage_comprehension',
+        promptAudioScript:
+          'Please look at the passage. Where do students hold an autumn music festival?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 5,
+        recordSeconds: 18,
+        maxScore: 5,
+        rubricPoints: ['They hold it in the school gym. / In the school gym. と正確に答えられているか'],
+        modelAnswer: 'They hold it in the school gym.',
+        modelTranslation: '学校の体育館で開催します。',
+      },
+      {
+        partId: 'q2',
+        numberLabel: 'No. 2',
+        questionType: 'picture_action_state',
+        introAudioScript: 'Please look at the picture.',
+        promptAudioScript: 'What is the girl on the left doing?',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 7,
+        recordSeconds: 20,
+        maxScore: 5,
+        rubricPoints: ['She is playing the guitar. と現在進行形で答えられているか'],
+        modelAnswer: 'She is playing the guitar.',
+        modelTranslation: '彼女はギターを弾いています。',
+      },
+      {
+        partId: 'q3',
+        numberLabel: 'No. 3',
+        questionType: 'picture_action_state',
+        promptAudioScript: 'What is the boy in the middle going to put on the wall?',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 7,
+        recordSeconds: 20,
+        maxScore: 5,
+        rubricPoints: ['He is going to put a poster on the wall. と答えられているか'],
+        modelAnswer: 'He is going to put a poster on the wall.',
+        modelTranslation: '彼は壁にポスターを貼るところです。',
+      },
+      {
+        partId: 'q4',
+        numberLabel: 'No. 4',
+        questionType: 'personal_opinion',
+        introAudioScript: 'Now, please turn over the card in your mind and answer my question.',
+        promptAudioScript: 'What kind of music do you like to listen to in your free time?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 8,
+        recordSeconds: 25,
+        maxScore: 5,
+        rubricPoints: ['好きな音楽のジャンルと、いつ・なぜ聴くかなどを1〜2文で答えられているか'],
+        modelAnswer:
+          'I like listening to Japanese pop music. It makes me cheerful when I walk to school.',
+        modelTranslation:
+          '日本のポップスを聴くのが好きです。歩いて登校するときに元気が出るからです。',
+      },
+    ],
+  },
+
+  // ==========================================================================
+  // 英検3級 オリジナル模擬 Set 2
+  // ==========================================================================
+  {
+    id: 'scbt_g3_set02',
+    origin: 'manatobi-original',
+    grade: 'eiken_3',
+    setNumber: 2,
+    title: '3級 S-CBT模擬 第2回：駅前の町の本屋さんとプレゼント選び',
+    themeSummaryJp: '休日に家族や友人のためのプレゼントを探す本屋さんの場面と休日の過ごし方',
+    cardTitle: 'A Friendly Neighborhood Bookshop',
+    passage:
+      'Green Town Bookshop is near the train station and opens at nine thirty every morning. It has colorful picture books, travel guides, and stationery. Clerks wrap gifts nicely for customers at no extra charge.',
+    passageTranslation:
+      'グリーンタウン書店は駅の近くにあり、毎朝9時30分に開店します。カラフルな絵本や旅行ガイド、文房具が揃っています。店員さんは追加料金なしで客のためにプレゼントをきれいに包んでくれます。',
+    silentReadSeconds: 20,
+    readAloudSeconds: 35,
+    readAloudMaxScore: 5,
+    illustrations: [
+      {
+        frameLabel: '場面イラスト：グリーンタウン書店の店内',
+        captionEn: 'Green Town Bookshop — Open 9:30 AM',
+        sceneDescriptionJp:
+          '①棚の前で旅行ガイドを見ている母親、②カウンターでプレゼントを包んでいる店員さん、③カレンダーを見ている男の子の場面。',
+        svgType: 'bookshop_gift',
+        frameIndex: 0,
+      },
+    ],
+    questions: [
+      {
+        partId: 'q1',
+        numberLabel: 'No. 1',
+        questionType: 'passage_comprehension',
+        promptAudioScript:
+          'Please look at the passage. What time does Green Town Bookshop open every morning?',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 5,
+        recordSeconds: 18,
+        maxScore: 5,
+        rubricPoints: ['It opens at nine thirty. / At nine thirty. と正確に答えられているか'],
+        modelAnswer: 'It opens at nine thirty every morning.',
+        modelTranslation: '毎朝9時30分に開店します。',
+      },
+      {
+        partId: 'q2',
+        numberLabel: 'No. 2',
+        questionType: 'picture_action_state',
+        introAudioScript: 'Please look at the picture.',
+        promptAudioScript: 'What is the clerk at the counter doing?',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 7,
+        recordSeconds: 20,
+        maxScore: 5,
+        rubricPoints: ['She/He is wrapping a gift. と現在進行形で答えられているか'],
+        modelAnswer: 'The clerk is wrapping a gift at the counter.',
+        modelTranslation: '店員さんはカウンターでプレゼントを包んでいます。',
+      },
+      {
+        partId: 'q3',
+        numberLabel: 'No. 3',
+        questionType: 'picture_action_state',
+        promptAudioScript: 'Where is the woman standing?',
+        showPromptOnScreenByDefault: true,
+        prepSeconds: 7,
+        recordSeconds: 20,
+        maxScore: 5,
+        rubricPoints: ['She is standing in front of the bookshelf. と場所を答えられているか'],
+        modelAnswer: 'She is standing in front of the travel guide shelf.',
+        modelTranslation: '彼女は旅行ガイドの棚の前に立っています。',
+      },
+      {
+        partId: 'q4',
+        numberLabel: 'No. 4',
+        questionType: 'personal_opinion',
+        promptAudioScript: 'Where do you usually go on Sundays? Please tell me two sentences.',
+        showPromptOnScreenByDefault: false,
+        prepSeconds: 8,
+        recordSeconds: 25,
+        maxScore: 5,
+        rubricPoints: ['日曜日に出かける場所と、そこで何をするかを2文で述べられているか'],
+        modelAnswer:
+          'I usually go to the city park near my house. I play soccer there with my friends.',
+        modelTranslation: 'たいてい家の近くの市営公園に行きます。そこで友だちとサッカーをします。',
+      },
+    ],
+  },
 ];
 
 for (const set of SCBT_SPEAKING_SETS) {

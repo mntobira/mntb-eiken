@@ -6,11 +6,6 @@ export interface SelectedAudioFormat {
   label: string;
 }
 
-/**
- * 優先度順の音声録音フォーマット候補。
- * - PC Chrome / Edge / Android Chrome / Firefox: WebM/Opus（高音質・極小サイズ）
- * - iPad / iPhone Safari (iOS WebKit): MP4/AAC（iOS Safari がネイティブ録音・再生可能）
- */
 export const PREFERRED_AUDIO_CANDIDATES: readonly SelectedAudioFormat[] = [
   { mimeType: 'audio/webm;codecs=opus', extension: 'webm', label: 'WebM (Opus)' },
   { mimeType: 'audio/webm', extension: 'webm', label: 'WebM' },
@@ -19,10 +14,6 @@ export const PREFERRED_AUDIO_CANDIDATES: readonly SelectedAudioFormat[] = [
   { mimeType: 'audio/aac', extension: 'm4a', label: 'AAC (M4A)' },
 ];
 
-/**
- * 実行環境の MediaRecorder.isTypeSupported を使って最適な MIME タイプと保存拡張子（webm | m4a）を決定する。
- * 単体テストから任意のサポート関数を注入できるよう純粋性を確保。
- */
 export function detectPreferredAudioMimeType(
   isTypeSupported?: (mime: string) => boolean,
   userAgent?: string,
@@ -39,7 +30,6 @@ export function detectPreferredAudioMimeType(
     /iPad|iPhone|iPod/i.test(ua) ||
     (/Safari/i.test(ua) && !/Chrome|Chromium|CriOS|Edg|Firefox/i.test(ua));
 
-  // iOS / Safari 系は MP4/AAC 系を先に試すことで再生互換トラブルを防ぐ
   const ordered = isAppleTouchOrSafari
     ? [
         ...PREFERRED_AUDIO_CANDIDATES.filter(c => c.extension === 'm4a'),
@@ -54,12 +44,11 @@ export function detectPreferredAudioMimeType(
           return candidate;
         }
       } catch {
-        // 一部ブラウザで未知コーデック文字列が例外を投げる場合に備えて継続
+        // continue
       }
     }
   }
 
-  // MediaRecorder が MIME 指定なし初期化のみ対応する環境向けのフォールバック
   return isAppleTouchOrSafari
     ? { mimeType: 'audio/mp4', extension: 'm4a', label: 'MP4 / M4A (既定)' }
     : { mimeType: 'audio/webm', extension: 'webm', label: 'WebM (既定)' };
@@ -79,9 +68,6 @@ export interface FriendlyMicError {
   guidance: string;
 }
 
-/**
- * getUserMedia / MediaRecorder 失敗時のエラーを高校生・iPad利用者にわかりやすい日本語ガイドへ変換する
- */
 export function classifyMediaError(error: unknown): FriendlyMicError {
   if (typeof window !== 'undefined' && window.isSecureContext === false) {
     return {
@@ -158,6 +144,38 @@ export function classifyMediaError(error: unknown): FriendlyMicError {
   };
 }
 
+/**
+ * 100ms 間隔の音量レベル配列（0..100）から「発話率(%)」と「最長連続無音秒数」を純粋計算する。
+ * 単体テスト可能・S-CBT 特有の「沈黙フリーズ」客観評価に用いる。
+ */
+export function computeVoiceActivityMetrics(
+  levelSamples: readonly number[],
+  sampleIntervalMs = 100,
+  activeThreshold = 8,
+): { speechRatio: number; maxSilenceSec: number } {
+  if (levelSamples.length === 0) {
+    return { speechRatio: 0, maxSilenceSec: 0 };
+  }
+  let activeFrames = 0;
+  let currentSilentFrames = 0;
+  let maxSilentFrames = 0;
+  for (const lvl of levelSamples) {
+    if (lvl >= activeThreshold) {
+      activeFrames++;
+      currentSilentFrames = 0;
+    } else {
+      currentSilentFrames++;
+      if (currentSilentFrames > maxSilentFrames) {
+        maxSilentFrames = currentSilentFrames;
+      }
+    }
+  }
+  const speechRatio = Math.round((activeFrames / levelSamples.length) * 100);
+  const maxSilenceSec =
+    Math.round(((maxSilentFrames * sampleIntervalMs) / 1000) * 10) / 10;
+  return { speechRatio, maxSilenceSec };
+}
+
 export interface RecordedClip {
   blob: Blob;
   objectUrl: string;
@@ -165,18 +183,93 @@ export interface RecordedClip {
   extension: SugorokuSpeakingAudioExt;
   durationSec: number;
   sizeBytes: number;
+  /** 有効発話フレーム率（0〜100%） */
+  speechRatio?: number;
+  /** 録音中の最長連続無音秒数 */
+  maxSilenceSec?: number;
+  /** ブラウザ標準 SpeechRecognition による英語自動書き起こし（API課金ゼロ） */
+  transcript?: string;
 }
 
 export interface ActiveRecordingHandle {
   stop: () => Promise<RecordedClip>;
   cancel: () => void;
-  getLevel: () => number; // 0..100 の声量メーター値
+  getLevel: () => number;
+  getTranscript: () => string;
 }
 
-/**
- * 音声録音を開始し、停止時に Blob + ObjectURL + 実測秒数を返すコントローラ。
- * 32kbps モノラル設定で高明瞭度かつ超軽量（40秒で約160KB）を実現。
- */
+interface MinimalSpeechRecognition {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: {
+    resultIndex: number;
+    results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }>;
+  }) => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+function startOptionalBrowserSpeechRecognition(): {
+  getText: () => string;
+  stop: () => void;
+} {
+  if (typeof window === 'undefined') {
+    return { getText: () => '', stop: () => undefined };
+  }
+  const w = window as unknown as {
+    SpeechRecognition?: new () => MinimalSpeechRecognition;
+    webkitSpeechRecognition?: new () => MinimalSpeechRecognition;
+  };
+  const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
+  if (!Ctor) {
+    return { getText: () => '', stop: () => undefined };
+  }
+
+  let finalized = '';
+  let interim = '';
+  let rec: MinimalSpeechRecognition | null = null;
+  try {
+    rec = new Ctor();
+    rec.lang = 'en-US';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = ev => {
+      let nextInterim = '';
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        const res = ev.results[i];
+        const piece = String(res?.[0]?.transcript ?? '').trim();
+        if (!piece) continue;
+        if (res.isFinal) {
+          finalized = finalized ? `${finalized} ${piece}` : piece;
+        } else {
+          nextInterim = nextInterim ? `${nextInterim} ${piece}` : piece;
+        }
+      }
+      interim = nextInterim;
+    };
+    rec.onerror = () => undefined;
+    rec.start();
+  } catch {
+    rec = null;
+  }
+
+  return {
+    getText: () => [finalized, interim].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
+    stop: () => {
+      if (!rec) return;
+      try {
+        rec.stop();
+      } catch {
+        // ignore
+      }
+      rec = null;
+    },
+  };
+}
+
 export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
   const format = detectPreferredAudioMimeType();
   let stream: MediaStream;
@@ -196,7 +289,6 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
     throw wrapped;
   }
 
-  // 声量メーター用 Web Audio Analyser（非対応ブラウザでも録音自体は継続）
   let audioCtx: AudioContext | null = null;
   let analyser: AnalyserNode | null = null;
   let dataArray: Uint8Array<ArrayBuffer> | null = null;
@@ -223,9 +315,27 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
       audioBitsPerSecond: 32_000,
     });
   } catch {
-    // 一部 Safari で options 付きコンストラクタが失敗した場合の安全フォールバック
     recorder = new MediaRecorder(stream);
   }
+
+  const speechRec = startOptionalBrowserSpeechRecognition();
+  const levelSamples: number[] = [];
+
+  const readCurrentRmsLevel = (): number => {
+    if (!analyser || !dataArray) return 0;
+    analyser.getByteTimeDomainData(dataArray);
+    let sumSq = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      const centered = (dataArray[i] - 128) / 128;
+      sumSq += centered * centered;
+    }
+    const rms = Math.sqrt(sumSq / dataArray.length);
+    return Math.min(100, Math.round(rms * 320));
+  };
+
+  const sampleTimer = setInterval(() => {
+    levelSamples.push(readCurrentRmsLevel());
+  }, 100);
 
   const chunks: BlobPart[] = [];
   const startedAt = Date.now();
@@ -236,6 +346,8 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
   };
 
   const cleanupResources = () => {
+    clearInterval(sampleTimer);
+    speechRec.stop();
     stream.getTracks().forEach(track => {
       try {
         track.stop();
@@ -252,15 +364,10 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
 
   return {
     getLevel(): number {
-      if (!analyser || !dataArray) return 0;
-      analyser.getByteTimeDomainData(dataArray);
-      let sumSq = 0;
-      for (let i = 0; i < dataArray.length; i++) {
-        const centered = (dataArray[i] - 128) / 128;
-        sumSq += centered * centered;
-      }
-      const rms = Math.sqrt(sumSq / dataArray.length);
-      return Math.min(100, Math.round(rms * 320));
+      return readCurrentRmsLevel();
+    },
+    getTranscript(): string {
+      return speechRec.getText();
     },
     cancel(): void {
       try {
@@ -273,25 +380,37 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
     stop(): Promise<RecordedClip> {
       return new Promise((resolve, reject) => {
         const finalize = () => {
+          const finalTranscript = speechRec.getText();
           cleanupResources();
           const actualMime =
             recorder.mimeType || format.mimeType || 'audio/webm';
-          const ext: SugorokuSpeakingAudioExt = actualMime.includes('mp4') || actualMime.includes('aac') || actualMime.includes('m4a')
-            ? 'm4a'
-            : format.extension;
+          const ext: SugorokuSpeakingAudioExt =
+            actualMime.includes('mp4') ||
+            actualMime.includes('aac') ||
+            actualMime.includes('m4a')
+              ? 'm4a'
+              : format.extension;
           const blob = new Blob(chunks, { type: actualMime });
           const durationSec = Math.max(
             1,
             Math.round(((Date.now() - startedAt) / 1000) * 10) / 10,
           );
           if (blob.size === 0) {
-            reject(new Error('音声データが記録されませんでした。マイク設定を確認してもう一度録音してください。'));
+            reject(
+              new Error(
+                '音声データが記録されませんでした。マイク設定を確認してもう一度録音してください。',
+              ),
+            );
             return;
           }
           const objectUrl =
             typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function'
               ? URL.createObjectURL(blob)
               : '';
+          const metrics =
+            analyser !== null && levelSamples.length > 0
+              ? computeVoiceActivityMetrics(levelSamples, 100, 8)
+              : { speechRatio: undefined, maxSilenceSec: undefined };
           resolve({
             blob,
             objectUrl,
@@ -299,6 +418,9 @@ export async function startAudioRecording(): Promise<ActiveRecordingHandle> {
             extension: ext,
             durationSec,
             sizeBytes: blob.size,
+            speechRatio: metrics.speechRatio,
+            maxSilenceSec: metrics.maxSilenceSec,
+            transcript: finalTranscript || undefined,
           });
         };
 

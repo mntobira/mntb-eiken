@@ -5,12 +5,17 @@ import {
   ClipboardCopy,
   ClipboardPaste,
   Clock,
+  Download,
   Printer,
   RefreshCw,
   Send,
 } from 'lucide-react';
 import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
 import { EIKEN_WRITING_TASKS } from '../../components/EikenWriting';
+import {
+  buildWritingSubmissionsCsv,
+  downloadUtf8BomCsv,
+} from '../shared/csvExport';
 import type {
   SugorokuAdminReviewTabProps,
   SugorokuWritingRubricScores,
@@ -106,14 +111,13 @@ export function TeacherWritingReviewTab({
     setShowAiImporter(false);
     setAiPasteBuffer('');
     if (selected.review) {
-      setRubric(
-        selected.review.rubricScores ?? {
-          content: 3,
-          structure: 3,
-          vocabulary: 3,
-          grammar: 3,
-        },
-      );
+      const rs = selected.review.rubricScores;
+      setRubric({
+        content: rs?.content ?? 3,
+        structure: rs?.structure ?? rs?.organization ?? 3,
+        vocabulary: rs?.vocabulary ?? 3,
+        grammar: rs?.grammar ?? 3,
+      });
       setComment(selected.review.comment || '');
       setCorrectedText(selected.review.correctedText || '');
       setStrengths(selected.review.strengths || '');
@@ -186,6 +190,11 @@ export function TeacherWritingReviewTab({
     setNotice('AI下書きを各欄へ自動反映しました！内容を確認・微調整して生徒へ返却してください。');
   };
 
+  const handleExportCsv = () => {
+    const csv = buildWritingSubmissionsCsv(filtered);
+    downloadUtf8BomCsv(csv, `sugoroku_writing_${effectiveClassId}.csv`);
+  };
+
   const handleSaveReview = async () => {
     if (!selected) return;
     if (!comment.trim()) {
@@ -201,7 +210,7 @@ export function TeacherWritingReviewTab({
         reviewerName: teacherNameInput.trim() || reviewerName,
         score: totalScore,
         maxScore: 16,
-        rubricScores: rubric,
+        rubricScores: { ...rubric, organization: rubric.structure },
         comment,
         correctedText,
         strengths,
@@ -290,14 +299,25 @@ export function TeacherWritingReviewTab({
             ))}
           </select>
         </div>
-        <button
-          type="button"
-          className="twr-chip twr-refresh-btn"
-          onClick={() => void reload()}
-        >
-          <RefreshCw size={14} aria-hidden="true" />
-          更新
-        </button>
+        <div className="twr-row-wrap">
+          <button
+            type="button"
+            className="twr-chip twr-refresh-btn"
+            onClick={handleExportCsv}
+            data-sugoroku-export-writing-csv
+          >
+            <Download size={14} aria-hidden="true" />
+            CSV出力
+          </button>
+          <button
+            type="button"
+            className="twr-chip twr-refresh-btn"
+            onClick={() => void reload()}
+          >
+            <RefreshCw size={14} aria-hidden="true" />
+            更新
+          </button>
+        </div>
       </div>
 
       {error && (

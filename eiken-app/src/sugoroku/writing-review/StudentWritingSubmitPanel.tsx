@@ -13,7 +13,11 @@ import { safeLocalStorage } from '../../utils/safeLocalStorage';
 import type { EikenGrade } from '../../eiken/config';
 import type { SugorokuWritingSubmissionDoc } from '../shared/types';
 import { computeEnglishDiff } from './diffHighlight';
-import { analyzeWritingFormat, type WritingTaskKind } from './formatCheck';
+import {
+  analyzeWritingFormat,
+  buildWritingIssueHighlights,
+  type WritingTaskKind,
+} from './formatCheck';
 import { openFeedbackSheetPrintWindow } from './printFeedbackSheet';
 import {
   fetchStudentWritingSubmissions,
@@ -77,6 +81,15 @@ export function StudentWritingSubmitPanel({
     [text, targetRange, taskKind, sourceText],
   );
 
+  const highlightSegments = useMemo(
+    () => buildWritingIssueHighlights(text, taskKind, sourceText),
+    [text, taskKind, sourceText],
+  );
+  const hasInlineHighlights = useMemo(
+    () => highlightSegments.some(s => s.kind === 'issue'),
+    [highlightSegments],
+  );
+
   const loadHistory = useCallback(async () => {
     const list = await fetchStudentWritingSubmissions(selectedClassId, uid, taskKey);
     setHistory(list);
@@ -126,6 +139,17 @@ export function StudentWritingSubmitPanel({
     return computeEnglishDiff(latest.text, latest.review.correctedText);
   }, [latest]);
 
+  const pacePercent = targetRange
+    ? Math.min(100, Math.round((check.words / Math.max(1, targetRange[1])) * 100))
+    : 0;
+  const paceState: 'under' | 'ok' | 'over' = !targetRange
+    ? 'ok'
+    : check.words < targetRange[0]
+    ? 'under'
+    : check.words > targetRange[1]
+    ? 'over'
+    : 'ok';
+
   return (
     <section className="swr-panel" aria-label="すごろく塾 ライティング形式チェックと先生への提出">
       <div className="swr-panel-header">
@@ -158,6 +182,31 @@ export function StudentWritingSubmitPanel({
             </small>
           )}
         </p>
+
+        {targetRange && (
+          <div className="swr-pace-wrap" aria-label="語数ペースゲージ">
+            <div className="swr-pace-head">
+              <span>
+                目標語数：{targetRange[0]}〜{targetRange[1]}語
+              </span>
+              <span>
+                {paceState === 'ok'
+                  ? `適正レンジ内！（${check.words}語）`
+                  : paceState === 'under'
+                  ? `あと ${targetRange[0] - check.words}語で目安到達`
+                  : `目安上限を +${check.words - targetRange[1]}語 超過`}
+              </span>
+            </div>
+            <div className="swr-pace-track">
+              <div
+                className="swr-pace-fill"
+                data-state={paceState}
+                style={{ width: `${pacePercent}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {check.words === 0 ? (
           <p className="swr-muted-note">
             上の入力欄に英文を書くと、語数範囲・文頭大文字・ピリオド・頻出スペル・要約丸写し注意などを自動点検します。
@@ -167,11 +216,29 @@ export function StudentWritingSubmitPanel({
             語数（{check.words}語）・文頭大文字・文末ピリオド・基本スペルすべてOKです！
           </p>
         ) : (
-          <ul className="swr-check-list">
-            {check.issues.map((issue, idx) => (
-              <li key={`${issue.code}-${idx}`}>{issue.message}</li>
-            ))}
-          </ul>
+          <>
+            <ul className="swr-check-list">
+              {check.issues.map((issue, idx) => (
+                <li key={`${issue.code}-${idx}`}>{issue.message}</li>
+              ))}
+            </ul>
+            {hasInlineHighlights && (
+              <div className="swr-inline-highlight-box" lang="en" aria-label="要注意箇所プレビュー">
+                <small lang="ja" className="twr-diff-caption">
+                  見直し箇所ハイライト（黄色箇所にカーソル/タップでヒント表示）：
+                </small>
+                {highlightSegments.map((seg, i) =>
+                  seg.kind === 'issue' ? (
+                    <mark key={i} className="swr-issue-mark" title={seg.hint}>
+                      {seg.text}
+                    </mark>
+                  ) : (
+                    <span key={i}>{seg.text}</span>
+                  ),
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -244,16 +311,16 @@ export function StudentWritingSubmitPanel({
               {latest.review.rubricScores && (
                 <div className="swr-rubric-chips">
                   <span className="swr-rubric-chip">
-                    内容 {latest.review.rubricScores.content}/4
+                    内容 {latest.review.rubricScores.content ?? '-'}/4
                   </span>
                   <span className="swr-rubric-chip">
-                    構成 {latest.review.rubricScores.structure}/4
+                    構成 {latest.review.rubricScores.structure ?? latest.review.rubricScores.organization ?? '-'}/4
                   </span>
                   <span className="swr-rubric-chip">
-                    語彙 {latest.review.rubricScores.vocabulary}/4
+                    語彙 {latest.review.rubricScores.vocabulary ?? '-'}/4
                   </span>
                   <span className="swr-rubric-chip">
-                    文法 {latest.review.rubricScores.grammar}/4
+                    文法 {latest.review.rubricScores.grammar ?? '-'}/4
                   </span>
                 </div>
               )}

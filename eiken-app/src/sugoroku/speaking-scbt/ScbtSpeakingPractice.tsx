@@ -9,6 +9,7 @@ import {
   RotateCcw,
   Send,
   Square,
+  Trash2,
   Volume2,
   VolumeX,
   Zap,
@@ -33,7 +34,10 @@ import { playScbtBeep } from './scbtBeep';
 import { ScbtIllustrationCard } from './ScbtIllustrationCard';
 import { openSpeakingFeedbackPrintWindow } from './speakingFeedbackSheet';
 import {
+  clearDraftSpeakingClips,
   fetchStudentSpeakingSubmissions,
+  loadDraftSpeakingClips,
+  saveDraftSpeakingClip,
   submitSpeakingSession,
 } from './speakingStore';
 import {
@@ -54,6 +58,8 @@ type FlowStep =
   | 'q3'
   | 'q4'
   | 'review_submit';
+
+type GradeFilterId = 'all' | 'eiken_2' | 'eiken_pre2plus' | 'eiken_pre2' | 'eiken_3';
 
 const STUDENT_NAME_CACHE_KEY = 'sugoroku_student_name_v1';
 
@@ -91,6 +97,38 @@ function speakEnglishPrompt(script: string, onEnd?: () => void): void {
   }
 }
 
+function renderClipTelemetry(clip: RecordedClip | undefined) {
+  if (!clip) return null;
+  const hasRatio = typeof clip.speechRatio === 'number';
+  const longPause = typeof clip.maxSilenceSec === 'number' && clip.maxSilenceSec >= 4.0;
+  return (
+    <div className="scbt-model-box">
+      {hasRatio && (
+        <div className="swr-muted-note">
+          発話率：<strong>{clip.speechRatio}%</strong>
+          {typeof clip.maxSilenceSec === 'number' && (
+            <>
+              {' '}
+              ・ 最長ポーズ：<strong>{clip.maxSilenceSec}秒</strong>
+            </>
+          )}
+          {longPause && (
+            <span className="twr-pill-pending">
+              {' '}
+              4秒以上の無音あり（&ldquo;Well, let me see...&rdquo; 等のつなぎ語を使うと減点を防げます）
+            </span>
+          )}
+        </div>
+      )}
+      {clip.transcript && (
+        <p lang="en" className="swr-muted-note">
+          <strong>【音声認識プレビュー】</strong> &ldquo;{clip.transcript}&rdquo;
+        </p>
+      )}
+    </div>
+  );
+}
+
 export interface ScbtSpeakingPracticeProps {
   uid: string;
   grade: EikenGrade;
@@ -106,10 +144,10 @@ export function ScbtSpeakingPractice({
   onBack,
   onOpenTeacherReview,
 }: ScbtSpeakingPracticeProps) {
-  const [gradeFilter, setGradeFilter] = useState<
-    'all' | 'eiken_2' | 'eiken_pre2plus' | 'eiken_pre2'
-  >(() =>
-    grade === 'eiken_pre2'
+  const [gradeFilter, setGradeFilter] = useState<GradeFilterId>(() =>
+    grade === 'eiken_3'
+      ? 'eiken_3'
+      : grade === 'eiken_pre2'
       ? 'eiken_pre2'
       : grade === 'eiken_pre2plus'
       ? 'eiken_pre2plus'
@@ -131,8 +169,10 @@ export function ScbtSpeakingPractice({
   const [subPhase, setSubPhase] = useState<'idle' | 'listening' | 'prep' | 'recording' | 'done'>('idle');
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
   const [micLevel, setMicLevel] = useState<number>(0);
+  const [liveTranscript, setLiveTranscript] = useState<string>('');
   const [testClip, setTestClip] = useState<RecordedClip | null>(null);
   const [clips, setClips] = useState<Partial<Record<SugorokuSpeakingPartId, RecordedClip>>>({});
+  const [restoredDraftCount, setRestoredDraftCount] = useState<number>(0);
   const [showScriptHint, setShowScriptHint] = useState(false);
   const [showModelAnswers, setShowModelAnswers] = useState(false);
   const [autoExamMode, setAutoExamMode] = useState<boolean>(true);
@@ -174,6 +214,7 @@ export function ScbtSpeakingPractice({
       meterTimerRef.current = null;
     }
     setMicLevel(0);
+    setLiveTranscript('');
   }, []);
 
   useEffect(() => {
@@ -185,6 +226,20 @@ export function ScbtSpeakingPractice({
       }
     };
   }, [clearTimers]);
+
+  // セット切り替え時に IndexedDB 退避済みの途中録音があれば自動復元
+  useEffect(() => {
+    let cancelled = false;
+    void loadDraftSpeakingClips(uid, selectedSet.id).then(drafts => {
+      if (cancelled) return;
+      const count = Object.keys(drafts).length;
+      setClips(drafts);
+      setRestoredDraftCount(count);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [uid, selectedSet.id]);
 
   const loadMySubmissions = useCallback(async () => {
     const rows = await fetchStudentSpeakingSubmissions(
@@ -215,6 +270,7 @@ export function ScbtSpeakingPractice({
           setSubPhase('done');
         } else {
           setClips(prev => ({ ...prev, [target]: clip }));
+          void saveDraftSpeakingClip(uid, selectedSet.id, target, clip);
           setSubPhase('done');
           if (autoAdvanceRef.current) {
             setTimeout(() => {
@@ -227,7 +283,7 @@ export function ScbtSpeakingPractice({
         setErrorMsg(err instanceof Error ? err.message : '録音の保存に失敗しました。');
       }
     },
-    [clearTimers],
+    [clearTimers, selectedSet.id, uid],
   );
 
   const beginRecordingForPart = useCallback(
@@ -243,7 +299,8 @@ export function ScbtSpeakingPractice({
 
         meterTimerRef.current = setInterval(() => {
           setMicLevel(handle.getLevel());
-        }, 100);
+          setLiveTranscript(handle.getTranscript());
+        }, 120);
 
         timerRef.current = setInterval(() => {
           setSecondsLeft(prev => {
@@ -341,6 +398,12 @@ export function ScbtSpeakingPractice({
     return null;
   }, [selectedSet, step]);
 
+  const handleClearDrafts = async () => {
+    await clearDraftSpeakingClips(uid, selectedSet.id);
+    setClips({});
+    setRestoredDraftCount(0);
+  };
+
   const handleSubmitAll = async () => {
     const cleanName = studentName.trim() || auth.currentUser?.displayName || 'すごろく塾生';
     safeLocalStorage()?.setItem(STUDENT_NAME_CACHE_KEY, cleanName);
@@ -365,6 +428,7 @@ export function ScbtSpeakingPractice({
           q4: clips.q4 ? { partId: 'q4', ...clips.q4 } : undefined,
         },
       });
+      setRestoredDraftCount(0);
       await loadMySubmissions();
       setSubmittedNotice(
         '全5パートの録音を先生へ提出しました！先生が聴取・評価すると講評シートをA4印刷・PDF保存できます。',
@@ -396,7 +460,7 @@ export function ScbtSpeakingPractice({
           <div>
             <h1 className="srh-title">英検 S-CBT スピーキング模擬演習</h1>
             <small className="swr-muted-note">
-              本番準拠タイマー＆ビープ音自動録音（形式：{detectedFormat.label}）
+              本番準拠タイマー・発話率計測・自動退避つき（形式：{detectedFormat.label}）
             </small>
           </div>
         </div>
@@ -443,16 +507,45 @@ export function ScbtSpeakingPractice({
         </div>
       )}
 
+      {restoredDraftCount > 0 && step === 'select' && (
+        <div className="scbt-ok-bar" role="status">
+          <strong className="swr-check-ok">
+            前回の途中録音（{selectedSet.title}：{restoredDraftCount}/5 パート）を端末から自動復元しました！
+          </strong>
+          <div className="twr-row-wrap">
+            <button
+              type="button"
+              className="scbt-primary-btn swr-mini-btn"
+              onClick={() => {
+                setAutoExamMode(false);
+                goToStep('review_submit');
+              }}
+            >
+              復元した録音を確認・続きから再開 →
+            </button>
+            <button
+              type="button"
+              className="scbt-secondary-btn swr-mini-btn"
+              onClick={() => void handleClearDrafts()}
+            >
+              <Trash2 size={13} aria-hidden="true" />
+              破棄して最初から
+            </button>
+          </div>
+        </div>
+      )}
+
       {step === 'select' && (
         <section className="scbt-card" aria-label="スピーキング模擬セット選択">
           <div className="twr-row-between">
             <div className="twr-row-wrap">
               {(
                 [
-                  ['all', 'すべて（全6セット）'],
-                  ['eiken_2', '英検2級（2セット）'],
-                  ['eiken_pre2plus', '英検準2級プラス（2セット）'],
-                  ['eiken_pre2', '英検準2級（2セット）'],
+                  ['all', 'すべて（全8セット）'],
+                  ['eiken_2', '英検2級（2）'],
+                  ['eiken_pre2plus', '準2級プラス（2）'],
+                  ['eiken_pre2', '英検準2級（2）'],
+                  ['eiken_3', '英検3級（2）'],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -470,7 +563,7 @@ export function ScbtSpeakingPractice({
               ))}
             </div>
             <small className="swr-muted-note">
-              完全オリジナル模擬課題（過去問・市販書流用なし／準2級プラス対応）
+              完全オリジナル模擬課題（過去問・市販書流用なし／3級〜2級 全8セット）
             </small>
           </div>
 
@@ -499,7 +592,6 @@ export function ScbtSpeakingPractice({
                     onClick={e => {
                       e.stopPropagation();
                       setSelectedSet(item);
-                      setClips({});
                       setSubmittedNotice('');
                       setShowModelAnswers(false);
                       goToStep('mic_check');
@@ -612,6 +704,11 @@ export function ScbtSpeakingPractice({
               <div className="scbt-meter-track">
                 <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
               </div>
+              {subPhase === 'recording' && liveTranscript && (
+                <small lang="en" className="swr-muted-note">
+                  認識中: {liveTranscript}
+                </small>
+              )}
             </div>
             <div className="twr-row-wrap">
               {subPhase !== 'recording' ? (
@@ -735,18 +832,21 @@ export function ScbtSpeakingPractice({
           </article>
 
           {clips.reading_aloud && subPhase !== 'recording' && (
-            <div className="scbt-ok-bar">
-              <strong className="swr-check-ok">
-                音読を録音しました（{clips.reading_aloud.durationSec}秒）
-              </strong>
-              <audio controls src={clips.reading_aloud.objectUrl} preload="metadata" />
-              <button
-                type="button"
-                className="scbt-primary-btn"
-                onClick={() => goToStep('q1')}
-              >
-                No. 1 の質問へ進む →
-              </button>
+            <div className="scbt-review-part-row">
+              <div className="twr-row-between">
+                <strong className="swr-check-ok">
+                  音読を録音しました（{clips.reading_aloud.durationSec}秒）
+                </strong>
+                <audio controls src={clips.reading_aloud.objectUrl} preload="metadata" />
+                <button
+                  type="button"
+                  className="scbt-primary-btn"
+                  onClick={() => goToStep('q1')}
+                >
+                  No. 1 の質問へ進む →
+                </button>
+              </div>
+              {renderClipTelemetry(clips.reading_aloud)}
             </div>
           )}
         </section>
@@ -826,9 +926,16 @@ export function ScbtSpeakingPractice({
                   : '「準備→自動録音」または「すぐ回答を録音」を押してください'}
               </strong>
               {subPhase === 'recording' && (
-                <div className="scbt-meter-track">
-                  <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
-                </div>
+                <>
+                  <div className="scbt-meter-track">
+                    <div className="scbt-meter-fill" style={{ width: `${micLevel}%` }} />
+                  </div>
+                  {liveTranscript && (
+                    <small lang="en" className="swr-muted-note">
+                      認識中: {liveTranscript}
+                    </small>
+                  )}
+                </>
               )}
             </div>
 
@@ -899,25 +1006,28 @@ export function ScbtSpeakingPractice({
           </div>
 
           {clips[currentQuestion.partId] && subPhase !== 'recording' && (
-            <div className="scbt-ok-bar">
-              <strong className="swr-check-ok">
-                {currentQuestion.numberLabel} を録音しました（
-                {clips[currentQuestion.partId]!.durationSec}秒）
-              </strong>
-              <audio
-                controls
-                src={clips[currentQuestion.partId]!.objectUrl}
-                preload="metadata"
-              />
-              <button
-                type="button"
-                className="scbt-primary-btn"
-                onClick={() => goToStep(NEXT_STEP_AFTER_PART[currentQuestion.partId])}
-              >
-                {currentQuestion.partId === 'q4'
-                  ? '自己再生確認・先生への提出へ →'
-                  : '次の質問へ進む →'}
-              </button>
+            <div className="scbt-review-part-row">
+              <div className="twr-row-between">
+                <strong className="swr-check-ok">
+                  {currentQuestion.numberLabel} を録音しました（
+                  {clips[currentQuestion.partId]!.durationSec}秒）
+                </strong>
+                <audio
+                  controls
+                  src={clips[currentQuestion.partId]!.objectUrl}
+                  preload="metadata"
+                />
+                <button
+                  type="button"
+                  className="scbt-primary-btn"
+                  onClick={() => goToStep(NEXT_STEP_AFTER_PART[currentQuestion.partId])}
+                >
+                  {currentQuestion.partId === 'q4'
+                    ? '自己再生確認・先生への提出へ →'
+                    : '次の質問へ進む →'}
+                </button>
+              </div>
+              {renderClipTelemetry(clips[currentQuestion.partId])}
             </div>
           )}
         </section>
@@ -929,8 +1039,8 @@ export function ScbtSpeakingPractice({
             <div>
               <h2 className="scbt-set-title">全パート自己再生確認 ＆ 先生へ提出</h2>
               <p className="scbt-set-desc">
-                自分の録音を聴き直し、気になるパートだけ個別に録り直すこともできます（録音済み：
-                <strong> {recordedCount} / 5 パート</strong>）。
+                自分の録音・発話率・認識プレビューを確認し、気になるパートだけ録り直せます（録音済み：
+                <strong> {recordedCount} / 5 パート</strong>・自動退避済）。
               </p>
             </div>
             <div className="twr-row-wrap">
@@ -947,6 +1057,7 @@ export function ScbtSpeakingPractice({
                 onClick={() =>
                   openSpeakingFeedbackPrintWindow(
                     {
+                      id: 'draft_preview',
                       classId: selectedClassId,
                       studentUid: uid,
                       studentName: studentName.trim() || 'すごろく塾生',
@@ -958,6 +1069,9 @@ export function ScbtSpeakingPractice({
                         storagePath: '',
                         mimeType: clips[p]!.mimeType,
                         durationSec: clips[p]!.durationSec,
+                        speechRatio: clips[p]!.speechRatio,
+                        maxSilenceSec: clips[p]!.maxSilenceSec,
+                        transcript: clips[p]!.transcript,
                       })),
                       status: 'submitted',
                       submittedAt: Date.now(),
@@ -1010,6 +1124,8 @@ export function ScbtSpeakingPractice({
                       </button>
                     </div>
                   </div>
+
+                  {renderClipTelemetry(clip)}
 
                   {showModelAnswers && (
                     <div className="scbt-model-box">
