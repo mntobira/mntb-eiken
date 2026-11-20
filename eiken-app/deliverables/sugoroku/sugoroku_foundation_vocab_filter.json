@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "3.0.0",
-  "description": "すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 品詞一致4択対応 2級Form A/B（各240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター",
+  "schemaVersion": "4.0.0",
+  "description": "すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 品詞一致4択対応 初回ステージ診断（25問）・2級Form A/B（各240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター",
   "recommendedGeneralPoolChaptersForGrade2": [
     "lv1",
     "lv2",
@@ -1980,6 +1980,717 @@
         "eiken-word-2-i-get-on-one-s-nerves"
       ]
     }
+  },
+  "entryPlacementDiagnosticTest25": {
+    "week": 0,
+    "form": "A",
+    "gradeId": "eiken_2_diagnostic",
+    "phase": "入塾初回 15分ステージ診断",
+    "theme": "英検2級スタートライン診断テスト（準2級基礎8問＋準2プラス橋渡し8問＋2級コア9問＝全25問）",
+    "itemCount": 25,
+    "passingScore": 14,
+    "items": [
+      {
+        "no": 1,
+        "id": "eiken-word-pre-2-a-although",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "noun",
+        "word": "although",
+        "meaning": "〜だけれども",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "Although it was cold, we went outside.",
+        "exampleTranslation": "寒かったけれども外に出ました。",
+        "clozeSentence": "( _____ ) it was cold, we went outside.",
+        "choicesJa": [
+          "薬局、薬屋",
+          "海外へ、海外で",
+          "〜だけれども",
+          "病棟、行政区"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "pharmacy",
+          "abroad",
+          "ward",
+          "although"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 2,
+        "id": "eiken-word-pre-2-a-ordinary",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "adj",
+        "word": "ordinary",
+        "meaning": "普通の、通常の",
+        "cefr": "B1",
+        "subBand": "B1前半",
+        "exampleSentence": "It was an ordinary working day.",
+        "exampleTranslation": "普通の平日でした。",
+        "clozeSentence": "It was an ( _____ ) working day.",
+        "choicesJa": [
+          "大都市の、首都圏の",
+          "普通の、通常の",
+          "骨董の、アンティークの",
+          "技術的な"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "metropolitan",
+          "antique",
+          "ordinary",
+          "technical"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 3,
+        "id": "eiken-word-pre-2-a-responsible",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "verb",
+        "word": "responsible",
+        "meaning": "責任がある",
+        "cefr": "B1",
+        "subBand": "B1前半",
+        "exampleSentence": "Who is responsible for this project?",
+        "exampleTranslation": "この企画の責任者は誰ですか。",
+        "clozeSentence": "Who is ( _____ ) for this project?",
+        "choicesJa": [
+          "責任がある",
+          "姿を消す",
+          "標準文語文法では避ける",
+          "育てる"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "disappear",
+          "responsible",
+          "clears",
+          "rear"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 4,
+        "id": "eiken-word-pre-2-a-transport",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "noun",
+        "word": "transport",
+        "meaning": "輸送、交通手段",
+        "cefr": "B1",
+        "subBand": "B1前半",
+        "exampleSentence": "Public transport is convenient here.",
+        "exampleTranslation": "ここでは公共交通機関が便利です。",
+        "clozeSentence": "Public ( _____ ) is convenient here.",
+        "choicesJa": [
+          "違って",
+          "結果、影響",
+          "疲労",
+          "輸送、交通手段"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "transport",
+          "unlike",
+          "consequence",
+          "fatigue"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 5,
+        "id": "eiken-word-pre-2-plus-a-participation",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "participation",
+        "meaning": "参加",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "The fee includes participation in the workshop.",
+        "exampleTranslation": "料金には講習会への参加が含まれています。",
+        "clozeSentence": "The fee includes ( _____ ) in the workshop.",
+        "choicesJa": [
+          "迂回させられた",
+          "限界・制約",
+          "参加",
+          "排出物"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "diverted",
+          "limitations",
+          "emissions",
+          "participation"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 6,
+        "id": "eiken-word-pre-2-plus-a-admission",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "admission",
+        "meaning": "入場、入場料",
+        "cefr": "B1",
+        "subBand": "B1後半",
+        "exampleSentence": "Admission to the museum is free.",
+        "exampleTranslation": "博物館への入場は無料です。",
+        "clozeSentence": "( _____ ) to the museum is free.",
+        "choicesJa": [
+          "耐久性",
+          "入場、入場料",
+          "可能性、有用性",
+          "口調、音色"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "durability",
+          "availability",
+          "admission",
+          "tone"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 7,
+        "id": "eiken-word-pre-2-plus-a-arrangement",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "arrangement",
+        "meaning": "手配、取り決め",
+        "cefr": "B1",
+        "subBand": "B1前半",
+        "exampleSentence": "We changed the seating arrangements.",
+        "exampleTranslation": "座席の配置を変えました。",
+        "clozeSentence": "We changed the seating ( _____ ).",
+        "choicesJa": [
+          "手配、取り決め",
+          "拍手",
+          "製造工場、製粉所",
+          "生物学"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "applause",
+          "arrangement",
+          "mill",
+          "biology"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 8,
+        "id": "eiken-word-pre-2-plus-a-recognise",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "verb",
+        "word": "recognise",
+        "meaning": "認識する、見覚えがある",
+        "cefr": "B1",
+        "subBand": "B1前半",
+        "exampleSentence": "I recognised her voice immediately.",
+        "exampleTranslation": "すぐに彼女の声だと分かりました。",
+        "clozeSentence": "I ( _____ ) her voice immediately.",
+        "choicesJa": [
+          "縮む、減る",
+          "分離する",
+          "装飾する",
+          "認識する、見覚えがある"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "recognise",
+          "shrink",
+          "separated",
+          "decorate"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 9,
+        "id": "eiken-word-2-a-imply",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "adv",
+        "word": "imply",
+        "meaning": "暗に示す、意味する",
+        "cefr": "B2",
+        "subBand": "B2後半",
+        "exampleSentence": "A lower price does not imply lower quality.",
+        "exampleTranslation": "価格が安いからといって品質が低いとは限りません。",
+        "clozeSentence": "A lower price does not ( _____ ) lower quality.",
+        "choicesJa": [
+          "身をさらすこと、暴露",
+          "隔週で",
+          "暗に示す、意味する",
+          "優しく、静かに"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "exposure",
+          "biweekly",
+          "gently",
+          "imply"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 10,
+        "id": "eiken-word-2-a-association",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "noun",
+        "word": "association",
+        "meaning": "協会、団体",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "The association supports local artists.",
+        "exampleTranslation": "その団体は地元の芸術家を支援しています。",
+        "clozeSentence": "The ( _____ ) supports local artists.",
+        "choicesJa": [
+          "火山",
+          "協会、団体",
+          "なぞなぞ、謎",
+          "丸太、ログオンする"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "volcano",
+          "riddle",
+          "association",
+          "log"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 11,
+        "id": "eiken-word-2-a-assumption",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "noun",
+        "word": "assumption",
+        "meaning": "仮定、思い込み",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "The plan is based on a false assumption.",
+        "exampleTranslation": "その計画は誤った仮定に基づいています。",
+        "clozeSentence": "The plan is based on a false ( _____ ).",
+        "choicesJa": [
+          "仮定、思い込み",
+          "礁、暗礁",
+          "坂、斜面",
+          "美徳、長所"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "reef",
+          "assumption",
+          "slope",
+          "virtue"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 12,
+        "id": "eiken-word-2-a-indicator",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "noun",
+        "word": "indicator",
+        "meaning": "指標",
+        "cefr": "B2",
+        "subBand": "B2後半",
+        "exampleSentence": "Sales are not the only indicator of success.",
+        "exampleTranslation": "売上高だけが成功の指標ではありません。",
+        "clozeSentence": "Sales are not the only ( _____ ) of success.",
+        "choicesJa": [
+          "供給網、格子",
+          "薬、医薬品",
+          "天然資源",
+          "指標"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "indicator",
+          "grid",
+          "medication",
+          "resources"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 13,
+        "id": "eiken-word-pre-2-a-description",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "noun",
+        "word": "description",
+        "meaning": "説明、描写",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "The website has a clear description.",
+        "exampleTranslation": "そのウェブサイトには分かりやすい説明があります。",
+        "clozeSentence": "The website has a clear ( _____ ).",
+        "choicesJa": [
+          "職場",
+          "拡大を妨げた",
+          "説明、描写",
+          "構成部品・パーツ"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "workplace",
+          "prevented",
+          "components",
+          "description"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 14,
+        "id": "eiken-word-pre-2-a-instruction",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "noun",
+        "word": "instruction",
+        "meaning": "指示、説明",
+        "cefr": "B1",
+        "subBand": "B1後半",
+        "exampleSentence": "Read the instructions before you start.",
+        "exampleTranslation": "始める前に説明を読んでください。",
+        "clozeSentence": "Read the ( _____ ) before you start.",
+        "choicesJa": [
+          "それによって〜を半減させた",
+          "指示、説明",
+          "負担からの和らぎ・軽減",
+          "耐久性"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "thereby",
+          "relief",
+          "instruction",
+          "durability"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 15,
+        "id": "eiken-word-pre-2-a-disadvantage",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "noun",
+        "word": "disadvantage",
+        "meaning": "欠点、不利な点",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "The main disadvantage is the cost.",
+        "exampleTranslation": "主な欠点は費用です。",
+        "clozeSentence": "The main ( _____ ) is the cost.",
+        "choicesJa": [
+          "欠点、不利な点",
+          "非常に大きな改善",
+          "説明、描写",
+          "甘さ"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "immense",
+          "disadvantage",
+          "description",
+          "sweetness"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 16,
+        "id": "eiken-word-pre-2-a-nor",
+        "rawLevel": "pre-2:a",
+        "tierLabel": "準2級基礎（A2〜B1）",
+        "posGroup": "adj",
+        "word": "nor",
+        "meaning": "もない",
+        "cefr": "A1",
+        "subBand": "A1",
+        "exampleSentence": "Neither the baker nor his apprentice noticed the timer ringing.",
+        "exampleTranslation": "パン職人も見習いも、タイマーが鳴っていることに気づきませんでした。",
+        "clozeSentence": "Neither the baker ( _____ ) his apprentice noticed the timer ringing.",
+        "choicesJa": [
+          "〜するのをためらう・気が進まない",
+          "頻繁な",
+          "繊細な、取り扱いの難しい",
+          "もない"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "nor",
+          "reluctant",
+          "frequent",
+          "delicate"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 17,
+        "id": "eiken-word-pre-2-plus-a-rehearsal",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "rehearsal",
+        "meaning": "リハーサル、練習",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "The rehearsal is open to local residents.",
+        "exampleTranslation": "リハーサルは地元住民に公開されています。",
+        "clozeSentence": "The ( _____ ) is open to local residents.",
+        "choicesJa": [
+          "快適さ、慰め",
+          "借りた",
+          "リハーサル、練習",
+          "〜に期待して"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "comfort",
+          "borrowed",
+          "Looking",
+          "rehearsal"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 18,
+        "id": "eiken-word-pre-2-plus-a-attendance",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "attendance",
+        "meaning": "出席、参加者数",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "Attendance increased after the change.",
+        "exampleTranslation": "その変更の後、参加者数が増えました。",
+        "clozeSentence": "( _____ ) increased after the change.",
+        "choicesJa": [
+          "枝・支部",
+          "出席、参加者数",
+          "at hand（手元に・間近に）",
+          "種、シード選手"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "branches",
+          "hand",
+          "attendance",
+          "seed"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 19,
+        "id": "eiken-word-pre-2-plus-a-suitable",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "adj",
+        "word": "suitable",
+        "meaning": "適切な、適した",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "This course is suitable for beginners.",
+        "exampleTranslation": "この講座は初心者に適しています。",
+        "clozeSentence": "This course is ( _____ ) for beginners.",
+        "choicesJa": [
+          "適切な、適した",
+          "部分的な、不公平な",
+          "食用の、食べられる",
+          "壊れやすい、虚弱な"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "partial",
+          "suitable",
+          "edible",
+          "fragile"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 20,
+        "id": "eiken-word-pre-2-plus-a-inconvenience",
+        "rawLevel": "pre-2-plus:a",
+        "tierLabel": "準2プラス橋渡し（B1）",
+        "posGroup": "noun",
+        "word": "inconvenience",
+        "meaning": "不便・迷惑",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "The hotel apologized for the inconvenience caused by the broken elevator.",
+        "exampleTranslation": "ホテルはエレベーター故障による不便を謝罪しました。",
+        "clozeSentence": "The hotel apologized for the ( _____ ) caused by the broken elevator.",
+        "choicesJa": [
+          "家具",
+          "銃弾、弾丸",
+          "熟練した",
+          "不便・迷惑"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "inconvenience",
+          "furniture",
+          "bullet",
+          "experienced"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 21,
+        "id": "eiken-word-2-a-consequence",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "noun",
+        "word": "consequence",
+        "meaning": "結果、影響",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "Consider the consequences before deciding.",
+        "exampleTranslation": "決める前に結果を考慮してください。",
+        "clozeSentence": "Consider the ( _____ ) before deciding.",
+        "choicesJa": [
+          "野生生物",
+          "汚染、公害",
+          "結果、影響",
+          "ファイル、～とじ込み"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "wildlife",
+          "pollution",
+          "file",
+          "consequence"
+        ],
+        "answerIndexEn": 3
+      },
+      {
+        "no": 22,
+        "id": "eiken-word-2-a-interpret",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "verb",
+        "word": "interpret",
+        "meaning": "解釈する",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "People may interpret the message differently.",
+        "exampleTranslation": "人によってその伝言の解釈が異なるかもしれません。",
+        "clozeSentence": "People may ( _____ ) the message differently.",
+        "choicesJa": [
+          "同封する、～を囲む",
+          "解釈する",
+          "保持する、～を覚えている",
+          "クリックする、～をカチッと鳴らす"
+        ],
+        "answerIndexJa": 1,
+        "choicesEn": [
+          "enclose",
+          "retain",
+          "interpret",
+          "click"
+        ],
+        "answerIndexEn": 2
+      },
+      {
+        "no": 23,
+        "id": "eiken-word-2-a-distinguish",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "verb",
+        "word": "distinguish",
+        "meaning": "区別する",
+        "cefr": "B1",
+        "subBand": "B1後半",
+        "exampleSentence": "It is important to distinguish fact from opinion.",
+        "exampleTranslation": "事実と意見を区別することが重要です。",
+        "clozeSentence": "It is important to ( _____ ) fact from opinion.",
+        "choicesJa": [
+          "区別する",
+          "見落とす、～を大目に見る",
+          "秀でている、すばらしい",
+          "幅を広げる"
+        ],
+        "answerIndexJa": 0,
+        "choicesEn": [
+          "overlook",
+          "distinguish",
+          "excellent",
+          "widen"
+        ],
+        "answerIndexEn": 1
+      },
+      {
+        "no": 24,
+        "id": "eiken-word-2-a-assess",
+        "rawLevel": "2:a",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "verb",
+        "word": "assess",
+        "meaning": "査定する、判断する",
+        "cefr": "B2",
+        "subBand": "B2前半",
+        "exampleSentence": "The teacher assessed each student's progress.",
+        "exampleTranslation": "先生は各生徒の進歩を評価しました。",
+        "clozeSentence": "The teacher ( _____ ) each student's progress.",
+        "choicesJa": [
+          "取り除く、～を排除する",
+          "駆りたてる、～を駆り立てる",
+          "知らせる",
+          "査定する、判断する"
+        ],
+        "answerIndexJa": 3,
+        "choicesEn": [
+          "assess",
+          "eliminate",
+          "spur",
+          "notify"
+        ],
+        "answerIndexEn": 0
+      },
+      {
+        "no": 25,
+        "id": "eiken-word-2-i-lead-to",
+        "rawLevel": "2:i",
+        "tierLabel": "2級コア（B1後半〜B2）",
+        "posGroup": "idiom",
+        "word": "lead to",
+        "meaning": "〜につながる",
+        "cefr": "A2",
+        "subBand": "A2",
+        "exampleSentence": "Poor communication can lead to mistakes.",
+        "exampleTranslation": "不十分な意思疎通は間違いにつながることがあります。",
+        "clozeSentence": "Poor communication can ( ________ ) mistakes.",
+        "choicesJa": [
+          "取り壊す、～を解体する",
+          "〜に関して",
+          "〜につながる",
+          "考慮して"
+        ],
+        "answerIndexJa": 2,
+        "choicesEn": [
+          "tear down",
+          "with regard to",
+          "in view of",
+          "lead to"
+        ],
+        "answerIndexEn": 3
+      }
+    ]
   },
   "grade2WeeklyVocabTests12Weeks": [
     {

@@ -2527,6 +2527,653 @@ def build_scbt_writing_speaking_handbook_pdf(audit_report: dict[str, Any]) -> Pa
     return out_path
 
 
+# ---------------------------------------------------------------------------
+# PDF 6: Entry Placement 15-Min Diagnostic Test & A/B/C Prescription (6 Pages)
+# ---------------------------------------------------------------------------
+def build_placement_diagnostic_pdf(diag_test: dict[str, Any]) -> Path:
+    """
+    Generates `sugoroku_eiken2_placement_diagnostic_test.pdf` (6 crisp A4 B&W pages):
+      - Page 1: Cover, 15-Minute Diagnostic Administration Guide, & A/B/C Placement Rubric Table
+      - Page 2: Student Sheet 1 — Part A Meaning Recall (Q01..Q12: 4 Pre-2 + 4 Pre-2 Plus + 4 Grade 2)
+      - Page 3: Student Sheet 2 — Part B 4-Choice Sentence Cloze (Q13..Q25: 13 items, zero truncation)
+      - Page 4: Answer Key & Layer-by-Layer Scoring Tally Sheet (Q01..Q25)
+      - Page 5: Coach Counseling & Parent/Student Route Agreement Prescription Sheet
+      - Page 6: First-Week Launch Checklist (4-Day Advance + 2-Day Buffer Schedule Setup)
+    """
+    out_path = OUT_DIR / "sugoroku_eiken2_placement_diagnostic_test.pdf"
+    total_pages = 6
+    c = canvas.Canvas(str(out_path), pagesize=A4, pageCompression=1, invariant=1)
+    c.setTitle("すごろく塾専用・入塾初回15分 英検2級スタートライン診断テスト＆A/B/C処方箋シート")
+    c.setAuthor("オンライン塾「すごろく」× マナトビ英検")
+
+    doc_title = "すごろく塾専用｜初回15分 2級スタート診断テスト"
+    items: list[dict[str, Any]] = diag_test["items"]
+
+    # ---------------- PAGE 1: Cover & Placement Rubric ----------------
+    draw_page_chrome(c, doc_title, "表紙・A/B/C判定基準", 1, total_pages)
+
+    banner_top = 62
+    banner_h = 78
+    c.setStrokeColor(C_BLACK)
+    c.setLineWidth(1.1)
+    c.rect(MARGIN_X, H - banner_top - banner_h, CONTENT_W, banner_h, stroke=1, fill=0)
+    c.setFillColor(C_BLACK)
+    c.rect(MARGIN_X + 10, H - banner_top - banner_h + 10, 96, banner_h - 20, stroke=0, fill=1)
+    c.setFillColor(C_WHITE)
+    c.setFont("SugorokuJP", 14.0)
+    c.drawCentredString(MARGIN_X + 58, H - banner_top - 33, "初回診断25問")
+    c.setFont("SugorokuJP", 8.5)
+    c.drawCentredString(MARGIN_X + 58, H - banner_top - 53, "所要時間 15分")
+
+    c.setFillColor(C_BLACK)
+    c.setFont("SugorokuJP", 13.4)
+    c.drawString(MARGIN_X + 118, H - banner_top - 28, "英検2級 スタートライン診断テスト＆A/B/C処方箋シート")
+    c.setFont("SugorokuJP", 7.5)
+    c.drawString(
+        MARGIN_X + 118,
+        H - banner_top - 46,
+        "準2級基礎（8問）＋ 準2級プラス橋渡し（8問）＋ 2級コア（9問）の3層構造で最適開始ステージを客観判定",
+    )
+    c.setFillColor(C_BG_SUB)
+    c.rect(MARGIN_X + 118, H - banner_top - 69, CONTENT_W - 130, 17, stroke=0, fill=1)
+    c.setFillColor(C_BLACK)
+    c.setFont("SugorokuJP", 7.0)
+    c.drawString(
+        MARGIN_X + 124,
+        H - banner_top - 63,
+        "構成：p.2〜3 生徒用問題用紙（全25問） ｜ p.4 解答・層別集計表 ｜ p.5 三者面談用処方箋 ｜ p.6 初週スタート設計シート",
+    )
+
+    cur_top = banner_top + banner_h + 12
+    h_purpose = draw_paragraph_box(
+        c,
+        "なぜ入塾初日に「3層混合25問（15分）」を実施するのか（西様・藤沢様方針：途中離脱ゼロの入口設計）",
+        [
+            "【つまずきの階層を15分で特定】「英検2級を取りたい高校生」でも、実際には①準2級の日常語彙（A2〜B1前半）が抜けている層、②準2級は読めるが抽象語彙（準2級プラス：B1中核）で止まる層、③すぐ2級に入れる層の3タイプに分かれます。",
+            "【納得感ある段階ブリッジ提案】本テストは3階層を均等に含むため、「いきなり2級で挫折させる」のではなく、得点根拠を示して『準2級プラス4週ブリッジ』や『準2級土台8週パック』を提案でき、生徒・保護者の納得度が飛躍的に高まります。",
+            "【実施ルール】辞書・スマホ参照なし、制限時間15分厳守。分からない問題は当てずっぽうで塗らず「空欄または△印」にさせると、未知語が正確に浮かび上がります。",
+        ],
+        MARGIN_X,
+        cur_top,
+        CONTENT_W,
+    )
+    cur_top += h_purpose + 12
+
+    c.setFont("SugorokuJP", 9.6)
+    c.drawString(MARGIN_X, H - cur_top - 10, "■ 得点・正答率による開始カリキュラム自動振り分け基準（A / B / C 3段階）")
+    cur_top += 16
+
+    rubric_rows = [
+        [
+            p_rich("<b>判定区分</b>", "cell_head"),
+            p_rich("<b>得点目安（25点満点）</b>", "cell_head"),
+            p_rich("<b>推奨スタート地点・使用冊子</b>", "cell_head"),
+            p_rich("<b>2級標準ルート合流・受験目標</b>", "cell_head"),
+        ],
+        [
+            p_rich("<b>A判定</b><br/>2級標準直行", "cell_center"),
+            p_rich("<b>14〜25点</b><br/>（正答率 55%以上）", "cell_center"),
+            p(
+                "『英検2級 12週間標準ルート』Week 1 から開始\n・配布：12週ルート表PDF ＋ 2級週次小テストForm A",
+                "cell_jp_sm",
+            ),
+            p("そのまま12週間で完走\n→ 4月 S-CBT第1回で合格圏突破を狙う", "cell_jp_sm"),
+        ],
+        [
+            p_rich("<b>B判定</b><br/>準2プラス橋渡し", "cell_center"),
+            p_rich("<b>10〜13点</b><br/>（正答率 40〜54%）", "cell_center"),
+            p(
+                "『段階ブリッジ冊子』Stage 05〜08（準2級プラス・4週間）を先行処方\n・35〜45語要約とB1社会語彙を先に固める",
+                "cell_jp_sm",
+            ),
+            p("5週目から『2級12週ルート Week 3』へ合流\n→ 5〜6月 S-CBT／本試験で確実合格", "cell_jp_sm"),
+        ],
+        [
+            p_rich("<b>C判定</b><br/>準2級土台先行", "cell_center"),
+            p_rich("<b>0〜9点</b><br/>（正答率 39%以下）", "cell_center"),
+            p(
+                "『段階ブリッジ冊子』Stage 01〜08（準2級4週＋準2プラス4週＝計8週間）\n・A2〜B1前半の動詞・会話表現から無理なく再構築",
+                "cell_jp_sm",
+            ),
+            p("9週目から『2級12週ルート Week 3』へ合流\n→ 夏までのS-CBT複数回受験で逆転合格", "cell_jp_sm"),
+        ],
+    ]
+    rub_tbl = Table(rubric_rows, colWidths=[72, 86, 198, CONTENT_W - 356], hAlign="LEFT")
+    rub_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                ("BACKGROUND", (0, 2), (-1, 2), C_BG_ZEBRA),
+                ("GRID", (0, 0), (-1, -1), 0.5, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    _, rth = rub_tbl.wrap(CONTENT_W, H)
+    rub_tbl.drawOn(c, MARGIN_X, H - cur_top - rth)
+    cur_top += rth + 14
+
+    layer_rows = [
+        [
+            p_rich("<b>出題セクション</b>", "cell_head"),
+            p_rich("<b>設問番号</b>", "cell_head"),
+            p_rich("<b>出題形式</b>", "cell_head"),
+            p_rich("<b>測定する英語力（CEFR帯）</b>", "cell_head"),
+        ],
+        [
+            p("準2級 基礎層（計8問）", "cell_center"),
+            p("Q01〜04 / Q13〜16", "cell_center"),
+            p("意味記述4問＋空所4択4問", "cell_center"),
+            p("高1〜高2前半の日常動詞・形容詞・基本文脈把握（CEFR A2〜B1前半）", "cell_jp_sm"),
+        ],
+        [
+            p("準2級プラス 橋渡し層（計8問）", "cell_center"),
+            p("Q05〜08 / Q17〜20", "cell_center"),
+            p("意味記述4問＋空所4択4問", "cell_center"),
+            p("社会・科学テーマへの橋渡し抽象語彙・因果関係把握（CEFR B1中核）", "cell_jp_sm"),
+        ],
+        [
+            p("英検2級 コア層（計9問）", "cell_center"),
+            p("Q09〜12 / Q21〜25", "cell_center"),
+            p("意味記述4問＋空所4択5問", "cell_center"),
+            p("2級『パス単』出る度A/B中核語彙・必須熟語の運用力（CEFR B1後半〜B2前半）", "cell_jp_sm"),
+        ],
+    ]
+    ltbl = Table(layer_rows, colWidths=[116, 86, 104, CONTENT_W - 306], hAlign="LEFT")
+    ltbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                ("BACKGROUND", (0, 2), (-1, 2), C_BG_ZEBRA),
+                ("GRID", (0, 0), (-1, -1), 0.45, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4.5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 4.0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4.0),
+            ]
+        )
+    )
+    _, lth = ltbl.wrap(CONTENT_W, H)
+    ltbl.drawOn(c, MARGIN_X, H - cur_top - lth)
+    c.showPage()
+
+    # ---------------- PAGE 2: Student Sheet 1 — Part A Meaning Recall (Q01..Q12) ----------------
+    draw_page_chrome(c, doc_title, "問題①｜Part A 記述（Q01〜12）", 2, total_pages)
+    cur_top = 58
+
+    meta_tbl = Table(
+        [
+            [
+                p_rich("<b>実施日：</b>2026年 ＿＿月 ＿＿日", "cell_jp_sm"),
+                p_rich("<b>生徒氏名：</b>＿＿＿＿＿＿＿＿＿＿＿＿", "cell_jp_sm"),
+                p_rich("<b>学年・部活：</b>高＿＿・＿＿＿＿＿＿部", "cell_jp_sm"),
+                p_rich("<b>Part A 得点：</b>＿＿ / 12", "cell_center"),
+            ]
+        ],
+        colWidths=[126, 150, 140, CONTENT_W - 416],
+        hAlign="LEFT",
+    )
+    meta_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), C_BG_SUB),
+                ("BOX", (0, 0), (-1, -1), 0.7, C_BLACK),
+                ("INNERGRID", (0, 0), (-1, -1), 0.4, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    _, mh = meta_tbl.wrap(CONTENT_W, H)
+    meta_tbl.drawOn(c, MARGIN_X, H - cur_top - mh)
+    cur_top += mh + 8
+
+    c.setFont("SugorokuJP", 8.2)
+    c.drawString(
+        MARGIN_X,
+        H - cur_top - 9,
+        "【Part A：意味確認（Q01〜Q12）】太字の英単語の日本語の意味を書きなさい（右の例文をヒントにして構いません）。",
+    )
+    cur_top += 14
+
+    pa_rows = [
+        [
+            p_rich("<b>No.</b>", "cell_head"),
+            p_rich("<b>測定階層</b>", "cell_head"),
+            p_rich("<b>対象英単語 ＆ 文脈ヒント例文</b>", "cell_head"),
+            p_rich("<b>日本語の意味（記述欄）</b>", "cell_head"),
+            p_rich("<b>採点</b>", "cell_head"),
+        ]
+    ]
+    for item in items[:12]:
+        word_ex = Paragraph(
+            f"<font name='Times-Bold' size='9.2'>{escape(item['word'])}</font><br/>"
+            f"<font name='Times-Roman' size='7.4' color='#333333'>{escape(item['exampleSentence'])}</font>",
+            STYLES["cell_jp_sm"],
+        )
+        pa_rows.append(
+            [
+                p_rich(f"<b>{item['no']:02d}</b>", "cell_center"),
+                p(item["tierLabel"].split("（")[0], "cell_center"),
+                word_ex,
+                p("", "cell_jp_sm"),
+                p("□", "cell_center"),
+            ]
+        )
+
+    pa_tbl = Table(pa_rows, colWidths=[26, 74, 240, CONTENT_W - 372, 32], hAlign="LEFT")
+    pa_zebra = [("BACKGROUND", (0, r), (-1, r), C_BG_ZEBRA) for r in range(2, 13, 2)]
+    pa_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                *pa_zebra,
+                ("LINEABOVE", (0, 5), (-1, 5), 0.9, C_BLACK),
+                ("LINEABOVE", (0, 9), (-1, 9), 0.9, C_BLACK),
+                ("GRID", (0, 0), (-1, -1), 0.45, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4.5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 6.2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6.2),
+            ]
+        )
+    )
+    _, pah = pa_tbl.wrap(CONTENT_W, H)
+    pa_tbl.drawOn(c, MARGIN_X, H - cur_top - pah)
+    cur_top += pah + 10
+
+    draw_paragraph_box(
+        c,
+        "受験のポイント（次ページ Part B へ続く — 合計制限時間 15分）",
+        [
+            "漢字が思い出せない場合はひらがなで書いて構いません。全く見たことがない単語は無理に埋めず空欄のまま次ページへ進みましょう。",
+        ],
+        MARGIN_X,
+        cur_top,
+        CONTENT_W,
+        style_name="body_xs",
+    )
+    c.showPage()
+
+    # ---------------- PAGE 3: Student Sheet 2 — Part B 4-Choice Cloze (Q13..Q25) ----------------
+    draw_page_chrome(c, doc_title, "問題②｜Part B 4択（Q13〜25）", 3, total_pages)
+    cur_top = 56
+
+    c.setFont("SugorokuJP", 8.0)
+    c.drawString(
+        MARGIN_X,
+        H - cur_top - 9,
+        "【Part B：本番大問1形式 空所補充4択（Q13〜Q25）】空所 ( _____ ) に入る最も適切なものを 1〜4 から1つ選び番号を書きなさい。",
+    )
+    cur_top += 13
+
+    pb_rows = [
+        [
+            p_rich("<b>No.</b>", "cell_head"),
+            p_rich("<b>英文空所補充問題（全文掲載・品詞一致4択）</b>", "cell_head"),
+            p_rich("<b>解答欄</b>", "cell_head"),
+            p_rich("<b>採点</b>", "cell_head"),
+        ]
+    ]
+    for item in items[12:25]:
+        cloze = re.sub(r"\s+", " ", item["clozeSentence"].strip())
+        opts_markup = "　 ".join(
+            f"<font name='SugorokuJP' size='6.4'><b>{i + 1}.</b></font> "
+            f"<font name='Times-Roman' size='7.4'>{escape(ch)}</font>"
+            for i, ch in enumerate(item["choicesEn"])
+        )
+        q_cell = Paragraph(
+            f"<font name='Times-Roman' size='7.5'>{escape(cloze)}</font> "
+            f"<font name='SugorokuJP' size='6.0' color='#444444'>［{escape(item['tierLabel'].split('（')[0])}］</font><br/>"
+            f"{opts_markup}",
+            STYLES["cell_jp_xs"],
+        )
+        pb_rows.append(
+            [
+                p_rich(f"<b>{item['no']:02d}</b>", "cell_center"),
+                q_cell,
+                p("（ ＿ ）", "cell_center"),
+                p("□", "cell_center"),
+            ]
+        )
+
+    pb_tbl = Table(pb_rows, colWidths=[26, CONTENT_W - 102, 46, 30], hAlign="LEFT")
+    pb_zebra = [("BACKGROUND", (0, r), (-1, r), C_BG_ZEBRA) for r in range(2, len(pb_rows), 2)]
+    pb_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                *pb_zebra,
+                ("LINEABOVE", (0, 5), (-1, 5), 0.85, C_BLACK),
+                ("LINEABOVE", (0, 9), (-1, 9), 0.85, C_BLACK),
+                ("GRID", (0, 0), (-1, -1), 0.45, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 3.8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 3.8),
+                ("TOPPADDING", (0, 0), (-1, -1), 2.3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.3),
+            ]
+        )
+    )
+    _, pbh = pb_tbl.wrap(CONTENT_W, H)
+    pb_tbl.drawOn(c, MARGIN_X, H - cur_top - pbh)
+    cur_top += pbh + 6
+
+    tot_box = Table(
+        [
+            [
+                p_rich("<b>Part A 得点：</b>＿＿ / 12", "cell_center"),
+                p_rich("<b>Part B 得点：</b>＿＿ / 13", "cell_center"),
+                p_rich("<b>総合得点：</b>＿＿ / 25 点（＿＿ %）", "cell_center"),
+                p_rich("<b>判定： A ・ B ・ C</b>", "cell_center"),
+            ]
+        ],
+        colWidths=[110, 110, 165, CONTENT_W - 385],
+        hAlign="LEFT",
+    )
+    tot_box.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), C_BG_SUB),
+                ("BOX", (0, 0), (-1, -1), 0.8, C_BLACK),
+                ("INNERGRID", (0, 0), (-1, -1), 0.45, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("TOPPADDING", (0, 0), (-1, -1), 3.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5),
+            ]
+        )
+    )
+    _, tbh = tot_box.wrap(CONTENT_W, H)
+    tot_box.drawOn(c, MARGIN_X, H - cur_top - tbh)
+    c.showPage()
+
+    # ---------------- PAGE 4: Answer Key & Layer Tally Sheet (Q01..Q25) ----------------
+    draw_page_chrome(c, doc_title, "解答＆3層別集計表（p.2〜3）", 4, total_pages)
+    cur_top = 54
+
+    ak_rows = [
+        [
+            p_rich("<b>No.</b>", "cell_head"),
+            p_rich("<b>測定階層</b>", "cell_head"),
+            p_rich("<b>正答</b>", "cell_head"),
+            p_rich("<b>対象単熟語</b>", "cell_head"),
+            p_rich("<b>標準和訳</b>", "cell_head"),
+            p_rich("<b>完成英文・和訳</b>", "cell_head"),
+        ]
+    ]
+    for item in items:
+        is_part_b = item["no"] >= 13
+        ans_str = f"<b>4択：{item['answerIndexEn'] + 1}</b>" if is_part_b else "記述"
+        ex_en = re.sub(r"\s+", " ", item["exampleSentence"].strip())
+        ak_rows.append(
+            [
+                p_rich(f"<b>{item['no']:02d}</b>", "cell_center"),
+                p(item["tierLabel"].split("（")[0], "cell_center"),
+                p_rich(ans_str, "cell_center"),
+                Paragraph(f"<font name='Times-Bold' size='8.0'>{escape(item['word'])}</font>", STYLES["cell_jp_xs"]),
+                p(item["meaning"], "cell_jp_xs"),
+                Paragraph(
+                    f"<font name='Times-Roman' size='6.6'>{escape(ex_en)}</font> "
+                    f"<font name='SugorokuJP' size='6.1' color='#444444'>（{escape(item['exampleTranslation'])}）</font>",
+                    STYLES["cell_jp_xs"],
+                ),
+            ]
+        )
+
+    ak_tbl = Table(ak_rows, colWidths=[22, 62, 42, 76, 86, CONTENT_W - 288], hAlign="LEFT")
+    ak_zebra = [("BACKGROUND", (0, r), (-1, r), C_BG_ZEBRA) for r in range(2, 26, 2)]
+    ak_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                *ak_zebra,
+                ("LINEABOVE", (0, 13), (-1, 13), 0.9, C_BLACK),
+                ("GRID", (0, 0), (-1, -1), 0.4, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 3.0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 3.0),
+                ("TOPPADDING", (0, 0), (-1, -1), 1.3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 1.3),
+            ]
+        )
+    )
+    _, akh = ak_tbl.wrap(CONTENT_W, H)
+    ak_tbl.drawOn(c, MARGIN_X, H - cur_top - akh)
+    c.showPage()
+
+    # ---------------- PAGE 5: Coach & Parent Route Prescription Sheet ----------------
+    draw_page_chrome(c, doc_title, "三者面談用｜処方箋シート", 5, total_pages)
+    cur_top = 58
+
+    c.setFont("SugorokuJP", 11.2)
+    c.drawString(MARGIN_X, H - cur_top - 12, "英検2級 短期合格に向けた現在地診断カルテ＆学習ルート合意書")
+    cur_top += 20
+
+    tally_rows = [
+        [
+            p_rich("<b>診断レイヤー</b>", "cell_head"),
+            p_rich("<b>対象設問</b>", "cell_head"),
+            p_rich("<b>生徒得点</b>", "cell_head"),
+            p_rich("<b>層別診断コメント（○を付ける）</b>", "cell_head"),
+        ],
+        [
+            p("① 準2級基礎（A2〜B1前半）", "cell_jp_sm"),
+            p("Q01〜04, Q13〜16", "cell_center"),
+            p("＿＿ / 8 点", "cell_center"),
+            p("□ 6点以上（土台十分） ／ □ 5点以下（高1基礎動詞・会話表現の穴埋めが必要）", "cell_jp_sm"),
+        ],
+        [
+            p("② 準2級プラス橋渡し（B1）", "cell_jp_sm"),
+            p("Q05〜08, Q17〜20", "cell_center"),
+            p("＿＿ / 8 点", "cell_center"),
+            p("□ 5点以上（評論文導入OK） ／ □ 4点以下（準2プラス4週ブリッジを強く推奨）", "cell_jp_sm"),
+        ],
+        [
+            p("③ 英検2級コア（B1後半〜B2）", "cell_jp_sm"),
+            p("Q09〜12, Q21〜25", "cell_center"),
+            p("＿＿ / 9 点", "cell_center"),
+            p("□ 4点以上（2級Week 1即開始可） ／ □ 3点以下（出る度A最優先で段階構築）", "cell_jp_sm"),
+        ],
+        [
+            p_rich("<b>総合スコア・正答率</b>", "cell_center"),
+            p("全25問（15分）", "cell_center"),
+            p_rich("<b>＿＿ / 25 点</b>", "cell_center"),
+            p_rich("<b>正答率： ＿＿＿ %　→　決定ルート：［ □ A判定 ／ □ B判定 ／ □ C判定 ］</b>", "cell_jp_sm"),
+        ],
+    ]
+    ttbl = Table(tally_rows, colWidths=[126, 86, 68, CONTENT_W - 280], hAlign="LEFT")
+    ttbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                ("BACKGROUND", (0, 4), (-1, 4), C_BG_SUB),
+                ("GRID", (0, 0), (-1, -1), 0.5, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 5.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5.5),
+            ]
+        )
+    )
+    _, tth = ttbl.wrap(CONTENT_W, H)
+    ttbl.drawOn(c, MARGIN_X, H - cur_top - tth)
+    cur_top += tth + 14
+
+    h_script = draw_paragraph_box(
+        c,
+        "講師用カウンセリング伝達トーク例（部活生・保護者の不安を解消する3ポイント）",
+        [
+            "1. 『C1難語は捨ててOK』：マナトビ英検の2級本文はA1〜B2語彙だけで95.1%、リスニングは98.4%カバーできることが実証済みです。準1級レベルの難語暗記でパンクさせず、出る度A・Bのコア語彙と要約・英作文の型で確実に合格点を取ります。",
+            "2. 『部活と両立できる4日進行＋2日調整』：週7日ぎっしり宿題を出すのではなく、平日4日（1日25〜35分）で進め、試合や遠征がある週末2日を復習・予備日に充てるペースメーカー設計で完走させます。",
+            "3. 『S-CBTの複数回チャンス活用』：紙の本試験1発勝負ではなく、4月〜7月のS-CBT（毎週実施）をマイルストーンに据え、1回目でスコア感覚を掴み2回目で確実に仕留める戦略を採ります。",
+        ],
+        MARGIN_X,
+        cur_top,
+        CONTENT_W,
+    )
+    cur_top += h_script + 14
+
+    plan_rows = [
+        [
+            p_rich("<b>合意事項</b>", "cell_head"),
+            p_rich("<b>個別設定内容（初回面談で記入）</b>", "cell_head"),
+        ],
+        [
+            p("開始カリキュラム＆初週教材", "cell_jp_sm"),
+            p("□ 2級12週標準 Week 1　／　□ 準2プラス橋渡し Stage 05　／　□ 準2級土台 Stage 01", "cell_jp_sm"),
+        ],
+        [
+            p("毎週の学習進行曜日（4日＋予備2日）", "cell_jp_sm"),
+            p("進行4日：［ 月 ・ 火 ・ 水 ・ 木 ・ 金 ・ 土 ・ 日 ］ ／ 調整予備日：［ ＿＿ ・ ＿＿ ］", "cell_jp_sm"),
+        ],
+        [
+            p("1日の固定スキマ時間枠（30分）", "cell_jp_sm"),
+            p("例：通学電車15分（単語・リスニング）＋ 帰宅後または就寝前15分（筆記演習）→ ＿＿＿＿＿＿＿＿＿＿", "cell_jp_sm"),
+        ],
+        [
+            p("S-CBT 第1回／第2回 受験目標月", "cell_jp_sm"),
+            p("第1回チャレンジ予定：2026年 ＿＿月 ＿＿日頃 ／ 本命合格ターゲット：2026年 ＿＿月 ＿＿日頃", "cell_jp_sm"),
+        ],
+        [
+            p("担当講師メモ・サイン", "cell_jp_sm"),
+            p("担当講師：＿＿＿＿＿＿＿＿＿＿　　生徒確認サイン：＿＿＿＿＿＿＿＿＿＿", "cell_jp_sm"),
+        ],
+    ]
+    ptbl = Table(plan_rows, colWidths=[148, CONTENT_W - 148], hAlign="LEFT")
+    ptbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                ("BACKGROUND", (0, 2), (-1, 2), C_BG_ZEBRA),
+                ("BACKGROUND", (0, 4), (-1, 4), C_BG_ZEBRA),
+                ("GRID", (0, 0), (-1, -1), 0.5, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 6.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6.5),
+            ]
+        )
+    )
+    _, pth = ptbl.wrap(CONTENT_W, H)
+    ptbl.drawOn(c, MARGIN_X, H - cur_top - pth)
+    c.showPage()
+
+    # ---------------- PAGE 6: First-Week Launch Checklist ----------------
+    draw_page_chrome(c, doc_title, "初週1週間ルーティン定着表", 6, total_pages)
+    cur_top = 58
+
+    c.setFont("SugorokuJP", 11.0)
+    c.drawString(MARGIN_X, H - cur_top - 12, "入塾1週目「4日進行＋2日調整＋指導日小テスト」スタートアップ記録表")
+    cur_top += 20
+
+    wk1_rows = [
+        [
+            p_rich("<b>Day</b>", "cell_head"),
+            p_rich("<b>位置づけ</b>", "cell_head"),
+            p_rich("<b>アプリ＆冊子でやること（目安25〜30分）</b>", "cell_head"),
+            p_rich("<b>有効時間</b>", "cell_head"),
+            p_rich("<b>達成</b>", "cell_head"),
+        ],
+        [
+            p_rich("<b>Day 1</b>", "cell_center"),
+            p("進行日①", "cell_center"),
+            p("週次対象単語 No.01〜05（声に出して例文音読）＋ 大問1 短文空所 5問 ＋ リスニング第1部 4問", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 2</b>", "cell_center"),
+            p("進行日②", "cell_center"),
+            p("週次対象単語 No.06〜10 ＋ 大問1 短文空所 6問 ＋ リスニング第1部 4問（スクリプト確認）", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 3</b>", "cell_center"),
+            p("進行日③", "cell_center"),
+            p("週次対象単語 No.11〜15 ＋ 大問1 残り6問 ＋ リスニング第1部 4問", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 4</b>", "cell_center"),
+            p("進行日④", "cell_center"),
+            p("週次対象単語 No.16〜20 ＋ 大問2 長文空所 6問（またはブリッジ読解）＋ リスニング残り3問", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 5</b>", "cell_center"),
+            p("調整予備①", "cell_center"),
+            p("部活延長・試合等で遅れた分のキャッチアップ ／ アプリ「復習リスト」の赤チェック単語潰し", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 6</b>", "cell_center"),
+            p("調整予備②", "cell_center"),
+            p("翌日の個別指導に向けた「週次20語セルフレビュー」＋ ライティング型確認（80〜100語または要約）", "cell_jp_sm"),
+            p("＿＿ 分", "cell_center"),
+            p("□", "cell_center"),
+        ],
+        [
+            p_rich("<b>Day 7</b>", "cell_center"),
+            p("個別指導日", "cell_center"),
+            p("冒頭5分：週次確認小テスト（16/20点合格！15点以下は次回Form B再試）＋ 1週間の時間ログ振り返り", "cell_jp_sm"),
+            p("指導内", "cell_center"),
+            p("□", "cell_center"),
+        ],
+    ]
+    w1_tbl = Table(wk1_rows, colWidths=[44, 62, CONTENT_W - 196, 56, 34], hAlign="LEFT")
+    w1_zebra = [("BACKGROUND", (0, r), (-1, r), C_BG_ZEBRA) for r in range(2, 8, 2)]
+    w1_tbl.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), C_BG_HEAD),
+                *w1_zebra,
+                ("GRID", (0, 0), (-1, -1), 0.5, C_BORDER),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4.5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 6.0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6.0),
+            ]
+        )
+    )
+    _, w1h = w1_tbl.wrap(CONTENT_W, H)
+    w1_tbl.drawOn(c, MARGIN_X, H - cur_top - w1h)
+    cur_top += w1h + 14
+
+    draw_paragraph_box(
+        c,
+        "マナトビ英検アプリ連携チェックリスト（初回ログイン時に講師と一緒に確認）",
+        [
+            "□ すごろくクラス招待コードで入室完了（広告が自動非表示になり、講師画面とリアルタイム連携されます）",
+            "□ ホーム画面に「今週の宿題（1日あたりの目標問数）」が表示されていることを確認",
+            "□ 音声再生ボタン（1.0x / 0.75x 速度切替）と S-CBT スピーキング録音マイクのテスト完了",
+            "□ 3日以上アプリを開かないと担当講師に「学習ストップ通知」が届くルールを共有済み（1日5分でも単語に触れよう！）",
+        ],
+        MARGIN_X,
+        cur_top,
+        CONTENT_W,
+    )
+    c.showPage()
+
+    c.save()
+    return out_path
+
+
 def main() -> None:
     filter_path = OUT_DIR / "sugoroku_foundation_vocab_filter.json"
     audit_path = OUT_DIR / "vocab_cefr_audit_report.json"
@@ -2538,11 +3185,16 @@ def main() -> None:
     filter_data = json.loads(filter_path.read_text(encoding="utf-8"))
     audit_report = json.loads(audit_path.read_text(encoding="utf-8"))
 
+    diag_test_25 = filter_data["entryPlacementDiagnosticTest25"]
     g2_weekly_tests = filter_data["grade2WeeklyVocabTests12Weeks"]
     g2_retests_form_b = filter_data["grade2WeeklyVocabRetestsFormB12Weeks"]
     pre2plus_tests = filter_data["pre2PlusBridgeVocabTests4Weeks"]
     pre2_tests = filter_data["pre2FoundationVocabTests4Weeks"]
     paraphrase_dict = filter_data.get("b1b2ParaphraseDictionary", {})
+
+    # 0. Build 15-min Entry Placement Diagnostic Test & Prescription PDF (6 pages)
+    diag_pdf = build_placement_diagnostic_pdf(diag_test_25)
+    diag_validation = check_pdf_quality(diag_pdf, expected_pages=6)
 
     # 1. Build 12-week Grade 2 curriculum route PDF (6 pages)
     route_pdf = build_curriculum_route_pdf(audit_report, paraphrase_dict)
@@ -2565,6 +3217,7 @@ def main() -> None:
     handbook_validation = check_pdf_quality(handbook_pdf, expected_pages=8)
 
     all_validations = [
+        diag_validation,
         route_validation,
         vocab_validation,
         retest_validation,
@@ -2573,12 +3226,12 @@ def main() -> None:
     ]
     total_verified_pages = sum(v["pages"] for v in all_validations)
 
-    # 6. Export machine-readable curriculum manifest v3.0.0 for AI 1 / AI 2 integration
+    # 6. Export machine-readable curriculum manifest v4.0.0 for AI 1 / AI 2 integration
     manifest_path = OUT_DIR / "curriculum_route_manifest.json"
     manifest_path.write_text(
         json.dumps(
             {
-                "schemaVersion": "3.0.0",
+                "schemaVersion": "4.0.0",
                 "presetId": "sugoroku_eiken2_12w_standard",
                 "title": "英検2級 3か月（12週間）合格モデルカリキュラム（S-CBT併用標準ルート）",
                 "targetGrade": "eiken_2",
@@ -2586,6 +3239,7 @@ def main() -> None:
                 "foundationGrade": "eiken_pre2",
                 "totalWeeks": 12,
                 "bridgeTotalStages": 8,
+                "placementDiagnosticPdf": "deliverables/sugoroku/sugoroku_eiken2_placement_diagnostic_test.pdf",
                 "routePdf": "deliverables/sugoroku/sugoroku_eiken2_12week_curriculum_route.pdf",
                 "weeklyVocabTestsPdf": "deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_tests_12w.pdf",
                 "weeklyVocabRetestsFormBPdf": "deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf",
@@ -2607,7 +3261,7 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    # 7. Save PDF layout & grayscale validation report across all 5 PDFs (83 pages)
+    # 7. Save PDF layout & grayscale validation report across all 6 PDFs (89 pages)
     validation_path = OUT_DIR / "pdf_layout_validation.json"
     validation_path.write_text(
         json.dumps(
@@ -2628,13 +3282,13 @@ def main() -> None:
     )
 
     print(
-        f"=== Sugoroku v3 Full PDF Suite Built & Verified ({len(all_validations)} PDFs, {total_verified_pages} Pages) ==="
+        f"=== Sugoroku v4 Full PDF Suite Built & Verified ({len(all_validations)} PDFs, {total_verified_pages} Pages) ==="
     )
     for doc_v in all_validations:
         print(
             f"  - {doc_v['file']}: {doc_v['pages']} pages, {doc_v['sizeKB']} KB (overlaps=0, grayscale=True)"
         )
-    print(f"  - {manifest_path.name} (v3.0.0) & {validation_path.name} written.")
+    print(f"  - {manifest_path.name} (v4.0.0) & {validation_path.name} written.")
 
 
 if __name__ == "__main__":

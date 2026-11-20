@@ -1,11 +1,68 @@
 {
   "status": "PASS",
-  "totalDocuments": 5,
-  "totalPagesVerified": 83,
+  "totalDocuments": 6,
+  "totalPagesVerified": 89,
   "zeroOverlapVerified": true,
   "zeroOutOfBoundsVerified": true,
   "grayscalePrintReady": true,
   "documents": [
+    {
+      "file": "sugoroku_eiken2_placement_diagnostic_test.pdf",
+      "sizeKB": 243.7,
+      "pages": 6,
+      "allPagesClean": true,
+      "pureGrayscaleVerified": true,
+      "pageDetails": [
+        {
+          "page": 1,
+          "charCount": 1429,
+          "lineCount": 66,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 2,
+          "charCount": 1116,
+          "lineCount": 76,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 3,
+          "charCount": 1763,
+          "lineCount": 78,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 4,
+          "charCount": 2523,
+          "lineCount": 175,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 5,
+          "charCount": 1214,
+          "lineCount": 48,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        },
+        {
+          "page": 6,
+          "charCount": 900,
+          "lineCount": 52,
+          "overlaps": 0,
+          "outOfBounds": 0,
+          "pureGrayscale": true
+        }
+      ]
+    },
     {
       "file": "sugoroku_eiken2_12week_curriculum_route.pdf",
       "sizeKB": 235.9,

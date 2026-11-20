@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.0.0",
+  "schemaVersion": "4.0.0",
   "presetId": "sugoroku_eiken2_12w_standard",
   "title": "英検2級 3か月（12週間）合格モデルカリキュラム（S-CBT併用標準ルート）",
   "targetGrade": "eiken_2",
@@ -7,6 +7,7 @@
   "foundationGrade": "eiken_pre2",
   "totalWeeks": 12,
   "bridgeTotalStages": 8,
+  "placementDiagnosticPdf": "deliverables/sugoroku/sugoroku_eiken2_placement_diagnostic_test.pdf",
   "routePdf": "deliverables/sugoroku/sugoroku_eiken2_12week_curriculum_route.pdf",
   "weeklyVocabTestsPdf": "deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_tests_12w.pdf",
   "weeklyVocabRetestsFormBPdf": "deliverables/sugoroku/sugoroku_eiken2_weekly_vocab_retests_formB_12w.pdf",
