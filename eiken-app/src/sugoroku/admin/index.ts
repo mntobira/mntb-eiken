@@ -12,6 +12,12 @@ export {
 } from './adminAnalytics';
 export { createSugorokuDemoBundle, type SugorokuDemoBundle } from './demoData';
 export { buildLineEncourageMessage, SugorokuStudentDetailView } from './SugorokuStudentDetailView';
+export { SugorokuStaffSheet } from './SugorokuStaffSheet';
+export {
+  buildStaffInviteId,
+  isValidStaffEmail,
+  normalizeStaffEmail,
+} from './firestoreAdminService';
 export {
   PortalSkeletonScreen,
   PullToRefreshHost,

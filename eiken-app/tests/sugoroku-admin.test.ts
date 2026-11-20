@@ -23,6 +23,12 @@ import {
   SugorokuBottomSheet,
   SugorokuToast,
 } from '../src/sugoroku/admin/SugorokuInteractiveUi';
+import { SugorokuStaffSheet } from '../src/sugoroku/admin/SugorokuStaffSheet';
+import {
+  buildStaffInviteId,
+  isValidStaffEmail,
+  normalizeStaffEmail,
+} from '../src/sugoroku/admin/firestoreAdminService';
 import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
@@ -213,5 +219,49 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(detailHtml).toContain('sg-stack-bar');
     expect(detailHtml).toContain('mt-progress');
     expect(detailHtml).toContain('study-doors');
+  });
+
+  it('複数講師（owner / staff）招待ID生成・メール検証・講師管理ボトムシートが正しく描画される', () => {
+    expect(normalizeStaffEmail('  Fujisawa@Sugoroku-Juku.jp ')).toBe('fujisawa@sugoroku-juku.jp');
+    expect(isValidStaffEmail('fujisawa@sugoroku-juku.jp')).toBe(true);
+    expect(isValidStaffEmail('invalid-email')).toBe(false);
+    expect(buildStaffInviteId('cls_01', 'Fujisawa@Example.com')).toBe(
+      'cls_01_fujisawa@example.com',
+    );
+
+    const demo = createSugorokuDemoBundle(new Date(2026, 10, 20, 21, 0, 0).getTime());
+    expect(demo.staffInvites).toHaveLength(2);
+
+    const ownerSheetHtml = renderToStaticMarkup(
+      createElement(SugorokuStaffSheet, {
+        open: true,
+        onClose: () => {},
+        viewerRole: 'owner',
+        ownerName: demo.ownerName,
+        ownerEmail: demo.ownerEmail,
+        staffInvites: demo.staffInvites,
+        onInviteStaff: () => {},
+        onRevokeStaff: () => {},
+      }),
+    );
+    expect(ownerSheetHtml).toContain('西 代表');
+    expect(ownerSheetHtml).toContain('藤沢 卓登');
+    expect(ownerSheetHtml).toContain('小松 講師');
+    expect(ownerSheetHtml).toContain('講師を追加');
+
+    // スタッフ（非オーナー）ログイン時は追加フォーム・削除ボタンが出ない
+    const staffSheetHtml = renderToStaticMarkup(
+      createElement(SugorokuStaffSheet, {
+        open: true,
+        onClose: () => {},
+        viewerRole: 'staff',
+        ownerName: demo.ownerName,
+        staffInvites: demo.staffInvites,
+        onInviteStaff: () => {},
+        onRevokeStaff: () => {},
+      }),
+    );
+    expect(staffSheetHtml).toContain('藤沢 卓登');
+    expect(staffSheetHtml).not.toContain('講師を追加');
   });
 });

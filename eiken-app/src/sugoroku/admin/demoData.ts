@@ -12,6 +12,7 @@ import type {
   SugorokuAssignmentDoc,
   SugorokuMemberDoc,
   SugorokuSpeakingSubmissionDoc,
+  SugorokuStaffInviteDoc,
   SugorokuStudyLogDoc,
   SugorokuWritingSubmissionDoc,
 } from '../shared/types';
@@ -21,6 +22,9 @@ export interface SugorokuDemoBundle {
   className: string;
   schoolName: string;
   joinCode: string;
+  ownerName: string;
+  ownerEmail: string;
+  staffInvites: SugorokuStaffInviteDoc[];
   members: SugorokuMemberDoc[];
   logsByUid: Record<string, SugorokuStudyLogDoc[]>;
   solvedByUid: Record<string, Record<string, number>>;
@@ -540,11 +544,44 @@ export function createSugorokuDemoBundle(nowMs: number = Date.now()): SugorokuDe
     },
   ];
 
+  const staffInvites: SugorokuStaffInviteDoc[] = [
+    {
+      id: `${classId}_fujisawa@sugoroku-juku.example.jp`,
+      classId,
+      className: '2027春 英検2級3か月合格コース（スポーツ総合型選抜クラス）',
+      schoolName: 'オンライン個別指導塾 すごろく',
+      email: 'fujisawa@sugoroku-juku.example.jp',
+      staffName: '藤沢 卓登',
+      role: 'staff',
+      status: 'active',
+      acceptedUid: 'teacher_sugoroku_fujisawa',
+      invitedByUid: 'teacher_sugoroku_nishi',
+      createdAt: ts(-28),
+      updatedAt: ts(-27),
+    },
+    {
+      id: `${classId}_komatsu@sugoroku-juku.example.jp`,
+      classId,
+      className: '2027春 英検2級3か月合格コース（スポーツ総合型選抜クラス）',
+      schoolName: 'オンライン個別指導塾 すごろく',
+      email: 'komatsu@sugoroku-juku.example.jp',
+      staffName: '小松 講師',
+      role: 'staff',
+      status: 'invited',
+      invitedByUid: 'teacher_sugoroku_nishi',
+      createdAt: ts(-2),
+      updatedAt: ts(-2),
+    },
+  ];
+
   return {
     classId,
     className: '2027春 英検2級3か月合格コース（スポーツ総合型選抜クラス）',
     schoolName: 'オンライン個別指導塾 すごろく',
     joinCode: 'SGRK27',
+    ownerName: '西 代表',
+    ownerEmail: 'nishi@sugoroku-juku.example.jp',
+    staffInvites,
     members,
     logsByUid,
     solvedByUid,

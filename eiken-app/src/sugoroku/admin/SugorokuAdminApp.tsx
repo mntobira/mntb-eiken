@@ -14,6 +14,7 @@ import {
   LogOut,
   MessageCircle,
   RefreshCw,
+  Users,
 } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
 import { signInWithGoogle, signOutGoogle } from '../../utils/googleAuth';
@@ -28,7 +29,10 @@ import {
 import { KineticText, ScoreRing, installRipple } from '../../motion';
 import type { ClassroomDoc } from '../../utils/classroomCore';
 import type { EikenGrade } from '../../eiken/config';
-import type { SugorokuAdminExtensionSlots } from '../shared/types';
+import type {
+  SugorokuAdminExtensionSlots,
+  SugorokuStaffInviteDoc,
+} from '../shared/types';
 import {
   buildStudentOverview,
   buildSugorokuSummaryCsv,
@@ -40,12 +44,16 @@ import {
 } from './adminAnalytics';
 import { createSugorokuDemoBundle, type SugorokuDemoBundle } from './demoData';
 import {
+  buildStaffInviteId,
   fetchManageableClassrooms,
+  inviteSugorokuStaff,
   isEmailPreAuthorizedAdmin,
   loadClassPortalData,
+  revokeSugorokuStaff,
   updateSugorokuStudentProfile,
   type LoadedClassPortalData,
 } from './firestoreAdminService';
+import { SugorokuStaffSheet } from './SugorokuStaffSheet';
 import {
   SugorokuStudentDetailView,
   buildLineEncourageMessage,
@@ -91,6 +99,7 @@ export function SugorokuAdminApp({
   const [activeTab, setActiveTab] = useState<SugorokuAdminTabId>('students');
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
+  const [staffSheetOpen, setStaffSheetOpen] = useState(false);
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [onlyAlerts, setOnlyAlerts] = useState(false);
 
@@ -201,7 +210,12 @@ export function SugorokuAdminApp({
     if (dataMode === 'demo') {
       return {
         isDemo: true,
+        viewerRole: 'owner' as const,
+        ownerName: demoBundle.ownerName,
+        ownerEmail: demoBundle.ownerEmail,
+        staffInvites: demoBundle.staffInvites.filter((inv) => inv.status !== 'revoked'),
         classId: demoBundle.classId,
+        schoolName: demoBundle.schoolName,
         className: demoBundle.className,
         joinCode: demoBundle.joinCode,
         members: demoBundle.members,
@@ -215,7 +229,12 @@ export function SugorokuAdminApp({
     if (!livePortalData) {
       return {
         isDemo: false,
+        viewerRole: 'owner' as const,
+        ownerName: user?.displayName || '代表講師',
+        ownerEmail: user?.email || undefined,
+        staffInvites: [] as SugorokuStaffInviteDoc[],
         classId: '',
+        schoolName: '',
         className: '',
         joinCode: '',
         members: [],
@@ -228,7 +247,15 @@ export function SugorokuAdminApp({
     }
     return {
       isDemo: false,
+      viewerRole: livePortalData.viewerRole,
+      ownerName:
+        livePortalData.viewerRole === 'owner'
+          ? user?.displayName || '代表講師'
+          : `${livePortalData.classroom.schoolName || 'すごろく塾'} 代表`,
+      ownerEmail: livePortalData.viewerRole === 'owner' ? user?.email || undefined : undefined,
+      staffInvites: livePortalData.staffInvites,
       classId: livePortalData.classroom.id,
+      schoolName: livePortalData.classroom.schoolName,
       className: livePortalData.classroom.className,
       joinCode: livePortalData.classroom.joinCode,
       members: livePortalData.members,
@@ -238,7 +265,7 @@ export function SugorokuAdminApp({
       writingSubmissions: livePortalData.writingSubmissions,
       speakingSubmissions: livePortalData.speakingSubmissions,
     };
-  }, [dataMode, demoBundle, livePortalData]);
+  }, [dataMode, demoBundle, livePortalData, user]);
 
   const allStudentOverviews: SugorokuStudentOverview[] = useMemo(() => {
     const built = sourceInfo.members
@@ -348,6 +375,54 @@ export function SugorokuAdminApp({
     await reloadLiveClasses();
   };
 
+  const handleInviteStaff = async (params: { email: string; staffName: string }) => {
+    if (dataMode === 'demo') {
+      const now = Date.now();
+      const next: SugorokuStaffInviteDoc = {
+        id: buildStaffInviteId(demoBundle.classId, params.email),
+        classId: demoBundle.classId,
+        className: demoBundle.className,
+        schoolName: demoBundle.schoolName,
+        email: params.email,
+        staffName: params.staffName,
+        role: 'staff',
+        status: 'invited',
+        invitedByUid: 'teacher_sugoroku_nishi',
+        createdAt: now,
+        updatedAt: now,
+      };
+      setDemoBundle((prev) => ({
+        ...prev,
+        staffInvites: [...prev.staffInvites.filter((i) => i.id !== next.id), next],
+      }));
+      return;
+    }
+    if (!sourceInfo.classId) return;
+    await inviteSugorokuStaff({
+      classroom: {
+        id: sourceInfo.classId,
+        className: sourceInfo.className,
+        schoolName: sourceInfo.schoolName,
+      },
+      email: params.email,
+      staffName: params.staffName,
+    });
+    await reloadLiveClasses();
+  };
+
+  const handleRevokeStaff = async (invite: SugorokuStaffInviteDoc) => {
+    if (dataMode === 'demo') {
+      setDemoBundle((prev) => ({
+        ...prev,
+        staffInvites: prev.staffInvites.filter((i) => i.id !== invite.id),
+      }));
+      return;
+    }
+    if (!sourceInfo.classId) return;
+    await revokeSugorokuStaff({ classId: sourceInfo.classId, invite });
+    await reloadLiveClasses();
+  };
+
   const handleCopyJoinCode = async () => {
     if (!sourceInfo.joinCode) return;
     try {
@@ -411,6 +486,18 @@ export function SugorokuAdminApp({
                 >
                   <Copy size={13} aria-hidden="true" />
                   {sourceInfo.joinCode}
+                </button>
+              )}
+
+              {sourceInfo.classId && (
+                <button
+                  type="button"
+                  className="sg-code-btn"
+                  onClick={() => setStaffSheetOpen(true)}
+                  title="講師メンバー管理"
+                >
+                  <Users size={13} aria-hidden="true" />
+                  講師 {1 + sourceInfo.staffInvites.length}
                 </button>
               )}
 
@@ -888,6 +975,19 @@ export function SugorokuAdminApp({
           </div>
         )}
       </SugorokuBottomSheet>
+
+      {/* Bottom Sheet：複数講師メンバー管理 */}
+      <SugorokuStaffSheet
+        open={staffSheetOpen}
+        onClose={() => setStaffSheetOpen(false)}
+        viewerRole={sourceInfo.viewerRole}
+        ownerName={sourceInfo.ownerName}
+        ownerEmail={sourceInfo.ownerEmail}
+        staffInvites={sourceInfo.staffInvites}
+        onInviteStaff={handleInviteStaff}
+        onRevokeStaff={handleRevokeStaff}
+        onToast={showToast}
+      />
     </div>
   );
 }

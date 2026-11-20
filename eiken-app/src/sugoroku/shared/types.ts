@@ -27,12 +27,37 @@ export type SugorokuRole = 'owner' | 'staff' | 'student';
 export const SUGOROKU_COLLECTIONS = {
   classrooms: 'classrooms',
   sugorokuMembers: 'sugoroku_members',
+  sugorokuStaffInvites: 'sugoroku_staff_invites',
   sugorokuStudyLogs: 'sugoroku_study_logs',
   studySummaries: 'study_summaries',
   assignments: 'assignments',
   writingSubmissions: 'writing_submissions',
   speakingSubmissions: 'speaking_submissions',
 } as const;
+
+/**
+ * 講師スタッフ招待・メンバーシップ（複数講師対応）
+ * - 招待データ Path: sugoroku_staff_invites/{classId}_{normalizedEmail}
+ * - 参加確定後 Path: classrooms/{classId}/sugoroku_members/{uid} (role: 'owner' | 'staff')
+ */
+export interface SugorokuStaffInviteDoc {
+  /** `${classId}_${normalizedEmail}` */
+  id: string;
+  classId: string;
+  className?: string;
+  schoolName?: string;
+  /** 小文字正規化済みのGoogleメールアドレス */
+  email: string;
+  /** 表示用の講師名（例: 藤沢 卓登） */
+  staffName: string;
+  role: 'owner' | 'staff';
+  status: 'invited' | 'active' | 'revoked';
+  /** ログイン・引き換え完了後に紐付く Firebase Auth UID */
+  acceptedUid?: string;
+  invitedByUid: string;
+  createdAt: number;
+  updatedAt: number;
+}
 
 /**
  * 1. 塾クラス・ロール（既存拡張）
