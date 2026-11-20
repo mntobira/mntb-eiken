@@ -1,9 +1,9 @@
 /**
- * すごろく塾 管理者ポータル：英作文・スピーキング確認タブ（エッセンシャル設計）
+ * すごろく塾 管理者ポータル：英作文・スピーキング確認タブ（エッセンシャル設計 ＆ AI 3 完全接続）
  */
 
 import { useState } from 'react';
-import { Copy, Eye } from 'lucide-react';
+import { Copy, ExternalLink, Eye } from 'lucide-react';
 import { ScoreRing } from '../../motion';
 import { Card, PrimaryButton, SecondaryButton } from '../../components/ui';
 import { getGradeLabel } from './adminAnalytics';
@@ -26,6 +26,9 @@ export function buildAiRubricPromptForTeacher(sub: SugorokuWritingSubmissionDoc)
 
 interface WritingExtensionHostProps {
   classId: string;
+  classNameLabel?: string;
+  reviewerUid?: string;
+  reviewerName?: string;
   isDemoMode: boolean;
   submissions: SugorokuWritingSubmissionDoc[];
   onSelectStudent?: (studentUid: string) => void;
@@ -35,6 +38,9 @@ interface WritingExtensionHostProps {
 
 export function SugorokuWritingExtensionSlot({
   classId,
+  classNameLabel,
+  reviewerUid,
+  reviewerName,
   isDemoMode,
   submissions,
   onSelectStudent,
@@ -44,7 +50,20 @@ export function SugorokuWritingExtensionSlot({
   const [inspectSub, setInspectSub] = useState<SugorokuWritingSubmissionDoc | null>(null);
 
   if (customRender) {
-    return <>{customRender({ classId, isDemoMode, submissions, onSelectStudent })}</>;
+    return (
+      <>
+        {customRender({
+          classId,
+          classNameLabel,
+          reviewerUid,
+          reviewerName,
+          isDemoMode,
+          demoMode: isDemoMode,
+          submissions,
+          onSelectStudent,
+        })}
+      </>
+    );
   }
 
   const copyPrompt = async (sub: SugorokuWritingSubmissionDoc) => {
@@ -56,80 +75,101 @@ export function SugorokuWritingExtensionSlot({
     }
   };
 
-  if (submissions.length === 0) {
-    return <Card className="slog-empty">提出された答案はありません</Card>;
-  }
-
   return (
     <section aria-label="英作文提出" className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
-      {submissions.map((sub) => (
-        <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
-          <div className="sg-toolbar">
-            <div className="sg-row-head">
-              <button
-                type="button"
-                className="mt-btn mt-btn-text"
-                style={{ minHeight: 32, padding: 0 }}
-                onClick={() => onSelectStudent?.(sub.studentUid)}
-              >
-                <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
-                  {sub.studentName}
-                </strong>
-              </button>
-              <span className="sg-grade-tag">
-                {getGradeLabel(sub.grade).replace('英検', '')} · {sub.wordCount}語
-              </span>
-              {sub.status === 'submitted' && (
-                <span className="sg-alert-text" data-warn="true">未添削</span>
-              )}
+      <div className="sg-toolbar">
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--mt-ink-2)' }}>
+          提出 {submissions.length}件
+        </span>
+        <a
+          href="/?portal=review"
+          className="mt-btn mt-btn-secondary"
+          style={{ textDecoration: 'none', minHeight: 34, padding: '0 12px', fontSize: 12 }}
+        >
+          <ExternalLink size={13} aria-hidden="true" />
+          添削返却ワークスペース
+        </a>
+      </div>
+
+      {submissions.length === 0 ? (
+        <Card className="slog-empty">提出された答案はありません</Card>
+      ) : (
+        submissions.map((sub) => (
+          <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+            <div className="sg-toolbar">
+              <div className="sg-row-head">
+                <button
+                  type="button"
+                  className="mt-btn mt-btn-text"
+                  style={{ minHeight: 32, padding: 0 }}
+                  onClick={() => onSelectStudent?.(sub.studentUid)}
+                >
+                  <strong
+                    style={{
+                      font: '800 15px/1.3 var(--mt-font-display)',
+                      color: 'var(--mt-ink-warm)',
+                    }}
+                  >
+                    {sub.studentName}
+                  </strong>
+                </button>
+                <span className="sg-grade-tag">
+                  {getGradeLabel(sub.grade).replace('英検', '')} · {sub.wordCount}語
+                </span>
+                {sub.status === 'submitted' && (
+                  <span className="sg-alert-text" data-warn="true">
+                    未添削
+                  </span>
+                )}
+              </div>
+
+              <div className="sg-chip-group">
+                <SecondaryButton
+                  onClick={() => setInspectSub(sub)}
+                  icon={<Eye size={14} aria-hidden="true" />}
+                >
+                  全文
+                </SecondaryButton>
+                <PrimaryButton
+                  onClick={() => void copyPrompt(sub)}
+                  icon={<Copy size={14} aria-hidden="true" />}
+                >
+                  採点用コピー
+                </PrimaryButton>
+              </div>
             </div>
 
-            <div className="sg-chip-group">
-              <SecondaryButton
-                onClick={() => setInspectSub(sub)}
-                icon={<Eye size={14} aria-hidden="true" />}
-              >
-                全文
-              </SecondaryButton>
-              <PrimaryButton
-                onClick={() => void copyPrompt(sub)}
-                icon={<Copy size={14} aria-hidden="true" />}
-              >
-                採点用コピー
-              </PrimaryButton>
-            </div>
-          </div>
+            <p
+              style={{
+                margin: 0,
+                font: '500 13px/1.6 var(--mt-font-body)',
+                color: 'var(--mt-ink-2)',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {sub.text}
+            </p>
 
-          <p
-            style={{
-              margin: 0,
-              font: '500 13px/1.6 var(--mt-font-body)',
-              color: 'var(--mt-ink-2)',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {sub.text}
-          </p>
-
-          {sub.review && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-              <ScoreRing
-                rate={sub.review.score / (sub.review.maxScore ?? 16)}
-                size={28}
-                stroke={4}
-                tone="brand"
-              />
-              <b>
-                {sub.review.score}/{sub.review.maxScore ?? 16}
-              </b>
-              <span style={{ color: 'var(--mt-ink-2)' }}>{sub.review.comment}</span>
-            </div>
-          )}
-        </Card>
-      ))}
+            {sub.review && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                <ScoreRing
+                  rate={sub.review.score / (sub.review.maxScore ?? 16)}
+                  size={28}
+                  stroke={4}
+                  tone="brand"
+                />
+                <b>
+                  {sub.review.score}/{sub.review.maxScore ?? 16}
+                </b>
+                <span style={{ color: 'var(--mt-ink-2)' }}>{sub.review.comment}</span>
+              </div>
+            )}
+          </Card>
+        ))
+      )}
 
       <SugorokuBottomSheet
         open={!!inspectSub}
@@ -174,6 +214,9 @@ export function SugorokuWritingExtensionSlot({
 
 interface SpeakingExtensionHostProps {
   classId: string;
+  classNameLabel?: string;
+  reviewerUid?: string;
+  reviewerName?: string;
   isDemoMode: boolean;
   submissions: SugorokuSpeakingSubmissionDoc[];
   onSelectStudent?: (studentUid: string) => void;
@@ -190,54 +233,107 @@ const SPEAKING_PART_LABELS: Record<string, string> = {
 
 export function SugorokuSpeakingExtensionSlot({
   classId,
+  classNameLabel,
+  reviewerUid,
+  reviewerName,
   isDemoMode,
   submissions,
   onSelectStudent,
   customRender,
 }: SpeakingExtensionHostProps) {
   if (customRender) {
-    return <>{customRender({ classId, isDemoMode, submissions, onSelectStudent })}</>;
-  }
-
-  if (submissions.length === 0) {
-    return <Card className="slog-empty">提出された録音はありません</Card>;
+    return (
+      <>
+        {customRender({
+          classId,
+          classNameLabel,
+          reviewerUid,
+          reviewerName,
+          isDemoMode,
+          demoMode: isDemoMode,
+          submissions,
+          onSelectStudent,
+        })}
+      </>
+    );
   }
 
   return (
-    <section aria-label="スピーキング録音" className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
-      {submissions.map((sub) => (
-        <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
-          <div className="sg-row-head">
-            <button
-              type="button"
-              className="mt-btn mt-btn-text"
-              style={{ minHeight: 32, padding: 0 }}
-              onClick={() => onSelectStudent?.(sub.studentUid)}
-            >
-              <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
-                {sub.studentName}
-              </strong>
-            </button>
-            <span className="sg-grade-tag">
-              {getGradeLabel(sub.grade).replace('英検', '')}
-            </span>
-            <span style={{ fontSize: 12, color: 'var(--mt-ink-3)' }}>
-              {sub.setTitle || sub.setId}
-            </span>
-          </div>
+    <section
+      aria-label="スピーキング録音"
+      className="sg-stagger"
+      style={{ display: 'grid', gap: 10 }}
+    >
+      <div className="sg-toolbar">
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--mt-ink-2)' }}>
+          録音提出 {submissions.length}件
+        </span>
+        <a
+          href="/?portal=review"
+          className="mt-btn mt-btn-secondary"
+          style={{ textDecoration: 'none', minHeight: 34, padding: '0 12px', fontSize: 12 }}
+        >
+          <ExternalLink size={13} aria-hidden="true" />
+          録音再生・評価ワークスペース
+        </a>
+      </div>
 
-          <div className="slog-rows">
-            {sub.recordings.map((rec) => (
-              <div key={rec.partId} className="slog-row">
-                <span>
-                  <strong>{SPEAKING_PART_LABELS[rec.partId] || rec.partId}</strong>
+      {submissions.length === 0 ? (
+        <Card className="slog-empty">提出された録音はありません</Card>
+      ) : (
+        submissions.map((sub) => (
+          <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+            <div className="sg-row-head">
+              <button
+                type="button"
+                className="mt-btn mt-btn-text"
+                style={{ minHeight: 32, padding: 0 }}
+                onClick={() => onSelectStudent?.(sub.studentUid)}
+              >
+                <strong
+                  style={{
+                    font: '800 15px/1.3 var(--mt-font-display)',
+                    color: 'var(--mt-ink-warm)',
+                  }}
+                >
+                  {sub.studentName}
+                </strong>
+              </button>
+              <span className="sg-grade-tag">
+                {getGradeLabel(sub.grade).replace('英検', '')}
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--mt-ink-3)' }}>
+                {sub.setTitle || sub.setId}
+              </span>
+              {sub.status === 'submitted' && (
+                <span className="sg-alert-text" data-warn="true">
+                  未評価
                 </span>
-                <b>{rec.durationSec}秒</b>
-              </div>
-            ))}
-          </div>
-        </Card>
-      ))}
+              )}
+            </div>
+
+            <div className="slog-rows">
+              {sub.recordings.map((rec) => (
+                <div key={rec.partId} className="slog-row">
+                  <span>
+                    <strong>{SPEAKING_PART_LABELS[rec.partId] || rec.partId}</strong>
+                  </span>
+                  {rec.downloadUrl ? (
+                    <audio
+                      controls
+                      preload="none"
+                      src={rec.downloadUrl}
+                      style={{ height: 30, maxWidth: 220 }}
+                    />
+                  ) : (
+                    <b>{rec.durationSec}秒</b>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))
+      )}
     </section>
   );
 }

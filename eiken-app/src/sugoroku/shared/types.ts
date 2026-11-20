@@ -66,14 +66,14 @@ export interface SugorokuMemberDoc {
   role: SugorokuRole;
   rosterName?: string;
   displayName?: string;
-  targetGrade: EikenGrade;
+  targetGrade?: EikenGrade;
   active: boolean;
   adFree: boolean;
   email?: string;
   note?: string;
   consentAcceptedAt?: number;
-  joinedAt?: number;
-  updatedAt?: number;
+  joinedAt?: number | unknown;
+  updatedAt?: number | unknown;
   serverUpdatedAt?: unknown;
 }
 
@@ -279,13 +279,21 @@ export interface SugorokuAdminReviewTabProps {
 export interface SugorokuAdminExtensionSlots {
   renderWritingReviewTab?: (ctx: {
     classId: string;
+    classNameLabel?: string;
+    reviewerUid?: string;
+    reviewerName?: string;
     isDemoMode: boolean;
+    demoMode?: boolean;
     submissions: SugorokuWritingSubmissionDoc[];
     onSelectStudent?: (studentUid: string) => void;
   }) => import('react').ReactNode;
   renderSpeakingReviewTab?: (ctx: {
     classId: string;
+    classNameLabel?: string;
+    reviewerUid?: string;
+    reviewerName?: string;
     isDemoMode: boolean;
+    demoMode?: boolean;
     submissions: SugorokuSpeakingSubmissionDoc[];
     onSelectStudent?: (studentUid: string) => void;
   }) => import('react').ReactNode;
