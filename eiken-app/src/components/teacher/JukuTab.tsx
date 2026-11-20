@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Plus, Trash2, RefreshCw, MessageSquareText, ClipboardList, Info, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, RefreshCw, MessageSquareText, ClipboardList, Info, ChevronDown, Route } from 'lucide-react';
 import { type ClassroomDoc } from '../../utils/classroomCore';
 import { fetchClassRawProgress, type StudentRawProgress } from '../../utils/classroom';
 import {
@@ -9,8 +9,6 @@ import {
   fetchClassReasons,
 } from '../../utils/classAssignments';
 import {
-  ASSIGNMENT_MAX_CHAPTERS,
-  ASSIGNMENT_TITLE_MAX,
   computeAssignmentProgress,
   countStatuses,
   formatDue,
@@ -26,24 +24,21 @@ import {
 import { getChapterCatalog } from '../../data/chapterCatalog';
 import { confirmAction } from '../../utils/dialog';
 import type { ThemeShape } from './teacherTheme';
+import {
+  attachPlanToAssignment,
+  deleteHomeworkPlan,
+  fetchHomeworkPlans,
+} from '../../sugoroku/homework/homeworkStore';
+import {
+  SugorokuHomeworkComposerModal,
+  SugorokuPlanBadges,
+} from '../../sugoroku/homework/SugorokuHomeworkComposer';
+import type { SugorokuHomeworkPlan } from '../../sugoroku/shared/types';
 
 // ===================================================================
 // 課題・理由タブ（塾向け・plan == 'juku' のクラスだけ）
 // ===================================================================
 
-/**
- * ① 課題：単元と締切を選んで配る → 生徒ごとに「期限内に完了／期限後に完了／取り組み中／未着手」
- * ② 選んだ理由：生徒が解説画面から送った理由を、問題ごとにまとめて読む
- *
- * ■ 見た目は既存の先生画面にそろえる
- *   ・上の操作ボタン … 観点別評価タブ（更新＝白枠、主ボタン＝科目色）
- *   ・空の状態 … 観点別評価タブ・生徒の様子タブの「まだ〜ありません」カード
- *   ・作成の窓 … クラスを作る窓（CreateClassModal）
- *   ・表示の切り替え … ダッシュボード上部のタブと同じ灰色の段
- *   ・状況の色 … 受付中の緑・注意書きの青・エラーの赤・控えめな灰（新しい色は足さない）
- *
- * plan は運営がコンソールで設定する。ここからは変えられない（ルールで禁止）。
- */
 const STATUS_STYLE: Record<AssignmentStatus, string> = {
   done: 'bg-[#F5FCFA] text-[#2F7C74] border-[#A9E0D8]',
   late: 'bg-[#FAF8F2] text-[#6B7280] border-[#E0E1DD]',
@@ -53,13 +48,6 @@ const STATUS_STYLE: Record<AssignmentStatus, string> = {
 
 function StatusChip({ status, children }: { status: AssignmentStatus; children: ReactNode }) {
   return <span className={`inline-block px-2 py-0.5 rounded-md text-xs border ${STATUS_STYLE[status]}`}>{children}</span>;
-}
-
-function todayPlus(days: number): string {
-  const d = new Date(Date.now() + days * 86_400_000);
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
 function EmptyCard({ icon: Icon, title, children }: { icon: typeof Info; title: string; children: ReactNode }) {
@@ -75,10 +63,12 @@ function EmptyCard({ icon: Icon, title, children }: { icon: typeof Info; title: 
 export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | null; theme: ThemeShape }) {
   const [view, setView] = useState<'assign' | 'reasons'>('assign');
   const [assignments, setAssignments] = useState<AssignmentDoc[]>([]);
+  const [plans, setPlans] = useState<Record<string, SugorokuHomeworkPlan>>({});
   const [students, setStudents] = useState<StudentRawProgress[]>([]);
   const [reasons, setReasons] = useState<AnswerReasonDoc[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [openId, setOpenId] = useState('');
 
@@ -94,14 +84,16 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
     setLoading(true);
     setError('');
     try {
-      const [list, rows, rs] = await Promise.all([
+      const [list, rows, rs, planMap] = await Promise.all([
         fetchAssignments(classId),
         fetchClassRawProgress(classId),
         fetchClassReasons(classId).catch(() => [] as AnswerReasonDoc[]),
+        fetchHomeworkPlans(classId),
       ]);
       setAssignments(sortAssignments(list));
       setStudents(rows);
       setReasons(rs);
+      setPlans(planMap);
     } catch (e) {
       setError(e instanceof Error ? e.message : '読み込みに失敗しました。');
     } finally {
@@ -131,7 +123,13 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
     if (!confirmAction(`課題「${a.title}」を消します。生徒の画面からも消えます。よろしいですか？`)) return;
     try {
       await deleteAssignment(a.id);
+      await deleteHomeworkPlan(a.id, classId);
       setAssignments((prev) => prev.filter((r) => r.id !== a.id));
+      setPlans((prev) => {
+        const next = { ...prev };
+        delete next[a.id];
+        return next;
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : '課題の削除に失敗しました。');
     }
@@ -141,11 +139,10 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
 
   return (
     <div className="space-y-4" data-testid="juku-tab">
-      {/* 表示の切り替え（ダッシュボード上部のタブと同じ見た目）＋ 操作ボタン（観点別評価タブと同じ見た目） */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1 p-1 bg-[#F1EFE9] rounded-xl" role="group" aria-label="表示の切り替え">
           {([
-            { id: 'assign' as const, label: `課題（${assignments.length}）` },
+            { id: 'assign' as const, label: `宿題・ペース管理（${assignments.length}）` },
             { id: 'reasons' as const, label: `選んだ理由（${reasons.length}）` },
           ]).map((item) => (
             <button
@@ -177,10 +174,21 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
             style={{ backgroundColor: theme.accent }}
           >
             <Plus className="w-4 h-4" />
-            課題を出す
+            <Route className="w-4 h-4" />
+            宿題・12週ルートを出す
           </button>
         )}
       </div>
+
+      {notice && (
+        <div
+          role="status"
+          onClick={() => setNotice('')}
+          className="p-3 rounded-xl bg-[#EEF6FC] border border-[#C6DCF0] text-xs font-bold text-[#2458A6] leading-relaxed cursor-pointer"
+        >
+          {notice}
+        </div>
+      )}
 
       {error && (
         <div className="p-3 rounded-xl bg-[#FDECEA] border border-[#F5C6C0] text-sm text-[#96342B] leading-relaxed">{error}</div>
@@ -190,13 +198,18 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
         <div className="py-12 text-center text-sm text-[#6B7280]">読み込んでいます…</div>
       ) : view === 'assign' ? (
         assignments.length === 0 ? (
-          <EmptyCard icon={ClipboardList} title="まだ課題はありません">
-            「課題を出す」から単元と締切を選ぶと、生徒のクラス画面に届きます。
+          <EmptyCard icon={ClipboardList} title="まだ宿題は配信されていません">
+            「宿題・12週ルートを出す」から『英検2級3か月標準ルート』または任意の単元と1日推奨問数を選ぶと、生徒のホーム画面最上部にピン留め表示されます。
           </EmptyCard>
         ) : (
           <div className="space-y-3">
             {assignments.map((a) => {
-              const rows = students.map((s) => ({ s, p: computeAssignmentProgress(a, s.solved, totals) }));
+              const plan = plans[a.id] || null;
+              const targetStudents =
+                plan?.targetStudentUids && plan.targetStudentUids.length > 0
+                  ? students.filter((s) => plan.targetStudentUids!.includes(s.uid))
+                  : students;
+              const rows = targetStudents.map((s) => ({ s, p: computeAssignmentProgress(a, s.solved, totals) }));
               const counts = countStatuses(rows.map((r) => r.p));
               const opened = openId === a.id;
               return (
@@ -206,6 +219,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
                       <p className="text-xs text-[#6B7280]">締切 {formatDue(a.dueAt)}</p>
                       <p className="text-base font-bold text-[#1B2631] truncate">{a.title}</p>
                       <p className="text-xs text-[#6B7280] truncate">{a.chapterIds.map((id) => titles[id] || id).join('、')}</p>
+                      <SugorokuPlanBadges plan={plan} />
                     </div>
                     <button
                       type="button"
@@ -234,7 +248,7 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
                   </button>
                   {opened && (
                     <div className="border-t border-[#F1EFE9] pt-2 space-y-1.5">
-                      {rows.length === 0 && <p className="text-xs text-[#6B7280]">まだ生徒がいません。</p>}
+                      {rows.length === 0 && <p className="text-xs text-[#6B7280]">対象生徒がいません。</p>}
                       {rows.map(({ s, p }) => (
                         <div key={s.uid} className="flex items-center gap-2 text-sm">
                           <span className="flex-1 min-w-0 truncate text-[#1B2631]">{s.displayName}</span>
@@ -255,7 +269,6 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
         </EmptyCard>
       ) : (
         <div className="space-y-3">
-          {/* 観点別評価タブの注意書きと同じ青い帯 */}
           <div className="flex items-start gap-2 p-3.5 rounded-xl bg-[#F4F7FA] border border-[#D9E4EC] text-xs text-[#3C5A6E] leading-relaxed">
             <Info className="w-4 h-4 mt-0.5 shrink-0" />
             <span>生徒が自分で「先生に送る」を押した理由だけが並びます。生徒はいつでも取り消せます。</span>
@@ -286,145 +299,37 @@ export function JukuTab({ activeClass, theme }: { activeClass: ClassroomDoc | nu
       )}
 
       {showCreate && (
-        <CreateAssignmentModal
+        <SugorokuHomeworkComposerModal
+          subject={activeClass.subject}
           catalog={catalog}
+          students={students}
           accent={theme.accent}
           onClose={() => setShowCreate(false)}
-          onCreate={async (input) => {
-            const created = await createAssignment(classId, input);
+          onSubmit={async (payload) => {
+            const created = await createAssignment(classId, {
+              title: payload.title,
+              chapterIds: payload.chapterIds,
+              dueDate: payload.dueDate,
+            });
+            const planRes = await attachPlanToAssignment(created, {
+              dailyQuotaProblems: payload.dailyQuotaProblems,
+              skillBreakdown: payload.skillBreakdown,
+              targetStudentUids: payload.targetStudentUids,
+              presetId: payload.presetId,
+              presetWeek: payload.presetWeek,
+              startAt: payload.startAt,
+            });
+            const refreshedPlans = await fetchHomeworkPlans(classId);
+            setPlans(refreshedPlans);
             setAssignments((prev) => sortAssignments([...prev, created]));
+            setNotice(
+              planRes.warning ||
+                `宿題「${created.title}」を配信しました（生徒のホーム最上部に1日${payload.dailyQuotaProblems || 5}問ペースで表示されます）。`,
+            );
             setShowCreate(false);
           }}
         />
       )}
-    </div>
-  );
-}
-
-// ===================================================================
-// 課題を出す窓（クラスを作る窓 CreateClassModal と同じ見た目）
-// ===================================================================
-
-function CreateAssignmentModal({
-  catalog,
-  accent,
-  onClose,
-  onCreate,
-}: {
-  catalog: Array<{ id: string; title: string; totalProblems: number }>;
-  accent: string;
-  onClose: () => void;
-  onCreate: (input: { title: string; chapterIds: string[]; dueDate: string }) => Promise<void>;
-}) {
-  const [title, setTitle] = useState('');
-  const [picked, setPicked] = useState<string[]>([]);
-  const [dueDate, setDueDate] = useState(todayPlus(7));
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-
-  const toggle = (id: string) => {
-    setPicked((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= ASSIGNMENT_MAX_CHAPTERS ? prev : [...prev, id]));
-  };
-
-  const submit = async () => {
-    setBusy(true);
-    setError('');
-    try {
-      await onCreate({ title, chapterIds: picked, dueDate });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '課題の作成に失敗しました。');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const canSubmit = title.trim().length > 0 && picked.length > 0 && !busy;
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 px-4 py-6"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="課題を出す"
-    >
-      <div
-        className="w-full max-w-md max-h-full flex flex-col bg-white rounded-2xl border border-[#E0E1DD] p-5"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h2 className="text-lg font-bold text-[#1B2631] mb-1">課題を出す</h2>
-        <p className="text-xs text-[#6B7280] mb-3 leading-relaxed">
-          単元と締切を選ぶと、クラスの生徒の画面に届きます。進み具合は生徒が解いた記録から自動で数えます。
-        </p>
-
-        <label className="block mb-3">
-          <span className="block text-xs font-bold text-[#4B5563] mb-1">課題の名前</span>
-          <input
-            value={title}
-            maxLength={ASSIGNMENT_TITLE_MAX}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="例）第1問A 週末課題"
-            className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-[#C9D2DA] text-sm text-[#1B2631] focus:outline-none focus:border-[#6FA8C5]"
-          />
-        </label>
-
-        <label className="block mb-3">
-          <span className="block text-xs font-bold text-[#4B5563] mb-1">締切</span>
-          <input
-            type="date"
-            value={dueDate}
-            min={todayPlus(0)}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-[#C9D2DA] text-sm text-[#1B2631] focus:outline-none focus:border-[#6FA8C5]"
-          />
-        </label>
-
-        <span className="block text-xs font-bold text-[#4B5563] mb-1.5">
-          単元（{picked.length}/{ASSIGNMENT_MAX_CHAPTERS}）
-        </span>
-        <div className="flex-1 min-h-0 overflow-y-auto mb-4">
-          <div className="flex flex-wrap gap-2">
-            {catalog.map((c) => {
-              const on = picked.includes(c.id);
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => toggle(c.id)}
-                  className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-sm border transition-colors ${
-                    on ? 'font-bold text-white border-transparent' : 'border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2]'
-                  }`}
-                  style={on ? { backgroundColor: accent } : undefined}
-                >
-                  {c.title}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {error && <p className="text-xs text-[#96342B] mb-2 leading-relaxed">{error}</p>}
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm border border-[#E0E1DD] text-[#4B5563] hover:bg-[#FAF8F2] transition-colors"
-          >
-            やめる
-          </button>
-          <button
-            type="button"
-            onClick={() => void submit()}
-            disabled={!canSubmit}
-            className="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
-            style={{ backgroundColor: accent }}
-          >
-            {busy ? '作成中…' : '出す'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

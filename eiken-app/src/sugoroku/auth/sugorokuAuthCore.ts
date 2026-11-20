@@ -473,7 +473,7 @@ export function parseCachedSugorokuMember(raw: string | null | undefined, expect
       role: parsed.role,
       active: parsed.active,
       adFree: parsed.adFree === true,
-      targetGrade: isEikenGrade(parsed.targetGrade) ? parsed.targetGrade : undefined,
+      targetGrade: isEikenGrade(parsed.targetGrade) ? parsed.targetGrade : 'eiken_2',
       classId: typeof parsed.classId === 'string' ? parsed.classId : undefined,
       classIds: Array.isArray(parsed.classIds) ? parsed.classIds.filter((c): c is string => typeof c === 'string') : undefined,
       displayName: typeof parsed.displayName === 'string' ? parsed.displayName : undefined,

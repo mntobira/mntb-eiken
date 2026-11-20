@@ -273,6 +273,7 @@ export async function fetchSugorokuMemberDoc(uid?: string): Promise<SugorokuMemb
     const normalized: SugorokuMemberDoc = {
       ...data,
       uid: targetUid,
+      targetGrade: isEikenGrade(data.targetGrade) ? data.targetGrade : 'eiken_2',
       active: data.active === true,
       adFree: data.adFree === true,
     };
@@ -347,6 +348,7 @@ export async function ensurePreAuthorizedInstructorMember(
     ...(existingMember ?? {}),
     uid: currentUser.uid,
     role: 'owner',
+    targetGrade: existingMember?.targetGrade ?? 'eiken_2',
     active: true,
     adFree: true,
     ...(normalizedEmail ? { email: normalizedEmail } : {}),
