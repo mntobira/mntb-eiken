@@ -31,8 +31,8 @@ export const ALPHA_CINEMATIC_CLIPS = {
     sbsMp4: '/cinematics/battle_countdown-sbs.mp4',
     poster: '/cinematics/battle_countdown-poster.webp',
     endPlate: '/cinematics/battle_countdown-end.webp',
-    width: 420,
-    height: 736,
+    width: 560,
+    height: 980,
     durationSec: 5.16,
   },
 } as const satisfies Record<string, AlphaClipSpec>;

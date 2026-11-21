@@ -205,7 +205,8 @@ export function LaunchScreen({ onStart, onAdminLogin, bgmEnabled, onBgmToggle, f
       if (src === '/mascots/walking.webp') {
         img.onload = () => setWalkReady(true);
       }
-      void img.decode?.().catch(() => {});
+      // 事前デコード非対応ブラウザや未キャッシュ時の失敗は通常描画へ委ねる
+      void img.decode?.().catch(() => { /* ignore decode race */ });
     });
   }, [equippedSpriteSrc]);
 
