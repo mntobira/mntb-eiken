@@ -4,7 +4,7 @@
  *   App.tsx からも従来どおり export している（import { isAppState } from './App' は変わらず動く）。
  *   このファイルは他の src を import しない葉モジュール。
  */
-export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'settings' | 'leaderboard' | 'subject_selection' | 'teacher_dashboard' | 'feedback_admin' | 'battle' | 'growth' | 'foundation' | 'study' | 'writing' | 'mock';
+export type AppState = 'home' | 'mode_selection' | 'chapters' | 'quiz' | 'explanation' | 'intro' | 'study_hub' | 'note_detail' | 'onboarding' | 'settings' | 'leaderboard' | 'subject_selection' | 'teacher_dashboard' | 'sugoroku_admin' | 'feedback_admin' | 'battle' | 'growth' | 'foundation' | 'study' | 'writing' | 'mock';
 
 export type AppMode = 'mini_test' | 'practice' | 'learning';
 
@@ -17,7 +17,7 @@ export type AppMode = 'mini_test' | 'practice' | 'learning';
 const APP_STATES = new Set<AppState>([
   'home', 'mode_selection', 'chapters', 'quiz', 'explanation', 'intro',
   'study_hub', 'note_detail', 'onboarding', 'settings',
-  'leaderboard', 'subject_selection', 'teacher_dashboard',
+  'leaderboard', 'subject_selection', 'teacher_dashboard', 'sugoroku_admin',
   'feedback_admin', 'battle', 'growth',
   /** 英文法・英単語を固める（単語・熟語／聞き取りの文法／その他）。下のナビを残す1画面のページ。 */
   'foundation',

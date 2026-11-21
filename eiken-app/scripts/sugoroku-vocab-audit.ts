@@ -1604,6 +1604,89 @@ function main() {
     { week: 4, phase: '2級本ルート合流判定', theme: '準2級プラス総仕上げ ＆ 英検2級本ルート合流チェック20' },
   ]);
 
+  // 5C. Entry Placement Diagnostic Test (25 items, 15 minutes):
+  //   Section 1 (Q01..Q08, 8 items): Pre-2 Foundation Core (A2〜B1前半) -> tests basic foundation
+  //   Section 2 (Q09..Q16, 8 items): Pre-2 Plus Bridge Core (B1中核) -> tests bridge readiness
+  //   Section 3 (Q17..Q25, 9 items): Grade 2 Core (B1後半〜B2前半) -> tests Grade 2 readiness
+  //   Note: Q01..Q12 are Part A Meaning Recall/4-Choice; Q13..Q25 are Part B 4-Choice Sentence Cloze!
+  const pickDistinctRows = (
+    pool: ReturnType<typeof filterCleanRowsForQuiz>,
+    count: number,
+    alreadyUsed: Set<string>,
+    preferPos?: Array<'verb' | 'noun' | 'adj' | 'adv' | 'idiom'>,
+  ) => {
+    const out: typeof pool = [];
+    const candidates = preferPos
+      ? pool.filter(r => preferPos.includes(classifyPosGroup(r.word, r.meaning, r.tier === 'i')))
+      : pool;
+    for (const row of [...candidates, ...pool]) {
+      const k = row.word.toLowerCase();
+      if (alreadyUsed.has(k)) continue;
+      if (row.exampleSentence.length > 74 || row.exampleSentence.length < 24) continue;
+      alreadyUsed.add(k);
+      out.push(row);
+      if (out.length >= count) break;
+    }
+    return out;
+  };
+
+  const diagUsed = new Set<string>();
+  const diagPre2Pool = filterCleanRowsForQuiz('eiken_pre2');
+  const diagPre2PlusPool = filterCleanRowsForQuiz('eiken_pre2plus');
+  const diagG2Pool = cleanG2Rows;
+
+  // Part A (Q01..Q12): 4 from Pre-2, 4 from Pre-2 Plus, 4 from Grade 2
+  // Part B (Q13..Q25): 4 from Pre-2, 4 from Pre-2 Plus, 5 from Grade 2
+  const diagPre2PartA = pickDistinctRows(diagPre2Pool.filter(r => r.tier === 'a'), 4, diagUsed);
+  const diagPre2PlusPartA = pickDistinctRows(diagPre2PlusPool.filter(r => r.tier === 'a'), 4, diagUsed);
+  const diagG2PartA = pickDistinctRows(diagG2Pool.filter(r => r.tier === 'a'), 4, diagUsed);
+
+  const diagPre2PartB = pickDistinctRows(diagPre2Pool.filter(r => r.tier !== 'i'), 4, diagUsed, ['verb', 'noun', 'adj']);
+  const diagPre2PlusPartB = pickDistinctRows(diagPre2PlusPool.filter(r => r.tier !== 'i'), 4, diagUsed, ['verb', 'noun', 'adj']);
+  const diagG2PartB = [
+    ...pickDistinctRows(diagG2Pool.filter(r => r.tier === 'a' || r.tier === 'b'), 4, diagUsed, ['verb', 'noun', 'adj']),
+    ...pickDistinctRows(idiomPool, 1, diagUsed, ['idiom']),
+  ];
+
+  const diagOrderedRaw25 = [
+    ...diagPre2PartA,
+    ...diagPre2PlusPartA,
+    ...diagG2PartA,
+    ...diagPre2PartB,
+    ...diagPre2PlusPartB,
+    ...diagG2PartB,
+  ].slice(0, 25);
+
+  const diagCombinedDistractorPool = [...diagPre2Pool, ...diagPre2PlusPool, ...allG2Distractors];
+  const placementDiagnosticItems = buildFourChoiceTestItems(
+    diagOrderedRaw25,
+    diagCombinedDistractorPool,
+    cleanMeaningDisplay,
+    41,
+  ).map((it, idx) => {
+    const diagTier =
+      (idx >= 0 && idx < 4) || (idx >= 12 && idx < 16)
+        ? '準2級基礎（A2〜B1）'
+        : (idx >= 4 && idx < 8) || (idx >= 16 && idx < 20)
+          ? '準2プラス橋渡し（B1）'
+          : '2級コア（B1後半〜B2）';
+    return {
+      ...it,
+      tierLabel: diagTier,
+    };
+  });
+
+  const placementDiagnosticTest: CuratedWeeklyTest = {
+    week: 0,
+    form: 'A',
+    gradeId: 'eiken_2_diagnostic',
+    phase: '入塾初回 15分ステージ診断',
+    theme: '英検2級スタートライン診断テスト（準2級基礎8問＋準2プラス橋渡し8問＋2級コア9問＝全25問）',
+    itemCount: placementDiagnosticItems.length,
+    passingScore: 14, // 14/25 = 56% -> Band A (Grade 2 Standard 12w Route)
+    items: placementDiagnosticItems,
+  };
+
   // 6. Build Audit Report v2
   const g2ReadCov = readingPassageCoverage.eiken_2;
   const g2LisCov = listeningScriptCoverage.eiken_2;
@@ -1655,11 +1738,11 @@ function main() {
   const reportJsonPath = resolve(OUT_DIR, 'vocab_cefr_audit_report.json');
   writeFileSync(reportJsonPath, JSON.stringify(auditReport, null, 2) + '\n', 'utf8');
 
-  // 7. Write sugoroku_foundation_vocab_filter.json (v3.0.0)
+  // 7. Write sugoroku_foundation_vocab_filter.json (v4.0.0)
   const filterJson = {
-    schemaVersion: '3.0.0',
+    schemaVersion: '4.0.0',
     description:
-      'すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 品詞一致4択対応 2級Form A/B（各240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター',
+      'すごろく塾「基礎重視モード（CEFR／パス単コア準拠）」推奨語彙フィルタ ＆ 品詞一致4択対応 初回ステージ診断（25問）・2級Form A/B（各240語）・準2プラス/準2級ブリッジ8週（160語）小テストマスター',
     recommendedGeneralPoolChaptersForGrade2: ['lv1', 'lv2', 'lv3', 'ilv1', 'ilv2'],
     excludedGeneralPoolChaptersForGrade2: ['lv4', 'ilv3'],
     b1b2ParaphraseDictionary: B1_B2_PARAPHRASE_HINTS,
@@ -1683,6 +1766,7 @@ function main() {
         excludedWordIds: foundationExcludeIdsByGrade.eiken_2,
       },
     },
+    entryPlacementDiagnosticTest25: placementDiagnosticTest,
     grade2WeeklyVocabTests12Weeks: weeklyTests,
     grade2WeeklyVocabRetestsFormB12Weeks: weeklyRetestsFormB,
     pre2PlusBridgeVocabTests4Weeks: pre2PlusBridgeTests,
@@ -1791,7 +1875,7 @@ function main() {
   const tsDir = resolve(APP_ROOT, 'src/sugoroku/curriculum');
   mkdirSync(tsDir, { recursive: true });
   const tsLines = [
-    '// Auto-generated by scripts/sugoroku-vocab-audit.ts (v3.0.0) — DO NOT EDIT MANUALLY',
+    '// Auto-generated by scripts/sugoroku-vocab-audit.ts (v4.0.0) — DO NOT EDIT MANUALLY',
     '',
     'export interface SugorokuQuizItemData {',
     '  no: number;',
@@ -1832,6 +1916,8 @@ function main() {
     '',
     `export const SUGOROKU_EXCLUDED_WORDBOOK_IDS: Record<'eiken_pre2' | 'eiken_pre2plus' | 'eiken_2', SugorokuGradeFilterSummary> = JSON.parse(${JSON.stringify(JSON.stringify(filterJson.wordbookFoundationFilter))});`,
     '',
+    `export const SUGOROKU_ENTRY_DIAGNOSTIC_TEST: SugorokuWeeklyQuizData = JSON.parse(${JSON.stringify(JSON.stringify(filterJson.entryPlacementDiagnosticTest25))});`,
+    '',
     `export const SUGOROKU_WEEKLY_QUIZ_BANKS: Record<'grade2FormA' | 'grade2FormB' | 'pre2PlusBridge' | 'pre2Foundation', SugorokuWeeklyQuizData[]> = JSON.parse(${JSON.stringify(
       JSON.stringify({
         grade2FormA: filterJson.grade2WeeklyVocabTests12Weeks,
@@ -1844,7 +1930,7 @@ function main() {
   ];
   writeFileSync(resolve(tsDir, 'vocabQuizData.ts'), tsLines.join('\n'), 'utf8');
 
-  console.log('=== Sugoroku Vocabulary & 4-Skill CEFR Audit v3 Complete ===');
+  console.log('=== Sugoroku Vocabulary & 4-Skill CEFR Audit v4 Complete ===');
   console.log(
     `  Reading B2 Coverage  : Pre-2=${p2ReadCov.cumulativeCoveragePercent.upToB2}%, Pre-2+=${p2pReadCov.cumulativeCoveragePercent.upToB2}%, Grade2=${g2ReadCov.cumulativeCoveragePercent.upToB2}%`,
   );
@@ -1852,7 +1938,7 @@ function main() {
     `  Listening B2 Coverage: Pre-2=${listeningScriptCoverage.eiken_pre2.cumulativeCoveragePercent.upToB2}%, Pre-2+=${listeningScriptCoverage.eiken_pre2plus.cumulativeCoveragePercent.upToB2}%, Grade2=${g2LisCov.cumulativeCoveragePercent.upToB2}%`,
   );
   console.log(
-    `  Curated Test Banks   : Grade 2 = ${weeklyTests.length * 20} words, Pre-2+ Bridge = ${pre2PlusBridgeTests.length * 20} words, Pre-2 Foundation = ${pre2FoundationTests.length * 20} words (Total 400 words)`,
+    `  Curated Test Banks   : Diagnostic = ${placementDiagnosticItems.length} words, Grade 2 Form A/B = ${weeklyTests.length * 20} words x2, Pre-2+ Bridge = ${pre2PlusBridgeTests.length * 20} words, Pre-2 Foundation = ${pre2FoundationTests.length * 20} words (Total 665 quiz items)`,
   );
 }
 
