@@ -119,6 +119,12 @@ export interface AdminAccessContext {
   /** 担当しているクラスの teacherUid 一覧または担当クラスID一覧 */
   ownedClassTeacherUids?: readonly string[];
   ownedJukuClassIds?: readonly string[];
+  /**
+   * true の場合、指定の事前承認済み管理者メールアドレス
+   * （SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS + VITE_SUGOROKU_ADMIN_EMAILS）のみ入場を許可し、
+   * それ以外のアカウント（一般教員・生徒・個人アカウント）はすべて遮断する。
+   */
+  strictSpecifiedEmailsOnly?: boolean;
 }
 
 export interface AdminAccessDecision {
@@ -214,6 +220,20 @@ export function evaluateSugorokuAdminAccess(ctx: AdminAccessContext): AdminAcces
     return { allowed: false, reason: 'suspended_member' };
   }
 
+  // 厳格モード（管理者ログインゲート）：指定の事前承認済み管理者メール（hirokingz0927@gmail.com / mntobira@gmail.com）のみ通過させ、それ以外は必ずブロック
+  if (ctx.strictSpecifiedEmailsOnly) {
+    if (
+      hasVerifiedPreAuthorizedInstructorEmail({
+        email: ctx.email,
+        emailVerified: ctx.emailVerified === true,
+        providerIds: ctx.providerIds,
+      })
+    ) {
+      return { allowed: true, reason: 'allowed_preauthorized_email' };
+    }
+    return { allowed: false, reason: 'insufficient_role' };
+  }
+
   if (ctx.memberDoc && ctx.memberDoc.uid === uid && isActiveSugorokuStaff(ctx.memberDoc)) {
     return { allowed: true, reason: 'allowed_staff_role' };
   }
@@ -246,15 +266,15 @@ export function evaluateSugorokuAdminAccess(ctx: AdminAccessContext): AdminAcces
 export function describeAdminDenyReason(reason: AdminAccessDecision['reason']): string {
   switch (reason) {
     case 'unauthenticated':
-      return '未ログイン状態です。講師用 Google アカウントでログインしてください。';
+      return '未ログイン状態です。管理者用の Google アカウントでログインしてください。';
     case 'google_required':
-      return 'Google アカウントでの認証が必要です。';
+      return 'Google アカウントでのログインが必要です。';
     case 'email_unverified':
-      return 'Google アカウントのメールアドレス確認が未完了です。';
+      return 'Google アカウントのメールアドレス確認が完了していません。';
     case 'suspended_member':
-      return 'このアカウントの講師権限は現在停止されています。運営管理者にご確認ください。';
+      return 'このアカウントの管理者権限は現在停止されています。';
     case 'insufficient_role':
-      return '講師ロール（owner / staff）または担当クラスが登録されていません。';
+      return 'このアカウントでは管理者画面に入れません。指定された管理者用 Google アカウントでログインしてください。';
     default:
       return '';
   }

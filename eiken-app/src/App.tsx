@@ -566,8 +566,9 @@ export default function App() {
 
   /**
    * タイトル画面「はじめる」直下の「管理者ログインをする」ボタンからの直行導線。
-   * - 未ログイン時は SugorokuAdminGuard で講師 Google ログイン（mntobira / hirokingz0927 即通過）を実行し、
-   *   認証完了後すぐに先生・クラス管理画面（TeacherDashboard）を開く。
+   * - 未ログイン時は SugorokuAdminGuard で指定管理者アカウント（hirokingz0927@gmail.com / mntobira@gmail.com）の
+   *   Google ログインのみを通過させ（それ以外のアカウントはすべてブロック）、
+   *   認証完了後すぐに生徒の学習時間可視化ダッシュボード（SugorokuAdminApp）を開く。
    */
   const enterAdminLogin = () => {
     battleAudio().unlock();
@@ -575,7 +576,7 @@ export default function App() {
     setFinishingLaunchBgm(false);
     setSettingsTab('class');
     setPrevAppState('home');
-    setAppState('teacher_dashboard');
+    setAppState('sugoroku_admin');
     setHasEntered(true);
   };
 
@@ -700,11 +701,27 @@ export default function App() {
                 <TeacherDashboard onBack={() => setAppState('settings')} />
               </SugorokuAdminGuard>
             )}
-            {/* すごろく塾管理者ポータル（React.lazyコード分割）。設定・先生欄から開いた場合も下ナビを隠して全画面表示 */}
+            {/* すごろく塾管理者ポータル（React.lazyコード分割）。タイトル画面「管理者ログインをする」または設定・先生欄から開く */}
             {appState === 'sugoroku_admin' && (
-              <SugorokuAdminGuard onBackToStudentApp={() => setAppState('settings')}>
+              <SugorokuAdminGuard
+                onBackToStudentApp={() => {
+                  if (auth.currentUser) {
+                    setAppState('settings');
+                  } else {
+                    setHasEntered(false);
+                  }
+                }}
+              >
                 <React.Suspense fallback={<ScreenLoading />}>
-                  <SugorokuAdminApp onBack={() => setAppState('settings')} />
+                  <SugorokuAdminApp
+                    onBack={() => {
+                      if (auth.currentUser) {
+                        setAppState('settings');
+                      } else {
+                        setHasEntered(false);
+                      }
+                    }}
+                  />
                 </React.Suspense>
               </SugorokuAdminGuard>
             )}

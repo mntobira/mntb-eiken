@@ -23,6 +23,7 @@ import { KantenTab } from './teacher/KantenTab';
 import { ClassesTab } from './teacher/ClassesTab';
 import { CreateClassModal } from './teacher/CreateClassModal';
 import { JukuTab } from './teacher/JukuTab';
+import { StudyTimeTab } from './teacher/StudyTimeTab';
 
 /**
  * ===================================================================
@@ -67,7 +68,7 @@ interface TeacherDashboardProps {
   onBack: () => void;
 }
 
-type Tab = 'students' | 'kanten' | 'juku' | 'classes';
+type Tab = 'students' | 'study_time' | 'kanten' | 'juku' | 'classes';
 
 
 export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
@@ -382,9 +383,10 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
 
         {/* タブ */}
         {classrooms.length > 0 && (
-          <div className="grid grid-cols-4 sm:flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 sm:w-fit">
+          <div className="grid grid-cols-5 sm:flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 sm:w-fit">
             {([
               { id: 'students' as Tab, label: '生徒の様子' },
+              { id: 'study_time' as Tab, label: '学習時間' },
               { id: 'kanten' as Tab, label: '観点別評価' },
               { id: 'juku' as Tab, label: '課題・理由' },
               { id: 'classes' as Tab, label: 'クラス設定' },
@@ -434,6 +436,8 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
             onSaveEdit={handleSaveRosterName}
             onCancelEdit={() => setEditingUid('')}
           />
+        ) : tab === 'study_time' ? (
+          <StudyTimeTab activeClass={activeClass} theme={theme} />
         ) : tab === 'kanten' ? (
           <KantenTab
             reports={kantenReports}

@@ -28,6 +28,14 @@ import {
 import { SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS } from '../src/sugoroku/shared/types';
 import { CLASSROOM_PREVIEW_EMAILS, isClassroomEnabledFor } from '../src/config/features';
 import { SugorokuGateScreen } from '../src/sugoroku/auth/SugorokuAuthGate';
+import { SugorokuAdminGuard } from '../src/sugoroku/auth/SugorokuAdminGuard';
+import {
+  buildStudentDetailedTimeCsv,
+  buildStudentDetailedTimeReport,
+} from '../src/sugoroku/admin/timeAnalyticsDetail';
+import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
+import { buildStudentOverview } from '../src/sugoroku/admin/adminAnalytics';
+import { SugorokuStudentDetailView } from '../src/sugoroku/admin/SugorokuStudentDetailView';
 import { isAdFree, setAdFree } from '../src/ads/adFree';
 
 describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
@@ -286,14 +294,12 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(parseSugorokuInviteDraft('invalid')).toBeNull();
   });
 
-  it('renders Manatobi-authentic SugorokuGateScreen for both unauthenticated and signed-in code states', () => {
+  it('renders Manatobi-authentic SugorokuGateScreen and SugorokuAdminGuard with zero demo bypasses or leaked emails', () => {
     const step1Html = renderToStaticMarkup(
       createElement(SugorokuGateScreen, {
         user: null,
         loading: false,
         onlineReady: true,
-        allowDemoBypass: false,
-        onDemoBypass: () => {},
         onEnrolled: async () => {},
       }),
     );
@@ -301,6 +307,10 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step1Html).toContain('Google アカウントでログイン');
     expect(step1Html).toContain('広告 100% 完全非表示');
     expect(step1Html).toContain('data-tobira-buddy');
+    expect(step1Html).not.toContain('デモデータモード');
+    expect(step1Html).not.toContain('試作デモ');
+    expect(step1Html).not.toContain('mntobira@gmail.com');
+    expect(step1Html).not.toContain('hirokingz0927@gmail.com');
 
     const mockUser = {
       uid: 'student_01',
@@ -314,8 +324,6 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         loading: false,
         isSuspended: true,
         onlineReady: true,
-        allowDemoBypass: false,
-        onDemoBypass: () => {},
         onEnrolled: async () => {},
       }),
     );
@@ -325,6 +333,26 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step2Html).toContain('英検2級');
     expect(step2Html).toContain('現在このアカウントの塾在籍が停止されています');
     expect(step2Html).toContain('公開ランキング等に本名は一切表示されません');
+
+    // SugorokuAdminGuard: must NOT expose 入場条件, pre-authorized instructor emails, internal role names, or demo bypass buttons
+    const adminGuardHtml = renderToStaticMarkup(
+      createElement(SugorokuAdminGuard, {
+        onBackToStudentApp: () => {},
+        children: createElement('div', { 'data-testid': 'protected-admin-child' }, 'SECRET'),
+      }),
+    );
+    expect(adminGuardHtml).toContain('sugoroku-admin-guard');
+    expect(adminGuardHtml).toContain('管理者ログイン');
+    expect(adminGuardHtml).not.toContain('SECRET');
+    expect(adminGuardHtml).not.toContain('入場条件');
+    expect(adminGuardHtml).not.toContain('デモデータモード');
+    expect(adminGuardHtml).not.toContain('試作デモ');
+    expect(adminGuardHtml).not.toContain('mntobira@gmail.com');
+    expect(adminGuardHtml).not.toContain('hirokingz0927@gmail.com');
+    expect(adminGuardHtml).not.toContain('teacherUid');
+
+    expect(describeAdminDenyReason('insufficient_role')).not.toContain('owner');
+    expect(describeAdminDenyReason('insufficient_role')).not.toContain('staff');
   });
 
   it('allows zero-touch instructor login & classroom preview for mntobira@gmail.com and hirokingz0927@gmail.com while rejecting unverified or unlisted emails', () => {
@@ -415,5 +443,94 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         memberDoc: { uid: 'suspended_instructor', role: 'owner', active: false },
       }),
     ).toEqual({ allowed: false, reason: 'suspended_member' });
+
+    // strictSpecifiedEmailsOnly=true（管理者ログインゲートの既定値）：
+    // hirokingz0927@gmail.com / mntobira@gmail.com は通過し、それ以外のメールはクラス作成者やstaffであっても必ず遮断される
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'owner_hiro',
+        email: 'hirokingz0927@gmail.com',
+        emailVerified: true,
+        providerIds: ['google.com'],
+        strictSpecifiedEmailsOnly: true,
+      }),
+    ).toEqual({ allowed: true, reason: 'allowed_preauthorized_email' });
+
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'owner_mntb',
+        email: 'mntobira@gmail.com',
+        emailVerified: true,
+        providerIds: ['google.com'],
+        strictSpecifiedEmailsOnly: true,
+      }),
+    ).toEqual({ allowed: true, reason: 'allowed_preauthorized_email' });
+
+    expect(
+      evaluateSugorokuAdminAccess({
+        uid: 'other_teacher',
+        email: 'other-teacher@school.ed.jp',
+        emailVerified: true,
+        providerIds: ['google.com'],
+        memberDoc: { uid: 'other_teacher', role: 'staff', active: true },
+        ownedJukuClassIds: ['class_any'],
+        strictSpecifiedEmailsOnly: true,
+      }),
+    ).toEqual({ allowed: false, reason: 'insufficient_role' });
+  });
+
+  it('computes detailed student study-time metrics (today / 7d / 30d / total, skill share %, streak, 30d CSV) and renders rich detail view', () => {
+    const fixedNow = new Date(2026, 10, 20, 21, 0, 0).getTime();
+    const demo = createSugorokuDemoBundle(fixedNow);
+    const mioMember = demo.members.find((m) => m.uid === 'stu_sato_mio')!;
+    const mioLogs = demo.logsByUid.stu_sato_mio ?? [];
+    const mioOverview = buildStudentOverview({
+      member: mioMember,
+      logs: mioLogs,
+      assignments: demo.assignments,
+      solvedByChapter: demo.solvedByUid.stu_sato_mio ?? {},
+      nowMs: fixedNow,
+    });
+
+    const report = buildStudentDetailedTimeReport({
+      uid: mioOverview.uid,
+      logs: mioLogs,
+      overview: mioOverview,
+      nowMs: fixedNow,
+    });
+
+    expect(report.todaySeconds).toBe(2340);
+    expect(report.weeklySeconds).toBeGreaterThan(0);
+    expect(report.monthlySeconds).toBeGreaterThanOrEqual(report.weeklySeconds);
+    expect(report.totalSeconds).toBeGreaterThanOrEqual(report.monthlySeconds);
+    expect(report.daily30).toHaveLength(30);
+    expect(report.currentStreakDays).toBeGreaterThanOrEqual(1);
+    expect(report.skillShares.some((s) => s.skill === 'listening' && s.sharePct > 0)).toBe(true);
+
+    const csv = buildStudentDetailedTimeCsv({
+      rosterName: mioOverview.rosterName,
+      targetGrade: mioOverview.targetGrade,
+      report,
+    });
+    expect(csv.startsWith('\uFEFF')).toBe(true);
+    expect(csv).toContain('リスニング(分)');
+    expect(csv).toContain('リーディング(分)');
+
+    const html = renderToStaticMarkup(
+      createElement(SugorokuStudentDetailView, {
+        student: mioOverview,
+        rawLogs: mioLogs,
+        isDemoMode: false,
+        onBack: () => {},
+        onSaveProfile: () => {},
+      }),
+    );
+    expect(html).toContain('student-time-kpi-grid');
+    expect(html).toContain('本日の学習時間');
+    expect(html).toContain('今週（直近7日）');
+    expect(html).toContain('直近30日間');
+    expect(html).toContain('累計有効学習時間');
+    expect(html).toContain('分野別の学習時間・時間配分');
+    expect(html).toContain('日別の学習ログ明細');
   });
 });
