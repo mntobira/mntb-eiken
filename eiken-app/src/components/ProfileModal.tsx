@@ -39,6 +39,8 @@ interface ProfileModalProps {
    *   先生は設定を探すことを苦にしないので、ここに置く。
    */
   onOpenTeacherDashboard?: () => void;
+  /** すごろく塾 管理者ポータル（個人別タイムログ・PDF教材棚）を開く */
+  onOpenSugorokuAdmin?: () => void;
   /**
    * フィードバック管理画面（運営専用）を開く。
    * 運営メールでログインしているときだけボタンを出す。
@@ -53,7 +55,7 @@ interface ProfileModalProps {
 
 type SettingsTab = 'general' | 'friends' | 'class';
 
-export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenFeedbackAdmin, onOpenOutfit, onStartClassChapter }: ProfileModalProps) {
+export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenSugorokuAdmin, onOpenFeedbackAdmin, onOpenOutfit, onStartClassChapter }: ProfileModalProps) {
   /** クラス機能を開けるか（公開前は先行確認のアカウントだけ・2026-10-28） */
   const classroomOn = isClassroomEnabledFor(auth.currentUser);
   const [tab, setTab] = useState<SettingsTab>(() => (initialTab && initialTab !== 'general' && auth.currentUser ? initialTab : 'general'));
@@ -140,6 +142,15 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                 >
                   <ClipboardList size={14} />
                   先生の方はこちら（クラスの管理）
+                </button>
+              )}
+              {onOpenSugorokuAdmin && (
+                <button
+                  onClick={onOpenSugorokuAdmin}
+                  className="mt-2 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#B6D4F7] bg-[#EEF5FF] text-xs font-bold text-[#1D58A8]"
+                >
+                  <School size={14} />
+                  すごろく塾 管理者ポータル（分野別学習時間・PDF棚）
                 </button>
               )}
             </div>

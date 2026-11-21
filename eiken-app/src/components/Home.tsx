@@ -2,6 +2,8 @@ import './home-legibility.css';
 import './home-pillars.css';
 import './my-tobira-tag.css';
 import './home-companion.css';
+import { SugorokuTodayHomework } from '../sugoroku/homework/SugorokuTodayHomework';
+import '../sugoroku/homework/homework.css';
 import { CompanionArt } from '../battle/ui/CompanionArt';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ChevronRight, Edit3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Target, Zap, BookHeart } from 'lucide-react';
@@ -137,9 +139,15 @@ interface HomeProps {
   /** フェードで音が消えた状態。ラベルを「もう一度鳴らす」に変えるため。 */
   isBgmFadedOut?: boolean;
   onToggleBgm?: (enabled: boolean) => void;
+  /**
+   * 「今日の宿題」カードの「今すぐ解く」。
+   * 塾クラスに参加している生徒にだけ、ホーム最上部のカードが出る。
+   * 渡されなければカード自体を出さない（＝一般ユーザーのホームは一切変わらない）。
+   */
+  onStartHomeworkChapter?: (chapterId: string) => void;
 }
 
-export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm }: HomeProps) {
+export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm, onStartHomeworkChapter }: HomeProps) {
   const { progress: savedGrowth, uid: growthUid } = useGrowthProgress();
   // 保存破損・アカウント切替中でも住人は表示する。表示用の初期値は保存しない。
   const fallbackGrowth = useMemo(() => emptyProgress(growthUid), [growthUid]);
@@ -388,6 +396,8 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
             <button type="button" onClick={() => setShowNotices(true)} aria-label="お知らせを開く"><Bell size={19} />{unreadCount > 0 && <i />}</button>
           </div>
         </header>
+        {/* 塾の「今日の宿題」— ホーム最上部に固定。塾クラス未参加なら自分で何も描かない */}
+        {onStartHomeworkChapter && <SugorokuTodayHomework onStartChapter={onStartHomeworkChapter} />}
         {onGrowth && <React.Suspense fallback={<div className="game-hud-placeholder">成長記録を読み込んでいます…</div>}>
           <GrowthHomeStrip expanded homeLayout onProfile={() => onGrowth('outfit')} onShop={() => onGrowth('gacha-shop')} onGacha={() => onGrowth('gacha')}
             onBadges={() => onGrowth('badges')} onMissions={() => onGrowth('missions')} onWallet={() => onGrowth('overview')} />
