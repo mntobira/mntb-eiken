@@ -1810,6 +1810,32 @@ service cloud.firestore {
         && resource.data.status == 'submitted';
     }
 
+    // ---- 6. クラス別 学習目標・塾運営設定（eiken_classrooms/{classId}/sugoroku_settings/{settingId}） ----
+    match /eiken_classrooms/{classId}/sugoroku_settings/{settingId} {
+      function validSugorokuClassSettings(d) {
+        return d.keys().hasOnly([
+            'classId', 'orgType', 'dailyGoalMinutes', 'weeklyGoalDays',
+            'examSession', 'focusSkills', 'coachNote', 'updatedAt', 'serverUpdatedAt'
+          ])
+          && d.classId == classId
+          && d.orgType in ['juku', 'tutor', 'school']
+          && d.dailyGoalMinutes is int && d.dailyGoalMinutes >= 10 && d.dailyGoalMinutes <= 180
+          && d.weeklyGoalDays is int && d.weeklyGoalDays >= 1 && d.weeklyGoalDays <= 7
+          && d.examSession in ['scbt_monthly', 'session_1', 'session_2', 'session_3', 'undecided']
+          && d.focusSkills is list && d.focusSkills.size() >= 1 && d.focusSkills.size() <= 5
+          && d.coachNote is string && d.coachNote.size() <= 200;
+      }
+
+      allow get: if sgIsClassTeacher(classId)
+        || sgCanManageClass(classId)
+        || (isAuthenticated() && sgIsEnrolledInClass(classId, request.auth.uid));
+
+      allow create, update: if (sgIsClassTeacher(classId) || sgCanManageClass(classId))
+        && validSugorokuClassSettings(request.resource.data);
+
+      allow delete: if sgIsClassTeacher(classId) || sgCanManageClass(classId);
+    }
+
 // ###################################################################
 // ###################################################################
 //

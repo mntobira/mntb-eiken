@@ -698,7 +698,10 @@ export default function App() {
                   }
                 }}
               >
-                <TeacherDashboard onBack={() => setAppState('settings')} />
+                <TeacherDashboard
+                  onBack={() => setAppState('settings')}
+                  onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')}
+                />
               </SugorokuAdminGuard>
             )}
             {/* すごろく塾管理者ポータル（React.lazyコード分割）。タイトル画面「管理者ログインをする」または設定・先生欄から開く */}
@@ -721,6 +724,7 @@ export default function App() {
                         setHasEntered(false);
                       }
                     }}
+                    onOpenTeacherDashboard={() => setAppState('teacher_dashboard')}
                   />
                 </React.Suspense>
               </SugorokuAdminGuard>
@@ -914,7 +918,7 @@ export default function App() {
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
             {/* ★対戦中（試合が始まってから終わるまで）は下ナビを出さない（2026-10-01）★ 問題と絵を1画面に入れるため。
                  「対戦をやめる」は対戦画面の中にある。結果画面ではナビが戻る。 */}
-            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'sugoroku_admin' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
+            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'sugoroku_admin' && appState !== 'teacher_dashboard' && appState !== 'feedback_admin' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
               /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
                  高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
               <BottomNavigation

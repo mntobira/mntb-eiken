@@ -83,12 +83,14 @@ export type SugorokuAdminTabId =
 
 export interface SugorokuAdminAppProps {
   onBack?: () => void;
+  onOpenTeacherDashboard?: () => void;
   initialDataMode?: 'auto' | 'demo' | 'firestore';
   extensionSlots?: SugorokuAdminExtensionSlots;
 }
 
 export function SugorokuAdminApp({
   onBack,
+  onOpenTeacherDashboard,
   initialDataMode = 'auto',
   extensionSlots,
 }: SugorokuAdminAppProps) {
@@ -477,6 +479,17 @@ export function SugorokuAdminApp({
             </div>
 
             <div className="sg-head-tools">
+              {onOpenTeacherDashboard && (
+                <button
+                  type="button"
+                  className="sg-code-btn"
+                  onClick={onOpenTeacherDashboard}
+                  title="クラスの作成・設定・宿題配信へ移動"
+                >
+                  クラス管理・作成
+                </button>
+              )}
+
               {sourceInfo.joinCode && (
                 <button
                   type="button"

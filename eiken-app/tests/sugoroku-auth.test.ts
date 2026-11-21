@@ -36,6 +36,20 @@ import {
 import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
 import { buildStudentOverview } from '../src/sugoroku/admin/adminAnalytics';
 import { SugorokuStudentDetailView } from '../src/sugoroku/admin/SugorokuStudentDetailView';
+import {
+  buildClassInviteMessage,
+  buildClassInviteUrl,
+  CLASSROOM_ALLOWED_SUBJECTS,
+  createDefaultClassSettings,
+  normalizeClassSettings,
+} from '../src/sugoroku/admin/classroomSettings';
+import { CreateClassModal } from '../src/components/teacher/CreateClassModal';
+import { EmptyState } from '../src/components/teacher/EmptyState';
+import { StudentsTab } from '../src/components/teacher/StudentsTab';
+import { ClassesTab } from '../src/components/teacher/ClassesTab';
+import { DEFAULT_CLASS_SUBJECT } from '../src/components/teacher/teacherSubjects';
+import { aggregateClass, type ClassroomDoc } from '../src/utils/classroomCore';
+import { subjectTheme } from '../src/data/subjectTheme';
 import { isAdFree, setAdFree } from '../src/ads/adFree';
 
 describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
@@ -532,5 +546,117 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(html).toContain('累計有効学習時間');
     expect(html).toContain('分野別の学習時間・時間配分');
     expect(html).toContain('日別の学習ログ明細');
+  });
+
+  it('provides juku-first class creation modal, presets, invite URL/LINE message kit, and editable class settings UI', () => {
+    expect(DEFAULT_CLASS_SUBJECT).toBe('eiken_2');
+    // Firestore ルールで拒否される eiken_1 がクラス作成選択肢に混入しないこと
+    expect(CLASSROOM_ALLOWED_SUBJECTS.some((s) => s.value === ('eiken_1' as never))).toBe(false);
+    expect(CLASSROOM_ALLOWED_SUBJECTS[0]?.value).toBe('eiken_2');
+
+    const modalHtml = renderToStaticMarkup(
+      createElement(CreateClassModal, {
+        schoolName: 'オンライン塾 すごろく',
+        className: '英検2級 S-CBT突破コース',
+        subject: 'eiken_2',
+        creating: false,
+        accent: '#3E9C93',
+        onClose: () => {},
+        onSubmit: () => {},
+      }),
+    );
+    expect(modalHtml).toContain('新しいコース・クラスを開設');
+    expect(modalHtml).toContain('学習塾・オンライン塾');
+    expect(modalHtml).toContain('ワンタップ定番コース設定');
+    expect(modalHtml).toContain('1日あたりの目標学習時間');
+    expect(modalHtml).toContain('週の目標学習日数');
+    expect(modalHtml).not.toContain('化学基礎');
+    expect(modalHtml).not.toContain('〇〇県立〇〇高等学校');
+
+    const emptyHtml = renderToStaticMarkup(
+      createElement(EmptyState, {
+        onCreate: () => {},
+        onOpenSugorokuAdmin: () => {},
+        accent: '#3E9C93',
+      }),
+    );
+    expect(emptyHtml).toContain('最初のコース・クラスを開設しましょう');
+    expect(emptyHtml).toContain('4技能添削・教材PDFポータルを開く');
+
+    const sampleRoom: ClassroomDoc = {
+      id: 'room_juku_1',
+      teacherUid: 'owner_1',
+      schoolName: 'オンライン塾 すごろく',
+      className: '英検2級 S-CBT合格コース',
+      joinCode: 'ACDEF2',
+      subject: 'eiken_2',
+      joinOpen: true,
+      plan: 'juku',
+    };
+    const settings = normalizeClassSettings(
+      {
+        orgType: 'juku',
+        dailyGoalMinutes: 30,
+        weeklyGoalDays: 5,
+        examSession: 'scbt_monthly',
+        focusSkills: ['vocab', 'reading', 'listening', 'writing'],
+        coachNote: '毎日30分コツコツ進めましょう！',
+      },
+      sampleRoom.id,
+    );
+
+    const inviteUrl = buildClassInviteUrl(sampleRoom.joinCode, 'https://manatobi-eiken.vercel.app');
+    expect(inviteUrl).toBe('https://manatobi-eiken.vercel.app/?sugoroku_invite=ACDEF2');
+
+    const inviteMsg = buildClassInviteMessage({
+      room: sampleRoom,
+      settings,
+      origin: 'https://manatobi-eiken.vercel.app',
+    });
+    expect(inviteMsg).toContain('【オンライン塾 すごろく】');
+    expect(inviteMsg).toContain('1日30分 × 週5日（週150分）');
+    expect(inviteMsg).toContain(inviteUrl);
+    expect(inviteMsg).toContain('広告完全非表示');
+
+    const theme = subjectTheme('eiken_2');
+    const studentsEmptyHtml = renderToStaticMarkup(
+      createElement(StudentsTab, {
+        students: [],
+        aggregate: aggregateClass([]),
+        loading: false,
+        theme,
+        activeClass: sampleRoom,
+        classSettings: settings,
+        copiedCode: '',
+        editingUid: '',
+        editingName: '',
+        onCopyCode: () => {},
+        onRefresh: () => {},
+        onExportCsv: () => {},
+        onStartEdit: () => {},
+        onChangeEditingName: () => {},
+        onSaveEdit: () => {},
+        onCancelEdit: () => {},
+      }),
+    );
+    expect(studentsEmptyHtml).toContain('招待URLをコピー');
+    expect(studentsEmptyHtml).toContain('LINE・保護者案内文をコピー');
+    expect(studentsEmptyHtml).toContain('塾生広告OFF');
+
+    const classesHtml = renderToStaticMarkup(
+      createElement(ClassesTab, {
+        classrooms: [sampleRoom],
+        activeClassId: sampleRoom.id,
+        settingsMap: { [sampleRoom.id]: settings ?? createDefaultClassSettings(sampleRoom.id) },
+        theme,
+        copiedCode: '',
+        onCopyCode: () => {},
+        onToggleJoin: () => {},
+        onEditRoom: () => {},
+        onDeleteRoom: () => {},
+      }),
+    );
+    expect(classesHtml).toContain('設定を編集');
+    expect(classesHtml).toContain('LINE・保護者案内文コピー');
   });
 });
