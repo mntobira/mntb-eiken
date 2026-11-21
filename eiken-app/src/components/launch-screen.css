@@ -43,6 +43,31 @@
 .launch-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: var(--mt-s1); width: 100%; }
 .launch-start { width: min(320px, 100%); min-height: 58px; gap: var(--mt-s3); border-radius: var(--mt-r-lg); font: 800 var(--mt-fs-xl)/1 var(--mt-font-display); letter-spacing: 0.03em; box-shadow: 0 4px 0 var(--mt-accent-strong), 0 10px 22px rgba(217, 107, 12, 0.22); transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease; }
 .launch-start:active { box-shadow: 0 1px 0 var(--mt-accent-strong), 0 4px 10px rgba(217, 107, 12, 0.18); transform: translateY(3px); }
+.launch-admin-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: min(320px, 100%);
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--mt-r-md);
+  border: 1.5px solid var(--mt-line-strong);
+  background: var(--mt-surface);
+  color: var(--mt-brand-strong);
+  font: 800 var(--mt-fs-sm)/1.2 var(--mt-font-body);
+  box-shadow: 0 2px 0 #dfd4be;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .15s ease, border-color .15s ease;
+}
+.launch-admin-login:hover {
+  background: #fff;
+  border-color: var(--mt-brand);
+}
+.launch-admin-login:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 1px 0 #dfd4be;
+}
 .launch-guest { min-height: var(--mt-tap); font-size: var(--mt-fs-sm); }
 .launch-note { min-height: var(--mt-tap); display: grid; place-items: center; margin: 0; font-size: var(--mt-fs-xs); color: var(--mt-ink-3); }
 .launch-screen button:focus-visible { outline: none; box-shadow: var(--mt-focus); }
@@ -139,9 +164,10 @@
   .launch-chips li > span { display: grid; gap: 6px; }
   .launch-chips li b { font: 800 16px/1.2 var(--mt-font-display); color: var(--mt-ink); }
   .launch-chips li small { display: block; font: 600 12.5px/1.5 var(--mt-font-body); color: var(--mt-ink-3); }
-  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "count count" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 12px; padding-top: 4px; }
+  .launch-actions { grid-area: actions; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "start guest" "admin ." "count count" "phil kbd"; align-items: center; justify-items: start; column-gap: 18px; row-gap: 10px; padding-top: 4px; }
   .launch-start { grid-area: start; width: 300px; min-height: 64px; }
   .launch-start:hover { filter: brightness(1.04); }
+  .launch-admin-login { grid-area: admin; width: 300px; min-height: 46px; }
   .launch-guest, .launch-note { grid-area: guest; }
   .launch-countdown-mini { grid-area: count; display: inline-flex; align-items: baseline; gap: 6px; margin: 0; font-size: 14px; font-weight: 700; color: var(--mt-ink-2); }
   .launch-countdown-mini svg { align-self: center; color: var(--mt-brand); }
