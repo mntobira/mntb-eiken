@@ -147,7 +147,10 @@ export function useSugorokuAuthState(): {
  * 管理者ポータル（SugorokuAdminApp）向けの認可状態フック。
  * AI 1 の管理者ポータルや設定画面の入り口からそのまま利用できる。
  */
-export function useSugorokuAdminGuard(): {
+export function useSugorokuAdminGuard(options?: {
+  /** 指定管理者メール（hirokingz0927@gmail.com / mntobira@gmail.com）以外を厳格に遮断するか（既定: true） */
+  strictSpecifiedEmailsOnly?: boolean;
+}): {
   user: User | null;
   checking: boolean;
   allowed: boolean;
@@ -156,6 +159,7 @@ export function useSugorokuAdminGuard(): {
   ownedClassIds: string[];
   recheck: () => Promise<void>;
 } {
+  const strictSpecifiedEmailsOnly = options?.strictSpecifiedEmailsOnly ?? true;
   const [user, setUser] = useState<User | null>(() => auth.currentUser);
   const [checking, setChecking] = useState<boolean>(true);
   const [decision, setDecision] = useState<{
@@ -173,12 +177,14 @@ export function useSugorokuAdminGuard(): {
   const recheck = useCallback(async (targetUser?: User | null) => {
     setChecking(true);
     try {
-      const res = await checkCurrentUserAdminAccess(targetUser ?? auth.currentUser);
+      const res = await checkCurrentUserAdminAccess(targetUser ?? auth.currentUser, {
+        strictSpecifiedEmailsOnly,
+      });
       setDecision(res);
     } finally {
       setChecking(false);
     }
-  }, []);
+  }, [strictSpecifiedEmailsOnly]);
 
   useEffect(() => {
     let alive = true;
@@ -186,7 +192,7 @@ export function useSugorokuAdminGuard(): {
     const offAuth = onAuthStateChanged(auth, (current) => {
       if (!alive) return;
       setUser(current);
-      void checkCurrentUserAdminAccess(current).then((res) => {
+      void checkCurrentUserAdminAccess(current, { strictSpecifiedEmailsOnly }).then((res) => {
         if (!alive) return;
         setDecision(res);
         setChecking(false);
@@ -196,7 +202,7 @@ export function useSugorokuAdminGuard(): {
       alive = false;
       offAuth();
     };
-  }, []);
+  }, [strictSpecifiedEmailsOnly]);
 
   return {
     user,

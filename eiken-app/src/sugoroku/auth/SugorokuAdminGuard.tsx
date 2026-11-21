@@ -43,17 +43,22 @@ import './sugoroku-auth.css';
 export interface SugorokuAdminGuardProps {
   children: React.ReactNode;
   onBackToStudentApp?: () => void;
+  /** 指定管理者メール（hirokingz0927@gmail.com / mntobira@gmail.com）以外をすべて遮断する（既定: true） */
+  strictSpecifiedEmailsOnly?: boolean;
 }
 
 export function SugorokuAdminGuard({
   children,
   onBackToStudentApp,
+  strictSpecifiedEmailsOnly = true,
 }: SugorokuAdminGuardProps) {
   useSuppressBannerAd();
   useEffect(() => installRipple(), []);
 
   const browserOnline = useBrowserOnline();
-  const { user, checking, allowed, reason, recheck } = useSugorokuAdminGuard();
+  const { user, checking, allowed, reason, recheck } = useSugorokuAdminGuard({
+    strictSpecifiedEmailsOnly,
+  });
   const { busy: signing, anyBusy, run: runSignIn } = useSignInGuard();
   const [authError, setAuthError] = useState('');
   const [showRedirect, setShowRedirect] = useState(() => isSafariOrIPadBrowser());
