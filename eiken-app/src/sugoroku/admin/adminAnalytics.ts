@@ -421,7 +421,7 @@ export function buildStudentOverview(input: BuildStudentOverviewInput): Sugoroku
     uid: input.member.uid,
     rosterName,
     nickname: input.member.displayName,
-    targetGrade: input.member.targetGrade,
+    targetGrade: input.member.targetGrade ?? 'eiken_2',
     note: input.member.note,
     adFree: input.member.adFree !== false,
     weeklyActiveSeconds,
