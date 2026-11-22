@@ -26,6 +26,7 @@ import {
   type ClassroomInput,
 } from '../../utils/classroomCore';
 import { createClassroom } from '../../utils/classroom';
+import { ensureRootInstructorBootstrap } from './firestoreAdminService';
 import type { SugorokuSkillKey } from '../shared/types';
 import { getGradeLabel } from './adminAnalytics';
 
@@ -370,6 +371,9 @@ export async function createManagedClassroom(params: {
   enableJukuPlan?: boolean;
   settings: Omit<JukuClassSettings, 'classId' | 'updatedAt'>;
 }): Promise<{ classroom: ClassroomDoc; settings: JukuClassSettings }> {
+  // 事前承認オーナー（mntobira / hirokingz0927）が初回クラス作成前に sugoroku_members/{uid} を自動ブートストラップ
+  await ensureRootInstructorBootstrap().catch(() => null);
+
   const created = await createClassroom({
     schoolName: params.schoolName,
     className: params.className,

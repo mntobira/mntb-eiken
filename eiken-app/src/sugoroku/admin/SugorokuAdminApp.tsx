@@ -84,6 +84,7 @@ export type SugorokuAdminTabId =
 export interface SugorokuAdminAppProps {
   onBack?: () => void;
   onOpenTeacherDashboard?: () => void;
+  onOpenCreateClass?: () => void;
   initialDataMode?: 'auto' | 'demo' | 'firestore';
   extensionSlots?: SugorokuAdminExtensionSlots;
 }
@@ -91,6 +92,7 @@ export interface SugorokuAdminAppProps {
 export function SugorokuAdminApp({
   onBack,
   onOpenTeacherDashboard,
+  onOpenCreateClass,
   initialDataMode = 'auto',
   extensionSlots,
 }: SugorokuAdminAppProps) {
@@ -367,18 +369,24 @@ export function SugorokuAdminApp({
     await reloadLiveClasses();
   };
 
-  const handleInviteStaff = async (params: { email: string; staffName: string }) => {
+  const handleInviteStaff = async (params: {
+    email: string;
+    staffName: string;
+    staffUid?: string;
+  }) => {
     if (dataMode === 'demo') {
       const now = Date.now();
+      const key = params.email || params.staffUid || `uid_${now}`;
       const next: SugorokuStaffInviteDoc = {
-        id: buildStaffInviteId(demoBundle.classId, params.email),
+        id: buildStaffInviteId(demoBundle.classId, key),
         classId: demoBundle.classId,
         className: demoBundle.className,
         schoolName: demoBundle.schoolName,
-        email: params.email,
+        email: params.email || `UID: ${params.staffUid}`,
         staffName: params.staffName,
         role: 'staff',
-        status: 'invited',
+        status: params.staffUid ? 'active' : 'invited',
+        ...(params.staffUid ? { acceptedUid: params.staffUid } : {}),
         invitedByUid: 'teacher_sugoroku_nishi',
         createdAt: now,
         updatedAt: now,
@@ -398,6 +406,7 @@ export function SugorokuAdminApp({
       },
       email: params.email,
       staffName: params.staffName,
+      staffUid: params.staffUid,
     });
     await reloadLiveClasses();
   };
@@ -635,8 +644,8 @@ export function SugorokuAdminApp({
                 対象級・1日の目標学習時間・週の目標日数を設定してクラスを開設すると、招待URL・6文字コード・LINE案内文が発行され、生徒の学習時間と4技能添削をここで一括管理できます。
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-                {onOpenTeacherDashboard && (
-                  <PrimaryButton onClick={onOpenTeacherDashboard}>
+                {(onOpenCreateClass || onOpenTeacherDashboard) && (
+                  <PrimaryButton onClick={onOpenCreateClass ?? onOpenTeacherDashboard}>
                     コース・クラスを開設する
                   </PrimaryButton>
                 )}
@@ -668,6 +677,12 @@ export function SugorokuAdminApp({
               ) : activeTab === 'writing_review' ? (
                 <SugorokuWritingExtensionSlot
                   classId={sourceInfo.classId}
+                  classNameLabel={
+                    [sourceInfo.schoolName, sourceInfo.className].filter(Boolean).join(' ') ||
+                    undefined
+                  }
+                  reviewerUid={user?.uid}
+                  reviewerName={user?.displayName || sourceInfo.ownerName}
                   isDemoMode={sourceInfo.isDemo}
                   submissions={sourceInfo.writingSubmissions}
                   onToast={showToast}
@@ -680,6 +695,12 @@ export function SugorokuAdminApp({
               ) : activeTab === 'speaking_review' ? (
                 <SugorokuSpeakingExtensionSlot
                   classId={sourceInfo.classId}
+                  classNameLabel={
+                    [sourceInfo.schoolName, sourceInfo.className].filter(Boolean).join(' ') ||
+                    undefined
+                  }
+                  reviewerUid={user?.uid}
+                  reviewerName={user?.displayName || sourceInfo.ownerName}
                   isDemoMode={sourceInfo.isDemo}
                   submissions={sourceInfo.speakingSubmissions}
                   customRender={extensionSlots?.renderSpeakingReviewTab}
@@ -987,6 +1008,7 @@ export function SugorokuAdminApp({
         open={staffSheetOpen}
         onClose={() => setStaffSheetOpen(false)}
         viewerRole={sourceInfo.viewerRole}
+        viewerUid={user?.uid}
         ownerName={sourceInfo.ownerName}
         ownerEmail={sourceInfo.ownerEmail}
         staffInvites={sourceInfo.staffInvites}

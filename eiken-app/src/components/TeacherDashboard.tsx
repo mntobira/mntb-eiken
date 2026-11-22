@@ -23,6 +23,7 @@ import {
   setRosterName,
   KANTEN_MASTERED_BOX,
 } from '../utils/classroom';
+import { fetchManageableClassrooms } from '../sugoroku/admin/firestoreAdminService';
 import { buildKantenReport, type KantenReport } from '../utils/kantenReport';
 import { getChapterCatalog, SUBJECT_LABELS } from '../data/chapterCatalog';
 import { aggregateClass, type ClassroomDoc } from '../utils/classroomCore';
@@ -50,12 +51,21 @@ import {
 
 interface TeacherDashboardProps {
   onBack: () => void;
+  backLabel?: string;
+  initialOpenCreate?: boolean;
+  onInitialCreateHandled?: () => void;
   onOpenSugorokuAdmin?: () => void;
 }
 
 type Tab = 'students' | 'study_time' | 'kanten' | 'juku' | 'classes';
 
-export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboardProps) {
+export function TeacherDashboard({
+  onBack,
+  backLabel = '戻る',
+  initialOpenCreate = false,
+  onInitialCreateHandled,
+  onOpenSugorokuAdmin,
+}: TeacherDashboardProps) {
   const [tab, setTab] = useState<Tab>('students');
   const [classrooms, setClassrooms] = useState<ClassroomDoc[]>([]);
   const [activeClassId, setActiveClassId] = useState<string>('');
@@ -68,7 +78,14 @@ export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboa
   const [copiedCode, setCopiedCode] = useState('');
 
   // クラス新規作成モーダル
-  const [showCreate, setShowCreate] = useState(false);
+  const [showCreate, setShowCreate] = useState(() => initialOpenCreate);
+
+  useEffect(() => {
+    if (initialOpenCreate) {
+      setShowCreate(true);
+      onInitialCreateHandled?.();
+    }
+  }, [initialOpenCreate, onInitialCreateHandled]);
   const [newSchoolName, setNewSchoolName] = useState(() => loadLastOrgName());
   const [newClassName, setNewClassName] = useState('');
   const [newSubject, setNewSubject] = useState<ClassroomDoc['subject']>(DEFAULT_CLASS_SUBJECT);
@@ -113,7 +130,7 @@ export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboa
     setLoadingClasses(true);
     setError('');
     try {
-      const rooms = await fetchMyClassrooms();
+      const rooms = await fetchManageableClassrooms().catch(() => fetchMyClassrooms());
       rooms.sort((a, b) => (a.className || '').localeCompare(b.className || '', 'ja'));
       setClassrooms(rooms);
 
@@ -410,7 +427,7 @@ export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboa
           className="flex items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm font-bold">戻る</span>
+          <span className="text-sm font-bold">{backLabel}</span>
         </button>
         <div className="max-w-md mx-auto bg-white rounded-3xl border border-[#E0E1DD] p-6 text-center shadow-xs">
           <School className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
@@ -434,7 +451,7 @@ export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboa
             className="flex min-h-[42px] items-center gap-1.5 text-[#4B5563] hover:text-[#1B2631] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-bold">戻る</span>
+            <span className="text-sm font-bold">{backLabel}</span>
           </button>
 
           {onOpenSugorokuAdmin && (

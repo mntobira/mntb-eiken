@@ -61,15 +61,19 @@ export interface SugorokuAuthGateProps {
   children: React.ReactNode;
   /** 常にゲートを強制するか（省略時は true。App.tsx 側では ?portal=sugoroku|juku のとき true を渡す） */
   enforce?: boolean;
+  /** 招待コードを持たない一般生徒が通常モードへ切り替える際のハンドラ */
+  onExitToStandardMode?: () => void;
 }
 
 export function SugorokuAuthGate({
   children,
   enforce = true,
+  onExitToStandardMode,
 }: SugorokuAuthGateProps) {
   const { user, loading, status, refresh } = useSugorokuAuthState();
+  const [bypassedToStandard, setBypassedToStandard] = useState(false);
 
-  if (!enforce) {
+  if (!enforce || bypassedToStandard) {
     return <>{children}</>;
   }
 
@@ -92,13 +96,38 @@ export function SugorokuAuthGate({
     return <>{children}</>;
   }
 
+  const handleExitToStandard = () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('portal');
+      url.searchParams.delete('sugoroku_invite');
+      url.searchParams.delete('invite');
+      url.searchParams.delete('code');
+      window.history.replaceState({}, '', url.toString());
+    } catch {
+      // ignore
+    }
+    setBypassedToStandard(true);
+    onExitToStandardMode?.();
+  };
+
   return (
     <SugorokuGateScreen
       user={user}
       loading={loading}
       isSuspended={status.isSuspended}
       onlineReady={onlineReady}
+      onExitToStandardMode={handleExitToStandard}
       onEnrolled={async () => {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('sugoroku_invite');
+          url.searchParams.delete('invite');
+          url.searchParams.delete('code');
+          window.history.replaceState({}, '', url.toString());
+        } catch {
+          // ignore
+        }
         await refresh();
       }}
     />
@@ -110,6 +139,7 @@ interface SugorokuGateScreenProps {
   loading: boolean;
   isSuspended?: boolean;
   onlineReady: boolean;
+  onExitToStandardMode?: () => void;
   onEnrolled: () => Promise<void>;
 }
 
@@ -117,6 +147,7 @@ export function SugorokuGateScreen({
   user,
   loading,
   isSuspended = false,
+  onExitToStandardMode,
   onEnrolled,
 }: SugorokuGateScreenProps) {
   // ゲート画面表示中もバナー広告を 100% 抑止
@@ -654,6 +685,19 @@ export function SugorokuGateScreen({
             </form>
           )}
         </section>
+
+        {onExitToStandardMode && (
+          <div className="pt-1 text-center">
+            <button
+              type="button"
+              data-testid="sugoroku-exit-to-standard-btn"
+              onClick={onExitToStandardMode}
+              className="text-xs font-bold text-[#5a6573] hover:text-[#1c2a39] underline underline-offset-4 min-h-[36px] px-3"
+            >
+              招待コードをお持ちでない方（通常モードで始める）
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

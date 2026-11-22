@@ -13,7 +13,10 @@ import {
 } from '../src/sugoroku/admin/adminAnalytics';
 import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
 import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
-import { classifyEikenMaterial } from '../src/sugoroku/admin/SugorokuPdfShelfTab';
+import {
+  SUGOROKU_DEDICATED_PDFS,
+  classifyEikenMaterial,
+} from '../src/sugoroku/admin/SugorokuPdfShelfTab';
 import {
   buildLineEncourageMessage,
   SugorokuStudentDetailView,
@@ -26,9 +29,17 @@ import {
 import { SugorokuStaffSheet } from '../src/sugoroku/admin/SugorokuStaffSheet';
 import {
   buildStaffInviteId,
+  getConfiguredAdminEmails,
+  isEmailPreAuthorizedAdmin,
   isValidStaffEmail,
   normalizeStaffEmail,
 } from '../src/sugoroku/admin/firestoreAdminService';
+import {
+  SUGOROKU_COLLECTIONS,
+  SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS,
+  SUGOROKU_SPEAKING_MAX_BYTES,
+  buildSpeakingStoragePath,
+} from '../src/sugoroku/shared/types';
 import { GACHA_PRINTS } from '../src/data/gachaPrints.generated';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
@@ -249,12 +260,13 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(ownerSheetHtml).toContain('小松 講師');
     expect(ownerSheetHtml).toContain('講師を追加');
 
-    // スタッフ（非オーナー）ログイン時は追加フォーム・削除ボタンが出ない
+    // スタッフ（非オーナー）ログイン時は追加フォーム・削除ボタンが出ない（自分のUIDコピーのみ可）
     const staffSheetHtml = renderToStaticMarkup(
       createElement(SugorokuStaffSheet, {
         open: true,
         onClose: () => {},
         viewerRole: 'staff',
+        viewerUid: 'staff_uid_12345',
         ownerName: demo.ownerName,
         staffInvites: demo.staffInvites,
         onInviteStaff: () => {},
@@ -262,6 +274,32 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       }),
     );
     expect(staffSheetHtml).toContain('藤沢 卓登');
+    expect(staffSheetHtml).toContain('自分のUIDをコピー');
     expect(staffSheetHtml).not.toContain('講師を追加');
+  });
+
+  it('AI 2 / AI 3 / AI 4 / AI 5 全PR連携の共通契約（事前承認オーナー2名・Storageパス・専用PDF6冊・homeworkPlans）を満たす', () => {
+    expect(SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS).toEqual([
+      'mntobira@gmail.com',
+      'hirokingz0927@gmail.com',
+    ]);
+    expect(getConfiguredAdminEmails('')).toContain('mntobira@gmail.com');
+    expect(getConfiguredAdminEmails('')).toContain('hirokingz0927@gmail.com');
+    expect(isEmailPreAuthorizedAdmin('HIROKINGZ0927@GMAIL.COM')).toBe(true);
+    expect(isEmailPreAuthorizedAdmin('MNTOBIRA@GMAIL.COM')).toBe(true);
+    expect(isEmailPreAuthorizedAdmin('random@example.com')).toBe(false);
+
+    expect(SUGOROKU_COLLECTIONS.homeworkPlans).toBe('sugoroku_homework_plans');
+    expect(SUGOROKU_SPEAKING_MAX_BYTES).toBe(5 * 1024 * 1024);
+    expect(buildSpeakingStoragePath('cls_01', 'stu_01', 'sub_01', 'q1', 'm4a')).toBe(
+      'sugoroku_speaking/cls_01/stu_01/sub_01/q1.m4a',
+    );
+    expect(() => buildSpeakingStoragePath('cls/bad', 'stu_01', 'sub_01', 'q1', 'webm')).toThrow();
+
+    expect(SUGOROKU_DEDICATED_PDFS).toHaveLength(6);
+    for (const pdf of SUGOROKU_DEDICATED_PDFS) {
+      expect(classifyEikenMaterial(pdf)).toBe('sugoroku_pack');
+      expect(pdf.file.startsWith('/sugoroku/')).toBe(true);
+    }
   });
 });

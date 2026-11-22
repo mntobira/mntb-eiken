@@ -238,6 +238,11 @@ export default function App() {
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
   /** 設定を開いたとき最初に見せるページ（対戦から「フレンドを追加」で来たときだけ 'friends'） */
   const [settingsTab, setSettingsTab] = useState<'general' | 'friends' | 'class'>('general');
+  /** 管理者画面（sugoroku_admin）をタイトルから開いたか設定＞クラスから開いたか */
+  const [adminEntryOrigin, setAdminEntryOrigin] = useState<'launch' | 'settings'>('launch');
+  /** 先生ダッシュボード（teacher_dashboard）の戻り先と初回クラス開設モーダル自動起動フラグ */
+  const [teacherDashboardOrigin, setTeacherDashboardOrigin] = useState<'sugoroku_admin' | 'settings'>('settings');
+  const [teacherAutoOpenCreate, setTeacherAutoOpenCreate] = useState(false);
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'reading' | 'grammar' | 'more'>('words');
@@ -629,6 +634,23 @@ export default function App() {
                 window.history.replaceState({}, '', url.toString());
               } catch { /* ignore */ }
               setDirectAdminPortal(false);
+              setAdminEntryOrigin('launch');
+              setTeacherDashboardOrigin('sugoroku_admin');
+              setTeacherAutoOpenCreate(false);
+              setHasInteracted(true);
+              setAppState('teacher_dashboard');
+              setHasEntered(true);
+            }}
+            onOpenCreateClass={() => {
+              try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('portal');
+                window.history.replaceState({}, '', url.toString());
+              } catch { /* ignore */ }
+              setDirectAdminPortal(false);
+              setAdminEntryOrigin('launch');
+              setTeacherDashboardOrigin('sugoroku_admin');
+              setTeacherAutoOpenCreate(true);
               setHasInteracted(true);
               setAppState('teacher_dashboard');
               setHasEntered(true);
@@ -651,6 +673,9 @@ export default function App() {
     setFinishingLaunchBgm(false);
     setSettingsTab('class');
     setPrevAppState('home');
+    setAdminEntryOrigin('launch');
+    setTeacherDashboardOrigin('sugoroku_admin');
+    setTeacherAutoOpenCreate(false);
     setAppState('sugoroku_admin');
     setHasEntered(true);
   };
@@ -761,15 +786,21 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
-            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={() => { setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」→管理ポータル、または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
             {appState === 'teacher_dashboard' && (
               <SugorokuAdminGuard
                 onBackToStudentApp={() => exitAdminToStudentFlow(false)}
                 onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
               >
                 <TeacherDashboard
-                  onBack={() => setAppState('settings')}
+                  backLabel={teacherDashboardOrigin === 'sugoroku_admin' ? 'すごろく塾 管理へ戻る' : '設定に戻る'}
+                  initialOpenCreate={teacherAutoOpenCreate}
+                  onInitialCreateHandled={() => setTeacherAutoOpenCreate(false)}
+                  onBack={() => {
+                    setTeacherAutoOpenCreate(false);
+                    setAppState(teacherDashboardOrigin === 'sugoroku_admin' ? 'sugoroku_admin' : 'settings');
+                  }}
                   onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')}
                 />
               </SugorokuAdminGuard>
@@ -783,13 +814,31 @@ export default function App() {
                 <React.Suspense fallback={<ScreenLoading />}>
                   <SugorokuAdminApp
                     onBack={() => {
-                      if (auth.currentUser) {
+                      if (adminEntryOrigin === 'settings' && auth.currentUser) {
                         setAppState('settings');
                       } else {
-                        exitAdminToStudentFlow(false);
+                        // タイトルから入った場合はアプリ状態を生徒向け（home / onboarding）へ戻したうえでタイトルへ帰還
+                        setSettingsTab('general');
+                        const currentUser = auth.currentUser;
+                        if (currentUser) {
+                          const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+                          setAppState(hasLocalProfile ? 'home' : 'onboarding');
+                        } else {
+                          setAppState('onboarding');
+                        }
+                        setHasEntered(false);
                       }
                     }}
-                    onOpenTeacherDashboard={() => setAppState('teacher_dashboard')}
+                    onOpenTeacherDashboard={() => {
+                      setTeacherDashboardOrigin('sugoroku_admin');
+                      setTeacherAutoOpenCreate(false);
+                      setAppState('teacher_dashboard');
+                    }}
+                    onOpenCreateClass={() => {
+                      setTeacherDashboardOrigin('sugoroku_admin');
+                      setTeacherAutoOpenCreate(true);
+                      setAppState('teacher_dashboard');
+                    }}
                   />
                 </React.Suspense>
               </SugorokuAdminGuard>

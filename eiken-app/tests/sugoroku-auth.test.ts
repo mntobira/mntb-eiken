@@ -319,12 +319,14 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         user: null,
         loading: false,
         onlineReady: true,
+        onExitToStandardMode: () => {},
         onEnrolled: async () => {},
       }),
     );
     expect(step1Html).toContain('sugoroku-auth-gate');
     expect(step1Html).toContain('Google アカウントでログイン');
     expect(step1Html).toContain('広告 100% 完全非表示');
+    expect(step1Html).toContain('sugoroku-exit-to-standard-btn');
     expect(step1Html).toContain('data-tobira-buddy');
     expect(step1Html).not.toContain('デモデータモード');
     expect(step1Html).not.toContain('試作デモ');
