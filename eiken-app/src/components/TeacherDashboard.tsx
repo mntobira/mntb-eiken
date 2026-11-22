@@ -618,7 +618,14 @@ export function TeacherDashboard({ onBack, onOpenSugorokuAdmin }: TeacherDashboa
             }}
           />
         ) : tab === 'study_time' ? (
-          <StudyTimeTab activeClass={activeClass} theme={theme} />
+          <StudyTimeTab
+            activeClass={activeClass}
+            classSettings={activeSettings}
+            theme={theme}
+            onOpenEditClass={() => {
+              if (activeClass) setEditingRoom(activeClass);
+            }}
+          />
         ) : tab === 'kanten' ? (
           <KantenTab
             reports={kantenReports}

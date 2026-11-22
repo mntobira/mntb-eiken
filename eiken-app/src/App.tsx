@@ -558,6 +558,17 @@ export default function App() {
               } catch { /* ignore */ }
               setDirectAdminPortal(false);
             } : undefined}
+            onOpenTeacherDashboard={() => {
+              try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('portal');
+                window.history.replaceState({}, '', url.toString());
+              } catch { /* ignore */ }
+              setDirectAdminPortal(false);
+              setHasInteracted(true);
+              setAppState('teacher_dashboard');
+              setHasEntered(true);
+            }}
           />
         </React.Suspense>
       </SugorokuAdminGuard>

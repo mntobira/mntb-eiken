@@ -221,15 +221,17 @@ export function SugorokuHomeworkComposerModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 px-3 py-4 sm:px-4 sm:py-6"
-      onClick={onClose}
+      className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-[#1B2631]/55 backdrop-blur-[2px] sm:p-4"
+      onClick={() => {
+        if (!busy) onClose();
+      }}
       role="dialog"
       aria-modal="true"
       aria-label="ペースメーカー宿題を出す"
       data-testid="sugoroku-homework-composer"
     >
       <div
-        className="w-full max-w-xl max-h-[92dvh] flex flex-col bg-[#FFFDF9] rounded-3xl border border-[#E3D9C8] shadow-xl overflow-hidden"
+        className="w-full sm:max-w-xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col bg-[#FFFDF9] rounded-t-3xl sm:rounded-3xl border border-[#E3D9C8] shadow-2xl overflow-hidden"
         onClick={(ev) => ev.stopPropagation()}
       >
         {/* ヘッダー */}
@@ -614,7 +616,7 @@ export function SugorokuHomeworkComposerModal({
         </div>
 
         {/* フッターボタン */}
-        <footer className="flex items-center gap-2.5 px-5 py-3.5 bg-white border-t border-[#E3D9C8]">
+        <footer className="shrink-0 flex items-center gap-2.5 px-5 pt-3.5 pb-[calc(0.9rem+env(safe-area-inset-bottom,0px))] bg-white border-t border-[#E3D9C8]">
           <button
             type="button"
             onClick={onClose}

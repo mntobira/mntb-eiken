@@ -8,9 +8,15 @@ import {
   Flame,
   AlertTriangle,
   BarChart3,
+  Target,
+  CheckCircle2,
 } from 'lucide-react';
 import { type ClassroomDoc } from '../../utils/classroomCore';
 import type { ThemeShape } from './teacherTheme';
+import {
+  createDefaultClassSettings,
+  type JukuClassSettings,
+} from '../../sugoroku/admin/classroomSettings';
 import {
   loadClassPortalData,
   updateSugorokuStudentProfile,
@@ -41,11 +47,19 @@ import type { EikenGrade } from '../../eiken/config';
  */
 export function StudyTimeTab({
   activeClass,
+  classSettings,
   theme,
+  onOpenEditClass,
 }: {
   activeClass: ClassroomDoc | null;
+  classSettings?: JukuClassSettings;
   theme: ThemeShape;
+  onOpenEditClass?: () => void;
 }) {
+  const settings = classSettings ?? createDefaultClassSettings(activeClass?.id || '');
+  const dailyGoalSec = settings.dailyGoalMinutes * 60;
+  const weeklyGoalMinutes = settings.dailyGoalMinutes * settings.weeklyGoalDays;
+  const weeklyGoalSec = weeklyGoalMinutes * 60;
   const [portalData, setPortalData] = useState<LoadedClassPortalData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -127,6 +141,7 @@ export function StudyTimeTab({
     const totalMonthSec = rows.reduce((s, r) => s + r.report.monthlySeconds, 0);
     const activeTodayCount = rows.filter((r) => r.report.todaySeconds > 0).length;
     const activeWeekCount = rows.filter((r) => r.report.weeklySeconds > 0).length;
+    const goalAchievedCount = rows.filter((r) => r.report.weeklySeconds >= weeklyGoalSec).length;
     return {
       count,
       totalTodaySec,
@@ -135,8 +150,9 @@ export function StudyTimeTab({
       avgWeekSec: count > 0 ? Math.round(totalWeekSec / count) : 0,
       activeTodayCount,
       activeWeekCount,
+      goalAchievedCount,
     };
-  }, [rows]);
+  }, [rows, weeklyGoalSec]);
 
   const selectedRow = useMemo(
     () => rows.find((r) => r.overview.uid === selectedUid) ?? null,
@@ -197,8 +213,12 @@ export function StudyTimeTab({
   if (selectedRow) {
     const { overview, report } = selectedRow;
     const chartDays = rangeDays === 30 ? report.daily30 : report.daily30.slice(-14);
-    const maxSec = Math.max(1800, ...chartDays.map((d) => d.totalSeconds));
+    const maxSec = Math.max(dailyGoalSec, 1800, ...chartDays.map((d) => d.totalSeconds));
     const todayKey = formatDateKey(Date.now());
+    const weeklyPct =
+      weeklyGoalSec > 0 ? Math.min(100, Math.round((report.weeklySeconds / weeklyGoalSec) * 100)) : 0;
+    const dailyPct =
+      dailyGoalSec > 0 ? Math.min(100, Math.round((report.todaySeconds / dailyGoalSec) * 100)) : 0;
 
     return (
       <div className="space-y-4" data-testid="teacher-student-time-detail">
@@ -253,27 +273,32 @@ export function StudyTimeTab({
               <p className="text-xl font-extrabold text-[#1B2631] mt-0.5">
                 {formatDurationJa(report.todaySeconds)}
               </p>
+              <p className="text-[11px] text-[#4B5563] mt-0.5">
+                目標{settings.dailyGoalMinutes}分の <strong>{dailyPct}%</strong>
+              </p>
             </div>
             <div className="rounded-xl bg-[#FAF8F2] border border-[#E8E4DA] p-3">
               <p className="text-xs text-[#6B7280]">今週（直近7日）</p>
               <p className="text-xl font-extrabold text-[#1B2631] mt-0.5">
                 {formatDurationJa(report.weeklySeconds)}
               </p>
-              <p className="text-[11px] text-[#6B7280]">1日平均 {report.avgDailyMinutes7}分</p>
+              <p className="text-[11px] text-[#4B5563] mt-0.5">
+                週目標{weeklyGoalMinutes}分の <strong>{weeklyPct}%</strong>
+              </p>
             </div>
             <div className="rounded-xl bg-[#FAF8F2] border border-[#E8E4DA] p-3">
               <p className="text-xs text-[#6B7280]">直近30日間</p>
               <p className="text-xl font-extrabold text-[#1B2631] mt-0.5">
                 {formatDurationJa(report.monthlySeconds)}
               </p>
-              <p className="text-[11px] text-[#6B7280]">{report.monthlySolvedCount}問解答</p>
+              <p className="text-[11px] text-[#6B7280] mt-0.5">{report.monthlySolvedCount}問解答</p>
             </div>
             <div className="rounded-xl bg-[#FAF8F2] border border-[#E8E4DA] p-3">
               <p className="text-xs text-[#6B7280]">累計有効学習時間</p>
-              <p className="text-xl font-extrabold" style={{ color: theme.accent }}>
+              <p className="text-xl font-extrabold mt-0.5" style={{ color: theme.accent }}>
                 {formatDurationJa(report.totalSeconds)}
               </p>
-              <p className="text-[11px] text-[#6B7280]">学習日平均 {report.avgSessionMinutes}分</p>
+              <p className="text-[11px] text-[#6B7280] mt-0.5">学習日平均 {report.avgSessionMinutes}分</p>
             </div>
           </div>
         </div>
@@ -435,11 +460,33 @@ export function StudyTimeTab({
         </div>
       )}
 
+      {/* コース目標バー */}
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-white rounded-2xl border border-[#E0E1DD] px-4 py-3 text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1 font-extrabold text-[#1F635B] bg-[#EBF8F6] border border-[#BFE6E0] px-2.5 py-1 rounded-full">
+            <Target className="w-3.5 h-3.5" />
+            コース目標：1日{settings.dailyGoalMinutes}分 × 週{settings.weeklyGoalDays}日（週{weeklyGoalMinutes}分）
+          </span>
+          <span className="text-[#4B5563]">
+            今週の目標達成：<strong>{classStats.goalAchievedCount}</strong> / {classStats.count}名
+          </span>
+        </div>
+        {onOpenEditClass && (
+          <button
+            type="button"
+            onClick={onOpenEditClass}
+            className="font-bold text-[#4B5563] hover:text-[#1B2631] underline underline-offset-2"
+          >
+            目標時間を変更
+          </button>
+        )}
+      </div>
+
       {/* クラス全体の学習時間サマリー4カード */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white rounded-2xl border border-[#E0E1DD] p-3.5">
           <p className="text-xs text-[#6B7280] mb-1">クラス本日の合計</p>
-          <p className="text-xl font-bold" style={{ color: theme.accent }}>
+          <p className="text-xl font-extrabold" style={{ color: theme.accent }}>
             {formatDurationJa(classStats.totalTodaySec)}
           </p>
           <p className="text-xs text-[#6B7280] mt-0.5">
@@ -448,23 +495,31 @@ export function StudyTimeTab({
         </div>
         <div className="bg-white rounded-2xl border border-[#E0E1DD] p-3.5">
           <p className="text-xs text-[#6B7280] mb-1">今週（7日間）1人平均</p>
-          <p className="text-xl font-bold" style={{ color: theme.accent }}>
+          <p className="text-xl font-extrabold" style={{ color: theme.accent }}>
             {formatDurationJa(classStats.avgWeekSec)}
           </p>
           <p className="text-xs text-[#6B7280] mt-0.5">
-            今週稼働 {classStats.activeWeekCount}/{classStats.count}人
+            週目標 {weeklyGoalMinutes}分 対比{' '}
+            {weeklyGoalSec > 0 ? `${Math.round((classStats.avgWeekSec / weeklyGoalSec) * 100)}%` : '-'}
           </p>
         </div>
         <div className="bg-white rounded-2xl border border-[#E0E1DD] p-3.5">
-          <p className="text-xs text-[#6B7280] mb-1">今週のクラス総学習時間</p>
-          <p className="text-xl font-bold text-[#1B2631]">
-            {formatDurationJa(classStats.totalWeekSec)}
+          <p className="text-xs text-[#6B7280] mb-1">週目標クリア人数</p>
+          <p className="text-xl font-extrabold text-[#1B2631]">
+            {classStats.goalAchievedCount}
+            <span className="text-sm font-bold text-[#6B7280]"> / {classStats.count}人</span>
+          </p>
+          <p className="text-xs text-[#6B7280] mt-0.5">
+            今週稼働 {classStats.activeWeekCount}人
           </p>
         </div>
         <div className="bg-white rounded-2xl border border-[#E0E1DD] p-3.5">
           <p className="text-xs text-[#6B7280] mb-1">直近30日の総学習時間</p>
-          <p className="text-xl font-bold text-[#1B2631]">
+          <p className="text-xl font-extrabold text-[#1B2631]">
             {formatDurationJa(classStats.totalMonthSec)}
+          </p>
+          <p className="text-xs text-[#6B7280] mt-0.5">
+            今週計 {formatDurationJa(classStats.totalWeekSec)}
           </p>
         </div>
       </div>
@@ -528,75 +583,99 @@ export function StudyTimeTab({
         </div>
       ) : (
         <div className="space-y-2.5">
-          {rows.map(({ overview, report }) => (
-            <button
-              key={overview.uid}
-              type="button"
-              onClick={() => setSelectedUid(overview.uid)}
-              className="w-full text-left bg-white rounded-2xl border border-[#E0E1DD] hover:border-[#9BA3AE] p-4 transition-colors"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-extrabold text-[#1B2631]">
-                      {overview.rosterName}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-[#F1EFE9] text-[11px] font-bold text-[#4B5563]">
-                      {getGradeLabel(overview.targetGrade).replace('英検', '')}
-                    </span>
-                    {overview.alerts[0] && (
-                      <span className="text-xs font-bold text-[#B91C1C]">
-                        {overview.alerts[0].label}
+          {rows.map(({ overview, report }) => {
+            const goalPct =
+              weeklyGoalSec > 0
+                ? Math.min(100, Math.round((report.weeklySeconds / weeklyGoalSec) * 100))
+                : 0;
+            const achieved = weeklyGoalSec > 0 && report.weeklySeconds >= weeklyGoalSec;
+            return (
+              <button
+                key={overview.uid}
+                type="button"
+                onClick={() => setSelectedUid(overview.uid)}
+                className="w-full text-left bg-white rounded-2xl border border-[#E0E1DD] hover:border-[#9BA3AE] p-4 transition-colors"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-extrabold text-[#1B2631]">
+                        {overview.rosterName}
                       </span>
-                    )}
+                      <span className="px-2 py-0.5 rounded-full bg-[#F1EFE9] text-[11px] font-bold text-[#4B5563]">
+                        {getGradeLabel(overview.targetGrade).replace('英検', '')}
+                      </span>
+                      {achieved && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[11px] font-bold text-[#065F46]">
+                          <CheckCircle2 className="w-3 h-3" />
+                          週目標達成
+                        </span>
+                      )}
+                      {overview.alerts[0] && (
+                        <span className="text-xs font-bold text-[#B91C1C]">
+                          {overview.alerts[0].label}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-[#6B7280]">
+                      <StudyDoorsWeek recentDailyLogs={overview.recentDailyLogs} />
+                      <span>最終: {overview.lastStudiedDateKey ?? '未学習'}</span>
+                      <span>週目標達成率: <strong>{goalPct}%</strong></span>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-[#6B7280]">
-                    <StudyDoorsWeek recentDailyLogs={overview.recentDailyLogs} />
-                    <span>最終: {overview.lastStudiedDateKey ?? '未学習'}</span>
-                    <span>直近30日稼働: {report.activeDays30}日</span>
+
+                  <div className="flex items-center gap-4 ml-auto">
+                    <div className="text-right">
+                      <span className="block text-[11px] text-[#6B7280]">本日</span>
+                      <strong className="text-sm font-extrabold text-[#1B2631] tabular-nums">
+                        {formatDurationJa(report.todaySeconds)}
+                      </strong>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-[11px] text-[#6B7280]">今週 / 目標{weeklyGoalMinutes}分</span>
+                      <strong
+                        className="text-base font-extrabold tabular-nums"
+                        style={{ color: theme.accent }}
+                      >
+                        {formatDurationJa(report.weeklySeconds)}
+                      </strong>
+                    </div>
+                    <div className="text-right hidden sm:block">
+                      <span className="block text-[11px] text-[#6B7280]">累計</span>
+                      <strong className="text-sm font-extrabold text-[#1B2631] tabular-nums">
+                        {formatDurationJa(report.totalSeconds)}
+                      </strong>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-[#9BA3AE] shrink-0" />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 ml-auto">
-                  <div className="text-right">
-                    <span className="block text-[11px] text-[#6B7280]">本日</span>
-                    <strong className="text-sm font-extrabold text-[#1B2631] tabular-nums">
-                      {formatDurationJa(report.todaySeconds)}
-                    </strong>
-                  </div>
-                  <div className="text-right">
-                    <span className="block text-[11px] text-[#6B7280]">今週(7日)</span>
-                    <strong
-                      className="text-base font-extrabold tabular-nums"
-                      style={{ color: theme.accent }}
-                    >
-                      {formatDurationJa(report.weeklySeconds)}
-                    </strong>
-                  </div>
-                  <div className="text-right hidden sm:block">
-                    <span className="block text-[11px] text-[#6B7280]">累計</span>
-                    <strong className="text-sm font-extrabold text-[#1B2631] tabular-nums">
-                      {formatDurationJa(report.totalSeconds)}
-                    </strong>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-[#9BA3AE] shrink-0" />
-                </div>
-              </div>
-
-              {overview.gradeSkillBreakdown.length > 0 && (
-                <div className="mt-3">
-                  <SkillRatioStackBar
-                    items={overview.gradeSkillBreakdown.map((g) => ({
-                      key: g.key,
-                      skill: g.skill,
-                      label: g.label,
-                      seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
-                    }))}
+                {/* 週目標プログレスバー */}
+                <div className="mt-2.5 h-1.5 rounded-full bg-[#F1EFE9] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${goalPct}%`,
+                      backgroundColor: achieved ? '#059669' : theme.accent,
+                    }}
                   />
                 </div>
-              )}
-            </button>
-          ))}
+
+                {overview.gradeSkillBreakdown.length > 0 && (
+                  <div className="mt-2.5">
+                    <SkillRatioStackBar
+                      items={overview.gradeSkillBreakdown.map((g) => ({
+                        key: g.key,
+                        skill: g.skill,
+                        label: g.label,
+                        seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
+                      }))}
+                    />
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
 

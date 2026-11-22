@@ -95,9 +95,11 @@ export function SugorokuAdminApp({
   extensionSlots,
 }: SugorokuAdminAppProps) {
   const [user, setUser] = useState(() => auth.currentUser);
-  const [dataMode, setDataMode] = useState<'demo' | 'firestore'>(() =>
-    initialDataMode === 'firestore' && FIREBASE_CONFIGURED ? 'firestore' : 'demo',
-  );
+  const [dataMode, setDataMode] = useState<'demo' | 'firestore'>(() => {
+    if (initialDataMode === 'demo') return 'demo';
+    if (initialDataMode === 'firestore') return 'firestore';
+    return FIREBASE_CONFIGURED ? 'firestore' : 'demo';
+  });
   const [activeTab, setActiveTab] = useState<SugorokuAdminTabId>('students');
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
@@ -163,18 +165,6 @@ export function SugorokuAdminApp({
       void reloadLiveClasses();
     }
   }, [user, reloadLiveClasses]);
-
-  const switchDataMode = (nextMode: 'demo' | 'firestore') => {
-    if (nextMode === dataMode) return;
-    setSelectedStudentUid(null);
-    setQuickSheetStudentUid(null);
-    setSkeletonTransition(true);
-    setDataMode(nextMode);
-    window.setTimeout(() => {
-      setSkeletonTransition(false);
-      showToast(nextMode === 'demo' ? 'デモ表示' : '本番接続');
-    }, 280);
-  };
 
   const handlePullRefresh = async () => {
     setPtrRefreshing(true);
@@ -528,23 +518,6 @@ export function SugorokuAdminApp({
                 />
               </button>
 
-              <div className="sg-mode-pill" role="group" aria-label="表示データ">
-                <button
-                  type="button"
-                  aria-pressed={dataMode === 'demo'}
-                  onClick={() => switchDataMode('demo')}
-                >
-                  デモ
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={dataMode === 'firestore'}
-                  onClick={() => switchDataMode('firestore')}
-                >
-                  本番
-                </button>
-              </div>
-
               {FIREBASE_CONFIGURED && user && (
                 <button
                   type="button"
@@ -622,13 +595,10 @@ export function SugorokuAdminApp({
           ) : dataMode === 'firestore' && !FIREBASE_CONFIGURED ? (
             <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center' }}>
               <p className="mt-body" style={{ margin: 0 }}>クラウド接続が未設定です。</p>
-              <SecondaryButton onClick={() => switchDataMode('demo')}>
-                デモ表示へ戻る
-              </SecondaryButton>
             </Card>
           ) : dataMode === 'firestore' && !user ? (
             <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center', maxWidth: 420, margin: '0 auto' }}>
-              <h2 className="mt-h2" style={{ margin: 0 }}>講師ログイン</h2>
+              <h2 className="mt-h2" style={{ margin: 0 }}>管理者ログイン</h2>
               {liveError && <p className="slog-error">{liveError}</p>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <PrimaryButton
@@ -638,19 +608,42 @@ export function SugorokuAdminApp({
                 >
                   {authBusy ? '認証中…' : 'Googleでログイン'}
                 </PrimaryButton>
-                <SecondaryButton onClick={() => switchDataMode('demo')}>
-                  デモ表示
-                </SecondaryButton>
               </div>
             </Card>
           ) : dataMode === 'firestore' && !loadingLive && !isAuthorizedForLive ? (
             <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 10, justifyItems: 'center' }}>
               <p className="mt-body" style={{ margin: 0 }}>
-                担当クラスが見つかりません（{user?.email}）
+                管理者権限が確認できませんでした。
               </p>
-              <SecondaryButton onClick={() => switchDataMode('demo')}>
-                デモ表示へ戻る
-              </SecondaryButton>
+            </Card>
+          ) : dataMode === 'firestore' && !loadingLive && classrooms.length === 0 && activeTab !== 'pdf_shelf' ? (
+            <Card
+              style={{
+                textAlign: 'center',
+                padding: '32px 20px',
+                display: 'grid',
+                gap: 14,
+                justifyItems: 'center',
+                maxWidth: 520,
+                margin: '16px auto',
+              }}
+            >
+              <h2 className="mt-h2" style={{ margin: 0 }}>
+                まずはコース・クラスを開設しましょう
+              </h2>
+              <p className="mt-body" style={{ margin: 0, maxWidth: 420 }}>
+                対象級・1日の目標学習時間・週の目標日数を設定してクラスを開設すると、招待URL・6文字コード・LINE案内文が発行され、生徒の学習時間と4技能添削をここで一括管理できます。
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+                {onOpenTeacherDashboard && (
+                  <PrimaryButton onClick={onOpenTeacherDashboard}>
+                    コース・クラスを開設する
+                  </PrimaryButton>
+                )}
+                <SecondaryButton onClick={() => setActiveTab('pdf_shelf')}>
+                  先に教材PDF書庫を見る
+                </SecondaryButton>
+              </div>
             </Card>
           ) : (
             <>

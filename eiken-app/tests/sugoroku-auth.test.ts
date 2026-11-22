@@ -29,6 +29,7 @@ import { SUGOROKU_DEFAULT_INSTRUCTOR_EMAILS } from '../src/sugoroku/shared/types
 import { CLASSROOM_PREVIEW_EMAILS, isClassroomEnabledFor } from '../src/config/features';
 import { SugorokuGateScreen } from '../src/sugoroku/auth/SugorokuAuthGate';
 import { SugorokuAdminGuard } from '../src/sugoroku/auth/SugorokuAdminGuard';
+import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
 import {
   buildStudentDetailedTimeCsv,
   buildStudentDetailedTimeReport,
@@ -658,5 +659,16 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     );
     expect(classesHtml).toContain('設定を編集');
     expect(classesHtml).toContain('LINE・保護者案内文コピー');
+
+    // SugorokuAdminApp からも「デモ / 本番」スイッチやメールアドレス露出が消え、クラス管理導線が出ること
+    const adminPortalHtml = renderToStaticMarkup(
+      createElement(SugorokuAdminApp, {
+        initialDataMode: 'demo',
+        onOpenTeacherDashboard: () => {},
+      }),
+    );
+    expect(adminPortalHtml).toContain('クラス管理・作成');
+    expect(adminPortalHtml).not.toContain('sg-mode-pill');
+    expect(adminPortalHtml).not.toContain('デモ表示');
   });
 });
