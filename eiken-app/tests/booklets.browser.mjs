@@ -124,10 +124,19 @@ for (const selected of targets) {
             assert.equal(await page.getByRole('button', { name: '問題をはじめる', exact: true }).count(), 0);
             assert.equal(await page.locator('audio[src*="/eiken_audio/"]').count(), 0);
             for (const [index, item] of group.entries()) {
-              const choice = page.getByRole('button', { name: new RegExp(`^${item.answer + 1} .*／`) });
-              await choice.nth(viewport.width < 768 ? 0 : index).click();
-              if (viewport.width < 768 && index < group.length - 1) {
-                await page.getByRole('button', { name: '次の解答欄へ', exact: true }).click();
+              const readingCards = await page.locator('[data-eiken-reading-quiz] [data-eiken-question]').count();
+              if (readingCards > 0) {
+                await page
+                  .locator('[data-eiken-reading-quiz] [data-eiken-question]')
+                  .nth(index)
+                  .getByRole('button', { name: new RegExp(`^${item.answer + 1} .*／`) })
+                  .click();
+              } else {
+                const choice = page.getByRole('button', { name: new RegExp(`^${item.answer + 1} .*／`) });
+                await choice.nth(viewport.width < 768 ? 0 : index).click();
+                if (viewport.width < 768 && index < group.length - 1) {
+                  await page.getByRole('button', { name: '次の解答欄へ', exact: true }).click();
+                }
               }
             }
             await page.getByRole('button', { name: '解答と解説を見る', exact: true }).click();

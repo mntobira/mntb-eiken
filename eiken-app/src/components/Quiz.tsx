@@ -66,8 +66,13 @@ import { safeGetItem } from '../utils/safeLocalStorage';
 import { resolveQuizRange } from '../utils/quizRange';
 import { logRejection } from '../utils/reportError';
 import { EikenClozePageQuiz } from './EikenClozePageQuiz';
+import { EikenReadingPageQuiz } from './EikenReadingPageQuiz';
 import { EikenStepExplanationView } from './EikenWrittenResultView';
-import { isEikenBatchClozeChapter, isEikenWrittenChapterId } from './eikenClozePageModel';
+import {
+  isEikenBatchClozeChapter,
+  isEikenPassageChapter,
+  isEikenWrittenChapterId,
+} from './eikenClozePageModel';
 import type { Chapter, Problem, SubQuestion } from '../types/curriculum';
 
 interface QuizProps {
@@ -137,6 +142,9 @@ interface QuizProps {
 export function Quiz(props: QuizProps) {
   if (isEikenBatchClozeChapter(props.chapter)) {
     return <EikenClozePageQuiz {...props} />;
+  }
+  if (isEikenPassageChapter(props.chapter)) {
+    return <EikenReadingPageQuiz {...props} />;
   }
   return <QuizBody {...props} />;
 }

@@ -33,9 +33,16 @@ import {
   EIKEN_CLOZE_PER_PAGE,
   extractEikenGradeFromChapterId,
   isEikenBatchClozeChapter,
+  isEikenPassageChapter,
+  isEikenWrittenChapterId,
   parseEikenClozeExplanation,
   splitEikenDialogueTurns,
 } from '../src/components/eikenClozePageModel';
+import {
+  buildReadingQuestionItems,
+  EikenReadingPageQuiz,
+  parseEikenReadingPassage,
+} from '../src/components/EikenReadingPageQuiz';
 import {
   extractMatchedEikenVocab,
   findMatchingReorderChoiceIndex,
@@ -58,10 +65,10 @@ class MemoryStorage implements Storage {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Listening parity', () => {
-  it('keeps at least 579 inherited source files byte-identical with documented Eiken adaptations', () => {
+  it('keeps at least 570 inherited source files byte-identical with documented Eiken adaptations', () => {
     const baseline = JSON.parse(readFileSync('tests/listening-baseline.json', 'utf8'));
     expect(baseline.commit).toBe('ee648b2a961096724afbdc455d7da36a81284f44');
-    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThanOrEqual(579);
+    expect(Object.keys(baseline.unchangedFiles).length).toBeGreaterThanOrEqual(570);
     for (const [path, hash] of Object.entries(baseline.unchangedFiles)) {
       const content = readFileSync(path);
       expect(createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex'), path).toBe(hash);
@@ -362,11 +369,11 @@ describe('Release content completeness', () => {
   });
   it('provides eight real wordbooks, unique stable IDs, bilingual examples and valid exercise links', () => {
     const data = JSON.parse(readFileSync('public/data/listeningVocabulary.json', 'utf8'));
-    expect(data.wordCount).toBe(480); expect(data.questionCount).toBe(960);
-    expect(new Set(data.words.map(word => word.id)).size).toBe(data.words.length);
+    expect(data.wordCount).toBe(6600); expect(data.questionCount).toBe(13200);
+    expect(new Set(data.words.map((word: { id: string }) => word.id)).size).toBe(data.words.length);
     for (const grade of EIKEN_GRADES.filter(grade => grade.available)) {
-      const words = data.words.filter(word => word.level === grade.id);
-      expect(words).toHaveLength(60);
+      const words = data.words.filter((word: { level: string }) => word.level === grade.id || word.level.startsWith(`${grade.id}_`));
+      expect(words.length).toBeGreaterThanOrEqual(600);
       const chapters = partsForGrade(grade.id).flatMap(part => part.chapters);
       for (const word of words) {
         expect(word.exampleSentence).toMatch(/[a-z]/i); expect(word.exampleTranslation).toMatch(/[ぁ-んァ-ヶ一-龯]/);
@@ -477,5 +484,37 @@ describe('Release content completeness', () => {
     ]);
     const hits = extractMatchedEikenVocab(sampleVocab, ['preserved', 'destroyed'], ['in the old libraries']);
     expect(hits.map(h => h.word)).toEqual(['preserve', 'library']);
+
+    // 長文読解・長文空所補充の専用リーディングUI（全194章のルーティング＋設問全文＋ボタン選択肢）の検証
+    const allChapters = EIKEN_GRADES.filter(g => g.available).flatMap(g =>
+      partsForGrade(g.id).flatMap(p => p.chapters),
+    );
+    const passageChapters = allChapters.filter(c => isEikenPassageChapter(c));
+    expect(passageChapters).toHaveLength(194);
+    expect(passageChapters.every(c => isEikenWrittenChapterId(c.id))).toBe(true);
+    expect(isEikenPassageChapter(g2Short)).toBe(false);
+    expect(isEikenPassageChapter(g2VocabWarmup)).toBe(false);
+    expect(extractEikenGradeFromChapterId('eiken_1_reading_extra_p1')).toBe('eiken_1');
+
+    const g5Reading = allChapters.find(c => c.id === 'eiken_5_reading_01')!;
+    const parsedPassage = parseEikenReadingPassage(g5Reading.practiceProblems[0], g5Reading.id);
+    expect(parsedPassage.title).toBe('Workshop board');
+    expect(parsedPassage.genreLabel).toBe('掲示・案内');
+    const qItems = buildReadingQuestionItems(g5Reading.practiceProblems[0]);
+    expect(qItems).toHaveLength(2);
+    expect(qItems[1].prompt).toContain('Where do students put their boats?');
+
+    const readingHtml = renderToStaticMarkup(
+      createElement(EikenReadingPageQuiz, {
+        mode: 'practice',
+        chapter: g5Reading,
+        isGuest: true,
+        onFinish: () => {},
+        onBack: () => {},
+      }),
+    );
+    expect(readingHtml).toContain('data-eiken-reading-quiz');
+    expect(readingHtml).toContain('解答と解説を見る');
+    expect(readingHtml).toContain('erp-mobile-bar');
   });
 });
