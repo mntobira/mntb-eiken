@@ -5,16 +5,20 @@
  * マナトビ純正デザインシステム（tokens.css / system.css / TobiraBuddy / KineticText / MoRipple）
  * に準拠した講師・管理者専用ログインゲート。
  *
- * セキュリティ原則：
+ * セキュリティ＆導線設計原則：
  *   - 画面上に具体的な管理者メールアドレスや内部ロール名・テーブル名は一切露出しない。
- *   - デモバイパス（未認証入場ボタン）は置かず、正規の Google アカウント認証と権限照合のみを通す。
+ *   - 管理者ログインからは指定された管理者 Google アカウントのみを通し、それ以外は確実にブロックする。
+ *   - 生徒が誤って「管理者ログインをする」を押してしまった場合や、生徒アカウントで弾かれた場合でも、
+ *     ワンタップで「生徒としてアプリを始める（通常の学習・ログイン画面）」へ迷わず移れるようにする。
  */
 
 import React, { useEffect, useState } from 'react';
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   ExternalLink,
+  Headphones,
   Loader2,
   Lock,
   LogOut,
@@ -42,14 +46,18 @@ import './sugoroku-auth.css';
 
 export interface SugorokuAdminGuardProps {
   children: React.ReactNode;
+  /** タイトル画面等へ戻るハンドラ */
   onBackToStudentApp?: () => void;
-  /** 指定管理者メール（hirokingz0927@gmail.com / mntobira@gmail.com）以外をすべて遮断する（既定: true） */
+  /** 生徒向けアプリ（通常の Google ログイン／ホーム画面）へ直行するハンドラ */
+  onSwitchToStudentApp?: () => void;
+  /** 指定管理者メール以外をすべて遮断する（既定: true） */
   strictSpecifiedEmailsOnly?: boolean;
 }
 
 export function SugorokuAdminGuard({
   children,
   onBackToStudentApp,
+  onSwitchToStudentApp,
   strictSpecifiedEmailsOnly = true,
 }: SugorokuAdminGuardProps) {
   useSuppressBannerAd();
@@ -94,11 +102,13 @@ export function SugorokuAdminGuard({
     }
   };
 
+  const studentEntryHandler = onSwitchToStudentApp || onBackToStudentApp;
+
   const buddyLine = checking
     ? 'アカウントを確認しているよ…'
     : !user
-      ? '先生・管理者専用のログイン画面だよ。Google アカウントでログインしてね。'
-      : 'このアカウントは管理者として登録されていないみたい。別のアカウントに切り替えてね。';
+      ? 'ここは先生・管理者専用のログイン画面だよ。生徒のみんなは下のボタンから始められるよ！'
+      : 'このアカウントは管理者としては登録されていないみたい。生徒として学習を始めるなら下のボタンを押してね！';
 
   return (
     <main data-testid="sugoroku-admin-guard" className="sga-screen">
@@ -111,7 +121,7 @@ export function SugorokuAdminGuard({
               className="sga-secondary-btn"
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              <span>戻る</span>
+              <span>タイトルへ戻る</span>
             </button>
           </div>
         )}
@@ -128,7 +138,7 @@ export function SugorokuAdminGuard({
             <KineticText text="管理者ログイン" variant="rise" />
           </h1>
           <p className="sga-hero-sub">
-            講師・管理者用の Google アカウントでログインしてください。
+            講師・管理者として登録された特定の Google アカウントのみログインできます。
           </p>
 
           <div className="sga-buddy-wrap">
@@ -167,7 +177,7 @@ export function SugorokuAdminGuard({
                 ) : (
                   <>
                     <GoogleMark size={20} />
-                    <span>Google アカウントでログイン</span>
+                    <span>管理者 Google アカウントでログイン</span>
                   </>
                 )}
               </button>
@@ -197,13 +207,26 @@ export function SugorokuAdminGuard({
               <div className="sga-error-box flex items-start gap-2.5">
                 <ShieldAlert size={19} className="mt-0.5 shrink-0" aria-hidden="true" />
                 <div>
-                  <p className="font-extrabold">管理者権限が確認できませんでした</p>
+                  <p className="font-extrabold">このアカウントでは管理者画面に入れません</p>
                   <p className="mt-1">
                     ログイン中: <b>{user.email || user.displayName || 'Google アカウント'}</b>
                   </p>
                   <p className="mt-1">{describeAdminDenyReason(reason)}</p>
                 </div>
               </div>
+
+              {studentEntryHandler && (
+                <button
+                  type="button"
+                  data-testid="sugoroku-continue-as-student-btn"
+                  onClick={studentEntryHandler}
+                  className="sga-primary-btn w-full justify-center"
+                >
+                  <Headphones size={16} aria-hidden="true" />
+                  <span>このアカウントのまま生徒として学習を始める</span>
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <button
@@ -212,20 +235,38 @@ export function SugorokuAdminGuard({
                   className="sga-secondary-btn w-full"
                 >
                   <RefreshCw size={15} aria-hidden="true" />
-                  <span>再確認する</span>
+                  <span>権限を再確認する</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => void signOutGoogle()}
-                  className="sga-primary-btn"
+                  className="sga-secondary-btn w-full"
                 >
                   <LogOut size={15} aria-hidden="true" />
-                  <span>別アカウントでログイン</span>
+                  <span>管理者アカウントに切り替える</span>
                 </button>
               </div>
             </div>
           )}
         </section>
+
+        {studentEntryHandler && (
+          <div className="pt-1 flex flex-col gap-2">
+            <p className="text-xs text-[#5D6D7E] text-center">
+              生徒・一般の方はこちらから通常の Google アカウントで始められます
+            </p>
+            <button
+              type="button"
+              data-testid="sugoroku-switch-to-student-btn"
+              onClick={studentEntryHandler}
+              className="sga-secondary-btn w-full justify-center"
+            >
+              <Headphones size={15} aria-hidden="true" />
+              <span>生徒用ログイン・学習画面へ進む</span>
+              <ArrowRight size={15} aria-hidden="true" />
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

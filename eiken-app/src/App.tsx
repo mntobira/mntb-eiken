@@ -98,7 +98,8 @@ import { subjectOfChapterId } from './data/subjects';
 import { safeSetItem } from './utils/storageGuard';
 import { safeGetItem, safeRemoveItem } from './utils/safeLocalStorage';
 import { STORAGE_KEYS } from './utils/storageKeysCatalog';
-import { useAppPersistence, isScreenshotLaunch } from './hooks/useAppPersistence';
+import { useAppPersistence, isScreenshotLaunch, isAdminOnlyAppState } from './hooks/useAppPersistence';
+import { profileKey } from './utils/userStorageKeys';
 import { trackScreen } from './utils/analytics';
 import { AppToast } from './components/AppToast';
 import { useAppBackgroundSync } from './hooks/useAppBackgroundSync';
@@ -528,11 +529,63 @@ export default function App() {
     },
   });
 
+  /**
+   * 生徒向け（オレンジの「はじめる」ボタン）からの開始導線。
+   * - 過去に「管理者ログインをする」を押した履歴（appState が sugoroku_admin / teacher_dashboard 等）が
+   *   残っていたとしても、オレンジの「はじめる」からは100%生徒・一般ユーザー導線へ入るようにリセットする。
+   * - 未ログイン時は通常の Google アカウントログイン画面（Onboarding）へ進み、どの Google アカウントでもログイン可能。
+   * - ログイン済みならプロフィール確認のうえ学習画面（Home または直前の学習画面）へ直行する。
+   */
   const enter = (finishBgm: boolean) => {
     battleAudio().unlock();
     setHasInteracted(true);
     setFinishingLaunchBgm(finishBgm);
+    setDirectAdminPortal(false);
+    setSettingsTab('general');
+
+    const currentUser = auth.currentUser;
+    if (!currentUser && !isGuest) {
+      setAppState('onboarding');
+    } else if (currentUser) {
+      const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+      if (!hasLocalProfile) {
+        setAppState('onboarding');
+      } else if (isAdminOnlyAppState(appState)) {
+        setAppState('home');
+      }
+    } else if (isAdminOnlyAppState(appState)) {
+      setAppState('home');
+    }
+
     setHasEntered(true);
+  };
+
+  /**
+   * 管理者画面から生徒向けアプリ／タイトルへ戻る共通ハンドラ。
+   * appState を管理者状態のまま残さないことで、戻ったあとにオレンジの「はじめる」を押した際も
+   * 二度と管理者ログイン画面へ誤遷移しないようにする。
+   */
+  const exitAdminToStudentFlow = (goToStudentLogin = false) => {
+    setSettingsTab('general');
+    const currentUser = auth.currentUser;
+    if (goToStudentLogin) {
+      if (currentUser) {
+        const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+        setAppState(hasLocalProfile ? 'home' : 'onboarding');
+      } else {
+        setAppState(isGuest ? 'home' : 'onboarding');
+      }
+      setHasEntered(true);
+      return;
+    }
+    if (currentUser) {
+      const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+      setAppState(hasLocalProfile ? 'home' : 'onboarding');
+      setHasEntered(true);
+    } else {
+      setAppState('onboarding');
+      setHasEntered(false);
+    }
   };
 
   if (directAdminPortal) {
@@ -546,6 +599,16 @@ export default function App() {
             window.history.replaceState({}, '', url.toString());
           } catch { /* ignore */ }
           setDirectAdminPortal(false);
+          exitAdminToStudentFlow(false);
+        } : undefined}
+        onSwitchToStudentApp={canExitToStudent ? () => {
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('portal');
+            window.history.replaceState({}, '', url.toString());
+          } catch { /* ignore */ }
+          setDirectAdminPortal(false);
+          exitAdminToStudentFlow(true);
         } : undefined}
       >
         <React.Suspense fallback={<ScreenLoading />}>
@@ -557,6 +620,7 @@ export default function App() {
                 window.history.replaceState({}, '', url.toString());
               } catch { /* ignore */ }
               setDirectAdminPortal(false);
+              exitAdminToStudentFlow(false);
             } : undefined}
             onOpenTeacherDashboard={() => {
               try {
@@ -701,13 +765,8 @@ export default function App() {
             {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
             {appState === 'teacher_dashboard' && (
               <SugorokuAdminGuard
-                onBackToStudentApp={() => {
-                  if (auth.currentUser) {
-                    setAppState('settings');
-                  } else {
-                    setHasEntered(false);
-                  }
-                }}
+                onBackToStudentApp={() => exitAdminToStudentFlow(false)}
+                onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
               >
                 <TeacherDashboard
                   onBack={() => setAppState('settings')}
@@ -718,13 +777,8 @@ export default function App() {
             {/* すごろく塾管理者ポータル（React.lazyコード分割）。タイトル画面「管理者ログインをする」または設定・先生欄から開く */}
             {appState === 'sugoroku_admin' && (
               <SugorokuAdminGuard
-                onBackToStudentApp={() => {
-                  if (auth.currentUser) {
-                    setAppState('settings');
-                  } else {
-                    setHasEntered(false);
-                  }
-                }}
+                onBackToStudentApp={() => exitAdminToStudentFlow(false)}
+                onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
               >
                 <React.Suspense fallback={<ScreenLoading />}>
                   <SugorokuAdminApp
@@ -732,7 +786,7 @@ export default function App() {
                       if (auth.currentUser) {
                         setAppState('settings');
                       } else {
-                        setHasEntered(false);
+                        exitAdminToStudentFlow(false);
                       }
                     }}
                     onOpenTeacherDashboard={() => setAppState('teacher_dashboard')}
@@ -749,7 +803,13 @@ export default function App() {
                 «ログイン → 科目選択 → ホーム → 学習を始める → 科目選択»
                 と科目選択が2回出てしまっていた。
                 科目はホームの「学習を始める」で選ぶ（初期値は化学基礎）。 */}
-            {appState === 'onboarding' && <Onboarding onComplete={() => { setIsGuest(false); setAppState('home'); }} onOffline={() => { setIsGuest(true); setAppState('home'); }} />}
+            {appState === 'onboarding' && (
+              <Onboarding
+                onComplete={() => { setIsGuest(false); setAppState('home'); }}
+                onOffline={() => { setIsGuest(true); setAppState('home'); }}
+                onBackToTitle={() => { setHasEntered(false); }}
+              />
+            )}
             {appState === 'subject_selection' && (
               <ListeningSubjectSelection
                 onSelectSubject={handleSelectSubject}

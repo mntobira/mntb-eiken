@@ -43,10 +43,15 @@ export function isScreenshotLaunch(): boolean {
   }
 }
 
-/** 起動したときの画面。保存値 → 画面検証・案内済みならホーム → 初回は案内 */
+/** 管理者専用の画面状態か（localStorage に残っていても一般起動時に自動復元してはいけない） */
+export function isAdminOnlyAppState(state: string | null | undefined): boolean {
+  return state === 'sugoroku_admin' || state === 'teacher_dashboard' || state === 'feedback_admin';
+}
+
+/** 起動したときの画面。保存値（管理者専用画面を除く） → 画面検証・案内済みならホーム → 初回は案内 */
 export function restoreAppState(): AppState {
   const saved = safeGetItem(STORAGE_KEYS.appState);
-  if (isAppState(saved)) return saved;
+  if (isAppState(saved) && !isAdminOnlyAppState(saved)) return saved;
   if (isScreenshotLaunch() || safeGetItem(STORAGE_KEYS.hasCompletedOnboarding) === 'true') return 'home';
   return 'onboarding';
 }
@@ -117,7 +122,13 @@ export function useAppPersistence() {
   const [isGuest, setIsGuest] = useState(() => safeGetItem(STORAGE_KEYS.loginFallbackLocal) === 'true');
   const [selectedSubject, setSelectedSubject] = useState<SubjectId>(restoreSelectedSubject);
 
-  useEffect(() => { safeSetItem(STORAGE_KEYS.appState, appState); }, [appState]);
+  useEffect(() => {
+    // 管理者専用画面（sugoroku_admin / teacher_dashboard / feedback_admin）を localStorage に焼くと、
+    // 次回タイトル画面で生徒の「はじめる」を押した際に管理者ログインへ吸い込まれる原因になるため保存しない。
+    if (!isAdminOnlyAppState(appState)) {
+      safeSetItem(STORAGE_KEYS.appState, appState);
+    }
+  }, [appState]);
   useEffect(() => { safeSetItem(STORAGE_KEYS.appMode, appMode); }, [appMode]);
   useEffect(() => { writeOrRemove(STORAGE_KEYS.selectedChapterId, selectedChapterId); }, [selectedChapterId]);
   useEffect(() => { writeOrRemove(STORAGE_KEYS.quizRange, quizRange ? JSON.stringify(quizRange) : null); }, [quizRange]);

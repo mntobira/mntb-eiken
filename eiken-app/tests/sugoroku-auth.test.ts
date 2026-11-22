@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { User } from 'firebase/auth';
@@ -51,6 +51,10 @@ import { ClassesTab } from '../src/components/teacher/ClassesTab';
 import { DEFAULT_CLASS_SUBJECT } from '../src/components/teacher/teacherSubjects';
 import { aggregateClass, type ClassroomDoc } from '../src/utils/classroomCore';
 import { subjectTheme } from '../src/data/subjectTheme';
+import { isAdminOnlyAppState, restoreAppState } from '../src/hooks/useAppPersistence';
+import { STORAGE_KEYS } from '../src/utils/storageKeysCatalog';
+import { safeSetItem } from '../src/utils/storageGuard';
+import { safeRemoveItem } from '../src/utils/safeLocalStorage';
 import { isAdFree, setAdFree } from '../src/ads/adFree';
 
 describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
@@ -670,5 +674,69 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(adminPortalHtml).toContain('クラス管理・作成');
     expect(adminPortalHtml).not.toContain('sg-mode-pill');
     expect(adminPortalHtml).not.toContain('デモ表示');
+  });
+
+  it('keeps student orange Start flow completely isolated from Admin Login even after visiting admin screens', () => {
+    expect(isAdminOnlyAppState('sugoroku_admin')).toBe(true);
+    expect(isAdminOnlyAppState('teacher_dashboard')).toBe(true);
+    expect(isAdminOnlyAppState('feedback_admin')).toBe(true);
+    expect(isAdminOnlyAppState('onboarding')).toBe(false);
+    expect(isAdminOnlyAppState('home')).toBe(false);
+
+    const store = new Map<string, string>();
+    const memoryStorage: Storage = {
+      get length() {
+        return store.size;
+      },
+      key(index: number) {
+        return [...store.keys()][index] ?? null;
+      },
+      getItem(k: string) {
+        return store.get(String(k)) ?? null;
+      },
+      setItem(k: string, v: string) {
+        store.set(String(k), String(v));
+      },
+      removeItem(k: string) {
+        store.delete(String(k));
+      },
+      clear() {
+        store.clear();
+      },
+    };
+    vi.stubGlobal('localStorage', memoryStorage);
+
+    try {
+      // 仮に localStorage に古い savedAppState = 'sugoroku_admin' / 'teacher_dashboard' が残っていても、
+      // 起動時の restoreAppState は絶対に管理者画面を復元せず、通常の生徒導線（onboarding または home）に戻す
+      safeSetItem(STORAGE_KEYS.appState, 'sugoroku_admin');
+      safeRemoveItem(STORAGE_KEYS.hasCompletedOnboarding);
+      expect(restoreAppState()).toBe('onboarding');
+
+      safeSetItem(STORAGE_KEYS.appState, 'teacher_dashboard');
+      safeSetItem(STORAGE_KEYS.hasCompletedOnboarding, 'true');
+      expect(restoreAppState()).toBe('home');
+
+      // 通常の学習画面（home / study など）は従来どおり復元される
+      safeSetItem(STORAGE_KEYS.appState, 'study');
+      expect(restoreAppState()).toBe('study');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+
+    // 管理者ガード画面には「タイトルへ戻る」と「生徒用ログイン・学習画面へ進む」の両方が用意されていること
+    const guardHtml = renderToStaticMarkup(
+      createElement(
+        SugorokuAdminGuard,
+        {
+          onBackToStudentApp: () => {},
+          onSwitchToStudentApp: () => {},
+        },
+        createElement('div', null, 'SECRET_ADMIN_BODY'),
+      ),
+    );
+    expect(guardHtml).not.toContain('SECRET_ADMIN_BODY');
+    expect(guardHtml).toContain('タイトルへ戻る');
+    expect(guardHtml).toContain('sugoroku-switch-to-student-btn');
   });
 });
