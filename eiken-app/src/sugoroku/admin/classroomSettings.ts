@@ -149,6 +149,18 @@ export const JUKU_CLASS_SUBJECT_DEFAULT: ClassroomDoc['subject'] = 'eiken_2';
 
 export const JUKU_COURSE_PRESETS: ClassPreset[] = [
   {
+    id: 'all_grades_unified',
+    badge: '塾おすすめ・全級一括',
+    label: '全級一括ルーム（5級〜1級）',
+    className: '全級一括コース（英検5級〜1級）',
+    subject: 'eiken_2',
+    dailyGoalMinutes: 30,
+    weeklyGoalDays: 5,
+    examSession: 'scbt_monthly',
+    focusSkills: ['vocab', 'reading', 'listening', 'writing', 'speaking'],
+    coachNote: '英検5級〜1級のどの級を学習しても一括で学習時間・宿題・英作文・スピーキング録音が共有されます。',
+  },
+  {
     id: 'eiken2_scbt',
     badge: '定番・大学受験',
     label: '英検2級 S-CBT＆一次突破',

@@ -83,9 +83,13 @@ export function ClassFormModal({
   const effectiveAccent = selectedTheme.accent || accent;
   const weeklyTotalMinutes = dailyGoalMinutes * weeklyGoalDays;
 
+  const effectiveClassName =
+    className.trim() ||
+    (mode === 'create' && orgType === 'juku' ? '全級一括コース（英検5級〜1級）' : '');
+
   const canSubmit =
     schoolName.trim().length > 0 &&
-    className.trim().length > 0 &&
+    effectiveClassName.length > 0 &&
     focusSkills.length > 0 &&
     !submitting;
 
@@ -119,7 +123,7 @@ export function ClassFormModal({
     if (!canSubmit) return;
     onSubmit({
       schoolName: schoolName.trim(),
-      className: className.trim(),
+      className: effectiveClassName,
       subject,
       joinOpen,
       orgType,

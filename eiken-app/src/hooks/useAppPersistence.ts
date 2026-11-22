@@ -45,7 +45,12 @@ export function isScreenshotLaunch(): boolean {
 
 /** 管理者専用の画面状態か（localStorage に残っていても一般起動時に自動復元してはいけない） */
 export function isAdminOnlyAppState(state: string | null | undefined): boolean {
-  return state === 'sugoroku_admin' || state === 'teacher_dashboard' || state === 'feedback_admin';
+  return (
+    state === 'sugoroku_admin' ||
+    state === 'teacher_dashboard' ||
+    state === 'sugoroku_review' ||
+    state === 'feedback_admin'
+  );
 }
 
 /** 起動したときの画面。保存値（管理者専用画面を除く） → 画面検証・案内済みならホーム → 初回は案内 */

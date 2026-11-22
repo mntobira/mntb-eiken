@@ -1,5 +1,5 @@
 /**
- * すごろく塾 管理者ポータル（エッセンシャル設計）
+ * すごろく塾 管理者ポータル（エッセンシャル設計・全級一括＆詳細目標対応）
  * 説明文・装飾色・重複ウィジェットを排し、必要な数値と操作だけを一瞥で扱う。
  */
 
@@ -10,10 +10,13 @@ import {
   Copy,
   Download,
   Eye,
+  Link2,
   LogIn,
   LogOut,
   MessageCircle,
+  Plus,
   RefreshCw,
+  Route,
   Users,
 } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
@@ -43,6 +46,23 @@ import {
   type SugorokuStudentOverview,
 } from './adminAnalytics';
 import { createSugorokuDemoBundle, type SugorokuDemoBundle } from './demoData';
+import {
+  buildClassInviteMessage,
+  buildClassInviteUrl,
+  createDefaultClassSettings,
+  createManagedClassroom,
+  loadCachedClassSettings,
+  loadLastOrgName,
+} from './classroomSettings';
+import { createAssignment } from '../../utils/classAssignments';
+import { dueDateToMs } from '../../utils/classAssignmentsCore';
+import type { StudentRawProgress } from '../../utils/classroom';
+import { attachPlanToAssignment } from '../homework/homeworkStore';
+import { allEikenChapterCatalog } from '../homework/chapterTotals';
+import {
+  SugorokuHomeworkComposerModal,
+  type PacemakerSubmitPayload,
+} from '../homework/SugorokuHomeworkComposer';
 import {
   buildStaffInviteId,
   fetchManageableClassrooms,
@@ -106,10 +126,15 @@ export function SugorokuAdminApp({
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [staffSheetOpen, setStaffSheetOpen] = useState(false);
+  const [homeworkModalOpen, setHomeworkModalOpen] = useState(false);
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [onlyAlerts, setOnlyAlerts] = useState(false);
+  const [newJukuSchoolName, setNewJukuSchoolName] = useState(
+    () => loadLastOrgName() || 'すごろく学習塾',
+  );
+  const [creatingJukuRoom, setCreatingJukuRoom] = useState(false);
 
-  const [skeletonTransition, setSkeletonTransition] = useState(false);
+  const [skeletonTransition] = useState(false);
   const [ptrRefreshing, setPtrRefreshing] = useState(false);
   const { toast, showToast, dismissToast } = usePortalToast();
 
@@ -212,6 +237,7 @@ export function SugorokuAdminApp({
         schoolName: demoBundle.schoolName,
         className: demoBundle.className,
         joinCode: demoBundle.joinCode,
+        subject: 'eiken_2' as ClassroomDoc['subject'],
         members: demoBundle.members,
         logsByUid: demoBundle.logsByUid,
         solvedByUid: demoBundle.solvedByUid,
@@ -231,6 +257,7 @@ export function SugorokuAdminApp({
         schoolName: '',
         className: '',
         joinCode: '',
+        subject: 'eiken_2' as ClassroomDoc['subject'],
         members: [],
         logsByUid: {},
         solvedByUid: {},
@@ -252,6 +279,7 @@ export function SugorokuAdminApp({
       schoolName: livePortalData.classroom.schoolName,
       className: livePortalData.classroom.className,
       joinCode: livePortalData.classroom.joinCode,
+      subject: livePortalData.classroom.subject,
       members: livePortalData.members,
       logsByUid: livePortalData.logsByUid,
       solvedByUid: livePortalData.solvedByUid,
@@ -279,7 +307,10 @@ export function SugorokuAdminApp({
 
   const filteredStudents = useMemo(() => {
     return allStudentOverviews.filter((s) => {
-      if (gradeFilter !== 'all' && s.targetGrade !== gradeFilter) return false;
+      if (gradeFilter !== 'all') {
+        const practicedGrade = s.gradeSkillBreakdown.some((g) => g.grade === gradeFilter);
+        if (s.targetGrade !== gradeFilter && !practicedGrade) return false;
+      }
       if (onlyAlerts && s.alerts.length === 0) return false;
       return true;
     });
@@ -434,6 +465,42 @@ export function SugorokuAdminApp({
     }
   };
 
+  const handleCopyInviteUrl = async () => {
+    if (!sourceInfo.joinCode) return;
+    try {
+      await navigator.clipboard.writeText(buildClassInviteUrl(sourceInfo.joinCode));
+      showToast('生徒用の参加URLをコピーしました', 'done');
+    } catch {
+      showToast('コピーできませんでした', 'warn');
+    }
+  };
+
+  const handleCopyInviteLineTemplate = async () => {
+    if (!sourceInfo.joinCode || !sourceInfo.classId) return;
+    try {
+      const settings = loadCachedClassSettings(sourceInfo.classId);
+      const roomDoc: ClassroomDoc = livePortalData?.classroom ?? {
+        id: sourceInfo.classId,
+        teacherUid: user?.uid || 'owner',
+        schoolName: sourceInfo.schoolName,
+        className: sourceInfo.className,
+        subject: sourceInfo.subject,
+        joinCode: sourceInfo.joinCode,
+        joinOpen: true,
+        plan: 'juku',
+        createdAt: 0,
+      };
+      const text = buildClassInviteMessage({
+        room: roomDoc,
+        settings,
+      });
+      await navigator.clipboard.writeText(text);
+      showToast('LINE・連絡用の案内文をコピーしました', 'done');
+    } catch {
+      showToast('コピーできませんでした', 'warn');
+    }
+  };
+
   const handleCopyStudentLineMessage = async (st: SugorokuStudentOverview) => {
     try {
       await navigator.clipboard.writeText(buildLineEncourageMessage(st));
@@ -459,6 +526,97 @@ export function SugorokuAdminApp({
   const isAuthorizedForLive =
     !!user && (classrooms.length > 0 || isEmailPreAuthorizedAdmin(user.email));
 
+  const composerStudents = useMemo<StudentRawProgress[]>(
+    () =>
+      allStudentOverviews.map((st) => ({
+        uid: st.uid,
+        displayName: st.rosterName,
+        solved: sourceInfo.solvedByUid[st.uid] ?? {},
+        reviewItems: [],
+      })),
+    [allStudentOverviews, sourceInfo.solvedByUid],
+  );
+
+  const homeworkCatalog = useMemo(() => allEikenChapterCatalog(), []);
+
+  const handleCreateQuickJukuRoom = async () => {
+    const cleanSchool = newJukuSchoolName.trim() || 'すごろく学習塾';
+    setCreatingJukuRoom(true);
+    setLiveError(null);
+    try {
+      const baseDefaults = createDefaultClassSettings('');
+      const { classroom: created } = await createManagedClassroom({
+        schoolName: cleanSchool,
+        className: '全級一括コース（英検5級〜1級）',
+        subject: 'eiken_2',
+        enableJukuPlan: true,
+        settings: {
+          orgType: 'juku',
+          dailyGoalMinutes: baseDefaults.dailyGoalMinutes,
+          weeklyGoalDays: baseDefaults.weeklyGoalDays,
+          examSession: baseDefaults.examSession,
+          focusSkills: baseDefaults.focusSkills,
+          coachNote: '英検5級〜1級のどの級を学習しても一括で学習時間・宿題・英作文・スピーキング録音が共有されます。',
+        },
+      });
+      await reloadLiveClasses();
+      setActiveClassId(created.id);
+      showToast(`招待コード ${created.joinCode} でコースを開設しました`, 'done');
+    } catch (e) {
+      setLiveError(e instanceof Error ? e.message : 'コースの開設に失敗しました');
+    } finally {
+      setCreatingJukuRoom(false);
+    }
+  };
+
+  const handleSubmitHomework = async (payload: PacemakerSubmitPayload) => {
+    if (dataMode === 'demo') {
+      const now = Date.now();
+      const dueMs = dueDateToMs(payload.dueDate);
+      const nextAssignment = {
+        id: `demo_assign_${now}`,
+        classId: demoBundle.classId,
+        teacherUid: 'teacher_sugoroku_nishi',
+        title: payload.title,
+        chapterIds: payload.chapterIds,
+        dueAt: Number.isFinite(dueMs) ? dueMs : now + 7 * 86_400_000,
+        startAt: payload.startAt ?? now,
+        targetStudentUids: payload.targetStudentUids,
+        dailyQuotaProblems: payload.dailyQuotaProblems,
+        skillBreakdown: payload.skillBreakdown,
+        presetId: payload.presetId,
+        presetWeek: payload.presetWeek,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setDemoBundle((prev) => ({
+        ...prev,
+        assignments: [nextAssignment, ...prev.assignments],
+      }));
+      setHomeworkModalOpen(false);
+      showToast(`宿題「${payload.title}」を配信しました`, 'done');
+      return;
+    }
+
+    if (!sourceInfo.classId) return;
+    const created = await createAssignment(sourceInfo.classId, {
+      title: payload.title,
+      chapterIds: payload.chapterIds,
+      dueDate: payload.dueDate,
+    });
+    await attachPlanToAssignment(created, {
+      dailyQuotaProblems: payload.dailyQuotaProblems,
+      skillBreakdown: payload.skillBreakdown,
+      targetStudentUids: payload.targetStudentUids,
+      presetId: payload.presetId,
+      presetWeek: payload.presetWeek,
+      startAt: payload.startAt,
+    });
+    await reloadLiveClasses();
+    setHomeworkModalOpen(false);
+    showToast(`宿題「${created.title}」を配信しました`, 'done');
+  };
+
   const showSkeleton =
     skeletonTransition || (dataMode === 'firestore' && loadingLive && !livePortalData);
 
@@ -483,7 +641,7 @@ export function SugorokuAdminApp({
                   type="button"
                   className="sg-code-btn"
                   onClick={onOpenTeacherDashboard}
-                  title="クラスの作成・設定・宿題配信へ移動"
+                  title="クラスの作成・目標設定・招待キットへ移動"
                 >
                   クラス管理・作成
                 </button>
@@ -602,14 +760,14 @@ export function SugorokuAdminApp({
           {showSkeleton ? (
             <PortalSkeletonScreen rows={5} />
           ) : dataMode === 'firestore' && !FIREBASE_CONFIGURED ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center' }}>
-              <p className="mt-body" style={{ margin: 0 }}>クラウド接続が未設定です。</p>
+            <Card className="sg-empty-card">
+              <p className="mt-body">クラウド接続が未設定です。</p>
             </Card>
           ) : dataMode === 'firestore' && !user ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 12, justifyItems: 'center', maxWidth: 420, margin: '0 auto' }}>
-              <h2 className="mt-h2" style={{ margin: 0 }}>管理者ログイン</h2>
+            <Card className="sg-empty-card sg-login-card">
+              <h2 className="mt-h2">管理者ログイン</h2>
               {liveError && <p className="slog-error">{liveError}</p>}
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div className="sg-chip-group">
                 <PrimaryButton
                   disabled={authBusy}
                   onClick={() => void handleGoogleSignIn()}
@@ -620,34 +778,38 @@ export function SugorokuAdminApp({
               </div>
             </Card>
           ) : dataMode === 'firestore' && !loadingLive && !isAuthorizedForLive ? (
-            <Card style={{ textAlign: 'center', padding: '24px 18px', display: 'grid', gap: 10, justifyItems: 'center' }}>
-              <p className="mt-body" style={{ margin: 0 }}>
-                管理者権限が確認できませんでした。
-              </p>
+            <Card className="sg-empty-card">
+              <p className="mt-body">管理者権限が確認できませんでした。</p>
             </Card>
           ) : dataMode === 'firestore' && !loadingLive && classrooms.length === 0 && activeTab !== 'pdf_shelf' ? (
-            <Card
-              style={{
-                textAlign: 'center',
-                padding: '32px 20px',
-                display: 'grid',
-                gap: 14,
-                justifyItems: 'center',
-                maxWidth: 520,
-                margin: '16px auto',
-              }}
-            >
-              <h2 className="mt-h2" style={{ margin: 0 }}>
-                まずはコース・クラスを開設しましょう
-              </h2>
-              <p className="mt-body" style={{ margin: 0, maxWidth: 420 }}>
-                対象級・1日の目標学習時間・週の目標日数を設定してクラスを開設すると、招待URL・6文字コード・LINE案内文が発行され、生徒の学習時間と4技能添削をここで一括管理できます。
+            <Card className="sg-create-juku-card" data-testid="sugoroku-create-juku-card">
+              <h2 className="mt-h2">塾ルーム・コースを開設（6文字コード＆招待URL発行）</h2>
+              <p className="mt-body">
+                英検の級ごとにルームを分けず1つで全級（5級〜1級）一括管理することも、コース別に学習目標（1日○分・週○日）を分けて開設することもできます。
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+              {liveError && <p className="slog-error">{liveError}</p>}
+              <label className="sg-create-juku-field">
+                <span>塾名・教室名</span>
+                <input
+                  type="text"
+                  value={newJukuSchoolName}
+                  maxLength={40}
+                  onChange={(e) => setNewJukuSchoolName(e.target.value)}
+                  placeholder="例）オンライン塾 すごろく / ○○進学塾 本校"
+                />
+              </label>
+              <div className="sg-chip-group">
+                <PrimaryButton
+                  disabled={creatingJukuRoom || !newJukuSchoolName.trim()}
+                  onClick={() => void handleCreateQuickJukuRoom()}
+                  icon={<Plus size={15} aria-hidden="true" />}
+                >
+                  {creatingJukuRoom ? '開設中…' : '全級一括コースを即時開設'}
+                </PrimaryButton>
                 {(onOpenCreateClass || onOpenTeacherDashboard) && (
-                  <PrimaryButton onClick={onOpenCreateClass ?? onOpenTeacherDashboard}>
-                    コース・クラスを開設する
-                  </PrimaryButton>
+                  <SecondaryButton onClick={onOpenCreateClass ?? onOpenTeacherDashboard}>
+                    目標時間を細かく設定して開設
+                  </SecondaryButton>
                 )}
                 <SecondaryButton onClick={() => setActiveTab('pdf_shelf')}>
                   先に教材PDF書庫を見る
@@ -728,9 +890,44 @@ export function SugorokuAdminApp({
               ) : (
                 <section
                   aria-label="生徒一覧"
-                  className="sg-stagger"
-                  style={{ display: 'grid', gap: 14 }}
+                  className="sg-stagger sg-grid-14"
                 >
+                  {/* 0名時：生徒招待キットをその場に提示 */}
+                  {!sourceInfo.isDemo && sourceInfo.joinCode && kpi.count === 0 && (
+                    <Card className="sg-grid-10">
+                      <div className="sg-toolbar">
+                        <div>
+                          <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+                            {sourceInfo.className || 'コース開設完了'}（招待コード: {sourceInfo.joinCode}）
+                          </strong>
+                          <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--mt-ink-2)' }}>
+                            招待URLまたはLINE案内文を生徒・保護者へ送ると、参加と同時に学習時間と4技能の提出がここに表示されます。
+                          </p>
+                        </div>
+                        <div className="sg-chip-group">
+                          <PrimaryButton
+                            onClick={() => void handleCopyInviteLineTemplate()}
+                            icon={<MessageCircle size={14} aria-hidden="true" />}
+                          >
+                            LINE案内文コピー
+                          </PrimaryButton>
+                          <SecondaryButton
+                            onClick={() => void handleCopyInviteUrl()}
+                            icon={<Link2 size={14} aria-hidden="true" />}
+                          >
+                            招待URLコピー
+                          </SecondaryButton>
+                          <SecondaryButton
+                            onClick={() => void handleCopyJoinCode()}
+                            icon={<Copy size={14} aria-hidden="true" />}
+                          >
+                            コード {sourceInfo.joinCode}
+                          </SecondaryButton>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
                   {/* 1. 静かな3項目サマリー帯 */}
                   <div className="sg-summary-strip">
                     <div className="sg-stat">
@@ -740,14 +937,7 @@ export function SugorokuAdminApp({
                           <CountUp value={kpi.count} fromZero duration={550} />
                           <span className="sg-stat-unit">名</span>
                           {kpi.alertCount > 0 && (
-                            <span
-                              style={{
-                                marginLeft: 8,
-                                fontSize: 13,
-                                fontWeight: 800,
-                                color: 'var(--mt-danger)',
-                              }}
-                            >
+                            <span className="sg-stat-alert-inline">
                               · {kpi.alertCount}名遅れ
                             </span>
                           )}
@@ -765,7 +955,7 @@ export function SugorokuAdminApp({
                       </div>
                     </div>
 
-                    <div className="sg-stat" style={{ justifyContent: 'space-between' }}>
+                    <div className="sg-stat sg-stat-between">
                       <div className="sg-stat-body">
                         <span className="sg-stat-label">宿題消化</span>
                         <span className="sg-stat-val">
@@ -782,14 +972,16 @@ export function SugorokuAdminApp({
                     </div>
                   </div>
 
-                  {/* 2. フィルタ＆CSV出力 */}
+                  {/* 2. フィルタ・宿題配信・CSV出力 */}
                   <div className="sg-toolbar">
                     <div className="sg-chip-group" role="group" aria-label="絞り込み">
                       {[
-                        { id: 'all', label: '全員' },
+                        { id: 'all', label: '全員（全級一括）' },
                         { id: 'eiken_2', label: '2級' },
                         { id: 'eiken_pre2plus', label: '準2級+' },
                         { id: 'eiken_pre2', label: '準2級' },
+                        { id: 'eiken_3', label: '3級' },
+                        { id: 'eiken_pre1', label: '準1級' },
                       ].map((g) => (
                         <button
                           key={g.id}
@@ -811,13 +1003,21 @@ export function SugorokuAdminApp({
                       </button>
                     </div>
 
-                    <SecondaryButton
-                      disabled={filteredStudents.length === 0}
-                      onClick={handleExportSummaryCsv}
-                      icon={<Download size={14} aria-hidden="true" />}
-                    >
-                      CSV
-                    </SecondaryButton>
+                    <div className="sg-chip-group">
+                      <PrimaryButton
+                        onClick={() => setHomeworkModalOpen(true)}
+                        icon={<Route size={14} aria-hidden="true" />}
+                      >
+                        宿題配信
+                      </PrimaryButton>
+                      <SecondaryButton
+                        disabled={filteredStudents.length === 0}
+                        onClick={handleExportSummaryCsv}
+                        icon={<Download size={14} aria-hidden="true" />}
+                      >
+                        CSV
+                      </SecondaryButton>
+                    </div>
                   </div>
 
                   {/* 3. 生徒リスト（遅れ・未学習が自動で上位ソート） */}
@@ -832,6 +1032,17 @@ export function SugorokuAdminApp({
                             ? 'warning'
                             : undefined;
                         const primaryAlert = st.alerts[0] ?? null;
+
+                        const totalCorrect = st.gradeSkillBreakdown.reduce(
+                          (sum, g) => sum + g.correct,
+                          0,
+                        );
+                        const totalJudged = st.gradeSkillBreakdown.reduce(
+                          (sum, g) => sum + g.totalQuestions,
+                          0,
+                        );
+                        const overallAccuracyPct =
+                          totalJudged > 0 ? Math.round((totalCorrect / totalJudged) * 100) : null;
 
                         return (
                           <SwipeableRow
@@ -849,31 +1060,33 @@ export function SugorokuAdminApp({
                                 icon: <Eye size={17} aria-hidden="true" />,
                                 onTrigger: () => setQuickSheetStudentUid(st.uid),
                               },
-                              {
-                                id: 'detail',
-                                label: '詳細',
-                                icon: <ChevronRight size={17} aria-hidden="true" />,
-                                onTrigger: () => setSelectedStudentUid(st.uid),
-                              },
                             ]}
                           >
                             <article
                               className="sg-student-row"
                               data-alert={alertLevel}
+                              role="button"
+                              tabIndex={0}
                               onClick={() => setSelectedStudentUid(st.uid)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  setSelectedStudentUid(st.uid);
+                                }
+                              }}
                             >
-                              <div className="sg-row-primary">
+                              <div className="sg-row-main">
                                 <div className="sg-row-head">
                                   <h3 className="sg-student-name">{st.rosterName}</h3>
                                   <span className="sg-grade-tag">
-                                    {getGradeLabel(st.targetGrade).replace('英検', '')}
+                                    {st.gradeSkillBreakdown[0]
+                                      ? getGradeLabel(st.gradeSkillBreakdown[0].grade as EikenGrade).replace('英検', '')
+                                      : getGradeLabel(st.targetGrade).replace('英検', '')}
                                   </span>
                                   {primaryAlert && (
                                     <span
                                       className="sg-alert-text"
-                                      data-warn={
-                                        primaryAlert.severity !== 'critical' ? 'true' : undefined
-                                      }
+                                      data-warn={primaryAlert.severity === 'warning' || undefined}
                                     >
                                       {primaryAlert.label}
                                     </span>
@@ -881,28 +1094,34 @@ export function SugorokuAdminApp({
                                 </div>
 
                                 <div className="sg-row-sub">
-                                  <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
                                   <span>
-                                    最終 {st.lastStudiedDateKey ? st.lastStudiedDateKey.slice(5) : '未学習'}
+                                    今週 <b>{formatDurationJa(st.weeklyActiveSeconds)}</b>
                                   </span>
+                                  <span>
+                                    本日 <b>{formatDurationJa(st.todayActiveSeconds)}</b>
+                                  </span>
+                                  <span>
+                                    宿題 <b>{st.homework.completionRate}%</b>
+                                  </span>
+                                  {overallAccuracyPct !== null && (
+                                    <span>
+                                      正答 <b>{overallAccuracyPct}%</b>
+                                    </span>
+                                  )}
                                 </div>
+
+                                <SkillRatioStackBar
+                                  items={st.gradeSkillBreakdown.map((g) => ({
+                                    key: g.key,
+                                    skill: g.skill,
+                                    label: g.label,
+                                    seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
+                                  }))}
+                                />
                               </div>
 
-                              <div className="sg-row-metrics">
-                                <div className="sg-num-cell">
-                                  <small>今週</small>
-                                  <strong>{formatDurationJa(st.weeklyActiveSeconds)}</strong>
-                                </div>
-
-                                <div className="sg-ring-cell" title="宿題消化率">
-                                  <ScoreRing
-                                    rate={st.homework.completionRate / 100}
-                                    size={32}
-                                    stroke={4.5}
-                                    tone={st.homework.overdueCount > 0 ? 'warn' : 'brand'}
-                                  />
-                                  <strong>{st.homework.completionRate}%</strong>
-                                </div>
+                              <div className="sg-row-right">
+                                <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
 
                                 <button
                                   type="button"
@@ -919,7 +1138,7 @@ export function SugorokuAdminApp({
 
                                 <ChevronRight
                                   size={18}
-                                  style={{ color: 'var(--mt-ink-3)', flexShrink: 0 }}
+                                  className="sg-row-chevron"
                                   aria-hidden="true"
                                 />
                               </div>
@@ -943,7 +1162,7 @@ export function SugorokuAdminApp({
         onClose={() => setQuickSheetStudentUid(null)}
       >
         {quickSheetStudent && (
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="sg-grid-12">
             <div className="slog-sum">
               <div>
                 <dt>今週</dt>
@@ -980,16 +1199,16 @@ export function SugorokuAdminApp({
               ))}
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="sg-flex-gap-8">
               <SecondaryButton
-                style={{ flex: 1 }}
+                className="sg-flex-1"
                 onClick={() => void handleCopyStudentLineMessage(quickSheetStudent)}
                 icon={<MessageCircle size={15} aria-hidden="true" />}
               >
                 声掛けコピー
               </SecondaryButton>
               <PrimaryButton
-                style={{ flex: 1 }}
+                className="sg-flex-1"
                 onClick={() => {
                   const uid = quickSheetStudent.uid;
                   setQuickSheetStudentUid(null);
@@ -1016,6 +1235,18 @@ export function SugorokuAdminApp({
         onRevokeStaff={handleRevokeStaff}
         onToast={showToast}
       />
+
+      {/* モーダル：全級対応・宿題一括/個別配信 */}
+      {homeworkModalOpen && (
+        <SugorokuHomeworkComposerModal
+          subject="eiken_2"
+          catalog={homeworkCatalog}
+          students={composerStudents}
+          accent="#1c2a39"
+          onClose={() => setHomeworkModalOpen(false)}
+          onSubmit={handleSubmitHomework}
+        />
+      )}
     </div>
   );
 }

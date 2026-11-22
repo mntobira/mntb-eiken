@@ -804,6 +804,118 @@
   cursor: pointer;
 }
 
+/* ---------- 塾ルーム開設カード（全級一括） ---------- */
+.sg-empty-card {
+  text-align: center;
+  padding: 24px 18px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.sg-empty-card > p {
+  margin: 0;
+}
+
+.sg-create-juku-card {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.sg-create-juku-card > h2,
+.sg-create-juku-card > p {
+  margin: 0;
+}
+
+.sg-create-juku-field {
+  display: grid;
+  gap: 6px;
+}
+
+.sg-create-juku-field > span {
+  font: 700 12px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-2);
+}
+
+.sg-create-juku-field > input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--mt-radius-md);
+  border: 1px solid var(--mt-line-strong);
+  background: #fff;
+  font: 700 14px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-warm);
+}
+
+/* ---------- 共通レイアウトユーティリティ（inline style 削減用） ---------- */
+.sg-grid-4 { display: grid; gap: 4px; }
+.sg-grid-6 { display: grid; gap: 6px; }
+.sg-grid-8 { display: grid; gap: 8px; }
+.sg-grid-10 { display: grid; gap: 10px; }
+.sg-grid-12 { display: grid; gap: 12px; }
+.sg-grid-14 { display: grid; gap: 14px; }
+.sg-m0 { margin: 0; }
+.sg-flex-gap-6 { display: flex; gap: 6px; }
+.sg-flex-gap-8 { display: flex; gap: 8px; }
+.sg-flex-1 { flex: 1; }
+.sg-pdf-head-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.sg-pdf-pages { font: 600 12px/1 var(--mt-font-body); color: var(--mt-ink-3); }
+.sg-skel-row { display: flex; align-items: center; gap: 12px; }
+.sg-skel-col { flex: 1; display: grid; gap: 8px; }
+.sg-w-42 { width: 42%; }
+.sg-w-48 { width: 48%; }
+.sg-w-62 { width: 62%; }
+.sg-w-72 { width: 72%; }
+.sg-staff-add-form { padding-top: 6px; border-top: 1px solid var(--mt-line); }
+.sg-toolbar-top { align-items: flex-start; }
+.sg-stat-between { justify-content: space-between; }
+.sg-stat-alert-inline {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--mt-danger);
+}
+.sg-row-chevron { color: var(--mt-ink-3); flex-shrink: 0; }
+.sg-login-card { max-width: 420px; margin: 0 auto; gap: 12px; }
+.sg-login-card > h2 { margin: 0; }
+.sg-summary-strip-sunken {
+  box-shadow: none;
+  background: var(--mt-bg-sunken);
+  border: 0;
+}
+.sg-student-note {
+  margin: 0;
+  font: 500 13px/1.5 var(--mt-font-body);
+  color: var(--mt-ink-2);
+}
+.sg-empty-compact { padding: 8px 0; }
+.sg-sub-name-btn { min-height: 32px; padding: 0; }
+.sg-sub-name-strong { font: 800 15px/1.3 var(--mt-font-display); color: var(--mt-ink-warm); }
+.sg-sub-excerpt {
+  margin: 0;
+  font: 500 13px/1.6 var(--mt-font-body);
+  color: var(--mt-ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sg-sub-review-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.sg-ink-2 { color: var(--mt-ink-2); }
+.sg-sub-meta { font-size: 12px; color: var(--mt-ink-3); }
+.sg-sub-fulltext {
+  padding: 12px;
+  border-radius: var(--mt-radius-md);
+  border: 1px solid var(--mt-line);
+  background: #fff;
+  font: 500 14px/1.7 var(--mt-font-body);
+  white-space: pre-wrap;
+}
+
 /* ---------- Motion ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .sg-stagger > * {

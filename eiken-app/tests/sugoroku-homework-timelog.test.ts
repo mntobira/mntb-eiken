@@ -14,6 +14,7 @@ import {
   sortHomeworkTasks,
 } from '../src/sugoroku/homework/homeworkCore';
 import {
+  allEikenChapterCatalog,
   chapterIdsOfGrade,
   chapterTitleOf,
   chapterTotals,
@@ -261,6 +262,13 @@ describe('AI 2: すごろく宿題エンジン（homeworkCore & chapterTotals）
     const sorted = sortHomeworkTasks([doneTask, futureTask, overdueTask], now);
     expect(sorted.map((t) => t.assignmentId)).toEqual(['overdue-1', 'open-later', 'done-1']);
     expect(pickPrimaryTask([doneTask, futureTask, overdueTask], now)?.assignmentId).toBe('overdue-1');
+
+    // 全級一括ルーム向けカタログが5級〜1級の全単元を横断して返すことを検証
+    const allCatalog = allEikenChapterCatalog();
+    expect(allCatalog.length).toBeGreaterThan(200);
+    expect(allCatalog.some((c) => c.id.startsWith('eiken_5_'))).toBe(true);
+    expect(allCatalog.some((c) => c.id.startsWith('eiken_2_'))).toBe(true);
+    expect(allCatalog.some((c) => c.id.startsWith('eiken_1_'))).toBe(true);
   });
 });
 

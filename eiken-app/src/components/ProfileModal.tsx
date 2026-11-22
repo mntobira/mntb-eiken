@@ -134,23 +134,24 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
               <ClassPanel defaultDisplayName={name} onStartChapter={onStartClassChapter} />
 
-              {/* 先生用の入口。生徒が誤って開いてもクラス0件の案内が出るだけ。 */}
-              {onOpenTeacherDashboard && (
+              {classroomOn && onOpenSugorokuAdmin && (
                 <button
-                  onClick={onOpenTeacherDashboard}
-                  className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-[#4A7FA0]"
-                >
-                  <ClipboardList size={14} />
-                  先生の方はこちら（クラスの管理）
-                </button>
-              )}
-              {onOpenSugorokuAdmin && (
-                <button
+                  type="button"
                   onClick={onOpenSugorokuAdmin}
-                  className="mt-2 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#B6D4F7] bg-[#EEF5FF] text-xs font-bold text-[#1D58A8]"
+                  className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#B6D4F7] bg-[#EEF5FF] text-xs font-bold text-[#1D58A8]"
                 >
                   <School size={14} />
-                  すごろく塾 管理者ポータル（分野別学習時間・PDF棚）
+                  すごろく塾 管理者ポータル（学習時間・4技能添削・PDF棚）
+                </button>
+              )}
+              {classroomOn && onOpenTeacherDashboard && (
+                <button
+                  type="button"
+                  onClick={onOpenTeacherDashboard}
+                  className="mt-2 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-[#4A7FA0]"
+                >
+                  <ClipboardList size={14} />
+                  クラス・学習目標設定・招待キットを開く
                 </button>
               )}
             </div>

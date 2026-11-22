@@ -186,20 +186,19 @@ export function PortalSkeletonScreen({
   return (
     <div className="sg-skeleton-wrap" role="status" aria-label={label} data-sugoroku-skeleton>
       <div className="sg-skel-card" aria-hidden="true">
-        <i className="sg-skel-bar" data-size="lg" style={{ width: '48%' }} />
-        <i className="sg-skel-bar" style={{ width: '72%' }} />
+        <i className="sg-skel-bar sg-w-48" data-size="lg" />
+        <i className="sg-skel-bar sg-w-72" />
       </div>
 
       {Array.from({ length: rows }, (_, i) => (
         <div
           key={i}
-          className="sg-skel-card"
+          className="sg-skel-card sg-skel-row"
           aria-hidden="true"
-          style={{ display: 'flex', alignItems: 'center', gap: 12 }}
         >
-          <div style={{ flex: 1, display: 'grid', gap: 8 }}>
-            <i className="sg-skel-bar" style={{ width: `${46 - (i % 3) * 6}%` }} />
-            <i className="sg-skel-bar" style={{ width: `${68 - (i % 2) * 12}%` }} />
+          <div className="sg-skel-col">
+            <i className="sg-skel-bar sg-w-42" />
+            <i className="sg-skel-bar sg-w-62" />
           </div>
           <i className="sg-skel-circle" />
         </div>

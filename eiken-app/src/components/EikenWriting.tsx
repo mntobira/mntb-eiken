@@ -8,6 +8,7 @@ import { bookletWritingTasks } from '../eiken/writtenPractice';
 import { emptyWriting, parseWriting, wordCount, writingKey, type WritingDraft, type WritingProgress } from '../eiken/writingProgress';
 import { safeLocalStorage } from '../utils/safeLocalStorage';
 import { USER_DATA_SYNCED_EVENT } from '../utils/userDataSyncEvent';
+import { StudentWritingSubmitPanel } from '../sugoroku/writing-review/StudentWritingSubmitPanel';
 import './eiken-writing.css';
 
 const gradeIds = ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1'] as const;
@@ -540,6 +541,18 @@ export function EikenWriting({
               ))}
             </details>
           )}
+          <StudentWritingSubmitPanel
+            uid={uid}
+            grade={grade}
+            taskKey={task.key}
+            taskTitle={task.title}
+            taskKind={taskKindInfo.kind}
+            instruction={task.instruction}
+            sourceText={task.source}
+            targetWordsLabel={task.target}
+            targetRange={targetRange}
+            text={current.text}
+          />
         </section>
       </div>
     </main>
