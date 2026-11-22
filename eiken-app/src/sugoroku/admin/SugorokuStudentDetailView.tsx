@@ -5,7 +5,7 @@
 
 import { useState, type CSSProperties } from 'react';
 import { Download, Edit3, MessageCircle, Save } from 'lucide-react';
-import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
+import { type EikenGrade } from '../../eiken/config';
 import { KineticText, ScoreRing } from '../../motion';
 import { CountUp } from '../../components/ui/CountUp';
 import {
@@ -67,7 +67,7 @@ export function SugorokuStudentDetailView({
 }: SugorokuStudentDetailViewProps) {
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [rosterName, setRosterName] = useState(student.rosterName);
-  const [targetGrade, setTargetGrade] = useState<EikenGrade>(student.targetGrade);
+  const targetGrade: EikenGrade = student.targetGrade;
   const [note, setNote] = useState(student.note || '');
   const [saving, setSaving] = useState(false);
 
@@ -135,8 +135,7 @@ export function SugorokuStudentDetailView({
   return (
     <section
       aria-label={student.rosterName}
-      className="sg-stagger"
-      style={{ display: 'grid', gap: 14 }}
+      className="sg-stagger sg-grid-14"
     >
       {/* 上部バー */}
       <div className="sg-toolbar">
@@ -151,7 +150,6 @@ export function SugorokuStudentDetailView({
           <SecondaryButton
             onClick={() => {
               setRosterName(student.rosterName);
-              setTargetGrade(student.targetGrade);
               setNote(student.note || '');
               setEditSheetOpen(true);
             }}
@@ -169,16 +167,20 @@ export function SugorokuStudentDetailView({
       </div>
 
       {/* 1. 生徒プロフィール＆主要数値 */}
-      <Card style={{ display: 'grid', gap: 14 }}>
-        <div className="sg-toolbar" style={{ alignItems: 'flex-start' }}>
-          <div style={{ display: 'grid', gap: 6 }}>
+      <Card className="sg-grid-14">
+        <div className="sg-toolbar sg-toolbar-top">
+          <div className="sg-grid-6">
             <div className="sg-row-head">
-              <h2 className="mt-h1" style={{ margin: 0 }}>
+              <h2 className="mt-h1 sg-m0">
                 <KineticText text={student.rosterName} variant="rise" />
               </h2>
-              <span className="sg-grade-tag">
-                {getGradeLabel(student.targetGrade).replace('英検', '')}
-              </span>
+              {student.gradeSkillBreakdown[0] ? (
+                <span className="sg-grade-tag">
+                  直近：{getGradeLabel(student.gradeSkillBreakdown[0].grade as EikenGrade).replace('英検', '')}
+                </span>
+              ) : (
+                <span className="sg-grade-tag">全級一括</span>
+              )}
               {student.alerts[0] && (
                 <span
                   className="sg-alert-text"
@@ -190,7 +192,7 @@ export function SugorokuStudentDetailView({
             </div>
 
             {student.note && (
-              <p style={{ margin: 0, font: '500 13px/1.5 var(--mt-font-body)', color: 'var(--mt-ink-2)' }}>
+              <p className="sg-student-note">
                 {student.note}
               </p>
             )}
@@ -199,7 +201,7 @@ export function SugorokuStudentDetailView({
           <StudyDoorsWeek recentDailyLogs={student.recentDailyLogs} />
         </div>
 
-        <div className="sg-summary-strip" style={{ boxShadow: 'none', background: 'var(--mt-bg-sunken)', border: 0 }}>
+        <div className="sg-summary-strip sg-summary-strip-sunken">
           <div className="sg-stat">
             <div className="sg-stat-body">
               <span className="sg-stat-label">今週</span>
@@ -210,7 +212,7 @@ export function SugorokuStudentDetailView({
             </div>
           </div>
 
-          <div className="sg-stat" style={{ justifyContent: 'space-between' }}>
+          <div className="sg-stat sg-stat-between">
             <div className="sg-stat-body">
               <span className="sg-stat-label">宿題</span>
               <span className="sg-stat-val">
@@ -226,7 +228,7 @@ export function SugorokuStudentDetailView({
             />
           </div>
 
-          <div className="sg-stat" style={{ justifyContent: 'space-between' }}>
+          <div className="sg-stat sg-stat-between">
             <div className="sg-stat-body">
               <span className="sg-stat-label">正答率</span>
               <span className="sg-stat-val">
@@ -268,11 +270,11 @@ export function SugorokuStudentDetailView({
       </Card>
 
       {/* 2. 分野別内訳 */}
-      <Card style={{ display: 'grid', gap: 12 }}>
+      <Card className="sg-grid-12">
         <SectionHeader title="分野別" />
 
         {student.gradeSkillBreakdown.length === 0 ? (
-          <p className="slog-empty" style={{ padding: '8px 0' }}>記録なし</p>
+          <p className="slog-empty sg-empty-compact">記録なし</p>
         ) : (
           <>
             <SkillRatioStackBar
@@ -317,7 +319,7 @@ export function SugorokuStudentDetailView({
       </Card>
 
       {/* 3. 直近14日 */}
-      <Card style={{ display: 'grid', gap: 12 }}>
+      <Card className="sg-grid-12">
         <SectionHeader title="直近14日" aside="分" />
 
         <div className="sg-daily-bars" role="img" aria-label="直近14日の学習時間">
@@ -379,15 +381,15 @@ export function SugorokuStudentDetailView({
         </div>
       </Card>
 
-      {/* Bottom Sheet：名簿・目標級・メモ編集 */}
+      {/* Bottom Sheet：名簿名・メモ編集（級ごとの固定分けは不要） */}
       <SugorokuBottomSheet
         open={editSheetOpen}
-        title="生徒設定"
+        title="塾生プロフィール設定"
         onClose={() => setEditSheetOpen(false)}
       >
         <div className="slog-form">
           <label className="f">
-            <span>表示名（管理画面のみ）</span>
+            <span>生徒氏名（講師の管理画面のみ表示）</span>
             <input
               type="text"
               value={rosterName}
@@ -396,21 +398,7 @@ export function SugorokuStudentDetailView({
           </label>
 
           <label className="f">
-            <span>目標級</span>
-            <select
-              value={targetGrade}
-              onChange={(e) => setTargetGrade(e.target.value as EikenGrade)}
-            >
-              {[...EIKEN_GRADES].reverse().map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="f">
-            <span>メモ</span>
+            <span>指導メモ（志望校・受験回・声掛け履歴など）</span>
             <textarea
               rows={3}
               value={note}

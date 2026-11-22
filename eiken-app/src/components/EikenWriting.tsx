@@ -171,14 +171,12 @@ export function EikenWriting({
   onGrade,
   onBack,
   initialTaskKey,
-  onOpenTeacherReview,
 }: {
   uid: string;
   grade: EikenGrade;
   onGrade: (grade: EikenGrade) => void;
   onBack: () => void;
   initialTaskKey?: string | null;
-  onOpenTeacherReview?: () => void;
 }) {
   const grade = tasks.some(task => task.grade === selectedGrade) ? selectedGrade : 'eiken_3';
   const available = useMemo(() => EIKEN_GRADES.filter(g => tasks.some(task => task.grade === g.id)), []);
@@ -554,7 +552,6 @@ export function EikenWriting({
             targetWordsLabel={task.target}
             targetRange={targetRange}
             text={current.text}
-            onOpenTeacherPreview={onOpenTeacherReview}
           />
         </section>
       </div>

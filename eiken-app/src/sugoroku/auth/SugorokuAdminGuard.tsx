@@ -15,7 +15,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   AlertTriangle,
-  ArrowLeft,
   ArrowRight,
   ExternalLink,
   Loader2,
@@ -54,7 +53,6 @@ export interface SugorokuAdminGuardProps {
 
 export function SugorokuAdminGuard({
   children,
-  onBackToStudentApp,
   allowDemoModeWhenUnconfigured = true,
 }: SugorokuAdminGuardProps) {
   useSuppressBannerAd();
@@ -107,38 +105,25 @@ export function SugorokuAdminGuard({
   const buddyLine = checking
     ? '講師アカウントの権限を確かめているよ…'
     : !user
-      ? 'ここは先生専用の管理ポータルだよ。登録済みの Google アカウントでログインしてね！'
+      ? 'ここは塾の先生専用の一括管理ポータルだよ。登録済みの Google アカウントでログインしてね！'
       : 'このアカウントには講師権限がまだ登録されていないみたい。講師用アカウントに切り替えてね。';
 
   return (
     <main data-testid="sugoroku-admin-guard" className="sga-screen">
       <div className="sga-shell">
-        {onBackToStudentApp && (
-          <div>
-            <button
-              type="button"
-              onClick={onBackToStudentApp}
-              className="sga-secondary-btn"
-            >
-              <ArrowLeft size={16} aria-hidden="true" />
-              <span>生徒の学習画面へ戻る</span>
-            </button>
-          </div>
-        )}
-
         <section className="sga-hero-card sga-stagger-1" aria-label="講師専用ポータル案内">
           <div className="sga-hero-top">
             <span className="sga-kicker-pill">
               <Lock size={13} aria-hidden="true" />
-              講師・管理者専用
+              塾講師・教室管理者専用
             </span>
           </div>
 
           <h1 className="sga-hero-title">
-            <KineticText text="すごろく塾 管理者ポータル" variant="rise" />
+            <KineticText text="すごろく塾 一括管理ポータル" variant="rise" />
           </h1>
           <p className="sga-hero-sub">
-            生徒の名簿名・学習ログ・提出答案を保護するため、登録済みの講師アカウントのみ入場できます。
+            塾の生徒全員（英検5級〜1級・4技能）の学習時間・宿題配信・英作文＆スピーキング添削を、級ごとに分けず1画面で一括管理できます。
           </p>
 
           <div className="sga-buddy-wrap">

@@ -134,7 +134,6 @@ export interface ScbtSpeakingPracticeProps {
   grade: EikenGrade;
   onGrade?: (grade: EikenGrade) => void;
   onBack: () => void;
-  onOpenTeacherReview?: () => void;
 }
 
 export function ScbtSpeakingPractice({
@@ -142,7 +141,6 @@ export function ScbtSpeakingPractice({
   grade,
   onGrade,
   onBack,
-  onOpenTeacherReview,
 }: ScbtSpeakingPracticeProps) {
   const [gradeFilter, setGradeFilter] = useState<GradeFilterId>(() =>
     grade === 'eiken_3'
@@ -179,9 +177,8 @@ export function ScbtSpeakingPractice({
   const [beepMuted, setBeepMuted] = useState<boolean>(false);
 
   const memberships = useMemo(() => loadJukuMemberships(uid), [uid]);
-  const [selectedClassId, setSelectedClassId] = useState<string>(
-    () => memberships[0]?.classId || SUGOROKU_DEMO_CLASS_ID,
-  );
+  const primaryClassId = memberships[0]?.classId || SUGOROKU_DEMO_CLASS_ID;
+  const primaryJukuName = memberships[0]?.className || '';
   const [studentName, setStudentName] = useState<string>(() => {
     return (
       safeLocalStorage()?.getItem(STUDENT_NAME_CACHE_KEY) ||
@@ -243,12 +240,12 @@ export function ScbtSpeakingPractice({
 
   const loadMySubmissions = useCallback(async () => {
     const rows = await fetchStudentSpeakingSubmissions(
-      selectedClassId,
+      primaryClassId,
       uid,
       selectedSet.id,
     );
     setHistory(rows);
-  }, [selectedClassId, uid, selectedSet.id]);
+  }, [primaryClassId, uid, selectedSet.id]);
 
   useEffect(() => {
     void loadMySubmissions();
@@ -413,7 +410,7 @@ export function ScbtSpeakingPractice({
     setSubmittedNotice('');
     try {
       await submitSpeakingSession({
-        classId: selectedClassId,
+        classId: primaryClassId,
         studentUid: uid,
         studentName: cleanName,
         grade: selectedSet.grade,
@@ -488,14 +485,8 @@ export function ScbtSpeakingPractice({
             {beepMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
             {beepMuted ? '合図音OFF' : '合図音ON'}
           </button>
-          {onOpenTeacherReview && (
-            <button
-              type="button"
-              className="scbt-secondary-btn"
-              onClick={onOpenTeacherReview}
-            >
-              講師の音声確認画面を開く
-            </button>
+          {primaryJukuName && (
+            <small className="swr-muted-note">連携中：{primaryJukuName}</small>
           )}
         </div>
       </header>
@@ -1058,7 +1049,7 @@ export function ScbtSpeakingPractice({
                   openSpeakingFeedbackPrintWindow(
                     {
                       id: 'draft_preview',
-                      classId: selectedClassId,
+                      classId: primaryClassId,
                       studentUid: uid,
                       studentName: studentName.trim() || 'すごろく塾生',
                       grade: selectedSet.grade,
@@ -1161,20 +1152,6 @@ export function ScbtSpeakingPractice({
           </div>
 
           <div className="scbt-submit-footer">
-            {memberships.length > 1 && (
-              <select
-                aria-label="提出先クラス"
-                className="scbt-input"
-                value={selectedClassId}
-                onChange={e => setSelectedClassId(e.target.value)}
-              >
-                {memberships.map(m => (
-                  <option key={m.classId} value={m.classId}>
-                    {m.className}
-                  </option>
-                ))}
-              </select>
-            )}
             <input
               type="text"
               className="scbt-input"
@@ -1196,7 +1173,7 @@ export function ScbtSpeakingPractice({
                 ? '音声をアップロード中…'
                 : recordedCount < SCBT_PART_ORDER.length
                 ? `全5パート録音すると提出できます（現在 ${recordedCount}/5）`
-                : '全5パートの録音を先生へ提出する'}
+                : '全5パートの録音を塾の先生へ提出する'}
             </button>
           </div>
 

@@ -16,7 +16,7 @@
     "generate:recording": "tsx scripts/build-recording-scripts.ts && python3 scripts/build-recording-pdf.py",
     "test:release": "node tests/release.browser.mjs",
     "test:audio": "node tests/audio.browser.mjs",
-    "typecheck": "node --max-old-space-size=800 --max-semi-space-size=4 node_modules/typescript/bin/tsc --noEmit",
+    "typecheck": "node scripts/typecheck-chunked.mjs",
     "test": "vitest run tests/*.test.ts --maxWorkers=1",
     "test:rules": "node --test tests/firestore-rules.test.mjs",
     "test:sdk": "tsx tests/firebase-sdk.emulator.ts",

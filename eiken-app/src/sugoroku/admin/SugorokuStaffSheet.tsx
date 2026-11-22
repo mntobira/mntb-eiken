@@ -88,7 +88,7 @@ export function SugorokuStaffSheet({
 
   return (
     <SugorokuBottomSheet open={open} title="講師メンバー" onClose={onClose}>
-      <div style={{ display: 'grid', gap: 14 }}>
+      <div className="sg-grid-14">
         {/* 登録済み講師一覧 */}
         <div className="slog-rows">
           <div className="slog-row">
@@ -136,7 +136,7 @@ export function SugorokuStaffSheet({
 
         {/* オーナーのみ：新規講師追加フォーム */}
         {canManage && (
-          <div className="slog-form" style={{ paddingTop: 6, borderTop: '1px solid var(--mt-line)' }}>
+          <div className="slog-form sg-staff-add-form">
             <div className="row">
               <label className="f">
                 <span>講師名</span>
@@ -159,7 +159,7 @@ export function SugorokuStaffSheet({
               </label>
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="sg-flex-gap-8">
               <SecondaryButton
                 onClick={() => void handleCopyPortalUrl()}
                 icon={<Copy size={14} aria-hidden="true" />}
@@ -168,7 +168,7 @@ export function SugorokuStaffSheet({
               </SecondaryButton>
 
               <PrimaryButton
-                style={{ flex: 1 }}
+                className="sg-flex-1"
                 disabled={busy || !email.trim()}
                 onClick={() => void handleAdd()}
                 icon={<Plus size={15} aria-hidden="true" />}

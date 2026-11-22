@@ -221,8 +221,8 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
     try {
       const created = await createClassroom({
         schoolName: newSchoolName,
-        className: newClassName,
-        subject: newSubject,
+        className: newClassName.trim() || '全級一括ルーム（英検5級〜1級）',
+        subject: newSubject || 'eiken_2',
       });
       setShowCreate(false);
       setNewClassName('');

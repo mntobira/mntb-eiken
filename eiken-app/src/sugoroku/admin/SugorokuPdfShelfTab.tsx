@@ -87,11 +87,10 @@ export function SugorokuPdfShelfTab({
   return (
     <section
       aria-label="教材PDF"
-      className="sg-stagger"
-      style={{ display: 'grid', gap: 12 }}
+      className="sg-stagger sg-grid-12"
     >
       {/* フィルタバー */}
-      <div style={{ display: 'grid', gap: 8 }}>
+      <div className="sg-grid-8">
         <div className="sg-chip-group" role="group" aria-label="級">
           <button
             type="button"
@@ -152,19 +151,19 @@ export function SugorokuPdfShelfTab({
               item.subject;
             return (
               <article key={item.id} className="sg-pdf-card">
-                <div style={{ display: 'grid', gap: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                <div className="sg-grid-4">
+                  <div className="sg-pdf-head-row">
                     <span className="sg-grade-tag">{gradeLabel}</span>
-                    <span style={{ font: '600 12px/1 var(--mt-font-body)', color: 'var(--mt-ink-3)' }}>
+                    <span className="sg-pdf-pages">
                       {item.pages}p
                     </span>
                   </div>
                   <h3 className="sg-pdf-title">{item.label}</h3>
                 </div>
 
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div className="sg-flex-gap-6">
                   <PrimaryButton
-                    style={{ flex: 1 }}
+                    className="sg-flex-1"
                     onClick={() => openPdf(item.file, item.label)}
                     icon={<Eye size={14} aria-hidden="true" />}
                   >

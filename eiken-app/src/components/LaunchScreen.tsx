@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES } from './AlphaCinematicClip';
 import { TitleBgmMuteButton, TITLE_SCREEN_BGM_SRC, useLaunchTitleBgm } from './TitleBgmControl';
-import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, ShieldCheck, Swords } from 'lucide-react';
+import { ArrowRight, BookHeart, Headphones, PenLine, Repeat2, Swords } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
 import { equippedPoseSrc } from '../battle/core/growth';
@@ -48,11 +48,9 @@ function useLandscapeTitle(): boolean {
   return isLandscape;
 }
 
-export function LaunchScreen({ onStart, onAdminLogin, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished }: {
+export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished }: {
   /** 2026-10-19 ゲスト入口は廃止（ログイン必須）。未ログインなら次にログイン画面が出る */
   onStart: (finishBgm: boolean) => void;
-  /** 講師・管理者向けログイン入口（「はじめる」直下のボタンから呼ばれる） */
-  onAdminLogin?: () => void;
   bgmEnabled: boolean;
   onBgmToggle: (enabled: boolean) => void;
   finishingBgm: boolean;
@@ -240,16 +238,6 @@ export function LaunchScreen({ onStart, onAdminLogin, bgmEnabled, onBgmToggle, f
     onStart(finishBgm);
   };
 
-  const enterAdmin = () => {
-    fadeOutLaunchSfx();
-    stopTitleBgm();
-    if (onAdminLogin) {
-      onAdminLogin();
-    } else {
-      onStart(false);
-    }
-  };
-
   useEffect(() => {
     if (!finishingBgm) return;
     // バックグラウンドや音源読み込みの中断で、ホームBGMの開始を待ち続けない。
@@ -351,15 +339,6 @@ export function LaunchScreen({ onStart, onAdminLogin, bgmEnabled, onBgmToggle, f
             <div className="launch-actions">
               <p className="launch-countdown-mini"><Headphones size={16} aria-hidden="true" />英検 <strong>5級〜1級</strong></p>
               <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
-              <button
-                type="button"
-                className="launch-admin-login"
-                data-testid="launch-admin-login-btn"
-                onClick={enterAdmin}
-              >
-                <ShieldCheck size={16} aria-hidden="true" />
-                管理者ログインをする
-              </button>
               <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : FIREBASE_CONFIGURED ? 'ログインして記録を同期、または端末で練習できます' : 'この端末に記録を保存して練習できます'}</p>
               <button type="button" className="launch-philosophy" data-open-philosophy onClick={() => setGate('philosophy')}><BookHeart size={16} aria-hidden="true" />学びの扉 ～私達に出来ることを～</button>
               <p className="launch-kbd" aria-hidden="true"><kbd>Enter</kbd> ではじめる</p>

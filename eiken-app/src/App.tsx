@@ -188,7 +188,7 @@ import { isSugorokuAdminPortalLaunch } from './sugoroku/admin/portalLaunch';
 const IDLE_RESET_MS = 30 * 60 * 1000;
 
 export default function App() {
-  const [directAdminPortal, setDirectAdminPortal] = useState(isSugorokuAdminPortalLaunch);
+  const [directAdminPortal] = useState(isSugorokuAdminPortalLaunch);
   // 画面検証（?screenshot=1 / screenshot_mode）または管理者ポータル直起動では起動画面を飛ばす
   const [hasEntered, setHasEntered] = useState(() => isScreenshotLaunch() || isSugorokuAdminPortalLaunch());
   const [finishingLaunchBgm, setFinishingLaunchBgm] = useState(false);
@@ -582,54 +582,19 @@ export default function App() {
   }), []);
 
   if (directAdminPortal) {
-    const canExitToStudent = (import.meta.env.VITE_SUGOROKU_PORTAL as string | undefined)?.trim().toLowerCase() !== 'admin';
     return (
-      <SugorokuAdminGuard
-        onBackToStudentApp={canExitToStudent ? () => {
-          try {
-            const url = new URL(window.location.href);
-            url.searchParams.delete('portal');
-            window.history.replaceState({}, '', url.toString());
-          } catch { /* ignore */ }
-          setDirectAdminPortal(false);
-        } : undefined}
-      >
+      <SugorokuAdminGuard>
         <React.Suspense fallback={<ScreenLoading />}>
-          <SugorokuAdminApp
-            extensionSlots={sugorokuAdminExtensionSlots}
-            onBack={canExitToStudent ? () => {
-              try {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('portal');
-                window.history.replaceState({}, '', url.toString());
-              } catch { /* ignore */ }
-              setDirectAdminPortal(false);
-            } : undefined}
-          />
+          <SugorokuAdminApp extensionSlots={sugorokuAdminExtensionSlots} />
         </React.Suspense>
       </SugorokuAdminGuard>
     );
   }
 
-  /**
-   * タイトル画面「はじめる」直下の「管理者ログインをする」ボタンからの直行導線。
-   * - 未ログイン時は SugorokuAdminGuard で講師 Google ログイン（mntobira / hirokingz0927 即通過）を実行し、
-   *   認証完了後すぐに先生・クラス管理画面（TeacherDashboard）を開く。
-   */
-  const enterAdminLogin = () => {
-    battleAudio().unlock();
-    setHasInteracted(true);
-    setFinishingLaunchBgm(false);
-    setSettingsTab('class');
-    setPrevAppState('home');
-    setAppState('teacher_dashboard');
-    setHasEntered(true);
-  };
-
   return (
     <SugorokuAuthGate enforce={sugorokuPortalMode === 'juku'}>
       {(!hasEntered || keepLaunchBgm) && (
-        <LaunchScreen onStart={enter} onAdminLogin={enterAdminLogin} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
+        <LaunchScreen onStart={enter} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
           finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
       )}
       {hasEntered && <>
@@ -732,26 +697,18 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
-            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {/* 先生ダッシュボード（直接遷移互換用。先生は基本 ?portal=admin 専用ポータルを利用） */}
             {appState === 'teacher_dashboard' && (
-              <SugorokuAdminGuard
-                onBackToStudentApp={() => {
-                  if (auth.currentUser) {
-                    setAppState('settings');
-                  } else {
-                    setHasEntered(false);
-                  }
-                }}
-              >
+              <SugorokuAdminGuard>
                 <TeacherDashboard onBack={() => setAppState('settings')} />
               </SugorokuAdminGuard>
             )}
-            {/* すごろく塾管理者ポータル（React.lazyコード分割）。設定・先生欄から開いた場合も下ナビを隠して全画面表示 */}
+            {/* すごろく塾管理者ポータル（React.lazyコード分割） */}
             {appState === 'sugoroku_admin' && (
-              <SugorokuAdminGuard onBackToStudentApp={() => setAppState('settings')}>
+              <SugorokuAdminGuard>
                 <React.Suspense fallback={<ScreenLoading />}>
-                  <SugorokuAdminApp extensionSlots={sugorokuAdminExtensionSlots} onBack={() => setAppState('settings')} />
+                  <SugorokuAdminApp extensionSlots={sugorokuAdminExtensionSlots} />
                 </React.Suspense>
               </SugorokuAdminGuard>
             )}
@@ -914,8 +871,8 @@ export default function App() {
                 progressOf={(subject) => studyProgressOf(subject)}
               />
             </React.Suspense>}
-            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} onOpenTeacherReview={() => { setReviewHubInitialTab('writing'); setReviewHubBackTo('writing'); setAppState('sugoroku_review'); }} /></React.Suspense>}
-            {appState === 'speaking' && <React.Suspense fallback={<ScreenLoading />}><ScbtSpeakingPractice key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} onOpenTeacherReview={() => { setReviewHubInitialTab('speaking'); setReviewHubBackTo('speaking'); setAppState('sugoroku_review'); }} /></React.Suspense>}
+            {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} /></React.Suspense>}
+            {appState === 'speaking' && <React.Suspense fallback={<ScreenLoading />}><ScbtSpeakingPractice key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} /></React.Suspense>}
             {appState === 'sugoroku_review' && <React.Suspense fallback={<ScreenLoading />}><SugorokuReviewHub initialTab={reviewHubInitialTab} onBack={() => setAppState(reviewHubBackTo)} /></React.Suspense>}
             {appState === 'mock' && <React.Suspense fallback={<ScreenLoading />}><EikenMockExam key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialExamKind={mockInitialKind} backLabel={mockBackTo === 'chapters' ? '大問別へ' : '学習へ'} onBack={() => setAppState(mockBackTo)} onRunningChange={setMockRunning} /></React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>

@@ -39,7 +39,6 @@ export interface StudentWritingSubmitPanelProps {
   targetWordsLabel: string;
   targetRange: [number, number] | null;
   text: string;
-  onOpenTeacherPreview?: () => void;
 }
 
 export function StudentWritingSubmitPanel({
@@ -53,12 +52,10 @@ export function StudentWritingSubmitPanel({
   targetWordsLabel,
   targetRange,
   text,
-  onOpenTeacherPreview,
 }: StudentWritingSubmitPanelProps) {
   const memberships = useMemo(() => loadJukuMemberships(uid), [uid]);
-  const [selectedClassId, setSelectedClassId] = useState<string>(
-    () => memberships[0]?.classId || SUGOROKU_DEMO_CLASS_ID,
-  );
+  const primaryClassId = memberships[0]?.classId || SUGOROKU_DEMO_CLASS_ID;
+  const primaryJukuName = memberships[0]?.className || '';
   const [studentName, setStudentName] = useState<string>(() => {
     const cached = safeLocalStorage()?.getItem(STUDENT_NAME_CACHE_KEY);
     if (cached) return cached;
@@ -69,12 +66,6 @@ export function StudentWritingSubmitPanel({
   const [showDiffMode, setShowDiffMode] = useState(true);
   const [statusMsg, setStatusMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    if (memberships.length > 0 && selectedClassId === SUGOROKU_DEMO_CLASS_ID) {
-      setSelectedClassId(memberships[0].classId);
-    }
-  }, [memberships, selectedClassId]);
 
   const check = useMemo(
     () => analyzeWritingFormat(text, targetRange, taskKind, sourceText),
@@ -91,9 +82,9 @@ export function StudentWritingSubmitPanel({
   );
 
   const loadHistory = useCallback(async () => {
-    const list = await fetchStudentWritingSubmissions(selectedClassId, uid, taskKey);
+    const list = await fetchStudentWritingSubmissions(primaryClassId, uid, taskKey);
     setHistory(list);
-  }, [selectedClassId, uid, taskKey]);
+  }, [primaryClassId, uid, taskKey]);
 
   useEffect(() => {
     void loadHistory();
@@ -114,7 +105,7 @@ export function StudentWritingSubmitPanel({
     setStatusMsg('');
     try {
       await submitWritingToClass({
-        classId: selectedClassId,
+        classId: primaryClassId,
         studentUid: uid,
         studentName: cleanName,
         grade,
@@ -125,7 +116,7 @@ export function StudentWritingSubmitPanel({
         formatWarnings: check.formatWarnings,
       });
       await loadHistory();
-      setStatusMsg('先生へ答案を提出しました！添削が返却されるとこの下に表示されます。');
+      setStatusMsg('塾の先生へ答案を一括提出しました！添削が返却されるとこの下に表示されます。');
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : '提出に失敗しました。');
     } finally {
@@ -155,16 +146,10 @@ export function StudentWritingSubmitPanel({
       <div className="swr-panel-header">
         <span className="swr-badge">
           <Sparkles size={14} aria-hidden="true" />
-          すごろく塾 添削提出＆セルフ形式チェック
+          塾の先生へ一括提出 ＆ セルフ形式チェック
         </span>
-        {onOpenTeacherPreview && (
-          <button
-            type="button"
-            className="swr-mini-btn"
-            onClick={onOpenTeacherPreview}
-          >
-            講師の添削画面を開く
-          </button>
+        {primaryJukuName && (
+          <small className="swr-muted-note">連携中：{primaryJukuName}</small>
         )}
       </div>
 
@@ -243,20 +228,6 @@ export function StudentWritingSubmitPanel({
       </div>
 
       <div className="swr-submit-row">
-        {memberships.length > 1 && (
-          <select
-            aria-label="提出先クラス"
-            className="swr-class-select"
-            value={selectedClassId}
-            onChange={e => setSelectedClassId(e.target.value)}
-          >
-            {memberships.map(m => (
-              <option key={m.classId} value={m.classId}>
-                {m.className}
-              </option>
-            ))}
-          </select>
-        )}
         <input
           type="text"
           className="swr-name-input"
@@ -274,7 +245,7 @@ export function StudentWritingSubmitPanel({
           data-sugoroku-submit-writing
         >
           <Send size={15} aria-hidden="true" />
-          {submitting ? '提出中…' : latest ? '書き直して再提出する' : '先生へ提出する'}
+          {submitting ? '提出中…' : latest ? '書き直して再提出する' : '塾の先生へ提出する'}
         </button>
       </div>
 

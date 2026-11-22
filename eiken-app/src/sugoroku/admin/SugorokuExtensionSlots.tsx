@@ -61,18 +61,17 @@ export function SugorokuWritingExtensionSlot({
   }
 
   return (
-    <section aria-label="英作文提出" className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
+    <section aria-label="英作文提出" className="sg-stagger sg-grid-10">
       {submissions.map((sub) => (
-        <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+        <Card key={sub.id} as="article" className="sg-grid-10">
           <div className="sg-toolbar">
             <div className="sg-row-head">
               <button
                 type="button"
-                className="mt-btn mt-btn-text"
-                style={{ minHeight: 32, padding: 0 }}
+                className="mt-btn mt-btn-text sg-sub-name-btn"
                 onClick={() => onSelectStudent?.(sub.studentUid)}
               >
-                <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+                <strong className="sg-sub-name-strong">
                   {sub.studentName}
                 </strong>
               </button>
@@ -100,22 +99,12 @@ export function SugorokuWritingExtensionSlot({
             </div>
           </div>
 
-          <p
-            style={{
-              margin: 0,
-              font: '500 13px/1.6 var(--mt-font-body)',
-              color: 'var(--mt-ink-2)',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
+          <p className="sg-sub-excerpt">
             {sub.text}
           </p>
 
           {sub.review && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+            <div className="sg-sub-review-row">
               <ScoreRing
                 rate={sub.review.score / (sub.review.maxScore ?? 16)}
                 size={28}
@@ -125,7 +114,7 @@ export function SugorokuWritingExtensionSlot({
               <b>
                 {sub.review.score}/{sub.review.maxScore ?? 16}
               </b>
-              <span style={{ color: 'var(--mt-ink-2)' }}>{sub.review.comment}</span>
+              <span className="sg-ink-2">{sub.review.comment}</span>
             </div>
           )}
         </Card>
@@ -137,25 +126,16 @@ export function SugorokuWritingExtensionSlot({
         onClose={() => setInspectSub(null)}
       >
         {inspectSub && (
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="sg-grid-12">
             <div className="sg-row-head">
               <span className="sg-grade-tag">
                 {getGradeLabel(inspectSub.grade).replace('英検', '')}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--mt-ink-3)' }}>
+              <span className="sg-sub-meta">
                 {inspectSub.wordCount}語 · {inspectSub.taskTitle || inspectSub.taskKey}
               </span>
             </div>
-            <div
-              style={{
-                padding: 12,
-                borderRadius: 'var(--mt-radius-md)',
-                border: '1px solid var(--mt-line)',
-                background: '#fff',
-                font: '500 14px/1.7 var(--mt-font-body)',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
+            <div className="sg-sub-fulltext">
               {inspectSub.text}
             </div>
             <PrimaryButton
@@ -204,24 +184,23 @@ export function SugorokuSpeakingExtensionSlot({
   }
 
   return (
-    <section aria-label="スピーキング録音" className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
+    <section aria-label="スピーキング録音" className="sg-stagger sg-grid-10">
       {submissions.map((sub) => (
-        <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
+        <Card key={sub.id} as="article" className="sg-grid-10">
           <div className="sg-row-head">
             <button
               type="button"
-              className="mt-btn mt-btn-text"
-              style={{ minHeight: 32, padding: 0 }}
+              className="mt-btn mt-btn-text sg-sub-name-btn"
               onClick={() => onSelectStudent?.(sub.studentUid)}
             >
-              <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+              <strong className="sg-sub-name-strong">
                 {sub.studentName}
               </strong>
             </button>
             <span className="sg-grade-tag">
               {getGradeLabel(sub.grade).replace('英検', '')}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--mt-ink-3)' }}>
+            <span className="sg-sub-meta">
               {sub.setTitle || sub.setId}
             </span>
           </div>

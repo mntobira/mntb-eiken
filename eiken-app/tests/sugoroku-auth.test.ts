@@ -322,9 +322,9 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(step2Html).toContain('sugoroku-invite-input');
     expect(step2Html).toContain('sga-code-slot');
     expect(step2Html).toContain('student01@school.ed.jp');
-    expect(step2Html).toContain('英検2級');
+    expect(step2Html).toContain('全級共通');
     expect(step2Html).toContain('現在このアカウントの塾在籍が停止されています');
-    expect(step2Html).toContain('公開ランキング等に本名は一切表示されません');
+    expect(step2Html).toContain('一般公開のランキング等に本名は一切表示されません');
   });
 
   it('allows zero-touch instructor login & classroom preview for mntobira@gmail.com and hirokingz0927@gmail.com while rejecting unverified or unlisted emails', () => {

@@ -30,7 +30,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { FIREBASE_CONFIGURED, USE_EMULATORS } from '../../firebase';
-import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
+import { type EikenGrade } from '../../eiken/config';
 import { JOIN_CODE_LENGTH } from '../../utils/classroomCore';
 import { isInAppBrowser } from '../../utils/googleAuth';
 import { useSignInGuard } from '../../hooks/useSignInGuard';
@@ -83,7 +83,7 @@ export function SugorokuAuthGate({
     return <>{children}</>;
   }
 
-  // ログイン済み かつ 停止されておらず（すごろく塾クラス在籍済み・講師/運営ロール・または事前承認済み講師メール）なら本編を表示
+  // 講師・運営アカウントで誤って生徒用URLを開いた場合は、生徒UIに入れず講師専用管理ポータル（?portal=admin）へ案内する
   const isPreAuthorizedInstructor =
     user != null &&
     hasVerifiedPreAuthorizedInstructorEmail({
@@ -91,12 +91,48 @@ export function SugorokuAuthGate({
       emailVerified: user.emailVerified,
       providerIds: (user.providerData || []).map((p) => p.providerId),
     });
-
-  if (
-    user &&
+  const isInstructorAccount =
+    user != null &&
     !status.isSuspended &&
-    (status.isEnrolledInJuku || isActiveSugorokuStaff(status.memberDoc) || isPreAuthorizedInstructor)
-  ) {
+    (isActiveSugorokuStaff(status.memberDoc) || isPreAuthorizedInstructor);
+
+  if (isInstructorAccount && !status.isEnrolledInJuku) {
+    return (
+      <main data-testid="sugoroku-instructor-redirect" className="sga-screen">
+        <div className="sga-shell">
+          <section className="sga-hero-card sga-stagger-1" aria-label="講師用ポータル案内">
+            <div className="sga-hero-top">
+              <span className="sga-kicker-pill">
+                <ShieldCheck size={13} aria-hidden="true" />
+                講師・教室管理者アカウント
+              </span>
+            </div>
+            <h1 className="sga-hero-title">講師専用の管理画面をご利用ください</h1>
+            <p className="sga-hero-sub">
+              このURLは生徒用の学習ゲートです。塾の一括管理・宿題配信・英作文＆スピーキング添削は講師専用ポータルで行えます。
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a href="?portal=admin" className="sga-primary-btn">
+                <span>講師用 一括管理ポータルを開く</span>
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+              <button
+                type="button"
+                onClick={() => void signOutGoogle()}
+                className="sga-secondary-btn"
+              >
+                <LogOut size={15} aria-hidden="true" />
+                <span>生徒用アカウントに切り替える</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  // ログイン済み かつ 停止されておらず、塾在籍済みなら本編を表示
+  if (user && !status.isSuspended && status.isEnrolledInJuku) {
     return <>{children}</>;
   }
 
@@ -161,7 +197,7 @@ export function SugorokuGateScreen({
 
   const [inviteCode, setInviteCode] = useState(initialDraft.inviteCode);
   const [displayName, setDisplayName] = useState(initialDraft.displayName);
-  const [targetGrade, setTargetGrade] = useState<EikenGrade>(initialDraft.targetGrade);
+  const targetGrade: EikenGrade = initialDraft.targetGrade;
   const [consentAccepted, setConsentAccepted] = useState(initialDraft.consentAccepted);
   const [submittingCode, setSubmittingCode] = useState(false);
   const [codeError, setCodeError] = useState('');
@@ -296,16 +332,20 @@ export function SugorokuGateScreen({
           </div>
 
           <h1 className="sga-hero-title">
-            <KineticText text="マナトビ英検 塾生ゲート" variant="rise" />
+            <KineticText text="マナトビ英検 塾生専用ログイン" variant="rise" />
           </h1>
           <p className="sga-hero-sub">
-            iPad・スマホ・PC で学習履歴を同期する塾生専用の4技能学習画面
+            塾から配られた招待コードを1回入れるだけで、英検5級〜1級の4技能すべてが塾の先生と一括連携されます（級ごとの登録・変更は不要です）
           </p>
 
           <div className="sga-perks-row" aria-label="塾生専用仕様">
             <span className="sga-perk-chip">
               <VolumeX size={13} aria-hidden="true" />
               広告 100% 完全非表示
+            </span>
+            <span className="sga-perk-chip">
+              <Sparkles size={13} aria-hidden="true" />
+              全級（5級〜1級）一括対応
             </span>
             <span className="sga-perk-chip">
               <ShieldCheck size={13} aria-hidden="true" />
@@ -375,9 +415,9 @@ export function SugorokuGateScreen({
             /* ==================== Step 1: Google ログイン ==================== */
             <div className="flex flex-col gap-3.5" aria-label="Google アカウントログイン">
               <div className="sga-info-box">
-                <p className="font-bold mb-1">ステップ 1：Google アカウントでログイン</p>
+                <p className="font-bold mb-1">ステップ 1：塾生用 Google アカウントでログイン</p>
                 <p>
-                  学校配布 iPad の Google Workspace アカウント、または個人の Gmail アカウントのどちらでも利用できます（事前登録済みの講師アカウントでログインした場合は招待コード不要でそのまま入場できます）。
+                  学校配布 iPad の Google アカウント、または個人の Gmail アカウントのどちらでも利用できます（※先生の方はこの生徒用画面ではなく、講師専用の管理URLをご利用ください）。
                 </p>
               </div>
 
@@ -506,7 +546,7 @@ export function SugorokuGateScreen({
                     className="inline-flex items-center gap-1.5 text-sm font-extrabold text-[#1c2a39]"
                   >
                     <KeyRound size={16} className="text-[#2458a6]" aria-hidden="true" />
-                    <span>すごろく招待コード（{JOIN_CODE_LENGTH}文字）</span>
+                    <span>塾の招待コード（{JOIN_CODE_LENGTH}文字・全級共通）</span>
                   </label>
                   {normalizedCode.length > 0 && (
                     <button
@@ -580,55 +620,39 @@ export function SugorokuGateScreen({
                 </div>
 
                 <p className="text-xs text-[#5a6573]">
-                  先生から配布された{JOIN_CODE_LENGTH}文字を入力（コピー＆ペースト可／全角文字や 0・O、1・I の見間違いは自動で補正します）。
+                  塾の先生から配られた{JOIN_CODE_LENGTH}文字のコードを入力してください（級ごとにコードを分ける必要はありません／全角や 0・O、1・I は自動補正します）。
                 </p>
               </div>
 
-              {/* ニックネーム＆目標級 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="sugoroku-student-name" className="block text-xs font-extrabold text-[#1c2a39] mb-1">
-                    アプリ内ニックネーム
-                  </label>
-                  <input
-                    id="sugoroku-student-name"
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    maxLength={24}
-                    placeholder="例: たくみ（本名でなくてOK）"
-                    className="sga-input"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sugoroku-target-grade" className="block text-xs font-extrabold text-[#1c2a39] mb-1">
-                    現在の目標級
-                  </label>
-                  <select
-                    id="sugoroku-target-grade"
-                    value={targetGrade}
-                    onChange={(e) => setTargetGrade(e.target.value as EikenGrade)}
-                    className="sga-select"
-                  >
-                    {EIKEN_GRADES.filter((g) => g.available).map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              {/* 塾の先生に伝える名前（級ごとの指定は不要・アプリ内でどの級を解いても自動で一括記録） */}
+              <div>
+                <label htmlFor="sugoroku-student-name" className="block text-xs font-extrabold text-[#1c2a39] mb-1">
+                  お名前（塾の先生の管理画面に表示されます）
+                </label>
+                <input
+                  id="sugoroku-student-name"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={24}
+                  placeholder="例: 山田 太郎（公開ランキングには本名は出ません）"
+                  className="sga-input"
+                />
+                <p className="mt-1 text-xs text-[#5a6573]">
+                  ※ 受験級（5級〜1級）の事前登録は不要です。アプリの中でどの級を練習・提出しても、塾の先生の画面に自動でまとめて届きます。
+                </p>
               </div>
 
               {/* 共有範囲の透明表示 ＆ 同意チェック */}
               <div className="sga-consent-card">
                 <div className="sga-privacy-grid">
                   <div className="sga-privacy-pill">
-                    <strong>担当講師に共有される内容</strong>
-                    日々の学習時間・単元別の進捗と正答率・提出した英作文とスピーキング録音
+                    <strong>塾の先生に一括共有される内容</strong>
+                    日々の学習時間・解いた級や単元の進捗と正答率・提出した英作文とスピーキング録音
                   </div>
                   <div className="sga-privacy-pill">
                     <strong>プライバシー保護の約束</strong>
-                    実名は講師管理画面内のみで扱われ、公開ランキング等に本名は一切表示されません
+                    氏名は塾の先生の管理画面内のみで扱われ、一般公開のランキング等に本名は一切表示されません
                   </div>
                 </div>
 
@@ -645,7 +669,7 @@ export function SugorokuGateScreen({
                     onChange={(e) => setConsentAccepted(e.target.checked)}
                   />
                   <span className="text-xs font-bold leading-relaxed text-[#1c2a39]">
-                    上記の学習記録・提出答案を担当クラスの先生へ共有することに同意します（高校生・中学生の方は保護者の方と一緒にご確認ください）
+                    上記の学習記録・提出答案を通っている塾の先生へ共有することに同意します（中高生の方は保護者の方と一緒にご確認ください）
                   </span>
                 </label>
               </div>
@@ -678,7 +702,7 @@ export function SugorokuGateScreen({
                 ) : (
                   <>
                     <ShieldCheck size={18} aria-hidden="true" />
-                    <span>すごろく塾クラスに参加して学習を始める</span>
+                    <span>塾に参加して学習を始める</span>
                   </>
                 )}
               </button>

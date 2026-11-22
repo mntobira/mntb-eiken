@@ -144,6 +144,8 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       }),
     );
     expect(html).toContain('すごろく塾 管理');
+    expect(html).toContain('全員（全級一括）');
+    expect(html).toContain('宿題配信');
     expect(html).toContain('高橋 陽斗（高2・サッカー部）');
     expect(html).toContain('山本 陸（高2・野球部）');
     expect(html).toContain('教材PDF');
