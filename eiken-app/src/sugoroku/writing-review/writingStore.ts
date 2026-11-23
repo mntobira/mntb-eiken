@@ -221,14 +221,28 @@ export async function fetchStudentWritingSubmissions(
   }
 }
 
+function isFirestorePermissionDenied(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const code = String((err as { code?: unknown }).code || '').toLowerCase();
+  const message = String((err as { message?: unknown }).message || '').toLowerCase();
+  return (
+    code.includes('permission-denied') ||
+    message.includes('missing or insufficient permissions') ||
+    message.includes('permission_denied')
+  );
+}
+
 /**
  * 講師：クラス全体のライティング提出答案一覧を取得する（新しい順）
+ * - ルール未反映・`plan: 'free'` クラス等で Firestore `list` が permission-denied になった場合でも、
+ *   生の英語エラーを投げず、事前取得済みリストやローカル控えにフォールバックする。
  */
 export async function fetchClassWritingSubmissions(
   classId: string,
-  options?: { includeDemoSamples?: boolean },
+  options?: { includeDemoSamples?: boolean; fallbackSubmissions?: readonly SugorokuWritingSubmissionDoc[] },
 ): Promise<SugorokuWritingSubmissionDoc[]> {
   const local = readLocalSubmissions().filter(item => item.classId === classId);
+  const seeded = (options?.fallbackSubmissions ?? []).filter(item => item.classId === classId || !item.classId);
   const includeDemo =
     options?.includeDemoSamples ?? classId === SUGOROKU_DEMO_CLASS_ID;
 
@@ -239,22 +253,30 @@ export async function fetchClassWritingSubmissions(
         if (demo.id) merged.set(demo.id, demo);
       }
     }
-    for (const item of local) {
+    for (const item of [...seeded, ...local]) {
       if (item.id) merged.set(item.id, item);
     }
     return [...merged.values()].sort((a, b) => b.submittedAt - a.submittedAt);
   }
 
-  const colRef = collection(db, 'classrooms', classId, 'writing_submissions');
-  const snap = await getDocs(colRef);
-  const remote = snap.docs.map(d => ({
-    ...(d.data() as SugorokuWritingSubmissionDoc),
-    id: d.id,
-    classId,
-  }));
+  let remote: SugorokuWritingSubmissionDoc[] = [];
+  try {
+    const colRef = collection(db, 'classrooms', classId, 'writing_submissions');
+    const snap = await getDocs(colRef);
+    remote = snap.docs.map(d => ({
+      ...(d.data() as SugorokuWritingSubmissionDoc),
+      id: d.id,
+      classId,
+    }));
+  } catch (err) {
+    if (!isFirestorePermissionDenied(err)) {
+      throw new Error('ライティング提出答案の取得に失敗しました。通信環境を確認してください。');
+    }
+    remote = [];
+  }
 
   const merged = new Map<string, SugorokuWritingSubmissionDoc>();
-  for (const item of [...local, ...remote]) {
+  for (const item of [...seeded, ...local, ...remote]) {
     if (item.id) merged.set(item.id, item);
   }
   return [...merged.values()].sort((a, b) => b.submittedAt - a.submittedAt);
@@ -310,10 +332,17 @@ export async function saveWritingReview(
     if (review.strengths) cleanReview.strengths = review.strengths;
     if (review.nextActions) cleanReview.nextActions = review.nextActions;
 
-    await updateDoc(ref, {
-      status: 'reviewed',
-      review: cleanReview,
-    });
+    try {
+      await updateDoc(ref, {
+        status: 'reviewed',
+        review: cleanReview,
+      });
+    } catch (err) {
+      if (isFirestorePermissionDenied(err)) {
+        throw new Error('クラウドへの添削返却権限が確認できませんでした（この端末には下書き保存済みです）。クラスの塾プラン設定を確認してください。');
+      }
+      throw new Error('添削結果のクラウド保存に失敗しました。通信環境を確認してください。');
+    }
   }
 
   return updated;

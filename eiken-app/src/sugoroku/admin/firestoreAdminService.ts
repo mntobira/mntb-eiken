@@ -195,11 +195,29 @@ export async function fetchManageableClassrooms(): Promise<ClassroomDoc[]> {
     return [];
   }
 
-  // 1. 自分が teacherUid のクラス
+  // 1. 自分が teacherUid のクラス（事前承認オーナーの未アップグレード既存クラスは自動で plan: 'juku' へ昇格）
   const ownRooms = await fetchMyClassrooms().catch(() => []);
-  for (const r of ownRooms) {
-    roomMap.set(r.id, r);
-  }
+  const canAutoUpgradeJuku =
+    Boolean(auth.currentUser.emailVerified && isEmailPreAuthorizedAdmin(email)) ||
+    Boolean(rootMember && rootMember.active && rootMember.role === 'owner');
+  await Promise.all(
+    ownRooms.map(async (r) => {
+      if (canAutoUpgradeJuku && r.plan !== 'juku') {
+        try {
+          await setDoc(
+            doc(db, CLASSROOMS_COLLECTION, r.id),
+            { plan: 'juku', updatedAt: serverTimestamp() },
+            { merge: true },
+          );
+          roomMap.set(r.id, { ...r, plan: 'juku' });
+          return;
+        } catch {
+          // ルール上昇格不可の場合はそのまま保持
+        }
+      }
+      roomMap.set(r.id, r);
+    }),
+  );
 
   // 2. ルート sugoroku_members/{uid} の classIds（staff / owner 割当クラス）
   if (

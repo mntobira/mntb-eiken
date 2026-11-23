@@ -48,20 +48,22 @@ function useLandscapeTitle(): boolean {
   return isLandscape;
 }
 
-export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished }: {
+export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished, skipIntro = false }: {
   /** 2026-10-19 ゲスト入口は廃止（ログイン必須）。未ログインなら次にログイン画面が出る */
   onStart: (finishBgm: boolean) => void;
   bgmEnabled: boolean;
   onBgmToggle: (enabled: boolean) => void;
   finishingBgm: boolean;
   onBgmFinished: () => void;
+  /** ログアウト後や「タイトルへ戻る」遷移時はエンブレム・OP動画を飛ばして即タイトル画面を表示 */
+  skipIntro?: boolean;
 }) {
   const { progress } = useGrowthProgress();
   const isLandscape = useLandscapeTitle();
   const opMovie = isLandscape ? FULLFRAME_CINEMATIC_MOVIES.titleOpLandscape : FULLFRAME_CINEMATIC_MOVIES.titleOpPortrait;
 
-  const [phase, setPhase] = useState<Phase>('intro');
-  const [gate, setGate] = useState<Gate>('emblem');
+  const [phase, setPhase] = useState<Phase>(() => (skipIntro ? 'done' : 'intro'));
+  const [gate, setGate] = useState<Gate>(() => (skipIntro ? 'title' : 'emblem'));
   const [emblemPhase, setEmblemPhase] = useState<'in' | 'hold' | 'out'>('in');
   const [emblemSkipped, setEmblemSkipped] = useState(false);
   const [opFadingOut, setOpFadingOut] = useState(false);

@@ -452,11 +452,23 @@ export async function fetchStudentSpeakingSubmissions(
   }
 }
 
+function isFirestorePermissionDenied(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const code = String((err as { code?: unknown }).code || '').toLowerCase();
+  const message = String((err as { message?: unknown }).message || '').toLowerCase();
+  return (
+    code.includes('permission-denied') ||
+    message.includes('missing or insufficient permissions') ||
+    message.includes('permission_denied')
+  );
+}
+
 export async function fetchClassSpeakingSubmissions(
   classId: string,
-  options?: { includeDemoSamples?: boolean },
+  options?: { includeDemoSamples?: boolean; fallbackSubmissions?: readonly SugorokuSpeakingSubmissionDoc[] },
 ): Promise<SugorokuSpeakingSubmissionDoc[]> {
   const local = readLocalSpeakingSubmissions().filter(item => item.classId === classId);
+  const seeded = (options?.fallbackSubmissions ?? []).filter(item => item.classId === classId || !item.classId);
   const includeDemo =
     options?.includeDemoSamples ?? classId === SUGOROKU_DEMO_CLASS_ID;
 
@@ -467,22 +479,30 @@ export async function fetchClassSpeakingSubmissions(
         if (demo.id) merged.set(demo.id, demo);
       }
     }
-    for (const item of local) {
+    for (const item of [...seeded, ...local]) {
       if (item.id) merged.set(item.id, item);
     }
     return [...merged.values()].sort((a, b) => b.submittedAt - a.submittedAt);
   }
 
-  const colRef = collection(db, 'classrooms', classId, 'speaking_submissions');
-  const snap = await getDocs(colRef);
-  const remote = snap.docs.map(d => ({
-    ...(d.data() as SugorokuSpeakingSubmissionDoc),
-    id: d.id,
-    classId,
-  }));
+  let remote: SugorokuSpeakingSubmissionDoc[] = [];
+  try {
+    const colRef = collection(db, 'classrooms', classId, 'speaking_submissions');
+    const snap = await getDocs(colRef);
+    remote = snap.docs.map(d => ({
+      ...(d.data() as SugorokuSpeakingSubmissionDoc),
+      id: d.id,
+      classId,
+    }));
+  } catch (err) {
+    if (!isFirestorePermissionDenied(err)) {
+      throw new Error('スピーキング提出音声一覧の取得に失敗しました。通信環境を確認してください。');
+    }
+    remote = [];
+  }
 
   const merged = new Map<string, SugorokuSpeakingSubmissionDoc>();
-  for (const item of [...local, ...remote]) {
+  for (const item of [...seeded, ...local, ...remote]) {
     if (item.id) merged.set(item.id, item);
   }
   return [...merged.values()].sort((a, b) => b.submittedAt - a.submittedAt);
@@ -524,10 +544,17 @@ export async function saveSpeakingReview(
     };
     if (review.reviewerName) cleanReview.reviewerName = review.reviewerName;
 
-    await updateDoc(ref, {
-      status: 'reviewed',
-      review: cleanReview,
-    });
+    try {
+      await updateDoc(ref, {
+        status: 'reviewed',
+        review: cleanReview,
+      });
+    } catch (err) {
+      if (isFirestorePermissionDenied(err)) {
+        throw new Error('クラウドへの評価返却権限が確認できませんでした（この端末には保存済みです）。クラスの塾プラン設定を確認してください。');
+      }
+      throw new Error('評価結果のクラウド保存に失敗しました。通信環境を確認してください。');
+    }
   }
 
   return updated;

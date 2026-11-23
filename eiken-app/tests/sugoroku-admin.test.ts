@@ -15,6 +15,7 @@ import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
 import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
 import {
   SUGOROKU_DEDICATED_PDFS,
+  SugorokuPdfShelfTab,
   classifyEikenMaterial,
 } from '../src/sugoroku/admin/SugorokuPdfShelfTab';
 import {
@@ -160,6 +161,9 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(html).toContain('高橋 陽斗（高2・サッカー部）');
     expect(html).toContain('山本 陸（高2・野球部）');
     expect(html).toContain('教材PDF');
+    // 不要な右上のログアウトボタン（[->）はヘッダーに存在しないこと（修正点6）
+    expect(html).not.toContain('aria-label="ログアウト"');
+    expect(html).not.toContain('lucide-log-out');
     // エッセンシャルUI・8大UX要素のマークアップ検証
     expect(html).toContain('class="kt');               // Kinetic Typography (KineticText)
     expect(html).toContain('class="mo-ring"');         // Infographic ScoreRing
@@ -167,6 +171,19 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(html).toContain('study-doors');             // Infographic 7日間の学びの扉
     expect(html).toContain('data-ptr-host');           // Pull to Refresh ホスト
     expect(html).toContain('data-swipe-row');          // Swipe Action 行
+
+    // 武田塾式・合格ルート＆今週やるべき4技能タスクの可視化検証（修正点7）
+    const routeHtml = renderToStaticMarkup(
+      createElement(SugorokuPdfShelfTab, {
+        activeSubject: 'eiken_2',
+      }),
+    );
+    expect(routeHtml).toContain('合格ルート＆今週やること');
+    expect(routeHtml).toContain('段階別 カリキュラム・参考書ルート全体図');
+    expect(routeHtml).toContain('Week 1 のゴール');
+    expect(routeHtml).toContain('Week 1 の宿題を配信');
+    expect(routeHtml).toContain('週次テスト Form A');
+    expect(routeHtml).toContain('不合格時 再テスト Form B');
   });
 
   it('Skeleton Screen・Toast・Bottom Sheet・個人詳細インフォグラフィック・LINE声掛け文生成が正しく動作する', () => {

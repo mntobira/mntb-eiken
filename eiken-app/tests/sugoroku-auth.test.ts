@@ -400,7 +400,7 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         }),
       ).toBe(true);
 
-      // 設定画面「クラス」タブ先行解放も両アカウントで有効
+      // 設定画面「クラス」タブは管理者・一般生徒アカウントともに公開され、未確認メール・未ログインのみ除外（修正点1・8）
       expect(isClassroomEnabledFor({ email: instructorEmail, emailVerified: true })).toBe(true);
       expect(isClassroomEnabledFor({ email: instructorEmail, emailVerified: false })).toBe(false);
 
@@ -434,6 +434,11 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
         }),
       ).toBe(true);
     }
+
+    // 一般生徒アカウントでも設定＞クラス参加UIは有効化されていること（修正点1・8）
+    expect(isClassroomEnabledFor({ email: 'student_any@gmail.com', emailVerified: true })).toBe(true);
+    expect(isClassroomEnabledFor({ email: 'student_school@ed.jp', emailVerified: true })).toBe(true);
+    expect(isClassroomEnabledFor(null)).toBe(false);
 
     // メール未確認トークンや無関係な Gmail アカウントは拒否
     expect(

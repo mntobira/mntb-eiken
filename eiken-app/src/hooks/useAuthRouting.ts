@@ -14,23 +14,36 @@ import { isScreenshotLaunch } from './useAppPersistence';
  *     あれば（起動直後でなければ）ホームへ
  *   ・起動直後の1回目は、復元した画面をそのまま使う（勝手にホームへ飛ばさない）
  */
-export function useAuthRouting({ isGuest, setIsGuest, setAppState, appState }: {
+export function useAuthRouting({ isGuest, setIsGuest, setAppState, appState, onSignedOutToTitle }: {
   isGuest: boolean;
   setIsGuest: (v: boolean) => void;
   setAppState: (s: AppState) => void;
   /** いまの画面（ログイン画面に居るかの判定だけに使う。省略時は従来どおり） */
   appState?: AppState;
+  /** ログイン中だったユーザーがログアウトした際にタイトル画面へ戻すコールバック */
+  onSignedOutToTitle?: () => void;
 }): void {
   const isFirstLoad = useRef(true);
+  const wasAuthenticatedRef = useRef<boolean>(Boolean(auth.currentUser));
   // 購読を張り直さずに最新の画面を読むため ref に入れる
   const appStateRef = useRef(appState);
   appStateRef.current = appState;
+  const onSignedOutRef = useRef(onSignedOutToTitle);
+  onSignedOutRef.current = onSignedOutToTitle;
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       const wasFirstLoad = isFirstLoad.current;
       isFirstLoad.current = false;
 
       if (!user) {
+        if (wasAuthenticatedRef.current) {
+          wasAuthenticatedRef.current = false;
+          setIsGuest(false);
+          if (onSignedOutRef.current) {
+            onSignedOutRef.current();
+            return;
+          }
+        }
         // ログイン必須（2026-10-19）。起動時に未ログインならログイン画面へ。
         // 例外：ログインできずに「この端末だけで続ける」を選んだ人・スクリーンショット撮影・管理者ログインガード中
         if (
@@ -42,6 +55,7 @@ export function useAuthRouting({ isGuest, setIsGuest, setAppState, appState }: {
           setAppState('onboarding');
         }
       } else {
+        wasAuthenticatedRef.current = true;
         setIsGuest(false);
         // タイトル画面「管理者ログインをする」等から先生・管理者画面を開いている最中は勝手に onboarding / home へ飛ばさない
         if (

@@ -1,6 +1,8 @@
 /**
- * すごろく塾 管理者ポータル（エッセンシャル設計・全級一括＆詳細目標対応）
- * 説明文・装飾色・重複ウィジェットを排し、必要な数値と操作だけを一瞥で扱う。
+ * すごろく塾・クラス統合管理ポータル（エッセンシャル設計・全クラス一覧切替＆詳細目標・招待・4技能添削・合格ルート完全統合）
+ * - 設定＞クラスを管理アカウントで開くと、所持・担当している全クラスが最上部に一覧表示され即選択できる
+ * - 新規クラス作成・目標時間/日数/受験回/参加受付編集・不要クラス削除・生徒招待キット（LINE案内文/URL/6文字コード）を全てこの画面内で完結
+ * - 学習ルート・教材タブからワンタップで週次カリキュラム宿題を配信可能
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,15 +14,16 @@ import {
   Eye,
   Link2,
   LogIn,
-  LogOut,
   MessageCircle,
   Plus,
   RefreshCw,
   Route,
+  Settings2,
+  Trash2,
   Users,
 } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
-import { signInWithGoogle, signOutGoogle } from '../../utils/googleAuth';
+import { signInWithGoogle } from '../../utils/googleAuth';
 import { PdfViewerHost } from '../../components/PdfViewer';
 import { CountUp } from '../../components/ui/CountUp';
 import {
@@ -29,6 +32,8 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '../../components/ui';
+import { ClassFormModal, type ClassFormValues } from '../../components/teacher/CreateClassModal';
+import { confirmAction } from '../../utils/dialog';
 import { KineticText, ScoreRing, installRipple } from '../../motion';
 import type { ClassroomDoc } from '../../utils/classroomCore';
 import type { EikenGrade } from '../../eiken/config';
@@ -36,6 +41,7 @@ import type {
   SugorokuAdminExtensionSlots,
   SugorokuStaffInviteDoc,
 } from '../shared/types';
+import type { SugorokuCompatibleAssignmentPayload } from '../curriculum';
 import {
   buildStudentOverview,
   buildSugorokuSummaryCsv,
@@ -51,8 +57,13 @@ import {
   buildClassInviteUrl,
   createDefaultClassSettings,
   createManagedClassroom,
+  deleteManagedClassroom,
+  fetchClassSettings,
+  getExamSessionShortLabel,
   loadCachedClassSettings,
   loadLastOrgName,
+  updateManagedClassroom,
+  type JukuClassSettings,
 } from './classroomSettings';
 import { createAssignment } from '../../utils/classAssignments';
 import { dueDateToMs } from '../../utils/classAssignmentsCore';
@@ -103,16 +114,22 @@ export type SugorokuAdminTabId =
 
 export interface SugorokuAdminAppProps {
   onBack?: () => void;
+  /** 後方互換のために型のみ保持（現在はポータル内蔵モーダルで完結） */
   onOpenTeacherDashboard?: () => void;
   onOpenCreateClass?: () => void;
   initialDataMode?: 'auto' | 'demo' | 'firestore';
   extensionSlots?: SugorokuAdminExtensionSlots;
 }
 
+function dueMsToDateInput(dueAtMs: number): string {
+  const d = new Date(dueAtMs);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
 export function SugorokuAdminApp({
   onBack,
-  onOpenTeacherDashboard,
-  onOpenCreateClass,
   initialDataMode = 'auto',
   extensionSlots,
 }: SugorokuAdminAppProps) {
@@ -127,6 +144,11 @@ export function SugorokuAdminApp({
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [staffSheetOpen, setStaffSheetOpen] = useState(false);
   const [homeworkModalOpen, setHomeworkModalOpen] = useState(false);
+  const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
+  const [classFormMode, setClassFormMode] = useState<'create' | 'edit' | null>(null);
+  const [savingClassForm, setSavingClassForm] = useState(false);
+  const [deletingClass, setDeletingClass] = useState(false);
+
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [onlyAlerts, setOnlyAlerts] = useState(false);
   const [newJukuSchoolName, setNewJukuSchoolName] = useState(
@@ -143,6 +165,7 @@ export function SugorokuAdminApp({
   );
 
   const [classrooms, setClassrooms] = useState<ClassroomDoc[]>([]);
+  const [classSettingsMap, setClassSettingsMap] = useState<Record<string, JukuClassSettings>>({});
   const [activeClassId, setActiveClassId] = useState<string>('');
   const [livePortalData, setLivePortalData] = useState<LoadedClassPortalData | null>(null);
   const [loadingLive, setLoadingLive] = useState(false);
@@ -158,7 +181,7 @@ export function SugorokuAdminApp({
     return onAuthStateChanged(auth, (current) => setUser(current));
   }, []);
 
-  const reloadLiveClasses = useCallback(async () => {
+  const reloadLiveClasses = useCallback(async (preferredClassId?: string) => {
     if (!FIREBASE_CONFIGURED || !auth.currentUser) {
       setClassrooms([]);
       setLivePortalData(null);
@@ -169,15 +192,28 @@ export function SugorokuAdminApp({
     try {
       const rooms = await fetchManageableClassrooms();
       setClassrooms(rooms);
+
+      const initialSettings: Record<string, JukuClassSettings> = {};
+      for (const r of rooms) {
+        initialSettings[r.id] = loadCachedClassSettings(r.id);
+      }
+      setClassSettingsMap(initialSettings);
+
       if (rooms.length > 0) {
-        const nextRoom = rooms.find((r) => r.id === activeClassId) ?? rooms[0];
+        const targetId = preferredClassId ?? activeClassId;
+        const nextRoom = rooms.find((r) => r.id === targetId) ?? rooms[0];
         setActiveClassId(nextRoom.id);
-        const portal = await loadClassPortalData(nextRoom);
+        const [portal, fetchedEntries] = await Promise.all([
+          loadClassPortalData(nextRoom),
+          Promise.all(rooms.map(async (r) => [r.id, await fetchClassSettings(r.id)] as const)),
+        ]);
+        setClassSettingsMap(Object.fromEntries(fetchedEntries));
         setLivePortalData(portal);
         if (initialDataMode === 'auto') {
           setDataMode('firestore');
         }
       } else {
+        setActiveClassId('');
         setLivePortalData(null);
       }
     } catch (e) {
@@ -225,6 +261,16 @@ export function SugorokuAdminApp({
     }
   };
 
+  const activeLiveRoom = useMemo(
+    () => classrooms.find((r) => r.id === activeClassId) ?? livePortalData?.classroom ?? null,
+    [classrooms, activeClassId, livePortalData],
+  );
+
+  const activeClassSettings = useMemo(() => {
+    if (!activeLiveRoom) return createDefaultClassSettings('');
+    return classSettingsMap[activeLiveRoom.id] ?? loadCachedClassSettings(activeLiveRoom.id);
+  }, [activeLiveRoom, classSettingsMap]);
+
   const sourceInfo = useMemo(() => {
     if (dataMode === 'demo') {
       return {
@@ -237,6 +283,7 @@ export function SugorokuAdminApp({
         schoolName: demoBundle.schoolName,
         className: demoBundle.className,
         joinCode: demoBundle.joinCode,
+        joinOpen: true,
         subject: 'eiken_2' as ClassroomDoc['subject'],
         members: demoBundle.members,
         logsByUid: demoBundle.logsByUid,
@@ -253,11 +300,12 @@ export function SugorokuAdminApp({
         ownerName: user?.displayName || '代表講師',
         ownerEmail: user?.email || undefined,
         staffInvites: [] as SugorokuStaffInviteDoc[],
-        classId: '',
-        schoolName: '',
-        className: '',
-        joinCode: '',
-        subject: 'eiken_2' as ClassroomDoc['subject'],
+        classId: activeLiveRoom?.id || '',
+        schoolName: activeLiveRoom?.schoolName || '',
+        className: activeLiveRoom?.className || '',
+        joinCode: activeLiveRoom?.joinCode || '',
+        joinOpen: activeLiveRoom?.joinOpen !== false,
+        subject: (activeLiveRoom?.subject ?? 'eiken_2') as ClassroomDoc['subject'],
         members: [],
         logsByUid: {},
         solvedByUid: {},
@@ -279,6 +327,7 @@ export function SugorokuAdminApp({
       schoolName: livePortalData.classroom.schoolName,
       className: livePortalData.classroom.className,
       joinCode: livePortalData.classroom.joinCode,
+      joinOpen: livePortalData.classroom.joinOpen !== false,
       subject: livePortalData.classroom.subject,
       members: livePortalData.members,
       logsByUid: livePortalData.logsByUid,
@@ -287,7 +336,7 @@ export function SugorokuAdminApp({
       writingSubmissions: livePortalData.writingSubmissions,
       speakingSubmissions: livePortalData.speakingSubmissions,
     };
-  }, [dataMode, demoBundle, livePortalData, user]);
+  }, [dataMode, demoBundle, livePortalData, activeLiveRoom, user]);
 
   const allStudentOverviews: SugorokuStudentOverview[] = useMemo(() => {
     const built = sourceInfo.members
@@ -478,7 +527,7 @@ export function SugorokuAdminApp({
   const handleCopyInviteLineTemplate = async () => {
     if (!sourceInfo.joinCode || !sourceInfo.classId) return;
     try {
-      const settings = loadCachedClassSettings(sourceInfo.classId);
+      const settings = classSettingsMap[sourceInfo.classId] ?? loadCachedClassSettings(sourceInfo.classId);
       const roomDoc: ClassroomDoc = livePortalData?.classroom ?? {
         id: sourceInfo.classId,
         teacherUid: user?.uid || 'owner',
@@ -486,7 +535,7 @@ export function SugorokuAdminApp({
         className: sourceInfo.className,
         subject: sourceInfo.subject,
         joinCode: sourceInfo.joinCode,
-        joinOpen: true,
+        joinOpen: sourceInfo.joinOpen,
         plan: 'juku',
         createdAt: 0,
       };
@@ -559,13 +608,88 @@ export function SugorokuAdminApp({
           coachNote: '英検5級〜1級のどの級を学習しても一括で学習時間・宿題・英作文・スピーキング録音が共有されます。',
         },
       });
-      await reloadLiveClasses();
-      setActiveClassId(created.id);
+      await reloadLiveClasses(created.id);
       showToast(`招待コード ${created.joinCode} でコースを開設しました`, 'done');
     } catch (e) {
       setLiveError(e instanceof Error ? e.message : 'コースの開設に失敗しました');
     } finally {
       setCreatingJukuRoom(false);
+    }
+  };
+
+  const handleSaveClassForm = async (values: ClassFormValues) => {
+    setSavingClassForm(true);
+    setLiveError(null);
+    try {
+      if (classFormMode === 'create') {
+        const { classroom: created } = await createManagedClassroom({
+          schoolName: values.schoolName,
+          className: values.className,
+          subject: values.subject,
+          enableJukuPlan: true,
+          settings: {
+            orgType: values.orgType,
+            dailyGoalMinutes: values.dailyGoalMinutes,
+            weeklyGoalDays: values.weeklyGoalDays,
+            examSession: values.examSession,
+            focusSkills: values.focusSkills,
+            coachNote: values.coachNote,
+          },
+        });
+        setClassFormMode(null);
+        await reloadLiveClasses(created.id);
+        showToast(`「${created.className}」（コード ${created.joinCode}）を開設しました`, 'done');
+      } else if (classFormMode === 'edit' && activeLiveRoom) {
+        const { classroom: updated, settings: savedSettings } = await updateManagedClassroom({
+          room: activeLiveRoom,
+          schoolName: values.schoolName,
+          className: values.className,
+          subject: values.subject,
+          joinOpen: values.joinOpen,
+          upgradeToJukuPlan: true,
+          settings: {
+            orgType: values.orgType,
+            dailyGoalMinutes: values.dailyGoalMinutes,
+            weeklyGoalDays: values.weeklyGoalDays,
+            examSession: values.examSession,
+            focusSkills: values.focusSkills,
+            coachNote: values.coachNote,
+          },
+        });
+        setClassSettingsMap((prev) => ({ ...prev, [updated.id]: savedSettings }));
+        setClassFormMode(null);
+        await reloadLiveClasses(updated.id);
+        showToast('クラス設定・学習目標を保存しました', 'done');
+      }
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'クラス設定の保存に失敗しました', 'warn');
+    } finally {
+      setSavingClassForm(false);
+    }
+  };
+
+  const handleDeleteCurrentClass = async () => {
+    if (!activeLiveRoom) return;
+    if (kpi.count > 0) {
+      showToast('在籍中の生徒がいるクラスは削除できません（先に参加受付の締切をご利用ください）', 'warn');
+      return;
+    }
+    const ok = confirmAction(
+      `「${activeLiveRoom.className}」（招待コード: ${activeLiveRoom.joinCode}）を削除します。\nこの操作は取り消せません。よろしいですか？`,
+    );
+    if (!ok) return;
+
+    setDeletingClass(true);
+    try {
+      await deleteManagedClassroom(activeLiveRoom);
+      setInviteSheetOpen(false);
+      setClassFormMode(null);
+      await reloadLiveClasses();
+      showToast(`「${activeLiveRoom.className}」を削除しました`, 'done');
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'クラスの削除に失敗しました', 'warn');
+    } finally {
+      setDeletingClass(false);
     }
   };
 
@@ -598,7 +722,10 @@ export function SugorokuAdminApp({
       return;
     }
 
-    if (!sourceInfo.classId) return;
+    if (!sourceInfo.classId) {
+      showToast('先に配信先のクラスを作成または選択してください', 'warn');
+      return;
+    }
     const created = await createAssignment(sourceInfo.classId, {
       title: payload.title,
       chapterIds: payload.chapterIds,
@@ -615,6 +742,19 @@ export function SugorokuAdminApp({
     await reloadLiveClasses();
     setHomeworkModalOpen(false);
     showToast(`宿題「${created.title}」を配信しました`, 'done');
+  };
+
+  const handleAssignRoutePreset = async (routePayload: SugorokuCompatibleAssignmentPayload) => {
+    await handleSubmitHomework({
+      title: routePayload.title,
+      chapterIds: routePayload.chapterIds,
+      dueDate: dueMsToDateInput(routePayload.dueAt),
+      dailyQuotaProblems: routePayload.dailyQuotaProblems,
+      skillBreakdown: routePayload.skillBreakdown,
+      presetId: routePayload.presetId,
+      presetWeek: routePayload.presetWeek,
+      startAt: routePayload.startAt,
+    });
   };
 
   const showSkeleton =
@@ -636,23 +776,22 @@ export function SugorokuAdminApp({
             </div>
 
             <div className="sg-head-tools">
-              {onOpenTeacherDashboard && (
-                <button
-                  type="button"
-                  className="sg-code-btn"
-                  onClick={onOpenTeacherDashboard}
-                  title="クラスの作成・目標設定・招待キットへ移動"
-                >
-                  クラス管理・作成
-                </button>
-              )}
+              <button
+                type="button"
+                className="sg-code-btn"
+                onClick={() => setClassFormMode('create')}
+                title="新しいクラス・コースを作成（この画面内で完結）"
+              >
+                <Plus size={13} aria-hidden="true" />
+                クラス管理・作成
+              </button>
 
               {sourceInfo.joinCode && (
                 <button
                   type="button"
                   className="sg-code-btn"
-                  onClick={() => void handleCopyJoinCode()}
-                  title="招待コードをコピー"
+                  onClick={() => setInviteSheetOpen(true)}
+                  title="招待コード・LINE案内文・クラス設定"
                 >
                   <Copy size={13} aria-hidden="true" />
                   {sourceInfo.joinCode}
@@ -677,25 +816,13 @@ export function SugorokuAdminApp({
                 disabled={ptrRefreshing || loadingLive}
                 onClick={() => void handlePullRefresh()}
                 aria-label="更新"
-                title="更新"
+                title="最新状態に更新"
               >
                 <RefreshCw
                   size={15}
                   className={ptrRefreshing || loadingLive ? 'animate-spin' : undefined}
                 />
               </button>
-
-              {FIREBASE_CONFIGURED && user && (
-                <button
-                  type="button"
-                  className="sg-icon-btn"
-                  onClick={() => void signOutGoogle()}
-                  title="ログアウト"
-                  aria-label="ログアウト"
-                >
-                  <LogOut size={15} />
-                </button>
-              )}
             </div>
           </div>
 
@@ -721,7 +848,7 @@ export function SugorokuAdminApp({
                 setActiveTab('pdf_shelf');
               }}
             >
-              <span>教材PDF</span>
+              <span>ルート・教材PDF</span>
             </button>
 
             <button
@@ -785,7 +912,7 @@ export function SugorokuAdminApp({
             <Card className="sg-create-juku-card" data-testid="sugoroku-create-juku-card">
               <h2 className="mt-h2">塾ルーム・コースを開設（6文字コード＆招待URL発行）</h2>
               <p className="mt-body">
-                英検の級ごとにルームを分けず1つで全級（5級〜1級）一括管理することも、コース別に学習目標（1日○分・週○日）を分けて開設することもできます。
+                英検の級ごとにルームを分けず1つで全級（5級〜1級）一括管理することも、学年・コース別に学習目標（1日○分・週○日）を分けて複数開設することもできます。
               </p>
               {liveError && <p className="slog-error">{liveError}</p>}
               <label className="sg-create-juku-field">
@@ -806,36 +933,99 @@ export function SugorokuAdminApp({
                 >
                   {creatingJukuRoom ? '開設中…' : '全級一括コースを即時開設'}
                 </PrimaryButton>
-                {(onOpenCreateClass || onOpenTeacherDashboard) && (
-                  <SecondaryButton onClick={onOpenCreateClass ?? onOpenTeacherDashboard}>
-                    目標時間を細かく設定して開設
-                  </SecondaryButton>
-                )}
+                <SecondaryButton onClick={() => setClassFormMode('create')}>
+                  クラス名・目標時間を細かく設定して開設
+                </SecondaryButton>
                 <SecondaryButton onClick={() => setActiveTab('pdf_shelf')}>
-                  先に教材PDF書庫を見る
+                  先に学習ルート・教材を見る
                 </SecondaryButton>
               </div>
             </Card>
           ) : (
             <>
-              {dataMode === 'firestore' && classrooms.length > 1 && (
-                <div className="sg-chip-group" role="group" aria-label="クラス">
-                  {classrooms.map((room) => (
-                    <button
-                      key={room.id}
-                      type="button"
-                      className="sg-chip"
-                      aria-pressed={room.id === activeClassId}
-                      onClick={() => void handleSelectLiveClass(room.id)}
-                    >
-                      {room.className}
-                    </button>
-                  ))}
-                </div>
+              {/* 所持・管理クラス一覧バー（1クラスのみでも常に表示し、切り替え・新規作成・設定・招待がこの画面で完結） */}
+              {dataMode === 'firestore' && classrooms.length > 0 && (
+                <section className="sg-class-strip" aria-label="担当クラス一覧">
+                  <div className="sg-class-strip-head">
+                    <span className="sg-class-strip-title">
+                      担当クラス一覧（{classrooms.length}クラス）— タップして切り替え
+                    </span>
+                    <div className="sg-chip-group">
+                      {activeLiveRoom && (
+                        <>
+                          <SecondaryButton
+                            onClick={() => setInviteSheetOpen(true)}
+                            icon={<MessageCircle size={13} aria-hidden="true" />}
+                          >
+                            生徒招待キット
+                          </SecondaryButton>
+                          <SecondaryButton
+                            onClick={() => setClassFormMode('edit')}
+                            icon={<Settings2 size={13} aria-hidden="true" />}
+                          >
+                            クラス・目標設定
+                          </SecondaryButton>
+                        </>
+                      )}
+                      <PrimaryButton
+                        onClick={() => setClassFormMode('create')}
+                        icon={<Plus size={13} aria-hidden="true" />}
+                      >
+                        クラス追加
+                      </PrimaryButton>
+                    </div>
+                  </div>
+
+                  <div className="sg-class-cards-row" role="group" aria-label="クラス選択">
+                    {classrooms.map((room) => {
+                      const selected = room.id === activeClassId;
+                      const st = classSettingsMap[room.id] ?? loadCachedClassSettings(room.id);
+                      return (
+                        <button
+                          key={room.id}
+                          type="button"
+                          className="sg-class-card-btn"
+                          aria-pressed={selected}
+                          onClick={() => void handleSelectLiveClass(room.id)}
+                        >
+                          <div className="sg-class-card-top">
+                            <span className="sg-class-card-school">
+                              {room.schoolName || 'すごろく塾'}
+                            </span>
+                            <span
+                              className="sg-class-status-dot"
+                              data-closed={room.joinOpen === false || undefined}
+                            >
+                              {room.joinOpen === false ? '受付締切' : '参加受付中'}
+                            </span>
+                          </div>
+                          <strong className="sg-class-card-name">{room.className}</strong>
+                          <div className="sg-class-card-meta">
+                            <span>コード: {room.joinCode}</span>
+                            <span>·</span>
+                            <span>{getGradeLabel(room.subject as EikenGrade)}中心</span>
+                            <span>·</span>
+                            <span>
+                              1日{st.dailyGoalMinutes}分×週{st.weeklyGoalDays}日
+                            </span>
+                            <span>·</span>
+                            <span>{getExamSessionShortLabel(st.examSession)}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               )}
 
               {activeTab === 'pdf_shelf' ? (
-                <SugorokuPdfShelfTab onToast={showToast} />
+                <SugorokuPdfShelfTab
+                  onToast={showToast}
+                  activeSubject={sourceInfo.subject}
+                  assignments={sourceInfo.assignments}
+                  onAssignRoutePreset={handleAssignRoutePreset}
+                  onOpenCustomHomework={() => setHomeworkModalOpen(true)}
+                />
               ) : activeTab === 'writing_review' ? (
                 <SugorokuWritingExtensionSlot
                   classId={sourceInfo.classId}
@@ -901,7 +1091,7 @@ export function SugorokuAdminApp({
                             {sourceInfo.className || 'コース開設完了'}（招待コード: {sourceInfo.joinCode}）
                           </strong>
                           <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--mt-ink-2)' }}>
-                            招待URLまたはLINE案内文を生徒・保護者へ送ると、参加と同時に学習時間と4技能の提出がここに表示されます。
+                            生徒のアプリ「設定 ＞ クラス」から6文字コード <b>{sourceInfo.joinCode}</b> を入力するか、招待URLを送ると参加と同時にここに表示されます。
                           </p>
                         </div>
                         <div className="sg-chip-group">
@@ -1222,6 +1412,83 @@ export function SugorokuAdminApp({
         )}
       </SugorokuBottomSheet>
 
+      {/* Bottom Sheet：生徒招待キット ＆ クラス運営操作（この画面から一歩も出ずに完結） */}
+      <SugorokuBottomSheet
+        open={inviteSheetOpen}
+        title={sourceInfo.className ? `「${sourceInfo.className}」の招待・管理` : '生徒招待キット'}
+        onClose={() => setInviteSheetOpen(false)}
+      >
+        <div className="sg-grid-12">
+          <div className="slog-sum">
+            <div>
+              <dt>6文字招待コード</dt>
+              <dd style={{ letterSpacing: '0.08em' }}>{sourceInfo.joinCode || '---'}</dd>
+            </div>
+            <div>
+              <dt>1日目標</dt>
+              <dd>{activeClassSettings.dailyGoalMinutes}分</dd>
+            </div>
+            <div>
+              <dt>週目標</dt>
+              <dd>週{activeClassSettings.weeklyGoalDays}日</dd>
+            </div>
+          </div>
+
+          <p className="sg-student-note">
+            生徒はログイン後、「設定 ＞ クラス」から上記6文字コードを入力するだけで参加でき、塾生は広告も自動で非表示になります。
+          </p>
+
+          <div className="sg-grid-8">
+            <PrimaryButton
+              onClick={() => void handleCopyInviteLineTemplate()}
+              icon={<MessageCircle size={15} aria-hidden="true" />}
+            >
+              LINE・保護者連絡用の案内文をコピー
+            </PrimaryButton>
+            <div className="sg-flex-gap-8">
+              <SecondaryButton
+                className="sg-flex-1"
+                onClick={() => void handleCopyInviteUrl()}
+                icon={<Link2 size={15} aria-hidden="true" />}
+              >
+                招待URLコピー
+              </SecondaryButton>
+              <SecondaryButton
+                className="sg-flex-1"
+                onClick={() => void handleCopyJoinCode()}
+                icon={<Copy size={15} aria-hidden="true" />}
+              >
+                コード {sourceInfo.joinCode}
+              </SecondaryButton>
+            </div>
+          </div>
+
+          {!sourceInfo.isDemo && activeLiveRoom && (
+            <div className="sg-staff-add-form sg-grid-8">
+              <SecondaryButton
+                onClick={() => {
+                  setInviteSheetOpen(false);
+                  setClassFormMode('edit');
+                }}
+                icon={<Settings2 size={15} aria-hidden="true" />}
+              >
+                クラス名・目標時間・参加受付を変更する
+              </SecondaryButton>
+
+              {kpi.count === 0 && sourceInfo.viewerRole === 'owner' && (
+                <SecondaryButton
+                  disabled={deletingClass}
+                  onClick={() => void handleDeleteCurrentClass()}
+                  icon={<Trash2 size={15} aria-hidden="true" />}
+                >
+                  {deletingClass ? '削除中…' : 'この空クラスを削除する'}
+                </SecondaryButton>
+              )}
+            </div>
+          )}
+        </div>
+      </SugorokuBottomSheet>
+
       {/* Bottom Sheet：複数講師メンバー管理 */}
       <SugorokuStaffSheet
         open={staffSheetOpen}
@@ -1236,10 +1503,51 @@ export function SugorokuAdminApp({
         onToast={showToast}
       />
 
+      {/* モーダル：クラスの新規開設 ＆ 既存クラスの目標・受付編集（別画面へ飛ばずその場で完結） */}
+      {classFormMode && (
+        <ClassFormModal
+          mode={classFormMode}
+          submitting={savingClassForm}
+          accent="#3E9C93"
+          joinCode={classFormMode === 'edit' ? activeLiveRoom?.joinCode : undefined}
+          isJukuPlanActive
+          initialValues={
+            classFormMode === 'edit' && activeLiveRoom
+              ? {
+                  schoolName: activeLiveRoom.schoolName || loadLastOrgName() || 'すごろく学習塾',
+                  className: activeLiveRoom.className || '',
+                  subject: activeLiveRoom.subject || 'eiken_2',
+                  joinOpen: activeLiveRoom.joinOpen !== false,
+                  orgType: activeClassSettings.orgType,
+                  dailyGoalMinutes: activeClassSettings.dailyGoalMinutes,
+                  weeklyGoalDays: activeClassSettings.weeklyGoalDays,
+                  examSession: activeClassSettings.examSession,
+                  focusSkills: activeClassSettings.focusSkills,
+                  coachNote: activeClassSettings.coachNote,
+                }
+              : {
+                  schoolName:
+                    activeLiveRoom?.schoolName || loadLastOrgName() || 'すごろく学習塾',
+                  className: '',
+                  subject: 'eiken_2',
+                  joinOpen: true,
+                  orgType: 'juku',
+                  dailyGoalMinutes: 30,
+                  weeklyGoalDays: 5,
+                  examSession: 'scbt_monthly',
+                  focusSkills: ['vocab', 'reading', 'listening', 'writing', 'speaking'],
+                  coachNote: '',
+                }
+          }
+          onClose={() => setClassFormMode(null)}
+          onSubmit={(values) => void handleSaveClassForm(values)}
+        />
+      )}
+
       {/* モーダル：全級対応・宿題一括/個別配信 */}
       {homeworkModalOpen && (
         <SugorokuHomeworkComposerModal
-          subject="eiken_2"
+          subject={sourceInfo.subject || 'eiken_2'}
           catalog={homeworkCatalog}
           students={composerStudents}
           accent="#1c2a39"

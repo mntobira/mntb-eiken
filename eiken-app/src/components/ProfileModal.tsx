@@ -14,6 +14,12 @@ import { GoogleMark } from './GoogleLinkBanner';
 import { signInWithGoogle, signOutGoogle, switchGoogleAccount, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
 import { useSignInGuard } from '../hooks/useSignInGuard';
 import { isFeedbackAdmin } from '../utils/feedbackReply';
+import {
+  checkCurrentUserAdminAccess,
+  hasVerifiedPreAuthorizedInstructorEmail,
+  isActiveSugorokuStaff,
+  loadCachedSugorokuMember,
+} from '../sugoroku/auth';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
 import { AccountSafetySection } from '../features/account/AccountSafetySection';
@@ -51,20 +57,73 @@ interface ProfileModalProps {
   onOpenOutfit?: () => void;
   /** 塾クラスの課題の「解く」から演習を始める */
   onStartClassChapter?: (chapterId: string, subject: SubjectKey) => void;
+  /** ログアウト実行時にタイトル画面（LaunchScreen）へ完全リセットして戻す */
+  onLogout?: () => void;
 }
 
 type SettingsTab = 'general' | 'friends' | 'class';
 
-export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenTeacherDashboard, onOpenSugorokuAdmin, onOpenFeedbackAdmin, onOpenOutfit, onStartClassChapter }: ProfileModalProps) {
-  /** クラス機能を開けるか（公開前は先行確認のアカウントだけ・2026-10-28） */
+function isImmediateSugorokuAdminUser(user: typeof auth.currentUser): boolean {
+  if (!user?.uid) return false;
+  const providerIds = (user.providerData || []).map((p) => p.providerId);
+  if (
+    hasVerifiedPreAuthorizedInstructorEmail({
+      email: user.email,
+      emailVerified: user.emailVerified,
+      providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
+    })
+  ) {
+    return true;
+  }
+  const cached = loadCachedSugorokuMember(user.uid);
+  return isActiveSugorokuStaff(cached);
+}
+
+export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenSugorokuAdmin, onOpenFeedbackAdmin, onStartClassChapter, onLogout }: ProfileModalProps) {
+  /** クラス機能を開けるか（ログイン済みの全ユーザーに公開） */
   const classroomOn = isClassroomEnabledFor(auth.currentUser);
-  const [tab, setTab] = useState<SettingsTab>(() => (initialTab && initialTab !== 'general' && auth.currentUser ? initialTab : 'general'));
+  const [isAdminAccount, setIsAdminAccount] = useState<boolean>(() => isImmediateSugorokuAdminUser(auth.currentUser));
+  const [tab, setTab] = useState<SettingsTab>(() => {
+    if (initialTab && initialTab !== 'general' && auth.currentUser) {
+      if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser)) {
+        return 'general';
+      }
+      return initialTab;
+    }
+    return 'general';
+  });
   const [battleAudioSettings, updateBattleAudio] = useBattleAudioSettings();
   /** 対戦カードのプレビューに出すニックネーム（編集はマイページ） */
   const [name, setName] = useState('');
   /** Google 連携の進行状態（連携／切り替えのどちらでも使う） */
   const { busy: signing, anyBusy: signInBusy, run: runSignIn } = useSignInGuard();
   const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const currentUser = auth.currentUser;
+    const immediate = isImmediateSugorokuAdminUser(currentUser);
+    setIsAdminAccount(immediate);
+    if (!currentUser) return;
+    void checkCurrentUserAdminAccess(currentUser, { strictSpecifiedEmailsOnly: false })
+      .then((res) => {
+        if (!alive) return;
+        setIsAdminAccount(res.allowed);
+        if (res.allowed && initialTab === 'class' && onOpenSugorokuAdmin) {
+          onOpenSugorokuAdmin();
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [initialTab, onOpenSugorokuAdmin]);
+
+  useEffect(() => {
+    if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser) && onOpenSugorokuAdmin) {
+      onOpenSugorokuAdmin();
+    }
+  }, [initialTab, onOpenSugorokuAdmin]);
 
   useEffect(() => {
     try {
@@ -81,7 +140,20 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
   const logout = async () => {
     await signOutGoogle();
-    onClose();
+    if (onLogout) {
+      onLogout();
+    } else {
+      onClose();
+    }
+  };
+
+  const handleClickClassTab = () => {
+    if (!auth.currentUser) return;
+    if (isAdminAccount && onOpenSugorokuAdmin) {
+      onOpenSugorokuAdmin();
+      return;
+    }
+    setTab('class');
   };
 
   /** ゲスト → Google 連携（記録はローカルに残るのでそのまま引き継がれる） */
@@ -120,8 +192,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} type="button">
             <Users size={14} /> フレンド
           </button>
-          <button aria-pressed={tab === 'class'} onClick={() => setTab('class')} disabled={classroomOn && !auth.currentUser} type="button">
-            <School size={14} /> クラス{!classroomOn && <span className="soon-tag">準備中</span>}
+          <button aria-pressed={tab === 'class'} onClick={handleClickClassTab} disabled={!auth.currentUser} type="button">
+            <School size={14} /> クラス
           </button>
         </div>
 
@@ -133,27 +205,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           ) : tab === 'class' && auth.currentUser ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
               <ClassPanel defaultDisplayName={name} onStartChapter={onStartClassChapter} />
-
-              {classroomOn && onOpenSugorokuAdmin && (
-                <button
-                  type="button"
-                  onClick={onOpenSugorokuAdmin}
-                  className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#B6D4F7] bg-[#EEF5FF] text-xs font-bold text-[#1D58A8]"
-                >
-                  <School size={14} />
-                  すごろく塾 管理者ポータル（学習時間・4技能添削・PDF棚）
-                </button>
-              )}
-              {classroomOn && onOpenTeacherDashboard && (
-                <button
-                  type="button"
-                  onClick={onOpenTeacherDashboard}
-                  className="mt-2 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-[#4A7FA0]"
-                >
-                  <ClipboardList size={14} />
-                  クラス・学習目標設定・招待キットを開く
-                </button>
-              )}
             </div>
           ) : (
             <div className="h-full flex flex-col gap-2">
