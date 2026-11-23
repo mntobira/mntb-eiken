@@ -1,5 +1,5 @@
 /**
- * すごろく塾 管理者ポータル：英作文・スピーキング確認タブ（エッセンシャル設計）
+ * すごろく塾 管理者ポータル：英作文・スピーキング確認タブ（エッセンシャル設計 ＆ AI 3 連携）
  */
 
 import { useState } from 'react';
@@ -26,6 +26,9 @@ export function buildAiRubricPromptForTeacher(sub: SugorokuWritingSubmissionDoc)
 
 interface WritingExtensionHostProps {
   classId: string;
+  classNameLabel?: string;
+  reviewerUid?: string;
+  reviewerName?: string;
   isDemoMode: boolean;
   submissions: SugorokuWritingSubmissionDoc[];
   onSelectStudent?: (studentUid: string) => void;
@@ -35,6 +38,9 @@ interface WritingExtensionHostProps {
 
 export function SugorokuWritingExtensionSlot({
   classId,
+  classNameLabel,
+  reviewerUid,
+  reviewerName,
   isDemoMode,
   submissions,
   onSelectStudent,
@@ -44,7 +50,20 @@ export function SugorokuWritingExtensionSlot({
   const [inspectSub, setInspectSub] = useState<SugorokuWritingSubmissionDoc | null>(null);
 
   if (customRender) {
-    return <>{customRender({ classId, isDemoMode, submissions, onSelectStudent })}</>;
+    return (
+      <>
+        {customRender({
+          classId,
+          classNameLabel,
+          reviewerUid,
+          reviewerName,
+          isDemoMode,
+          demoMode: isDemoMode,
+          submissions,
+          onSelectStudent,
+        })}
+      </>
+    );
   }
 
   const copyPrompt = async (sub: SugorokuWritingSubmissionDoc) => {
@@ -72,7 +91,12 @@ export function SugorokuWritingExtensionSlot({
                 style={{ minHeight: 32, padding: 0 }}
                 onClick={() => onSelectStudent?.(sub.studentUid)}
               >
-                <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+                <strong
+                  style={{
+                    font: '800 15px/1.3 var(--mt-font-display)',
+                    color: 'var(--mt-ink-warm)',
+                  }}
+                >
                   {sub.studentName}
                 </strong>
               </button>
@@ -80,7 +104,9 @@ export function SugorokuWritingExtensionSlot({
                 {getGradeLabel(sub.grade).replace('英検', '')} · {sub.wordCount}語
               </span>
               {sub.status === 'submitted' && (
-                <span className="sg-alert-text" data-warn="true">未添削</span>
+                <span className="sg-alert-text" data-warn="true">
+                  未添削
+                </span>
               )}
             </div>
 
@@ -174,6 +200,9 @@ export function SugorokuWritingExtensionSlot({
 
 interface SpeakingExtensionHostProps {
   classId: string;
+  classNameLabel?: string;
+  reviewerUid?: string;
+  reviewerName?: string;
   isDemoMode: boolean;
   submissions: SugorokuSpeakingSubmissionDoc[];
   onSelectStudent?: (studentUid: string) => void;
@@ -190,13 +219,29 @@ const SPEAKING_PART_LABELS: Record<string, string> = {
 
 export function SugorokuSpeakingExtensionSlot({
   classId,
+  classNameLabel,
+  reviewerUid,
+  reviewerName,
   isDemoMode,
   submissions,
   onSelectStudent,
   customRender,
 }: SpeakingExtensionHostProps) {
   if (customRender) {
-    return <>{customRender({ classId, isDemoMode, submissions, onSelectStudent })}</>;
+    return (
+      <>
+        {customRender({
+          classId,
+          classNameLabel,
+          reviewerUid,
+          reviewerName,
+          isDemoMode,
+          demoMode: isDemoMode,
+          submissions,
+          onSelectStudent,
+        })}
+      </>
+    );
   }
 
   if (submissions.length === 0) {
@@ -204,7 +249,11 @@ export function SugorokuSpeakingExtensionSlot({
   }
 
   return (
-    <section aria-label="スピーキング録音" className="sg-stagger" style={{ display: 'grid', gap: 10 }}>
+    <section
+      aria-label="スピーキング録音"
+      className="sg-stagger"
+      style={{ display: 'grid', gap: 10 }}
+    >
       {submissions.map((sub) => (
         <Card key={sub.id} as="article" style={{ display: 'grid', gap: 10 }}>
           <div className="sg-row-head">
@@ -214,7 +263,12 @@ export function SugorokuSpeakingExtensionSlot({
               style={{ minHeight: 32, padding: 0 }}
               onClick={() => onSelectStudent?.(sub.studentUid)}
             >
-              <strong style={{ font: '800 15px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+              <strong
+                style={{
+                  font: '800 15px/1.3 var(--mt-font-display)',
+                  color: 'var(--mt-ink-warm)',
+                }}
+              >
                 {sub.studentName}
               </strong>
             </button>
@@ -224,6 +278,11 @@ export function SugorokuSpeakingExtensionSlot({
             <span style={{ fontSize: 12, color: 'var(--mt-ink-3)' }}>
               {sub.setTitle || sub.setId}
             </span>
+            {sub.status === 'submitted' && (
+              <span className="sg-alert-text" data-warn="true">
+                未評価
+              </span>
+            )}
           </div>
 
           <div className="slog-rows">
@@ -232,7 +291,16 @@ export function SugorokuSpeakingExtensionSlot({
                 <span>
                   <strong>{SPEAKING_PART_LABELS[rec.partId] || rec.partId}</strong>
                 </span>
-                <b>{rec.durationSec}秒</b>
+                {rec.downloadUrl ? (
+                  <audio
+                    controls
+                    preload="none"
+                    src={rec.downloadUrl}
+                    style={{ height: 30, maxWidth: 220 }}
+                  />
+                ) : (
+                  <b>{rec.durationSec}秒</b>
+                )}
               </div>
             ))}
           </div>

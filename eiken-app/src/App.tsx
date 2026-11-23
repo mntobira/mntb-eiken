@@ -35,6 +35,10 @@ import { ModeSelection } from './components/ModeSelection';
  */
 const StudyCatalog = React.lazy(() => import('./components/StudyCatalog').then(m => ({ default: m.StudyCatalog })));
 const EikenWriting = React.lazy(() => import('./components/EikenWriting').then(module => ({ default: module.EikenWriting })));
+const ScbtSpeakingPractice = React.lazy(() => import('./sugoroku/speaking-scbt/ScbtSpeakingPractice').then(module => ({ default: module.ScbtSpeakingPractice })));
+const SugorokuReviewHub = React.lazy(() => import('./sugoroku/review-portal/SugorokuReviewHub').then(module => ({ default: module.SugorokuReviewHub })));
+const TeacherWritingReviewTab = React.lazy(() => import('./sugoroku/writing-review/TeacherWritingReviewTab').then(module => ({ default: module.TeacherWritingReviewTab })));
+const TeacherSpeakingReviewTab = React.lazy(() => import('./sugoroku/speaking-scbt/TeacherSpeakingReviewTab').then(module => ({ default: module.TeacherSpeakingReviewTab })));
 const EikenMockExam = React.lazy(() => import('./components/EikenMockExam').then(module => ({ default: module.EikenMockExam })));
 const FoundationPage = React.lazy(() =>
   import('./components/FoundationPage').then((m) => ({ default: m.FoundationPage })),
@@ -98,7 +102,8 @@ import { subjectOfChapterId } from './data/subjects';
 import { safeSetItem } from './utils/storageGuard';
 import { safeGetItem, safeRemoveItem } from './utils/safeLocalStorage';
 import { STORAGE_KEYS } from './utils/storageKeysCatalog';
-import { useAppPersistence, isScreenshotLaunch } from './hooks/useAppPersistence';
+import { useAppPersistence, isScreenshotLaunch, isAdminOnlyAppState } from './hooks/useAppPersistence';
+import { profileKey } from './utils/userStorageKeys';
 import { trackScreen } from './utils/analytics';
 import { AppToast } from './components/AppToast';
 import { useAppBackgroundSync } from './hooks/useAppBackgroundSync';
@@ -204,7 +209,20 @@ export default function App() {
     quizRange, setQuizRange, quizAnswers, setQuizAnswers, isGuest, setIsGuest,
     selectedSubject, setSelectedSubject,
   } = useAppPersistence();
-  // 使われ方の記録：どの画面を開いたか（設定でオフにできる。utils/analytics.ts）
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const portal = new URLSearchParams(window.location.search).get('portal');
+    if (portal === 'review' || portal === 'writing-review' || portal === 'speaking-review') {
+      setHasEntered(true);
+      setReviewHubInitialTab(portal === 'speaking-review' ? 'speaking' : 'writing');
+      setReviewHubBackTo('home');
+      setAppState('sugoroku_review');
+    } else if (portal === 'speaking') {
+      if (!auth.currentUser) setIsGuest(true);
+      setHasEntered(true);
+      setAppState('speaking');
+    }
+  }, [setAppState, setIsGuest]);
   useEffect(() => { trackScreen(hasEntered ? appState : 'launch'); }, [appState, hasEntered]);
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [studyHubView, setStudyHubView] = useState<StudyHubView>({ tab: 'today', subjectTab: 'all' });
@@ -215,6 +233,8 @@ export default function App() {
   const [mockBackTo, setMockBackTo] = useState<'study' | 'chapters'>('study');
   const [writingInitialTaskKey, setWritingInitialTaskKey] = useState<string | null>(null);
   const [writingBackTo, setWritingBackTo] = useState<'study' | 'chapters'>('study');
+  const [reviewHubInitialTab, setReviewHubInitialTab] = useState<'writing' | 'speaking'>('writing');
+  const [reviewHubBackTo, setReviewHubBackTo] = useState<AppState>('study');
   const [growthPage, setGrowthPage] = useState<GrowthPage>('overview');
   // 対戦 → 演習 → 対戦に戻る導線とスクロール位置は hooks/useBattleReturn.ts
   const { battleReturnActive, setBattleReturnActive, battleScrollRef, returnToBattle, rememberBattleScroll } = useBattleReturn(appState, setAppState);
@@ -237,6 +257,11 @@ export default function App() {
   const [prevAppState, setPrevAppState] = useState<AppState>('home');
   /** 設定を開いたとき最初に見せるページ（対戦から「フレンドを追加」で来たときだけ 'friends'） */
   const [settingsTab, setSettingsTab] = useState<'general' | 'friends' | 'class'>('general');
+  /** 管理者画面（sugoroku_admin）をタイトルから開いたか設定＞クラスから開いたか */
+  const [adminEntryOrigin, setAdminEntryOrigin] = useState<'launch' | 'settings'>('launch');
+  /** 先生ダッシュボード（teacher_dashboard）の戻り先と初回クラス開設モーダル自動起動フラグ */
+  const [teacherDashboardOrigin, setTeacherDashboardOrigin] = useState<'sugoroku_admin' | 'settings'>('settings');
+  const [teacherAutoOpenCreate, setTeacherAutoOpenCreate] = useState(false);
   const [subjectPickerReturnTo, setSubjectPickerReturnTo] = useState<AppState>('home');
   /** 固めるページで開いているタブ（ページを離れても戻ったときに同じタブを開く） */
   const [foundationTab, setFoundationTab] = useState<'words' | 'quiz' | 'reading' | 'grammar' | 'more'>('words');
@@ -340,6 +365,7 @@ export default function App() {
     setStudyLastContent(content.id);
     safeSetItem(STORAGE_KEYS.studyCatalogLast, content.id);
     if (content.action.kind === 'writing') { setWritingInitialTaskKey(null); setWritingBackTo('study'); setAppState('writing'); return; }
+    if (content.action.kind === 'speaking') { setAppState('speaking'); return; }
     if (content.action.kind === 'mock') {
       setMockInitialKind('written');
       setMockBackTo('study');
@@ -528,12 +554,91 @@ export default function App() {
     },
   });
 
+  /**
+   * 生徒向け（オレンジの「はじめる」ボタン）からの開始導線。
+   * - 過去に「管理者ログインをする」を押した履歴（appState が sugoroku_admin / teacher_dashboard 等）が
+   *   残っていたとしても、オレンジの「はじめる」からは100%生徒・一般ユーザー導線へ入るようにリセットする。
+   * - 未ログイン時は通常の Google アカウントログイン画面（Onboarding）へ進み、どの Google アカウントでもログイン可能。
+   * - ログイン済みならプロフィール確認のうえ学習画面（Home または直前の学習画面）へ直行する。
+   */
   const enter = (finishBgm: boolean) => {
     battleAudio().unlock();
     setHasInteracted(true);
     setFinishingLaunchBgm(finishBgm);
+    setDirectAdminPortal(false);
+    setSettingsTab('general');
+
+    const currentUser = auth.currentUser;
+    if (!currentUser && !isGuest) {
+      setAppState('onboarding');
+    } else if (currentUser) {
+      const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+      if (!hasLocalProfile) {
+        setAppState('onboarding');
+      } else if (isAdminOnlyAppState(appState)) {
+        setAppState('home');
+      }
+    } else if (isAdminOnlyAppState(appState)) {
+      setAppState('home');
+    }
+
     setHasEntered(true);
   };
+
+  /**
+   * 管理者画面から生徒向けアプリ／タイトルへ戻る共通ハンドラ。
+   * appState を管理者状態のまま残さないことで、戻ったあとにオレンジの「はじめる」を押した際も
+   * 二度と管理者ログイン画面へ誤遷移しないようにする。
+   */
+  const exitAdminToStudentFlow = (goToStudentLogin = false) => {
+    setSettingsTab('general');
+    const currentUser = auth.currentUser;
+    if (goToStudentLogin) {
+      if (currentUser) {
+        const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+        setAppState(hasLocalProfile ? 'home' : 'onboarding');
+      } else {
+        setAppState(isGuest ? 'home' : 'onboarding');
+      }
+      setHasEntered(true);
+      return;
+    }
+    if (currentUser) {
+      const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+      setAppState(hasLocalProfile ? 'home' : 'onboarding');
+      setHasEntered(true);
+    } else {
+      setAppState('onboarding');
+      setHasEntered(false);
+    }
+  };
+
+  const sugorokuAdminExtensionSlots = React.useMemo<import('./sugoroku/shared/types').SugorokuAdminExtensionSlots>(() => ({
+    renderWritingReviewTab: ({ classId, classNameLabel, reviewerUid, reviewerName, isDemoMode, onSelectStudent }) => (
+      <React.Suspense fallback={<ScreenLoading />}>
+        <TeacherWritingReviewTab
+          classId={classId}
+          classNameLabel={classNameLabel}
+          demoMode={isDemoMode}
+          reviewerUid={reviewerUid ?? auth.currentUser?.uid}
+          reviewerName={reviewerName || auth.currentUser?.displayName || 'すごろく英検担当講師'}
+          onSelectStudent={onSelectStudent}
+        />
+      </React.Suspense>
+    ),
+    renderSpeakingReviewTab: ({ classId, classNameLabel, reviewerUid, reviewerName, isDemoMode, onSelectStudent }) => (
+      <React.Suspense fallback={<ScreenLoading />}>
+        <TeacherSpeakingReviewTab
+          classId={classId}
+          classNameLabel={classNameLabel}
+          demoMode={isDemoMode}
+          reviewerUid={reviewerUid ?? auth.currentUser?.uid}
+          reviewerName={reviewerName || auth.currentUser?.displayName || 'すごろく英検担当講師'}
+          onSelectStudent={onSelectStudent}
+        />
+      </React.Suspense>
+    ),
+  }), []);
 
   if (directAdminPortal) {
     const canExitToStudent = (import.meta.env.VITE_SUGOROKU_PORTAL as string | undefined)?.trim().toLowerCase() !== 'admin';
@@ -546,10 +651,21 @@ export default function App() {
             window.history.replaceState({}, '', url.toString());
           } catch { /* ignore */ }
           setDirectAdminPortal(false);
+          exitAdminToStudentFlow(false);
+        } : undefined}
+        onSwitchToStudentApp={canExitToStudent ? () => {
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('portal');
+            window.history.replaceState({}, '', url.toString());
+          } catch { /* ignore */ }
+          setDirectAdminPortal(false);
+          exitAdminToStudentFlow(true);
         } : undefined}
       >
         <React.Suspense fallback={<ScreenLoading />}>
           <SugorokuAdminApp
+            extensionSlots={sugorokuAdminExtensionSlots}
             onBack={canExitToStudent ? () => {
               try {
                 const url = new URL(window.location.href);
@@ -557,7 +673,36 @@ export default function App() {
                 window.history.replaceState({}, '', url.toString());
               } catch { /* ignore */ }
               setDirectAdminPortal(false);
+              exitAdminToStudentFlow(false);
             } : undefined}
+            onOpenTeacherDashboard={() => {
+              try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('portal');
+                window.history.replaceState({}, '', url.toString());
+              } catch { /* ignore */ }
+              setDirectAdminPortal(false);
+              setAdminEntryOrigin('launch');
+              setTeacherDashboardOrigin('sugoroku_admin');
+              setTeacherAutoOpenCreate(false);
+              setHasInteracted(true);
+              setAppState('teacher_dashboard');
+              setHasEntered(true);
+            }}
+            onOpenCreateClass={() => {
+              try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('portal');
+                window.history.replaceState({}, '', url.toString());
+              } catch { /* ignore */ }
+              setDirectAdminPortal(false);
+              setAdminEntryOrigin('launch');
+              setTeacherDashboardOrigin('sugoroku_admin');
+              setTeacherAutoOpenCreate(true);
+              setHasInteracted(true);
+              setAppState('teacher_dashboard');
+              setHasEntered(true);
+            }}
           />
         </React.Suspense>
       </SugorokuAdminGuard>
@@ -566,8 +711,9 @@ export default function App() {
 
   /**
    * タイトル画面「はじめる」直下の「管理者ログインをする」ボタンからの直行導線。
-   * - 未ログイン時は SugorokuAdminGuard で講師 Google ログイン（mntobira / hirokingz0927 即通過）を実行し、
-   *   認証完了後すぐに先生・クラス管理画面（TeacherDashboard）を開く。
+   * - 未ログイン時は SugorokuAdminGuard で指定管理者アカウント（hirokingz0927@gmail.com / mntobira@gmail.com）の
+   *   Google ログインのみを通過させ（それ以外のアカウントはすべてブロック）、
+   *   認証完了後すぐに生徒の学習時間可視化・4技能添削ダッシュボード（SugorokuAdminApp）を開く。
    */
   const enterAdminLogin = () => {
     battleAudio().unlock();
@@ -575,7 +721,10 @@ export default function App() {
     setFinishingLaunchBgm(false);
     setSettingsTab('class');
     setPrevAppState('home');
-    setAppState('teacher_dashboard');
+    setAdminEntryOrigin('launch');
+    setTeacherDashboardOrigin('sugoroku_admin');
+    setTeacherAutoOpenCreate(false);
+    setAppState('sugoroku_admin');
     setHasEntered(true);
   };
 
@@ -685,26 +834,60 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => setAppState('teacher_dashboard')} onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
-            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={() => { setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {/* 先生ダッシュボード。タイトル画面「管理者ログインをする」→管理ポータル、または設定＞クラスから開く。未ログイン時は SugorokuAdminGuard で講師Google認証を案内。 */}
             {appState === 'teacher_dashboard' && (
               <SugorokuAdminGuard
-                onBackToStudentApp={() => {
-                  if (auth.currentUser) {
-                    setAppState('settings');
-                  } else {
-                    setHasEntered(false);
-                  }
-                }}
+                onBackToStudentApp={() => exitAdminToStudentFlow(false)}
+                onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
               >
-                <TeacherDashboard onBack={() => setAppState('settings')} />
+                <TeacherDashboard
+                  backLabel={teacherDashboardOrigin === 'sugoroku_admin' ? 'すごろく塾 管理へ戻る' : '設定に戻る'}
+                  initialOpenCreate={teacherAutoOpenCreate}
+                  onInitialCreateHandled={() => setTeacherAutoOpenCreate(false)}
+                  onBack={() => {
+                    setTeacherAutoOpenCreate(false);
+                    setAppState(teacherDashboardOrigin === 'sugoroku_admin' ? 'sugoroku_admin' : 'settings');
+                  }}
+                  onOpenSugorokuAdmin={() => setAppState('sugoroku_admin')}
+                />
               </SugorokuAdminGuard>
             )}
-            {/* すごろく塾管理者ポータル（React.lazyコード分割）。設定・先生欄から開いた場合も下ナビを隠して全画面表示 */}
+            {/* すごろく塾管理者ポータル（React.lazyコード分割）。タイトル画面「管理者ログインをする」または設定・先生欄から開く */}
             {appState === 'sugoroku_admin' && (
-              <SugorokuAdminGuard onBackToStudentApp={() => setAppState('settings')}>
+              <SugorokuAdminGuard
+                onBackToStudentApp={() => exitAdminToStudentFlow(false)}
+                onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
+              >
                 <React.Suspense fallback={<ScreenLoading />}>
-                  <SugorokuAdminApp onBack={() => setAppState('settings')} />
+                  <SugorokuAdminApp
+                    extensionSlots={sugorokuAdminExtensionSlots}
+                    onBack={() => {
+                      if (adminEntryOrigin === 'settings' && auth.currentUser) {
+                        setAppState('settings');
+                      } else {
+                        setSettingsTab('general');
+                        const currentUser = auth.currentUser;
+                        if (currentUser) {
+                          const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
+                          setAppState(hasLocalProfile ? 'home' : 'onboarding');
+                        } else {
+                          setAppState('onboarding');
+                        }
+                        setHasEntered(false);
+                      }
+                    }}
+                    onOpenTeacherDashboard={() => {
+                      setTeacherDashboardOrigin('sugoroku_admin');
+                      setTeacherAutoOpenCreate(false);
+                      setAppState('teacher_dashboard');
+                    }}
+                    onOpenCreateClass={() => {
+                      setTeacherDashboardOrigin('sugoroku_admin');
+                      setTeacherAutoOpenCreate(true);
+                      setAppState('teacher_dashboard');
+                    }}
+                  />
                 </React.Suspense>
               </SugorokuAdminGuard>
             )}
@@ -717,7 +900,13 @@ export default function App() {
                 «ログイン → 科目選択 → ホーム → 学習を始める → 科目選択»
                 と科目選択が2回出てしまっていた。
                 科目はホームの「学習を始める」で選ぶ（初期値は化学基礎）。 */}
-            {appState === 'onboarding' && <Onboarding onComplete={() => { setIsGuest(false); setAppState('home'); }} onOffline={() => { setIsGuest(true); setAppState('home'); }} />}
+            {appState === 'onboarding' && (
+              <Onboarding
+                onComplete={() => { setIsGuest(false); setAppState('home'); }}
+                onOffline={() => { setIsGuest(true); setAppState('home'); }}
+                onBackToTitle={() => { setHasEntered(false); }}
+              />
+            )}
             {appState === 'subject_selection' && (
               <ListeningSubjectSelection
                 onSelectSubject={handleSelectSubject}
@@ -868,6 +1057,17 @@ export default function App() {
               />
             </React.Suspense>}
             {appState === 'writing' && <React.Suspense fallback={<ScreenLoading />}><EikenWriting key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialTaskKey={writingInitialTaskKey} onBack={() => setAppState(writingBackTo)} /></React.Suspense>}
+            {appState === 'speaking' && <React.Suspense fallback={<ScreenLoading />}><ScbtSpeakingPractice key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} onBack={() => setAppState('study')} /></React.Suspense>}
+            {appState === 'sugoroku_review' && (
+              <SugorokuAdminGuard
+                onBackToStudentApp={() => exitAdminToStudentFlow(false)}
+                onSwitchToStudentApp={() => exitAdminToStudentFlow(true)}
+              >
+                <React.Suspense fallback={<ScreenLoading />}>
+                  <SugorokuReviewHub initialTab={reviewHubInitialTab} onBack={() => setAppState(reviewHubBackTo)} />
+                </React.Suspense>
+              </SugorokuAdminGuard>
+            )}
             {appState === 'mock' && <React.Suspense fallback={<ScreenLoading />}><EikenMockExam key={auth.currentUser?.uid || 'guest'} uid={auth.currentUser?.uid || 'guest'} grade={selectedSubject as import('./eiken/config').EikenGrade} onGrade={setSelectedSubject} initialExamKind={mockInitialKind} backLabel={mockBackTo === 'chapters' ? '大問別へ' : '学習へ'} onBack={() => setAppState(mockBackTo)} onRunningChange={setMockRunning} /></React.Suspense>}
             {appState === 'foundation' && <React.Suspense fallback={<ScreenLoading />}>
               <FoundationPage key={auth.currentUser?.uid || 'guest'}
@@ -897,7 +1097,7 @@ export default function App() {
                 アイコンには aria-hidden を付け、ラベルだけがスクリーンリーダーに読まれるよう整理 */}
             {/* ★対戦中（試合が始まってから終わるまで）は下ナビを出さない（2026-10-01）★ 問題と絵を1画面に入れるため。
                  「対戦をやめる」は対戦画面の中にある。結果画面ではナビが戻る。 */}
-            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'sugoroku_admin' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
+            {appState !== 'onboarding' && appState !== 'subject_selection' && appState !== 'sugoroku_admin' && appState !== 'teacher_dashboard' && appState !== 'sugoroku_review' && appState !== 'speaking' && appState !== 'feedback_admin' && appState !== 'quiz' && appState !== 'explanation' && !(appState === 'battle' && battleActive) && !(appState === 'mock' && mockRunning) && (
               /* C19 下ナビは共通部品1つ（components/ui/BottomNavigation）。行き先・条件は以前と同じ。
                  高さは --app-nav-h として公開し、各画面が下の余白の基準にする。 */
               <BottomNavigation

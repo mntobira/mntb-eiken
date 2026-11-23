@@ -172,7 +172,8 @@ export async function signInSugorokuWithGoogle(options: {
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
     return {
       ok: false,
-      message: 'クラウド認証が未設定です（試作デモ環境）。運営者が Firebase 環境変数を設定すると Google ログインが有効になります。',
+      message:
+        '現在この配信URLではクラウド認証が有効化されていません。本番URL（mntb-eiken.vercel.app）からアクセスしてください。',
       errorCode: 'firebase_unconfigured',
     };
   }
@@ -582,7 +583,10 @@ export async function redeemSugorokuInviteCode(
  * 現在ログイン中のユーザーが管理者ポータル（SugorokuAdminApp）・生徒実名（rosterName）・提出物を
  * 扱える権限を持っているか Firestore 実データに基づいて判定する。
  */
-export async function checkCurrentUserAdminAccess(user?: User | null): Promise<AdminAccessDecision & {
+export async function checkCurrentUserAdminAccess(
+  user?: User | null,
+  options?: { strictSpecifiedEmailsOnly?: boolean },
+): Promise<AdminAccessDecision & {
   memberDoc: SugorokuMemberDoc | null;
   ownedClassIds: string[];
 }> {
@@ -596,6 +600,7 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
     };
   }
 
+  const strictSpecifiedEmailsOnly = options?.strictSpecifiedEmailsOnly === true;
   const providerIds = (currentUser.providerData || []).map((p) => p.providerId);
 
   if (!FIREBASE_CONFIGURED && !USE_EMULATORS) {
@@ -607,6 +612,7 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
       providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
       memberDoc: cached,
       ownedJukuClassIds: [],
+      strictSpecifiedEmailsOnly,
     });
     return { ...decision, memberDoc: cached, ownedClassIds: [] };
   }
@@ -626,6 +632,7 @@ export async function checkCurrentUserAdminAccess(user?: User | null): Promise<A
     providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
     memberDoc,
     ownedJukuClassIds: ownedClassIds,
+    strictSpecifiedEmailsOnly,
   });
 
   return {

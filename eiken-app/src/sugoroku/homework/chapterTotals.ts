@@ -54,3 +54,33 @@ export function chapterTitleOf(chapterId: string): string {
   }
   return chapterId;
 }
+
+export interface AllGradesChapterCatalogItem {
+  id: string;
+  grade: string;
+  gradeLabel: string;
+  title: string;
+  totalProblems: number;
+}
+
+/** 塾一括管理用：英検全級（5級〜1級）の全単元カタログを軽量索引から返す */
+export function allEikenChapterCatalog(): AllGradesChapterCatalogItem[] {
+  const out: AllGradesChapterCatalogItem[] = [];
+  for (const subject of SUBJECT_INDEX) {
+    if (!subject.id.startsWith('eiken_')) continue;
+    const shortGrade = subject.label.replace(/^英検/, '');
+    for (const ch of subject.chapters) {
+      const count = Math.max(0, Math.floor(ch.problemCount || 0));
+      if (count <= 0) continue;
+      const rawTitle = (ch.title || ch.realTitle || ch.abstractTitle || ch.id).trim();
+      out.push({
+        id: ch.id,
+        grade: subject.id,
+        gradeLabel: shortGrade,
+        title: `[${shortGrade}] ${rawTitle}`,
+        totalProblems: count,
+      });
+    }
+  }
+  return out;
+}

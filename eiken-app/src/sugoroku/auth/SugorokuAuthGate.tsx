@@ -16,7 +16,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
-  ArrowRight,
   Check,
   ExternalLink,
   KeyRound,
@@ -62,26 +61,23 @@ export interface SugorokuAuthGateProps {
   children: React.ReactNode;
   /** 常にゲートを強制するか（省略時は true。App.tsx 側では ?portal=sugoroku|juku のとき true を渡す） */
   enforce?: boolean;
-  /** デモ環境（Firebase未設定時）に試作プレビュー入場を許可するか（既定: true） */
-  allowDemoPreviewWhenUnconfigured?: boolean;
+  /** 招待コードを持たない一般生徒が通常モードへ切り替える際のハンドラ */
+  onExitToStandardMode?: () => void;
 }
 
 export function SugorokuAuthGate({
   children,
   enforce = true,
-  allowDemoPreviewWhenUnconfigured = true,
+  onExitToStandardMode,
 }: SugorokuAuthGateProps) {
   const { user, loading, status, refresh } = useSugorokuAuthState();
-  const [demoBypassed, setDemoBypassed] = useState(false);
+  const [bypassedToStandard, setBypassedToStandard] = useState(false);
 
-  if (!enforce) {
+  if (!enforce || bypassedToStandard) {
     return <>{children}</>;
   }
 
   const onlineReady = FIREBASE_CONFIGURED || USE_EMULATORS;
-  if (!onlineReady && demoBypassed && allowDemoPreviewWhenUnconfigured) {
-    return <>{children}</>;
-  }
 
   // ログイン済み かつ 停止されておらず（すごろく塾クラス在籍済み・講師/運営ロール・または事前承認済み講師メール）なら本編を表示
   const isPreAuthorizedInstructor =
@@ -100,15 +96,38 @@ export function SugorokuAuthGate({
     return <>{children}</>;
   }
 
+  const handleExitToStandard = () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('portal');
+      url.searchParams.delete('sugoroku_invite');
+      url.searchParams.delete('invite');
+      url.searchParams.delete('code');
+      window.history.replaceState({}, '', url.toString());
+    } catch {
+      // ignore
+    }
+    setBypassedToStandard(true);
+    onExitToStandardMode?.();
+  };
+
   return (
     <SugorokuGateScreen
       user={user}
       loading={loading}
       isSuspended={status.isSuspended}
       onlineReady={onlineReady}
-      allowDemoBypass={!onlineReady && allowDemoPreviewWhenUnconfigured}
-      onDemoBypass={() => setDemoBypassed(true)}
+      onExitToStandardMode={handleExitToStandard}
       onEnrolled={async () => {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('sugoroku_invite');
+          url.searchParams.delete('invite');
+          url.searchParams.delete('code');
+          window.history.replaceState({}, '', url.toString());
+        } catch {
+          // ignore
+        }
         await refresh();
       }}
     />
@@ -120,8 +139,7 @@ interface SugorokuGateScreenProps {
   loading: boolean;
   isSuspended?: boolean;
   onlineReady: boolean;
-  allowDemoBypass: boolean;
-  onDemoBypass: () => void;
+  onExitToStandardMode?: () => void;
   onEnrolled: () => Promise<void>;
 }
 
@@ -129,8 +147,7 @@ export function SugorokuGateScreen({
   user,
   loading,
   isSuspended = false,
-  allowDemoBypass,
-  onDemoBypass,
+  onExitToStandardMode,
   onEnrolled,
 }: SugorokuGateScreenProps) {
   // ゲート画面表示中もバナー広告を 100% 抑止
@@ -377,7 +394,7 @@ export function SugorokuGateScreen({
               <div className="sga-info-box">
                 <p className="font-bold mb-1">ステップ 1：Google アカウントでログイン</p>
                 <p>
-                  学校配布 iPad の Google Workspace アカウント、または個人の Gmail アカウントのどちらでも利用できます（事前登録済みの講師アカウントでログインした場合は招待コード不要でそのまま入場できます）。
+                  学校配布 iPad の Google Workspace アカウント、または個人の Gmail アカウントのどちらでも利用できます。
                 </p>
               </div>
 
@@ -445,23 +462,6 @@ export function SugorokuGateScreen({
                 <div role="alert" className="sga-error-box flex items-start gap-2">
                   <AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
                   <span>{authError}</span>
-                </div>
-              )}
-
-              {allowDemoBypass && (
-                <div className="pt-1 border-t border-[#e3d9c8] flex flex-col gap-2">
-                  <p className="text-xs text-[#5a6573]">
-                    現在はクラウド未接続の試作プレビュー環境です。画面確認用にこのまま本編を開けます。
-                  </p>
-                  <button
-                    type="button"
-                    data-testid="sugoroku-demo-preview-btn"
-                    onClick={onDemoBypass}
-                    className="sga-primary-btn"
-                  >
-                    <span>試作デモ画面をプレビューする</span>
-                    <ArrowRight size={16} aria-hidden="true" />
-                  </button>
                 </div>
               )}
             </div>
@@ -685,6 +685,19 @@ export function SugorokuGateScreen({
             </form>
           )}
         </section>
+
+        {onExitToStandardMode && (
+          <div className="pt-1 text-center">
+            <button
+              type="button"
+              data-testid="sugoroku-exit-to-standard-btn"
+              onClick={onExitToStandardMode}
+              className="text-xs font-bold text-[#5a6573] hover:text-[#1c2a39] underline underline-offset-4 min-h-[36px] px-3"
+            >
+              招待コードをお持ちでない方（通常モードで始める）
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -13,8 +13,13 @@ export {
 export { createSugorokuDemoBundle, type SugorokuDemoBundle } from './demoData';
 export { buildLineEncourageMessage, SugorokuStudentDetailView } from './SugorokuStudentDetailView';
 export { SugorokuStaffSheet } from './SugorokuStaffSheet';
+export { SUGOROKU_DEDICATED_PDFS, SugorokuPdfShelfTab, classifyEikenMaterial } from './SugorokuPdfShelfTab';
 export {
   buildStaffInviteId,
+  createSugorokuPortalClassroom,
+  ensureRootInstructorBootstrap,
+  getConfiguredAdminEmails,
+  isEmailPreAuthorizedAdmin,
   isValidStaffEmail,
   normalizeStaffEmail,
 } from './firestoreAdminService';

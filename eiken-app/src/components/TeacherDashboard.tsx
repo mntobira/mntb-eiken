@@ -1,8 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Users, Plus, AlertTriangle, School } from 'lucide-react';
+import {
+  ArrowLeft,
+  Users,
+  Plus,
+  AlertTriangle,
+  School,
+  BookOpenCheck,
+  CheckCircle2,
+  X,
+  Clock,
+  ClipboardCheck,
+  BarChart3,
+  Settings2,
+  ShieldCheck,
+} from 'lucide-react';
 import { auth } from '../firebase';
 import {
-  createClassroom,
   fetchMyClassrooms,
   fetchClassSummaries,
   fetchClassRawProgress,
@@ -10,88 +23,83 @@ import {
   setRosterName,
   KANTEN_MASTERED_BOX,
 } from '../utils/classroom';
+import { fetchManageableClassrooms } from '../sugoroku/admin/firestoreAdminService';
 import { buildKantenReport, type KantenReport } from '../utils/kantenReport';
 import { getChapterCatalog, SUBJECT_LABELS } from '../data/chapterCatalog';
 import { aggregateClass, type ClassroomDoc } from '../utils/classroomCore';
-import { buildStudentCsv, type StudentSummary } from '../utils/studySummary';
+import { buildStudentCsv, type StudentSummary, toDateKey } from '../utils/studySummary';
 import { subjectTheme } from '../data/subjectTheme';
-import { toDateKey } from '../utils/studySummary';
+import { confirmAction } from '../utils/dialog';
 import { DEFAULT_CLASS_SUBJECT } from './teacher/teacherSubjects';
 import { EmptyState } from './teacher/EmptyState';
 import { StudentsTab } from './teacher/StudentsTab';
 import { KantenTab } from './teacher/KantenTab';
 import { ClassesTab } from './teacher/ClassesTab';
-import { CreateClassModal } from './teacher/CreateClassModal';
+import { ClassFormModal, CreateClassModal, type ClassFormValues } from './teacher/CreateClassModal';
 import { JukuTab } from './teacher/JukuTab';
-
-/**
- * ===================================================================
- * 先生ダッシュボード（フェーズ0 ③）
- * ===================================================================
- *
- * -------------------------------------------------------------------
- * ■ この画面が答えるべき問い
- * -------------------------------------------------------------------
- * 現場の先生が学習アプリの管理画面を開くとき、知りたいことは
- * 実際には次の3つしかない。
- *
- *   ① 今日、誰に声を掛けるべきか（手が止まっている生徒は誰か）
- *   ② クラスはどこでつまずいているか（未処理の復習が集まる場所）
- *   ③ 評価に使える形で持ち出せるか（＝CSV）
- *
- * 逆に、凝ったグラフや期間比較のチャートは「見て楽しい」が
- * 職員室では使われない。授業前の5分で①→③が終わることを優先し、
- * 装飾よりも「次の行動が決まること」を設計基準にした。
- *
- * -------------------------------------------------------------------
- * ■ 教育的な安全装置（外してはいけない）
- * -------------------------------------------------------------------
- * 「取り組み度」は 継続50 / 立て直し35 / 未処理15 の合計であり、
- * 成績そのものではない。画面には必ず内訳を並べ、
- *
- *   「成績そのものではなく、先生の判断を助ける材料としてご覧ください」
- *
- * という説明を常時表示する。数字だけが独り歩きして生徒が
- * 不当に評価されることを防ぐため、この注意書きは折りたたまない。
- *
- * -------------------------------------------------------------------
- * ■ プライバシー（同意の作り込み）
- * -------------------------------------------------------------------
- * 先生が生徒の学習データを読めるのは、生徒自身が参加コードで
- * クラスに入り study_access を作ったときだけ。先生側からは
- * 生徒を勝手に追加できない（Firestore ルールで保証）。
- * つまりこの画面に並ぶのは「本人が見せることを選んだ生徒」だけである。
- */
+import { StudyTimeTab } from './teacher/StudyTimeTab';
+import {
+  createDefaultClassSettings,
+  createManagedClassroom,
+  deleteManagedClassroom,
+  fetchClassSettings,
+  loadCachedClassSettings,
+  loadLastOrgName,
+  updateManagedClassroom,
+  type JukuClassSettings,
+} from '../sugoroku/admin/classroomSettings';
 
 interface TeacherDashboardProps {
   onBack: () => void;
+  backLabel?: string;
+  initialOpenCreate?: boolean;
+  onInitialCreateHandled?: () => void;
+  onOpenSugorokuAdmin?: () => void;
 }
 
-type Tab = 'students' | 'kanten' | 'juku' | 'classes';
+type Tab = 'students' | 'study_time' | 'kanten' | 'juku' | 'classes';
 
-
-export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
+export function TeacherDashboard({
+  onBack,
+  backLabel = '戻る',
+  initialOpenCreate = false,
+  onInitialCreateHandled,
+  onOpenSugorokuAdmin,
+}: TeacherDashboardProps) {
   const [tab, setTab] = useState<Tab>('students');
   const [classrooms, setClassrooms] = useState<ClassroomDoc[]>([]);
   const [activeClassId, setActiveClassId] = useState<string>('');
+  const [settingsMap, setSettingsMap] = useState<Record<string, JukuClassSettings>>({});
   const [students, setStudents] = useState<StudentSummary[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(true);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [copiedCode, setCopiedCode] = useState('');
 
-  // クラス作成モーダル
-  const [showCreate, setShowCreate] = useState(false);
-  const [newSchoolName, setNewSchoolName] = useState('');
+  // クラス新規作成モーダル
+  const [showCreate, setShowCreate] = useState(() => initialOpenCreate);
+
+  useEffect(() => {
+    if (initialOpenCreate) {
+      setShowCreate(true);
+      onInitialCreateHandled?.();
+    }
+  }, [initialOpenCreate, onInitialCreateHandled]);
+  const [newSchoolName, setNewSchoolName] = useState(() => loadLastOrgName());
   const [newClassName, setNewClassName] = useState('');
   const [newSubject, setNewSubject] = useState<ClassroomDoc['subject']>(DEFAULT_CLASS_SUBJECT);
   const [creating, setCreating] = useState(false);
+
+  // 既存クラス設定編集モーダル
+  const [editingRoom, setEditingRoom] = useState<ClassroomDoc | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   // 名簿名のインライン編集
   const [editingUid, setEditingUid] = useState('');
   const [editingName, setEditingName] = useState('');
 
-  // 観点別評価レポート（開いたときにだけ読む＝無駄な read を発生させない）
+  // 観点別評価レポート
   const [kantenReports, setKantenReports] = useState<KantenReport[]>([]);
   const [loadingKanten, setLoadingKanten] = useState(false);
   const [kantenLoadedFor, setKantenLoadedFor] = useState('');
@@ -102,10 +110,17 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
     () => classrooms.find((room) => room.id === activeClassId) || null,
     [classrooms, activeClassId],
   );
+  const activeSettings = useMemo(
+    () =>
+      activeClass
+        ? settingsMap[activeClass.id] ?? loadCachedClassSettings(activeClass.id)
+        : createDefaultClassSettings(''),
+    [activeClass, settingsMap],
+  );
   const theme = subjectTheme(activeClass?.subject);
 
   // ---------------------------------------------------------------
-  // クラス一覧の読み込み
+  // クラス一覧 ＋ 各クラス設定の読み込み
   // ---------------------------------------------------------------
   const loadClasses = useCallback(async () => {
     if (!uid) {
@@ -115,20 +130,36 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
     setLoadingClasses(true);
     setError('');
     try {
-      const rooms = await fetchMyClassrooms();
-      // 作成順が保証されないので、クラス名で並べて毎回同じ順にする
+      const rooms = await fetchManageableClassrooms().catch(() => fetchMyClassrooms());
       rooms.sort((a, b) => (a.className || '').localeCompare(b.className || '', 'ja'));
       setClassrooms(rooms);
+
+      // まずローカルキャッシュで即時反映し、その後 Firestore 設定を取得
+      const initialSettings: Record<string, JukuClassSettings> = {};
+      for (const r of rooms) {
+        initialSettings[r.id] = loadCachedClassSettings(r.id);
+      }
+      setSettingsMap(initialSettings);
+
+      if (rooms.length > 0 && !newSchoolName) {
+        setNewSchoolName(rooms[0].schoolName || '');
+      }
+
       setActiveClassId((current) => {
         if (current && rooms.some((room) => room.id === current)) return current;
         return rooms.length > 0 ? rooms[0].id : '';
       });
+
+      const fetchedEntries = await Promise.all(
+        rooms.map(async (r) => [r.id, await fetchClassSettings(r.id)] as const),
+      );
+      setSettingsMap(Object.fromEntries(fetchedEntries));
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'クラスの読み込みに失敗しました。');
     } finally {
       setLoadingClasses(false);
     }
-  }, [uid]);
+  }, [uid, newSchoolName]);
 
   useEffect(() => {
     void loadClasses();
@@ -163,10 +194,6 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
 
   // ---------------------------------------------------------------
   // 観点別評価レポートの読み込み
-  //
-  // 「生徒の様子」タブとは別に生データを読む必要がある
-  // （章別の到達状況はサマリーからは復元できないため）。
-  // タブを開いた瞬間に1回だけ読み、クラスを切り替えたら読み直す。
   // ---------------------------------------------------------------
   const loadKanten = useCallback(
     async (classId: string, subject: ClassroomDoc['subject']) => {
@@ -208,32 +235,128 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
 
   useEffect(() => {
     if (tab !== 'kanten' || !activeClass) return;
-    if (kantenLoadedFor === activeClass.id) return; // 読み直しは「更新」ボタンで明示的に
+    if (kantenLoadedFor === activeClass.id) return;
     void loadKanten(activeClass.id, activeClass.subject);
   }, [tab, activeClass, kantenLoadedFor, loadKanten]);
 
   // ---------------------------------------------------------------
-  // 操作
+  // クラス開設・設定更新・削除
   // ---------------------------------------------------------------
-  const handleCreate = async () => {
+  const handleCreate = async (values: ClassFormValues) => {
     setCreating(true);
     setError('');
     try {
-      const created = await createClassroom({
-        schoolName: newSchoolName,
-        className: newClassName,
-        subject: newSubject,
+      const { classroom: created, settings: createdSettings } = await createManagedClassroom({
+        schoolName: values.schoolName,
+        className: values.className,
+        subject: values.subject,
+        enableJukuPlan: true,
+        settings: {
+          orgType: values.orgType,
+          dailyGoalMinutes: values.dailyGoalMinutes,
+          weeklyGoalDays: values.weeklyGoalDays,
+          examSession: values.examSession,
+          focusSkills: values.focusSkills,
+          coachNote: values.coachNote,
+        },
       });
       setShowCreate(false);
+      setNewSchoolName(values.schoolName);
       setNewClassName('');
-      // 学校名は次のクラスでもたいてい同じなので残す（連続作成の手間を減らす）
       setClassrooms((prev) => [...prev, created]);
+      setSettingsMap((prev) => ({ ...prev, [created.id]: createdSettings }));
       setActiveClassId(created.id);
-      setTab('classes');
+      setTab('students');
+      setNotice(
+        `「${created.className}」を開設しました（招待コード: ${created.joinCode}）。下のボタンから招待URLまたはLINE案内文をコピーして生徒へ送れます。`,
+      );
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : 'クラスの作成に失敗しました。');
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleSaveEditRoom = async (values: ClassFormValues) => {
+    if (!editingRoom) return;
+    setSavingEdit(true);
+    setError('');
+    try {
+      const { classroom: updated, settings: updatedSettings } = await updateManagedClassroom({
+        room: editingRoom,
+        schoolName: values.schoolName,
+        className: values.className,
+        subject: values.subject,
+        joinOpen: values.joinOpen,
+        upgradeToJukuPlan: true,
+        settings: {
+          orgType: values.orgType,
+          dailyGoalMinutes: values.dailyGoalMinutes,
+          weeklyGoalDays: values.weeklyGoalDays,
+          examSession: values.examSession,
+          focusSkills: values.focusSkills,
+          coachNote: values.coachNote,
+        },
+      });
+      setClassrooms((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+      setSettingsMap((prev) => ({ ...prev, [updated.id]: updatedSettings }));
+      if (kantenLoadedFor === updated.id && editingRoom.subject !== updated.subject) {
+        setKantenLoadedFor('');
+      }
+      setEditingRoom(null);
+      setNotice(`「${updated.className}」の設定を保存しました。`);
+    } catch (editError) {
+      setError(editError instanceof Error ? editError.message : '設定の保存に失敗しました。');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleUpgradeToJuku = async (room: ClassroomDoc) => {
+    setError('');
+    try {
+      const currentSettings = settingsMap[room.id] ?? createDefaultClassSettings(room.id);
+      const { classroom: updated } = await updateManagedClassroom({
+        room,
+        schoolName: room.schoolName,
+        className: room.className,
+        subject: room.subject,
+        joinOpen: room.joinOpen,
+        upgradeToJukuPlan: true,
+        settings: {
+          orgType: currentSettings.orgType,
+          dailyGoalMinutes: currentSettings.dailyGoalMinutes,
+          weeklyGoalDays: currentSettings.weeklyGoalDays,
+          examSession: currentSettings.examSession,
+          focusSkills: currentSettings.focusSkills,
+          coachNote: currentSettings.coachNote,
+        },
+      });
+      setClassrooms((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+      if (updated.plan === 'juku') {
+        setNotice(`「${updated.className}」を塾プラン（宿題配信・広告完全非表示）に切り替えました。`);
+      }
+    } catch (upgradeErr) {
+      setError(upgradeErr instanceof Error ? upgradeErr.message : '塾プランへの切り替えに失敗しました。');
+    }
+  };
+
+  const handleDeleteRoom = async (room: ClassroomDoc) => {
+    const ok = confirmAction(
+      `コース「${room.className}」（招待コード: ${room.joinCode}）を削除します。\n※ 誤作成クラスや終了クラスの整理用です。よろしいですか？`,
+    );
+    if (!ok) return;
+    setError('');
+    try {
+      await deleteManagedClassroom(room);
+      const remaining = classrooms.filter((r) => r.id !== room.id);
+      setClassrooms(remaining);
+      if (activeClassId === room.id) {
+        setActiveClassId(remaining[0]?.id ?? '');
+      }
+      setNotice(`「${room.className}」を削除しました。`);
+    } catch (delError) {
+      setError(delError instanceof Error ? delError.message : 'クラスの削除に失敗しました。');
     }
   };
 
@@ -243,15 +366,12 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
       setCopiedCode(code);
       window.setTimeout(() => setCopiedCode(''), 1800);
     } catch {
-      // クリップボードが使えない環境（古い端末・非HTTPS）でも
-      // コードは画面に大きく出しているので、失敗しても致命的ではない
       setError('コードのコピーができませんでした。画面の文字を書き写してください。');
     }
   };
 
   const handleToggleJoin = async (room: ClassroomDoc) => {
     const next = !room.joinOpen;
-    // 楽観更新（通信を待たせない）。失敗したら元に戻す。
     setClassrooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, joinOpen: next } : r)));
     try {
       await setJoinOpen(room.id, next);
@@ -279,11 +399,6 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
     }
   };
 
-  /**
-   * CSV を書き出す。
-   * ファイル名にクラス名と日付を入れる。先生は複数クラス分を
-   * ダウンロードフォルダに溜めるので、名前で判別できないと使えない。
-   */
   const handleExportCsv = () => {
     if (students.length === 0) return;
     const csv = buildStudentCsv(students);
@@ -306,21 +421,19 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
   // ---------------------------------------------------------------
   if (!uid) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6">
+      <div className="min-h-screen bg-[#FDFBF7] px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-10">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm">戻る</span>
+          <span className="text-sm font-bold">{backLabel}</span>
         </button>
-        <div className="max-w-md mx-auto bg-white rounded-2xl border border-[#E0E1DD] p-6 text-center">
+        <div className="max-w-md mx-auto bg-white rounded-3xl border border-[#E0E1DD] p-6 text-center shadow-xs">
           <School className="w-10 h-10 mx-auto mb-3 text-[#9BA3AE]" />
-          <h2 className="text-lg font-bold text-[#1B2631] mb-2">先生用の画面です</h2>
+          <h2 className="text-lg font-extrabold text-[#1B2631] mb-2">講師・管理者専用の画面です</h2>
           <p className="text-sm text-[#4B5563] leading-relaxed">
-            クラスの管理には Google ログインが必要です。
-            <br />
-            設定画面からログインしてから、もう一度お試しください。
+            コース・クラスの管理には Google ログインが必要です。
           </p>
         </div>
       </div>
@@ -328,91 +441,172 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] px-4 sm:px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6">
-      {/* ヘッダー */}
+    <div className="min-h-screen bg-[#FDFBF7] px-4 sm:px-6 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
       <div className="max-w-5xl mx-auto">
-        <button
-          onClick={onBack}
-          className="flex min-h-[44px] items-center gap-2 text-[#4B5563] hover:text-[#1B2631] transition-colors mb-3"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm">戻る</span>
-        </button>
+        {/* トップナビゲーション行 */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex min-h-[42px] items-center gap-1.5 text-[#4B5563] hover:text-[#1B2631] transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm font-bold">{backLabel}</span>
+          </button>
 
-        <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+          {onOpenSugorokuAdmin && (
+            <button
+              type="button"
+              onClick={onOpenSugorokuAdmin}
+              className="inline-flex min-h-[40px] items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white border border-[#D8D5CC] text-[#1B2631] hover:bg-[#FAF8F2] shadow-2xs transition-colors"
+            >
+              <BookOpenCheck className="w-4 h-4 text-[#3E9C93]" />
+              4技能添削・教材PDFポータルへ
+            </button>
+          )}
+        </div>
+
+        {/* メインヘッダー */}
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
           <div>
-            {/* ホワイトレーベル：学校名を主役にする */}
-            {activeClass?.schoolName && (
-              <p className="text-xs text-[#6B7280] mb-1">{activeClass.schoolName}</p>
-            )}
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1B2631] flex items-center gap-2">
-              <Users className="w-6 h-6" style={{ color: theme.accent }} />
-              クラスの学習状況
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <span className="text-xs font-bold text-[#6B7280]">
+                {activeClass?.schoolName || '塾・英語コース管理'}
+              </span>
+              {activeClass?.plan === 'juku' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#E8F6F4] text-[#236B63] border border-[#B5E2DC]">
+                  <ShieldCheck className="w-3 h-3" />
+                  塾プラン稼働中
+                </span>
+              )}
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#1B2631] flex items-center gap-2">
+              <Users className="w-6 h-6 shrink-0" style={{ color: theme.accent }} />
+              <span>{activeClass ? activeClass.className : 'コース・クラスの学習管理'}</span>
             </h1>
           </div>
+
           <button
+            type="button"
             onClick={() => setShowCreate(true)}
-            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-extrabold text-white shadow-xs transition-transform active:scale-95"
             style={{ backgroundColor: theme.accent }}
           >
             <Plus className="w-4 h-4" />
-            クラスを作る
+            新しいクラスを開設
           </button>
         </div>
 
-        {/* クラス切り替え */}
+        {/* コース・クラス切り替えピル */}
         {classrooms.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
-            {classrooms.map((room) => (
-              <button
-                key={room.id}
-                onClick={() => setActiveClassId(room.id)}
-                className={`shrink-0 min-h-[44px] px-3.5 py-2 rounded-xl text-sm border transition-colors ${
-                  room.id === activeClassId
-                    ? 'bg-white border-transparent font-bold text-[#1B2631]'
-                    : 'bg-transparent border-[#E0E1DD] text-[#4B5563] hover:bg-white/60'
-                }`}
-                style={room.id === activeClassId ? { boxShadow: theme.bubbleShadow } : undefined}
-              >
-                {room.className}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-3">
+            {classrooms.map((room) => {
+              const roomTheme = subjectTheme(room.subject);
+              const isSelected = room.id === activeClassId;
+              return (
+                <button
+                  key={room.id}
+                  type="button"
+                  onClick={() => setActiveClassId(room.id)}
+                  className={`shrink-0 min-h-[42px] px-3.5 py-2 rounded-xl text-xs sm:text-sm border flex items-center gap-2 transition-all ${
+                    isSelected
+                      ? 'bg-white border-[#3E9C93] font-extrabold text-[#1B2631] shadow-xs'
+                      : 'bg-white/55 border-[#E0E1DD] text-[#4B5563] hover:bg-white'
+                  }`}
+                >
+                  <span>{room.className}</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${roomTheme.chipTextClass} ${roomTheme.chipBgClass}`}
+                  >
+                    {roomTheme.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
 
-        {/* タブ */}
+        {/* 機能タブバー（モバイル横スクロール＋アイコン付き高視認デザイン） */}
         {classrooms.length > 0 && (
-          <div className="grid grid-cols-4 sm:flex gap-1 p-1 bg-[#F1EFE9] rounded-xl mb-5 sm:w-fit">
-            {([
-              { id: 'students' as Tab, label: '生徒の様子' },
-              { id: 'kanten' as Tab, label: '観点別評価' },
-              { id: 'juku' as Tab, label: '課題・理由' },
-              { id: 'classes' as Tab, label: 'クラス設定' },
-            ]).map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setTab(item.id)}
-                className={`min-h-[44px] px-1 sm:px-4 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-colors ${
-                  tab === item.id ? 'bg-white font-bold text-[#1B2631] shadow-sm' : 'text-[#4B5563]'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="flex gap-1 overflow-x-auto p-1 bg-[#EFECE4] rounded-2xl mb-5 sm:w-fit">
+            {(
+              [
+                { id: 'students' as Tab, label: '生徒・招待', icon: Users },
+                { id: 'study_time' as Tab, label: '学習時間', icon: Clock },
+                { id: 'juku' as Tab, label: '宿題・根拠', icon: ClipboardCheck },
+                { id: 'kanten' as Tab, label: '到達レポート', icon: BarChart3 },
+                { id: 'classes' as Tab, label: 'コース設定', icon: Settings2 },
+              ] as const
+            ).map((item) => {
+              const Icon = item.icon;
+              const active = tab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setTab(item.id)}
+                  className={`shrink-0 min-h-[42px] px-3 sm:px-4 rounded-xl text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-1.5 transition-all ${
+                    active
+                      ? 'bg-white font-extrabold text-[#1B2631] shadow-xs'
+                      : 'font-bold text-[#4B5563] hover:text-[#1B2631]'
+                  }`}
+                >
+                  <Icon
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={active ? { color: theme.accent } : undefined}
+                  />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         )}
 
+        {/* 完了トーストバナー */}
+        {notice && (
+          <div className="mb-4 flex items-start justify-between gap-2 p-3.5 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-xs sm:text-sm text-[#065F46]">
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#059669]" />
+              <span className="leading-relaxed font-medium">{notice}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setNotice('')}
+              aria-label="通知を閉じる"
+              className="p-1 rounded-lg hover:bg-[#D1FAE5] text-[#065F46]"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* エラーバナー */}
         {error && (
-          <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-[#FDECEA] border border-[#F5C6C0] text-sm text-[#96342B]">
-            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-            <span className="leading-relaxed">{error}</span>
+          <div className="mb-4 flex items-start justify-between gap-2 p-3.5 rounded-2xl bg-[#FDECEA] border border-[#F5C6C0] text-xs sm:text-sm text-[#96342B]">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span className="leading-relaxed">{error}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setError('')}
+              aria-label="エラーを閉じる"
+              className="p-1 rounded-lg hover:bg-[#FADBD8]"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         )}
 
+        {/* メインビュー */}
         {loadingClasses ? (
-          <div className="py-16 text-center text-sm text-[#6B7280]">読み込んでいます…</div>
+          <div className="py-16 text-center text-sm text-[#6B7280]">コース情報を読み込んでいます…</div>
         ) : classrooms.length === 0 ? (
-          <EmptyState onCreate={() => setShowCreate(true)} accent={theme.accent} />
+          <EmptyState
+            onCreate={() => setShowCreate(true)}
+            onOpenSugorokuAdmin={onOpenSugorokuAdmin}
+            accent={theme.accent}
+          />
         ) : tab === 'students' ? (
           <StudentsTab
             students={students}
@@ -420,6 +614,7 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
             loading={loadingStudents}
             theme={theme}
             activeClass={activeClass}
+            classSettings={activeSettings}
             copiedCode={copiedCode}
             editingUid={editingUid}
             editingName={editingName}
@@ -433,6 +628,20 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
             onChangeEditingName={setEditingName}
             onSaveEdit={handleSaveRosterName}
             onCancelEdit={() => setEditingUid('')}
+            onOpenStudyTime={() => setTab('study_time')}
+            onOpenHomework={() => setTab('juku')}
+            onOpenEditClass={() => {
+              if (activeClass) setEditingRoom(activeClass);
+            }}
+          />
+        ) : tab === 'study_time' ? (
+          <StudyTimeTab
+            activeClass={activeClass}
+            classSettings={activeSettings}
+            theme={theme}
+            onOpenEditClass={() => {
+              if (activeClass) setEditingRoom(activeClass);
+            }}
           />
         ) : tab === 'kanten' ? (
           <KantenTab
@@ -449,14 +658,24 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
         ) : (
           <ClassesTab
             classrooms={classrooms}
+            activeClassId={activeClassId}
+            settingsMap={settingsMap}
             theme={theme}
             copiedCode={copiedCode}
+            onSelectClass={(id) => {
+              setActiveClassId(id);
+              setTab('students');
+            }}
             onCopyCode={handleCopyCode}
             onToggleJoin={handleToggleJoin}
+            onEditRoom={(room) => setEditingRoom(room)}
+            onDeleteRoom={handleDeleteRoom}
+            onUpgradeToJuku={handleUpgradeToJuku}
           />
         )}
       </div>
 
+      {/* 新規コース・クラス開設モーダル */}
       {showCreate && (
         <CreateClassModal
           schoolName={newSchoolName}
@@ -469,6 +688,26 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
           onChangeSubject={setNewSubject}
           onClose={() => setShowCreate(false)}
           onSubmit={handleCreate}
+        />
+      )}
+
+      {/* 既存コース・クラス設定編集モーダル */}
+      {editingRoom && (
+        <ClassFormModal
+          mode="edit"
+          submitting={savingEdit}
+          accent={subjectTheme(editingRoom.subject).accent}
+          joinCode={editingRoom.joinCode}
+          isJukuPlanActive={editingRoom.plan === 'juku'}
+          initialValues={{
+            schoolName: editingRoom.schoolName,
+            className: editingRoom.className,
+            subject: editingRoom.subject,
+            joinOpen: editingRoom.joinOpen,
+            ...(settingsMap[editingRoom.id] ?? createDefaultClassSettings(editingRoom.id)),
+          }}
+          onClose={() => setEditingRoom(null)}
+          onSubmit={handleSaveEditRoom}
         />
       )}
     </div>

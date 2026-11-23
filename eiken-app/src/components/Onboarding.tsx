@@ -28,7 +28,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Loader2, AlertTriangle, Check, ArrowRight } from 'lucide-react';
+import { Loader2, AlertTriangle, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 import { signInWithGoogle, consumeGoogleRedirectResult, GOOGLE_LINK_BENEFITS, isInAppBrowser } from '../utils/googleAuth';
 import { syncUserData } from '../utils/userDataSync';
@@ -47,12 +47,14 @@ interface OnboardingProps {
   onComplete: () => void;
   /** ログインできないときだけ使う「この端末だけで続ける」 */
   onOffline: () => void;
+  /** タイトル画面へ戻る（生徒導線と管理者導線を間違えたとき等にいつでも戻れるようにする） */
+  onBackToTitle?: () => void;
 }
 
 /** 新しい端末では、プロフィールがクラウドから届くのを少しだけ待つ（入力し直しを防ぐ） */
 const PROFILE_WAIT_MS = 4000;
 
-export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
+export function Onboarding({ onComplete, onOffline, onBackToTitle }: OnboardingProps) {
   const [step, setStep] = useState<'login' | 'profile'>('login');
   const [name, setName] = useState('');
   const [grade, setGrade] = useState('');
@@ -178,6 +180,18 @@ export function Onboarding({ onComplete, onOffline }: OnboardingProps) {
       >
         {step === 'login' ? (
           <>
+            {onBackToTitle && (
+              <div className="mb-2">
+                <button
+                  type="button"
+                  onClick={onBackToTitle}
+                  className="inline-flex items-center gap-1 text-xs font-modern font-bold text-[#5D6D7E] hover:text-[#1B2631] transition-colors"
+                >
+                  <ArrowLeft size={14} aria-hidden="true" />
+                  タイトルへ戻る
+                </button>
+              </div>
+            )}
             <h2 className="text-center text-2xl font-bold text-[#1B2631] sm:text-[28px]">ようこそ！</h2>{!onlineReady && <p role="status" className="mt-2 text-center text-[12px] font-modern text-[#7E5109]">設定前のプレビューです。ログインとオンライン対戦には専用Firebaseの設定が必要です。</p>}
             {/* ★説明文を書き換えた理由★
                 以前は「学習記録を守るため、連携をおすすめしています」だけで、

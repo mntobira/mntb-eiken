@@ -42,7 +42,7 @@ import {
   totalProblemsOf,
 } from './homeworkCore';
 import { DAILY_QUOTA_MAX } from './homeworkStore';
-import { chapterIdsOfGrade, chapterTotals } from './chapterTotals';
+import { allEikenChapterCatalog, chapterIdsOfGrade, chapterTotals } from './chapterTotals';
 import type { SugorokuHomeworkPlan, SugorokuSkillBreakdown } from '../shared/types';
 
 function todayPlus(days: number): string {
@@ -92,6 +92,7 @@ export function SugorokuHomeworkComposerModal({
   const [dueDate, setDueDate] = useState(todayPlus(7));
   const [quotaMode, setQuotaMode] = useState<'auto' | 'custom'>('auto');
   const [customQuota, setCustomQuota] = useState<number>(6);
+  const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [skillFilter, setSkillFilter] = useState<'all' | 'vocab' | 'reading' | 'listening'>('all');
   const [deliveryScope, setDeliveryScope] = useState<'all' | 'selected'>('all');
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
@@ -185,10 +186,19 @@ export function SugorokuHomeworkComposerModal({
   const effectiveDailyQuota = quotaMode === 'custom' ? Math.max(1, Math.min(DAILY_QUOTA_MAX, customQuota)) : autoDailyQuota;
   const dailyMinutes = estimateMinutes(effectiveDailyQuota);
 
+  const unifiedCatalog = useMemo(() => {
+    const allGrades = allEikenChapterCatalog();
+    if (allGrades.length > 0) return allGrades;
+    return catalog.map((c) => ({ ...c, grade: subject, gradeLabel: '' }));
+  }, [catalog, subject]);
+
   const filteredCatalog = useMemo(() => {
-    if (skillFilter === 'all') return catalog;
-    return catalog.filter((c) => parseChapterRef(c.id)?.skill === skillFilter);
-  }, [catalog, skillFilter]);
+    return unifiedCatalog.filter((c) => {
+      if (gradeFilter !== 'all' && c.grade !== gradeFilter) return false;
+      if (skillFilter !== 'all' && parseChapterRef(c.id)?.skill !== skillFilter) return false;
+      return true;
+    });
+  }, [unifiedCatalog, gradeFilter, skillFilter]);
 
   const canSubmit =
     title.trim().length > 0 &&
@@ -221,15 +231,17 @@ export function SugorokuHomeworkComposerModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 px-3 py-4 sm:px-4 sm:py-6"
-      onClick={onClose}
+      className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-[#1B2631]/55 backdrop-blur-[2px] sm:p-4"
+      onClick={() => {
+        if (!busy) onClose();
+      }}
       role="dialog"
       aria-modal="true"
       aria-label="ペースメーカー宿題を出す"
       data-testid="sugoroku-homework-composer"
     >
       <div
-        className="w-full max-w-xl max-h-[92dvh] flex flex-col bg-[#FFFDF9] rounded-3xl border border-[#E3D9C8] shadow-xl overflow-hidden"
+        className="w-full sm:max-w-xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col bg-[#FFFDF9] rounded-t-3xl sm:rounded-3xl border border-[#E3D9C8] shadow-2xl overflow-hidden"
         onClick={(ev) => ev.stopPropagation()}
       >
         {/* ヘッダー */}
@@ -490,35 +502,64 @@ export function SugorokuHomeworkComposerModal({
             )}
           </section>
 
-          {/* 単元選択リスト（手動調整も常に可能） */}
+          {/* 単元選択リスト（全級5級〜1級から自由選択可能） */}
           <section className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-bold text-[#3E4C5B]">
-                出題単元（{picked.length}/{ASSIGNMENT_MAX_CHAPTERS} 単元選択中）
+                出題単元・全級対応（{picked.length}/{ASSIGNMENT_MAX_CHAPTERS} 単元選択中）
               </span>
               <div className="flex flex-wrap gap-1">
                 {(
                   [
-                    { id: 'all', label: 'すべて' },
-                    { id: 'vocab', label: '語彙・大問1' },
-                    { id: 'reading', label: '長文読解' },
-                    { id: 'listening', label: 'リスニング' },
+                    { id: 'all', label: '全級' },
+                    { id: 'eiken_2', label: '2級' },
+                    { id: 'eiken_pre2plus', label: '準2+' },
+                    { id: 'eiken_pre2', label: '準2級' },
+                    { id: 'eiken_3', label: '3級' },
+                    { id: 'eiken_4', label: '4級' },
+                    { id: 'eiken_5', label: '5級' },
+                    { id: 'eiken_pre1', label: '準1級' },
+                    { id: 'eiken_1', label: '1級' },
                   ] as const
-                ).map((f) => (
+                ).map((g) => (
                   <button
-                    key={f.id}
+                    key={g.id}
                     type="button"
-                    onClick={() => setSkillFilter(f.id)}
-                    className={`min-h-[32px] px-2.5 rounded-lg text-xs font-bold border ${
-                      skillFilter === f.id
-                        ? 'bg-[#1C2A39] text-white border-[#1C2A39]'
+                    onClick={() => setGradeFilter(g.id)}
+                    className={`min-h-[28px] px-2 rounded-lg text-xs font-bold border ${
+                      gradeFilter === g.id
+                        ? 'bg-[#2458A6] text-white border-[#2458A6]'
                         : 'bg-white text-[#5A6573] border-[#E3D9C8]'
                     }`}
                   >
-                    {f.label}
+                    {g.label}
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  { id: 'all', label: 'すべての分野' },
+                  { id: 'vocab', label: '語彙・大問1' },
+                  { id: 'reading', label: '長文読解' },
+                  { id: 'listening', label: 'リスニング' },
+                ] as const
+              ).map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setSkillFilter(f.id)}
+                  className={`min-h-[32px] px-2.5 rounded-lg text-xs font-bold border ${
+                    skillFilter === f.id
+                      ? 'bg-[#1C2A39] text-white border-[#1C2A39]'
+                      : 'bg-white text-[#5A6573] border-[#E3D9C8]'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
             </div>
 
             <div className="max-h-44 overflow-y-auto rounded-2xl border border-[#E3D9C8] bg-white p-2.5">
@@ -568,7 +609,7 @@ export function SugorokuHomeworkComposerModal({
                       deliveryScope === 'all' ? 'bg-white text-[#1C2A39] shadow-sm' : 'text-[#5A6573]'
                     }`}
                   >
-                    クラス全員（{students.length}名）
+                    塾生全員（{students.length}名）
                   </button>
                   <button
                     type="button"
@@ -614,7 +655,7 @@ export function SugorokuHomeworkComposerModal({
         </div>
 
         {/* フッターボタン */}
-        <footer className="flex items-center gap-2.5 px-5 py-3.5 bg-white border-t border-[#E3D9C8]">
+        <footer className="shrink-0 flex items-center gap-2.5 px-5 pt-3.5 pb-[calc(0.9rem+env(safe-area-inset-bottom,0px))] bg-white border-t border-[#E3D9C8]">
           <button
             type="button"
             onClick={onClose}

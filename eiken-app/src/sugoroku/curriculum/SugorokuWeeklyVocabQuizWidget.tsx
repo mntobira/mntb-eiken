@@ -11,6 +11,7 @@ import {
   type SugorokuQuizTrack,
   type SugorokuWeeklyQuizData,
 } from './index';
+import './sugoroku-vocab-quiz.css';
 
 export interface SugorokuWeeklyVocabQuizWidgetProps {
   initialTrack?: SugorokuQuizTrack;
@@ -116,7 +117,9 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
     setEmittedAssignment(null);
   };
 
-  const handleGenerateAssignmentFromPlacement = (band: 'A_STANDARD_GRADE2' | 'B_BRIDGE_PRE2PLUS_4W' | 'C_FOUNDATION_PRE2_8W') => {
+  const handleGenerateAssignmentFromPlacement = (
+    band: 'A_STANDARD_GRADE2' | 'B_BRIDGE_PRE2PLUS_4W' | 'C_FOUNDATION_PRE2_8W',
+  ) => {
     const payload =
       band === 'A_STANDARD_GRADE2'
         ? buildSugorokuWeeklyAssignmentPayload({
@@ -148,49 +151,28 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
   if (!currentQuiz) return null;
 
   return (
-    <section
-      aria-label="すごろく語彙診断・週次確認テスト"
-      style={{
-        border: '1px solid #d4d4d8',
-        borderRadius: 12,
-        padding: 16,
-        background: '#ffffff',
-        color: '#18181b',
-        display: 'grid',
-        gap: 14,
-      }}
-    >
-      <header
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 10,
-          borderBottom: '1px solid #e4e4e7',
-          paddingBottom: 10,
-        }}
-      >
+    <section aria-label="すごろく語彙診断・週次確認テスト" className="svqw-root">
+      <header className="svqw-header">
         <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#52525b' }}>
+          <div className="svqw-eyebrow">
             {track === 'placementDiagnostic25'
               ? '入塾初回 15分ステージ診断（A判定:14点〜 ／ B判定:10〜13点 ／ C判定:0〜9点）'
               : 'すごろく塾 ペースメーカー確認テスト（合格基準 16 / 20点＝80%）'}
             {studentName ? ` ｜ 受験者：${studentName}` : ''}
           </div>
-          <h3 style={{ margin: '4px 0 0', fontSize: 17, fontWeight: 800 }}>
+          <h3 className="svqw-title">
             {TRACK_LABELS[track]}
             {track !== 'placementDiagnostic25' ? ` — 第${currentQuiz.week}回` : ''}
           </h3>
-          <div style={{ fontSize: 12, color: '#52525b', marginTop: 2 }}>{currentQuiz.theme}</div>
+          <div className="svqw-theme">{currentQuiz.theme}</div>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+        <div className="svqw-controls">
           <select
             aria-label="テスト種別選択"
             value={track}
             onChange={e => handleTrackChange(e.target.value as SugorokuQuizTrack)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #a1a1aa', fontSize: 13 }}
+            className="svqw-select"
           >
             {(Object.keys(TRACK_LABELS) as SugorokuQuizTrack[]).map(k => (
               <option key={k} value={k}>
@@ -204,7 +186,7 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
               aria-label="回次選択"
               value={currentQuiz.week}
               onChange={e => handleWeekChange(Number(e.target.value))}
-              style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #a1a1aa', fontSize: 13 }}
+              className="svqw-select"
             >
               {availableQuizzes.map(q => (
                 <option key={q.week} value={q.week}>
@@ -217,16 +199,8 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
           <button
             type="button"
             onClick={() => setShowPlacementHelper(v => !v)}
-            style={{
-              padding: '6px 10px',
-              borderRadius: 8,
-              border: '1px solid #27272a',
-              background: showPlacementHelper ? '#27272a' : '#f4f4f5',
-              color: showPlacementHelper ? '#ffffff' : '#18181b',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className="svqw-shelf-toggle"
+            data-active={showPlacementHelper ? 'true' : 'false'}
           >
             印刷PDF全6冊棚・処方シミュレーター
           </button>
@@ -234,19 +208,9 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
       </header>
 
       {showPlacementHelper && (
-        <aside
-          aria-label="初回診断振り分けとPDF教材棚"
-          style={{
-            background: '#f8fafc',
-            border: '1px solid #cbd5e1',
-            borderRadius: 10,
-            padding: 12,
-            display: 'grid',
-            gap: 10,
-          }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-            <label style={{ fontSize: 13, fontWeight: 700 }}>
+        <aside aria-label="初回診断振り分けとPDF教材棚" className="svqw-shelf-aside">
+          <div className="svqw-shelf-row">
+            <label className="svqw-diag-label">
               紙の診断テスト正答率から即判定：
               <input
                 type="number"
@@ -254,56 +218,28 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
                 max={100}
                 value={diagInput}
                 onChange={e => setDiagInput(Number(e.target.value))}
-                style={{ width: 64, marginLeft: 6, padding: '3px 6px', borderRadius: 6, border: '1px solid #94a3b8' }}
+                className="svqw-diag-input"
               />{' '}
               %
             </label>
-            <span
-              style={{
-                padding: '3px 10px',
-                borderRadius: 999,
-                background: '#18181b',
-                color: '#ffffff',
-                fontSize: 12,
-                fontWeight: 700,
-              }}
-            >
-              {placementPreview.label}
-            </span>
+            <span className="svqw-band-badge">{placementPreview.label}</span>
             <button
               type="button"
               onClick={() => handleGenerateAssignmentFromPlacement(placementPreview.band)}
-              style={{
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: '1px solid #18181b',
-                background: '#ffffff',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              className="svqw-assign-outline-btn"
             >
               この判定の初週宿題を作成（4日進行＋2日調整）
             </button>
           </div>
-          <p style={{ margin: 0, fontSize: 12.5, color: '#334155' }}>{placementPreview.summaryForCoach}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <p className="svqw-coach-summary">{placementPreview.summaryForCoach}</p>
+          <div className="svqw-pdf-links">
             {SUGOROKU_CURRICULUM_PDF_SHELF.map(pdf => (
               <a
                 key={pdf.id}
                 href={pdf.publicUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  fontSize: 12,
-                  padding: '5px 10px',
-                  borderRadius: 6,
-                  border: '1px solid #475569',
-                  color: '#0f172a',
-                  background: '#ffffff',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                }}
+                className="svqw-pdf-link"
               >
                 PDF: {pdf.title.split('（')[0]}（{pdf.pages}p）
               </a>
@@ -313,16 +249,7 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
       )}
 
       {emittedAssignment && (
-        <div
-          role="status"
-          style={{
-            padding: 10,
-            borderRadius: 8,
-            border: '1px solid #0f172a',
-            background: '#f1f5f9',
-            fontSize: 12.5,
-          }}
-        >
+        <div role="status" className="svqw-emitted-box">
           <strong>週次宿題ペイロード生成済み：</strong> {emittedAssignment.title} ｜ 1日目安{' '}
           <strong>{emittedAssignment.dailyQuotaProblems}問</strong>（Reading {emittedAssignment.skillBreakdown.reading}問・
           Listening {emittedAssignment.skillBreakdown.listening}問・厳選単語 {emittedAssignment.skillBreakdown.vocab}語）
@@ -330,19 +257,9 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
       )}
 
       {result && (
-        <div
-          role="status"
-          style={{
-            padding: 14,
-            borderRadius: 10,
-            border: `2px solid ${result.passed ? '#15803d' : '#b91c1c'}`,
-            background: result.passed ? '#f0fdf4' : '#fef2f2',
-            display: 'grid',
-            gap: 8,
-          }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-            <strong style={{ fontSize: 16, color: result.passed ? '#166534' : '#991b1b' }}>
+        <div role="status" className="svqw-result-box" data-passed={result.passed ? 'true' : 'false'}>
+          <div className="svqw-result-head">
+            <strong className="svqw-result-score">
               得点：{result.score} / {result.total} 点
               {result.diagnosticBreakdown
                 ? `（${result.diagnosticBreakdown.percent}%） — ${result.diagnosticBreakdown.placement.label}`
@@ -353,53 +270,31 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
               <button
                 type="button"
                 onClick={() => handleGenerateAssignmentFromPlacement(result.diagnosticBreakdown!.placement.band)}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: '#18181b',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
+                className="svqw-action-dark-btn"
               >
                 推奨ルートの初週宿題を配信する
               </button>
             )}
 
             {result.nextAction === 'RETEST_FORM_B_REQUIRED' && (
-              <button
-                type="button"
-                onClick={handleStartFormBRetest}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: '#991b1b',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
+              <button type="button" onClick={handleStartFormBRetest} className="svqw-action-danger-btn">
                 別フォーム［Form B］で再テストを実施する
               </button>
             )}
           </div>
 
           {result.diagnosticBreakdown && (
-            <div style={{ fontSize: 12.5, color: '#1e293b' }}>
+            <div className="svqw-breakdown">
               <strong>3層別内訳：</strong> 準2級基礎 {result.diagnosticBreakdown.pre2FoundationCorrect}/
               {result.diagnosticBreakdown.pre2FoundationTotal}点 ｜ 準2プラス橋渡し{' '}
               {result.diagnosticBreakdown.pre2PlusBridgeCorrect}/{result.diagnosticBreakdown.pre2PlusBridgeTotal}点 ｜
               2級コア {result.diagnosticBreakdown.grade2CoreCorrect}/{result.diagnosticBreakdown.grade2CoreTotal}点
-              <div style={{ marginTop: 4 }}>{result.diagnosticBreakdown.placement.summaryForCoach}</div>
+              <div className="svqw-breakdown-note">{result.diagnosticBreakdown.placement.summaryForCoach}</div>
             </div>
           )}
 
           {result.missedWordsSummary.length > 0 && (
-            <div style={{ fontSize: 12.5, color: '#27272a' }}>
+            <div className="svqw-missed">
               <strong>要復習リスト（音読3回推奨）：</strong>{' '}
               {result.missedWordsSummary.map(m => `${m.word}（${m.meaning}）`).join(' ／ ')}
             </div>
@@ -407,7 +302,7 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
         </div>
       )}
 
-      <div style={{ display: 'grid', gap: 10 }}>
+      <div className="svqw-list">
         {currentQuiz.items.map((item, idx) => {
           const isPartA = item.no <= 12;
           const choices = isPartA ? item.choicesJa : item.choicesEn;
@@ -417,68 +312,49 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
           return (
             <div
               key={`${track}-${currentQuiz.week}-${item.id}`}
-              style={{
-                border: '1px solid #e4e4e7',
-                borderRadius: 8,
-                padding: '10px 12px',
-                background: idx % 2 === 1 ? '#fafafa' : '#ffffff',
-              }}
+              className="svqw-card"
+              data-odd={idx % 2 === 1 ? 'true' : 'false'}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 700 }}>
-                  <span style={{ display: 'inline-block', minWidth: 28, color: '#52525b' }}>Q{item.no}.</span>
+              <div className="svqw-q-head">
+                <div className="svqw-q-stem">
+                  <span className="svqw-q-no">Q{item.no}.</span>
                   {isPartA ? (
                     <>
-                      <span style={{ fontSize: 15, marginRight: 8 }}>{item.word}</span>
-                      <span style={{ fontSize: 12, fontWeight: 400, color: '#52525b' }}>{item.exampleSentence}</span>
+                      <span className="svqw-q-word">{item.word}</span>
+                      <span className="svqw-q-sub">{item.exampleSentence}</span>
                     </>
                   ) : (
                     <>
                       <span>{item.clozeSentence}</span>
-                      <span style={{ fontSize: 12, fontWeight: 400, color: '#52525b', marginLeft: 6 }}>
-                        （{item.exampleTranslation}）
-                      </span>
+                      <span className="svqw-q-sub-gap">（{item.exampleTranslation}）</span>
                     </>
                   )}
                 </div>
-                <span style={{ fontSize: 11, color: '#71717a', whiteSpace: 'nowrap' }}>
+                <span className="svqw-q-meta">
                   {isPartA ? 'Part A 意味' : 'Part B 空所4択'} · {item.tierLabel}
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 6 }}>
+              <div className="svqw-choices">
                 {choices.map((choiceText, cIdx) => {
                   const isChosen = pickedIdx === cIdx;
                   const showCorrect = result !== null && cIdx === correctIdx;
                   const showWrong = result !== null && isChosen && cIdx !== correctIdx;
+                  const state = showCorrect
+                    ? 'correct'
+                    : showWrong
+                      ? 'wrong'
+                      : isChosen
+                        ? 'chosen'
+                        : 'idle';
                   return (
                     <button
                       key={`${item.id}-${cIdx}`}
                       type="button"
                       disabled={result !== null}
                       onClick={() => setSelected(prev => ({ ...prev, [idx]: cIdx }))}
-                      style={{
-                        textAlign: 'left',
-                        padding: '6px 10px',
-                        borderRadius: 6,
-                        border: showCorrect
-                          ? '2px solid #15803d'
-                          : showWrong
-                            ? '2px solid #b91c1c'
-                            : isChosen
-                              ? '2px solid #18181b'
-                              : '1px solid #d4d4d8',
-                        background: showCorrect
-                          ? '#dcfce7'
-                          : showWrong
-                            ? '#fee2e2'
-                            : isChosen
-                              ? '#f4f4f5'
-                              : '#ffffff',
-                        fontSize: 13,
-                        fontWeight: isChosen || showCorrect ? 700 : 400,
-                        cursor: result !== null ? 'default' : 'pointer',
-                      }}
+                      className="svqw-choice-btn"
+                      data-state={state}
                     >
                       {cIdx + 1}. {choiceText}
                     </button>
@@ -490,11 +366,11 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
         })}
       </div>
 
-      <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 12.5, color: '#52525b' }}>
+      <footer className="svqw-footer">
+        <span className="svqw-progress">
           解答済み：{answeredCount} / {currentQuiz.items.length} 問
         </span>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="svqw-footer-actions">
           {result !== null && (
             <button
               type="button"
@@ -502,15 +378,7 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
                 setSelected({});
                 setResult(null);
               }}
-              style={{
-                padding: '8px 14px',
-                borderRadius: 8,
-                border: '1px solid #71717a',
-                background: '#ffffff',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              className="svqw-reset-btn"
             >
               リセット
             </button>
@@ -519,16 +387,7 @@ export const SugorokuWeeklyVocabQuizWidget: React.FC<SugorokuWeeklyVocabQuizWidg
             type="button"
             disabled={!allAnswered || result !== null}
             onClick={handleSubmit}
-            style={{
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: 'none',
-              background: allAnswered && result === null ? '#18181b' : '#a1a1aa',
-              color: '#ffffff',
-              fontSize: 13.5,
-              fontWeight: 700,
-              cursor: allAnswered && result === null ? 'pointer' : 'not-allowed',
-            }}
+            className="svqw-submit-btn"
           >
             {track === 'placementDiagnostic25' ? 'ステージ診断を実行する（A/B/C判定）' : '採点する（16点合格判定）'}
           </button>
