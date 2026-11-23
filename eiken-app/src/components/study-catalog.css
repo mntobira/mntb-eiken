@@ -167,6 +167,7 @@
   /* 下段「書く・覚える」の3枚（一次筆記通し模試・ライティング・英単語帳）は4カラムずつ使って横幅いっぱいに揃える */
   .sc-eiken-list > [data-content-kind="mock"],
   .sc-eiken-list > [data-content-kind="writing"],
+  .sc-eiken-list > [data-content-kind="speaking"],
   .sc-eiken-list > [data-content-kind="foundation"] {
     grid-column: span 4;
   }
@@ -199,11 +200,13 @@
   }
   .sc-eiken-list > [data-content-kind="mock"],
   .sc-eiken-list > [data-content-kind="writing"],
+  .sc-eiken-list > [data-content-kind="speaking"],
   .sc-eiken-list > [data-content-kind="foundation"] {
     grid-column: span 2;
   }
   .sc-eiken-list > [data-content-kind="mock"] .sc-icon,
   .sc-eiken-list > [data-content-kind="writing"] .sc-icon,
+  .sc-eiken-list > [data-content-kind="speaking"] .sc-icon,
   .sc-eiken-list > [data-content-kind="foundation"] .sc-icon {
     display: none;
   }
