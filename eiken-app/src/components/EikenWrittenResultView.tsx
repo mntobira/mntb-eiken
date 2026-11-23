@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Clock,
   Coins,
+  FileSearch,
   Home,
   MinusCircle,
   RotateCcw,
@@ -46,6 +47,7 @@ import {
   extractEikenGradeFromChapterId,
   prefersSingleColumnChoices,
 } from './eikenClozePageModel';
+import { parsePassageEmailAndParagraphs } from './eikenStudyHelpers';
 import { EikenQuestionStem } from './EikenClozePageQuiz';
 import './eiken-cloze-page.css';
 import './eiken-written-result.css';
@@ -68,6 +70,7 @@ interface ParsedSubReview {
   correctWord: string;
   translation: string;
   why: string;
+  evidencePhrases: string[];
   choices: {
     mark: string;
     text: string;
@@ -80,8 +83,105 @@ interface ParsedSubReview {
 interface ParsedPassageBlock {
   title: string;
   body: string;
+  headers: { key: string; value: string }[];
+  paragraphs: string[];
   translationLabel: string;
   translation: string;
+}
+
+function extractEvidenceSnippets(why: string, body: string): string[] {
+  if (!why || !body) return [];
+  const candidates: string[] = [];
+
+  const evLine = why.match(/根拠[：:]\s*(.+)/);
+  if (evLine?.[1]) {
+    candidates.push(evLine[1].trim());
+  }
+
+  for (const qm of why.matchAll(/["“'「『]([A-Za-z0-9][^"”'」』]{3,120})["”'」』]/g)) {
+    candidates.push(qm[1].trim());
+  }
+
+  for (const run of why.matchAll(/[A-Za-z][A-Za-z0-9,'’\-. ]{6,110}[A-Za-z0-9.!]/g)) {
+    candidates.push(run[0].trim());
+  }
+
+  const hits: string[] = [];
+  const lowerBody = body.toLowerCase();
+  for (const raw of candidates) {
+    const cleaned = raw.replace(/[.。,、]+$/g, '').trim();
+    if (cleaned.length < 4) continue;
+    const idx = lowerBody.indexOf(cleaned.toLowerCase());
+    if (idx >= 0) {
+      const exactSlice = body.slice(idx, idx + cleaned.length);
+      if (!hits.includes(exactSlice)) {
+        hits.push(exactSlice);
+      }
+    }
+  }
+  return hits;
+}
+
+function renderPassageTextWithEvidence(text: string, evidences: readonly string[]): React.ReactNode {
+  const renderStyled = (chunk: string, keyPrefix: string): React.ReactNode => {
+    if (!chunk.includes('__')) {
+      return formatText(chunk, [], { prose: true, noMath: true });
+    }
+    return chunk.split(/(__[^_]+__)/g).map((seg, i) => {
+      if (seg.startsWith('__') && seg.endsWith('__') && seg.length > 4) {
+        return (
+          <u key={`${keyPrefix}-u-${i}`} className="ewr-passage-underline">
+            {formatText(seg.slice(2, -2), [], { prose: true, noMath: true })}
+          </u>
+        );
+      }
+      return (
+        <React.Fragment key={`${keyPrefix}-t-${i}`}>
+          {formatText(seg, [], { prose: true, noMath: true })}
+        </React.Fragment>
+      );
+    });
+  };
+
+  const validEvs = evidences.filter(Boolean);
+  if (validEvs.length === 0) {
+    return renderStyled(text, 'plain');
+  }
+
+  const nodes: React.ReactNode[] = [];
+  let rest = text;
+  let seq = 0;
+  while (rest.length > 0) {
+    let bestIdx = -1;
+    let bestEv = '';
+    const lowerRest = rest.toLowerCase();
+    for (const ev of validEvs) {
+      const found = lowerRest.indexOf(ev.toLowerCase());
+      if (found >= 0 && (bestIdx < 0 || found < bestIdx || (found === bestIdx && ev.length > bestEv.length))) {
+        bestIdx = found;
+        bestEv = rest.slice(found, found + ev.length);
+      }
+    }
+    if (bestIdx < 0) {
+      nodes.push(<React.Fragment key={`tail-${seq}`}>{renderStyled(rest, `tail-${seq}`)}</React.Fragment>);
+      break;
+    }
+    if (bestIdx > 0) {
+      nodes.push(
+        <React.Fragment key={`pre-${seq}`}>
+          {renderStyled(rest.slice(0, bestIdx), `pre-${seq}`)}
+        </React.Fragment>,
+      );
+    }
+    nodes.push(
+      <mark key={`ev-${seq}`} className="ewr-ev-mark" data-eiken-ev>
+        {renderStyled(bestEv, `ev-${seq}`)}
+      </mark>,
+    );
+    rest = rest.slice(bestIdx + bestEv.length);
+    seq += 1;
+  }
+  return nodes;
 }
 
 function extractPassageBlock(problem: Problem): ParsedPassageBlock | null {
@@ -92,6 +192,7 @@ function extractPassageBlock(problem: Problem): ParsedPassageBlock | null {
   const titleMatch = rawText.match(/^【([^】]+)】\s*\n([\s\S]*)$/);
   const title = titleMatch ? titleMatch[1].trim() : problem.title || '長文';
   const body = titleMatch ? titleMatch[2].trim() : rawText;
+  const parsedEmail = parsePassageEmailAndParagraphs(body);
 
   const trackTr = problem.explanationTracks?.[0]?.translation?.trim() || '';
   const rawExp = String(problem.explanation || '');
@@ -99,16 +200,25 @@ function extractPassageBlock(problem: Problem): ParsedPassageBlock | null {
   const translationLabel = fullTrMatch?.[1] || '本文の和訳';
   const translation = (fullTrMatch?.[2] || trackTr).trim();
 
-  return { title, body, translationLabel, translation };
+  return {
+    title,
+    body,
+    headers: parsedEmail.headers.length >= 2 ? parsedEmail.headers : [],
+    paragraphs: parsedEmail.headers.length >= 2 ? parsedEmail.paragraphs : body.split(/\n{2,}/).filter(Boolean),
+    translationLabel,
+    translation,
+  };
 }
 
-/** 長文本文中の `( 21 )` 等の空所に、採点後の語句バッジをインライン埋め込みして描画 */
+/** 長文本文中の `( 21 )` 等の空所に採点後の語句バッジを埋め込み、さらに選択中の根拠箇所を黄色マーカーで強調描画 */
 function PassageBodyWithAnswers({
-  body,
+  passage,
   subs,
+  activeEvidences = [],
 }: {
-  body: string;
+  passage: ParsedPassageBlock;
   subs: readonly ParsedSubReview[];
+  activeEvidences?: readonly string[];
 }) {
   const byNo = useMemo(() => {
     const map = new Map<number, ParsedSubReview>();
@@ -116,17 +226,31 @@ function PassageBodyWithAnswers({
     return map;
   }, [subs]);
 
-  const paragraphs = body.split(/\n{2,}/).filter(Boolean);
   return (
     <div className="ewr-passage-en" lang="en">
-      {paragraphs.map((para, pIdx) => {
+      {passage.headers.length > 0 && (
+        <dl className="ewr-email-headers" aria-label="メールヘッダー">
+          {passage.headers.map((h, i) => (
+            <div key={i} className="ewr-email-row">
+              <dt>{h.key}:</dt>
+              <dd>{renderPassageTextWithEvidence(h.value, activeEvidences)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {passage.paragraphs.map((para, pIdx) => {
         const parts = para.split(/(\(\s*\d+\s*\))/g);
         return (
           <p key={pIdx} className="ewr-passage-para">
             {parts.map((part, idx) => {
               const m = part.match(/^\(\s*(\d+)\s*\)$/);
               if (!m) {
-                return <React.Fragment key={idx}>{formatText(part, [], { prose: true, noMath: true })}</React.Fragment>;
+                return (
+                  <React.Fragment key={idx}>
+                    {renderPassageTextWithEvidence(part, activeEvidences)}
+                  </React.Fragment>
+                );
               }
               const no = Number(m[1]);
               const hit = byNo.get(no);
@@ -168,6 +292,7 @@ function parseProblemSubReviews(
   answers: Record<string, string>,
   fallbackIndex: number,
   hasPassage: boolean,
+  passageBody = '',
 ): ParsedSubReview[] {
   const subs = problem.subQuestions || [];
   const rawExpLines = String(problem.explanation || '')
@@ -228,6 +353,15 @@ function parseProblemSubReviews(
       : baseStem;
 
     const why = String(sq.explainJa || '').trim();
+    const trackEvs = (problem.explanationTracks?.[0]?.keyPhrases || [])
+      .filter(kp => String(kp.meaning || '').includes(`問${displayNo}`) && String(kp.meaning || '').includes('根拠'))
+      .map(kp => String(kp.phrase || '').trim())
+      .filter(Boolean);
+    const extractedEvs = hasPassage ? extractEvidenceSnippets(why, passageBody) : [];
+    const evidencePhrases = Array.from(new Set([...trackEvs, ...extractedEvs])).filter(
+      ev => ev.length >= 4 && passageBody.toLowerCase().includes(ev.toLowerCase()),
+    );
+
     const distractors = sq.distractors || [];
     const choices = sq.options.map((mark, idx) => ({
       mark,
@@ -248,6 +382,7 @@ function parseProblemSubReviews(
       correctWord,
       translation: sIdx === 0 ? problemTranslation : '',
       why,
+      evidencePhrases,
       choices,
     };
   });
@@ -262,6 +397,8 @@ function SubReviewCard({
   onToggleOpen,
   saved,
   onSaveNote,
+  evidenceActive,
+  onShowEvidence,
 }: {
   problem: Problem;
   chapter: Chapter;
@@ -271,9 +408,11 @@ function SubReviewCard({
   onToggleOpen: (open: boolean) => void;
   saved: boolean;
   onSaveNote: () => void;
+  evidenceActive?: boolean;
+  onShowEvidence?: () => void;
 }) {
   const [reasonsOpen, setReasonsOpen] = useState(false);
-  const { sq, displayNo, stem, orderTokens, status, filledWord, correctWord, translation, why, choices } = sub;
+  const { sq, displayNo, stem, orderTokens, status, filledWord, correctWord, translation, why, evidencePhrases, choices } = sub;
   const singleCol = prefersSingleColumnChoices(choices.map(c => c.text));
   const labelId = `ewr-q-${sq.id}`;
   const isClozeSlotPrompt = hasPassage && /^空所\s*\(/.test(stem);
@@ -414,6 +553,20 @@ function SubReviewCard({
               </div>
             )}
 
+            {hasPassage && evidencePhrases.length > 0 && onShowEvidence && (
+              <div className="ewr-ev-action-row">
+                <button
+                  type="button"
+                  className="ewr-ev-btn"
+                  data-active={evidenceActive || undefined}
+                  onClick={onShowEvidence}
+                >
+                  <FileSearch size={13} aria-hidden="true" />
+                  <span>{evidenceActive ? '本文の根拠マーカーを解除' : '本文で根拠を見る'}</span>
+                </button>
+              </div>
+            )}
+
             {choices.some(c => Boolean(c.reason)) && (
               <div className="ecp-choice-reasons-fold">
                 <button
@@ -499,18 +652,46 @@ export function EikenStepExplanationView({
   const theme = subjectTheme(gradeId);
   const passage = useMemo(() => extractPassageBlock(currentQuestion), [currentQuestion]);
   const subs = useMemo(
-    () => parseProblemSubReviews(currentQuestion, answers, currentQuestionIndex, Boolean(passage)),
+    () =>
+      parseProblemSubReviews(
+        currentQuestion,
+        answers,
+        currentQuestionIndex,
+        Boolean(passage),
+        passage?.body ?? '',
+      ),
     [currentQuestion, answers, currentQuestionIndex, passage],
   );
 
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
   const [passageTrOpen, setPassageTrOpen] = useState(true);
   const [savedNotes, setSavedNotes] = useState<Record<string, boolean>>({});
+  const [activeEvSqId, setActiveEvSqId] = useState<string | null>(null);
+  const stepScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setOpenMap({});
     setPassageTrOpen(true);
+    setActiveEvSqId(null);
   }, [currentQuestion.id]);
+
+  const activeEvidences = useMemo(() => {
+    if (!activeEvSqId) return [];
+    return subs.find(s => s.sq.id === activeEvSqId)?.evidencePhrases ?? [];
+  }, [activeEvSqId, subs]);
+
+  const handleToggleEvidence = (sub: ParsedSubReview) => {
+    const nextId = activeEvSqId === sub.sq.id ? null : sub.sq.id;
+    setActiveEvSqId(nextId);
+    if (nextId) {
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() => {
+          const mark = stepScrollRef.current?.querySelector('[data-eiken-ev]');
+          mark?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }),
+      );
+    }
+  };
 
   const handleSave = (sub: ParsedSubReview) => {
     const key = `${currentQuestion.id}:${sub.sq.id}`;
@@ -575,7 +756,7 @@ export function EikenStepExplanationView({
         </span>
       </header>
 
-      <div className="ecp-scroll">
+      <div className="ecp-scroll" ref={stepScrollRef}>
         <div className={`ewr-step-body${passage ? ' has-passage' : ''}`}>
           {/* 正誤ミニチップ（スマホの QuestionChip 互換アクセシビリティ属性も付与） */}
           {subs.length > 1 && (
@@ -649,7 +830,7 @@ export function EikenStepExplanationView({
                 )}
               </div>
 
-              <PassageBodyWithAnswers body={passage.body} subs={subs} />
+              <PassageBodyWithAnswers passage={passage} subs={subs} activeEvidences={activeEvidences} />
 
               {passage.translation && passageTrOpen && (
                 <div className="ewr-passage-ja">
@@ -675,6 +856,10 @@ export function EikenStepExplanationView({
                   onToggleOpen={next => setOpenMap(prev => ({ ...prev, [sub.sq.id]: next }))}
                   saved={Boolean(savedNotes[noteKey])}
                   onSaveNote={() => void handleSave(sub)}
+                  evidenceActive={activeEvSqId === sub.sq.id}
+                  onShowEvidence={
+                    passage && sub.evidencePhrases.length > 0 ? () => handleToggleEvidence(sub) : undefined
+                  }
                 />
               );
             })}
@@ -748,6 +933,7 @@ export function EikenWrittenResultView({
   const [filter, setFilter] = useState<'all' | 'wrong'>('all');
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
   const [openPassageTr, setOpenPassageTr] = useState<Record<string, boolean>>({});
+  const [activeEvMap, setActiveEvMap] = useState<Record<string, string | null>>({});
   const [savedNotes, setSavedNotes] = useState<Record<string, boolean>>({});
   const [studyReward, setStudyReward] = useState<{ coins: number; xp: number; count: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -790,7 +976,13 @@ export function EikenWrittenResultView({
   let runningNo = startIdx;
   const problemBlocks = scopedProblems.map(problem => {
     const passage = extractPassageBlock(problem);
-    const subs = parseProblemSubReviews(problem, answers, runningNo, Boolean(passage));
+    const subs = parseProblemSubReviews(
+      problem,
+      answers,
+      runningNo,
+      Boolean(passage),
+      passage?.body ?? '',
+    );
     runningNo += subs.length;
     return { problem, passage, subs };
   });
@@ -1035,7 +1227,7 @@ export function EikenWrittenResultView({
               const trOpen = openPassageTr[problem.id] ?? false;
 
               return (
-                <section key={problem.id} className="ewr-passage-group">
+                <section key={problem.id} className="ewr-passage-group" data-passage-group={problem.id}>
                   {passage && (
                     <div className="ewr-passage-card">
                       <div className="ewr-passage-head">
@@ -1058,7 +1250,15 @@ export function EikenWrittenResultView({
                           </button>
                         )}
                       </div>
-                      <PassageBodyWithAnswers body={passage.body} subs={subs} />
+                      <PassageBodyWithAnswers
+                        passage={passage}
+                        subs={subs}
+                        activeEvidences={
+                          activeEvMap[problem.id]
+                            ? subs.find(s => s.sq.id === activeEvMap[problem.id])?.evidencePhrases ?? []
+                            : []
+                        }
+                      />
                       {passage.translation && trOpen && (
                         <div className="ewr-passage-ja">
                           <span className="ewr-passage-ja-tag">【{passage.translationLabel}】</span>
@@ -1083,6 +1283,24 @@ export function EikenWrittenResultView({
                           onToggleOpen={next => setOpenMap(prev => ({ ...prev, [sub.sq.id]: next }))}
                           saved={Boolean(savedNotes[noteKey])}
                           onSaveNote={() => void handleSave(problem, sub)}
+                          evidenceActive={activeEvMap[problem.id] === sub.sq.id}
+                          onShowEvidence={
+                            passage && sub.evidencePhrases.length > 0
+                              ? () => {
+                                  const nextSq = activeEvMap[problem.id] === sub.sq.id ? null : sub.sq.id;
+                                  setActiveEvMap(prev => ({ ...prev, [problem.id]: nextSq }));
+                                  if (nextSq) {
+                                    window.requestAnimationFrame(() =>
+                                      window.requestAnimationFrame(() => {
+                                        scrollRef.current
+                                          ?.querySelector(`[data-passage-group="${problem.id}"] [data-eiken-ev]`)
+                                          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }),
+                                    );
+                                  }
+                                }
+                              : undefined
+                          }
                         />
                       );
                     })}

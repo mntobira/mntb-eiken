@@ -26,18 +26,33 @@ export function isEikenBatchClozeChapter(chapter: Pick<Chapter, 'id'> | null | u
 }
 
 /**
+ * 英検の長文読解・長文空所補充チャプターかどうか（1本文＋全設問を専用リーディングUIで表示）。
+ * 例: `eiken_5_reading_01`, `eiken_2_written_04_reading`, `eiken_2_written_04_cloze`, `eiken_1_reading_extra_p1`
+ */
+export function isEikenPassageChapter(chapter: Pick<Chapter, 'id'> | null | undefined): boolean {
+  if (!chapter?.id) return false;
+  return /^eiken_[a-z0-9]+_(?:written_\d+_(?:reading|cloze)|reading_\d+|reading_extra_[a-z0-9_-]+)$/.test(
+    chapter.id,
+  );
+}
+
+/**
  * 英検の筆記・リーディング・語彙系チャプターかどうか（リスニング以外）。
- * 例: `eiken_5_written_01_short`, `eiken_3_written_02_reading`, `eiken_5_vocabulary_01`, `eiken_5_reading_01`
+ * 例: `eiken_5_written_01_short`, `eiken_3_written_02_reading`, `eiken_5_vocabulary_01`, `eiken_5_reading_01`, `eiken_1_reading_extra_p1`
  */
 export function isEikenWrittenChapterId(chapterId: string | null | undefined): boolean {
   if (!chapterId) return false;
-  return /^eiken_[a-z0-9]+_(?:written_\d+_[a-z0-9_]+|vocabulary_\d+|reading_\d+)$/.test(chapterId);
+  return /^eiken_[a-z0-9]+_(?:written_\d+_[a-z0-9_]+|vocabulary_\d+|reading_\d+|reading_extra_[a-z0-9_-]+)$/.test(
+    chapterId,
+  );
 }
 
 /** 章ID（`eiken_2_written_04_short` / `eiken_5_vocabulary_01` 等）から級のキー（`eiken_2`）を取り出す */
 export function extractEikenGradeFromChapterId(chapterId: string | undefined): EikenGrade | undefined {
   if (!chapterId) return undefined;
-  const m = chapterId.match(/^(eiken_[a-z0-9]+)_(?:written_\d+_|vocabulary_\d+|reading_\d+)/);
+  const m = chapterId.match(
+    /^(eiken_[a-z0-9]+)_(?:written_\d+_|vocabulary_\d+|reading_\d+|reading_extra_[a-z0-9_-]+)/,
+  );
   return m ? (m[1] as EikenGrade) : undefined;
 }
 

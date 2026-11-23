@@ -402,6 +402,91 @@
   font-family: var(--font-modern, var(--mt-font-body));
 }
 
+.ewr-email-headers {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #faf7f0;
+  border: 1px solid #e9e0ce;
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ewr-email-row {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  gap: 6px;
+  align-items: baseline;
+}
+
+.ewr-email-row dt {
+  margin: 0;
+  font-weight: 800;
+  color: #54626f;
+  font-size: 12px;
+}
+
+.ewr-email-row dd {
+  margin: 0;
+  font-weight: 700;
+  color: #111827;
+  overflow-wrap: anywhere;
+}
+
+.ewr-passage-underline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ecp-accent, #3e9c93);
+  font-weight: 700;
+}
+
+/* TOEIC Part 7 と同じ「本文で根拠を見る」黄色マーカー */
+.ewr-ev-mark {
+  background: #fef08a;
+  color: #1e293b;
+  border-bottom: 2px solid #d97706;
+  border-radius: 3px;
+  padding: 1px 3px;
+  font-weight: 700;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.ewr-ev-action-row {
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.ewr-ev-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid #e9c46a;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.ewr-ev-btn:hover {
+  background: #fef3c7;
+}
+
+.ewr-ev-btn[data-active] {
+  border-color: #d97706;
+  background: #fef08a;
+  color: #78350f;
+}
+
 .ewr-passage-para {
   margin: 0;
 }
