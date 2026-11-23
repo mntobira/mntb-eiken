@@ -15,6 +15,7 @@ import { createSugorokuDemoBundle } from '../src/sugoroku/admin/demoData';
 import { SugorokuAdminApp } from '../src/sugoroku/admin/SugorokuAdminApp';
 import {
   SUGOROKU_DEDICATED_PDFS,
+  SugorokuPdfShelfTab,
   classifyEikenMaterial,
 } from '../src/sugoroku/admin/SugorokuPdfShelfTab';
 import {
@@ -160,6 +161,9 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(html).toContain('高橋 陽斗（高2・サッカー部）');
     expect(html).toContain('山本 陸（高2・野球部）');
     expect(html).toContain('教材PDF');
+    // 不要な右上のログアウトボタン（[->）はヘッダーに存在しないこと（修正点6）
+    expect(html).not.toContain('aria-label="ログアウト"');
+    expect(html).not.toContain('lucide-log-out');
     // エッセンシャルUI・8大UX要素のマークアップ検証
     expect(html).toContain('class="kt');               // Kinetic Typography (KineticText)
     expect(html).toContain('class="mo-ring"');         // Infographic ScoreRing
@@ -167,6 +171,34 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(html).toContain('study-doors');             // Infographic 7日間の学びの扉
     expect(html).toContain('data-ptr-host');           // Pull to Refresh ホスト
     expect(html).toContain('data-swipe-row');          // Swipe Action 行
+
+    // アプリ内回数＆周回数ベースの合格ルート＆課題設定管理UIの検証（修正点7・市販参考書ゼロ）
+    const routeHtml = renderToStaticMarkup(
+      createElement(SugorokuPdfShelfTab, {
+        activeSubject: 'eiken_2',
+        assignments: [
+          {
+            id: 'asg_demo_1',
+            classId: 'cls_1',
+            teacherUid: 't_1',
+            title: '英検2級 アプリ第1回 筆記＋リスニング（2周）',
+            chapterIds: ['eiken_2_written_01_short', 'eiken_2_listening_r01_part1'],
+            dueAt: Date.now() + 5 * 86_400_000,
+            dailyQuotaProblems: 8,
+            targetLaps: 2,
+            coachInstruction: '間違えた問題は解説を読んで音読2回',
+          },
+        ],
+      }),
+    );
+    expect(routeHtml).toContain('合格ルート＆今週やること（アプリ完結）');
+    expect(routeHtml).toContain('アプリ内完結 段階別カリキュラム・回数ルート全体図');
+    expect(routeHtml).toContain('現在配信中の課題・ペース管理');
+    expect(routeHtml).toContain('英検2級 アプリ第1回 筆記＋リスニング（2周）');
+    expect(routeHtml).toContain('目標2周');
+    expect(routeHtml).toContain('Week 1 のゴール');
+    expect(routeHtml).toContain('Week 1 の課題を配信');
+    expect(routeHtml).not.toContain('段階別 カリキュラム・参考書ルート全体図');
   });
 
   it('Skeleton Screen・Toast・Bottom Sheet・個人詳細インフォグラフィック・LINE声掛け文生成が正しく動作する', () => {

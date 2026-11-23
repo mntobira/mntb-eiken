@@ -129,6 +129,10 @@ export interface SugorokuAssignmentDoc {
   startAt?: number;
   targetStudentUids?: string[];
   dailyQuotaProblems?: number;
+  /** 目標周回数（例: 2周・3周。1周＝全大問クリア、2周目以降はアプリ内反復の目安表示） */
+  targetLaps?: number;
+  /** 講師からの学習メモ・やり方指示（例: 「間違えた問題は解説を読んで音読2回」） */
+  coachInstruction?: string;
   skillBreakdown?: SugorokuSkillBreakdown;
   presetId?: string;
   presetWeek?: number;
@@ -155,6 +159,8 @@ export interface SugorokuHomeworkTask {
   todayQuota: number;
   todayDone: number;
   todayRemaining: number;
+  targetLaps?: number;
+  coachInstruction?: string;
   overPacedToday?: boolean;
   skillBreakdown?: SugorokuSkillBreakdown;
   status: 'done' | 'late' | 'not_started' | 'on_track' | 'behind' | 'ahead';

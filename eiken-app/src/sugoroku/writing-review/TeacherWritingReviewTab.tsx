@@ -42,10 +42,13 @@ export function TeacherWritingReviewTab({
   reviewerUid,
   reviewerName = 'すごろく英検担当講師',
   demoMode = false,
-}: SugorokuAdminReviewTabProps) {
+  submissions,
+}: SugorokuAdminReviewTabProps & { submissions?: readonly SugorokuWritingSubmissionDoc[] }) {
   const effectiveClassId = classId || SUGOROKU_DEMO_CLASS_ID;
-  const [items, setItems] = useState<SugorokuWritingSubmissionDoc[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<SugorokuWritingSubmissionDoc[]>(() =>
+    submissions ? [...submissions] : [],
+  );
+  const [loading, setLoading] = useState(() => !submissions);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [gradeFilter, setGradeFilter] = useState<EikenGrade | 'all'>('all');
   const [selectedId, setSelectedId] = useState<string>('');
@@ -74,6 +77,7 @@ export function TeacherWritingReviewTab({
     try {
       const rows = await fetchClassWritingSubmissions(effectiveClassId, {
         includeDemoSamples: demoMode || effectiveClassId === SUGOROKU_DEMO_CLASS_ID,
+        fallbackSubmissions: submissions,
       });
       setItems(rows);
       setSelectedId(prev => {
@@ -85,7 +89,7 @@ export function TeacherWritingReviewTab({
     } finally {
       setLoading(false);
     }
-  }, [effectiveClassId, demoMode]);
+  }, [effectiveClassId, demoMode, submissions]);
 
   useEffect(() => {
     void reload();

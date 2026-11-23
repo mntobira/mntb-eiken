@@ -28,6 +28,7 @@ import {
   Flame,
   Headphones,
   RefreshCw,
+  Repeat,
   Sparkles,
   Timer,
 } from 'lucide-react';
@@ -366,9 +367,15 @@ export function SugorokuTodayHomework({
         <i style={{ width: `${primary.percent}%` }} />
       </div>
 
-      {/* 技能別内訳ピル（リーディング・リスニング・語彙） */}
-      {(breakdown.vocab || breakdown.reading || breakdown.listening) && (
+      {/* 技能別内訳ピル（リーディング・リスニング・語彙・周回数） */}
+      {(breakdown.vocab || breakdown.reading || breakdown.listening || (primary.targetLaps && primary.targetLaps >= 2)) && (
         <div className="sgr-homework-skills" aria-label="分野別の問題数">
+          {primary.targetLaps && primary.targetLaps >= 2 ? (
+            <span className="sgr-skill-chip" style={{ background: '#e6f4ec', borderColor: '#b5dec6', color: '#1f7a4d' }}>
+              <Repeat size={12} aria-hidden="true" />
+              目標 {primary.targetLaps}周
+            </span>
+          ) : null}
           {breakdown.vocab ? (
             <span className="sgr-skill-chip">単語・語彙 {breakdown.vocab}問</span>
           ) : null}
@@ -385,6 +392,13 @@ export function SugorokuTodayHomework({
             </span>
           ) : null}
         </div>
+      )}
+
+      {/* 先生からの一言・やり方メモ */}
+      {primary.coachInstruction && (
+        <p className="sgr-homework-msg" style={{ background: '#fff8e8', color: '#7a4b00' }}>
+          先生メモ：{primary.coachInstruction}
+        </p>
       )}
 
       {/* ペースメーカー声掛けメッセージ（まとめ解き抑制・未着手励まし） */}

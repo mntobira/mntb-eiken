@@ -308,6 +308,15 @@ export function buildHomeworkTask(input: HomeworkInput): SugorokuHomeworkTask {
       ? plan.skillBreakdown
       : autoBreakdown;
 
+  const targetLaps =
+    typeof plan?.targetLaps === 'number' && Number.isFinite(plan.targetLaps) && plan.targetLaps >= 1
+      ? Math.min(10, Math.floor(plan.targetLaps))
+      : undefined;
+  const coachInstruction =
+    typeof plan?.coachInstruction === 'string' && plan.coachInstruction.trim()
+      ? plan.coachInstruction.trim().slice(0, 140)
+      : undefined;
+
   let status: SugorokuHomeworkTask['status'];
   if (remaining === 0) status = assignment.dueAt < now ? 'late' : 'done';
   else if (overdue) status = 'behind';
@@ -333,6 +342,8 @@ export function buildHomeworkTask(input: HomeworkInput): SugorokuHomeworkTask {
     todayQuota: quotaTarget,
     todayDone: counted.solvedToday,
     todayRemaining,
+    targetLaps,
+    coachInstruction,
     overPacedToday,
     skillBreakdown,
     status,
@@ -478,7 +489,20 @@ export function buildWeeklyRoute(
         ),
       );
     });
-    // 旧形式の章IDしかない級向けのフォールバック
+    // 旧形式の章IDや3級・4級・5級の整序・会話単元も自動対応
+    const extraForLowerGrades: string[] = [];
+    rounds.forEach((n) => {
+      const nn = String(n).padStart(2, '0');
+      extraForLowerGrades.push(
+        ...pick(
+          `${grade}_written_${nn}_conversation`,
+          `${grade}_written_${nn}_reorder`,
+          `${grade}_listening_r${nn}_part3`,
+        ),
+      );
+    });
+    ids.push(...extraForLowerGrades);
+
     if (ids.length === 0) {
       const nn = String(primaryRound).padStart(2, '0');
       ids.push(
@@ -538,23 +562,83 @@ export interface HomeworkPreset {
 export const HOMEWORK_PRESETS: readonly HomeworkPreset[] = [
   {
     id: 'eiken2-12w',
-    label: '英検2級 3か月（12週間）標準ルート',
-    shortLabel: '英検2級 12週ルート',
+    label: '英検2級 アプリ全15回 12週ルート',
+    shortLabel: '英検2級 全15回ルート',
     grade: 'eiken_2',
-    description: '運動部生でも毎日10〜15分で回せるよう、語彙（大問1）＋長文＋リスニングを週単位で日割り配信します。',
+    description: 'アプリ内の筆記第1回〜第15回＆リスニング第1回〜第15回を12週間で日割り配信します（毎日10〜15分）。',
   },
   {
     id: 'eikenpre2plus-12w',
-    label: '英検準2級プラス 3か月（12週間）標準ルート',
-    shortLabel: '準2級プラス 12週ルート',
+    label: '英検準2級プラス アプリ全15回 12週ルート',
+    shortLabel: '準2級プラス 全15回ルート',
     grade: 'eiken_pre2plus',
-    description: '2級への橋渡しに最適な準2級プラスの語彙・長文・リスニングを12週間で段階的に固めます。',
+    description: 'アプリ内の準2級プラス筆記・リスニング全15回を段階的に攻略し、2級へつなげます。',
   },
   {
     id: 'eikenpre2-12w',
-    label: '英検準2級 3か月（12週間）標準ルート',
-    shortLabel: '英検準2級 12週ルート',
+    label: '英検準2級 アプリ全15回 12週ルート',
+    shortLabel: '英検準2級 全15回ルート',
     grade: 'eiken_pre2',
-    description: '高校基礎の語彙・会話リスニングから長文読解まで、無理のない日割りペースで完走させます。',
+    description: 'アプリ内の準2級（大問1・会話・長文・リスニング第1〜3部）全15回を無理なく完走します。',
+  },
+  {
+    id: 'eiken3-12w',
+    label: '英検3級 アプリ全15回 ルート',
+    shortLabel: '英検3級 全15回ルート',
+    grade: 'eiken_3',
+    description: 'アプリ内の3級（短文語彙・会話・読解・リスニング第1〜3部）全15回を日割りで配信します。',
+  },
+  {
+    id: 'eiken4-12w',
+    label: '英検4級 アプリ全15回 ルート',
+    shortLabel: '英検4級 全15回ルート',
+    grade: 'eiken_4',
+    description: 'アプリ内の4級（短文・会話・語句整序・読解・リスニング）全15回をスモールステップで進めます。',
+  },
+  {
+    id: 'eiken5-12w',
+    label: '英検5級 アプリ全15回 ルート',
+    shortLabel: '英検5級 全15回ルート',
+    grade: 'eiken_5',
+    description: 'アプリ内の5級（短文・会話・語句整序・リスニング第1〜3部）全15回を楽しく完走します。',
+  },
+  {
+    id: 'eikenpre1-12w',
+    label: '英検準1級 アプリ全15回 ルート',
+    shortLabel: '英検準1級 全15回ルート',
+    grade: 'eiken_pre1',
+    description: 'アプリ内の準1級（大問1語彙18問・長文空所・読解・リスニング第1〜3部）全15回を攻略します。',
+  },
+  {
+    id: 'eiken1-12w',
+    label: '英検1級 アプリ全15回 ルート',
+    shortLabel: '英検1級 全15回ルート',
+    grade: 'eiken_1',
+    description: 'アプリ内の1級（大問1語彙22問・長文・リスニング第1〜4部）全15回を計画的に進めます。',
   },
 ];
+
+/**
+ * アプリ内の「第N回」（1〜15回）を指定して、その回の全パート（筆記＋リスニング）の単元IDリストを返す。
+ * 講師が「今週は第3回を2周！」のようにアプリ内の回数ベースで課題を設定するときに使用。
+ */
+export function chapterIdsOfAppRound(
+  grade: string,
+  roundNo: number,
+  availableChapterIds: readonly string[],
+): string[] {
+  const set = new Set(availableChapterIds);
+  const nn = String(Math.max(1, Math.min(15, Math.floor(roundNo)))).padStart(2, '0');
+  const candidates = [
+    `${grade}_written_${nn}_short`,
+    `${grade}_written_${nn}_conversation`,
+    `${grade}_written_${nn}_reorder`,
+    `${grade}_written_${nn}_cloze`,
+    `${grade}_written_${nn}_reading`,
+    `${grade}_listening_r${nn}_part1`,
+    `${grade}_listening_r${nn}_part2`,
+    `${grade}_listening_r${nn}_part3`,
+    `${grade}_listening_r${nn}_part4`,
+  ];
+  return candidates.filter((id) => set.has(id)).slice(0, 10);
+}

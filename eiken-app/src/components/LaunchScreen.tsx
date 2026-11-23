@@ -11,6 +11,7 @@ import './launch-screen.css';
 import { fadeOutLaunchSfx, launchCueSchedule, playLaunchSfx, preloadLaunchSfx, type LaunchSfx } from '../battle/audio/launchSfx';
 import { resumeSharedAudio } from '../battle/audio/sharedAudioContext';
 import { readAudioPreferences } from '../battle/audio/audioPreferences';
+import { SugorokuTitleHomeworkBanner } from '../sugoroku/homework/SugorokuTitleHomeworkBanner';
 
 const EIKEN_DISCLAIMER = '英検®は公益財団法人 日本英語検定協会の登録商標です。本アプリは同協会の承認・推奨を受けたものではありません。問題は独自制作です。';
 
@@ -48,20 +49,24 @@ function useLandscapeTitle(): boolean {
   return isLandscape;
 }
 
-export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished }: {
+export function LaunchScreen({ onStart, onStartHomeworkChapter, bgmEnabled, onBgmToggle, finishingBgm, onBgmFinished, skipIntro = false }: {
   /** 2026-10-19 ゲスト入口は廃止（ログイン必須）。未ログインなら次にログイン画面が出る */
   onStart: (finishBgm: boolean) => void;
+  /** タイトル画面の「今日の課題」カードから未完了単元の演習へワンタップ直行 */
+  onStartHomeworkChapter?: (chapterId: string, finishBgm: boolean) => void;
   bgmEnabled: boolean;
   onBgmToggle: (enabled: boolean) => void;
   finishingBgm: boolean;
   onBgmFinished: () => void;
+  /** ログアウト後や「タイトルへ戻る」遷移時はエンブレム・OP動画を飛ばして即タイトル画面を表示 */
+  skipIntro?: boolean;
 }) {
   const { progress } = useGrowthProgress();
   const isLandscape = useLandscapeTitle();
   const opMovie = isLandscape ? FULLFRAME_CINEMATIC_MOVIES.titleOpLandscape : FULLFRAME_CINEMATIC_MOVIES.titleOpPortrait;
 
-  const [phase, setPhase] = useState<Phase>('intro');
-  const [gate, setGate] = useState<Gate>('emblem');
+  const [phase, setPhase] = useState<Phase>(() => (skipIntro ? 'done' : 'intro'));
+  const [gate, setGate] = useState<Gate>(() => (skipIntro ? 'title' : 'emblem'));
   const [emblemPhase, setEmblemPhase] = useState<'in' | 'hold' | 'out'>('in');
   const [emblemSkipped, setEmblemSkipped] = useState(false);
   const [opFadingOut, setOpFadingOut] = useState(false);
@@ -239,6 +244,18 @@ export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, o
     onStart(finishBgm);
   };
 
+  const enterHomeworkChapter = (chapterId: string) => {
+    fadeOutLaunchSfx();
+    const audio = titleBgmRef.current;
+    const finishBgm = Boolean(bgmEnabled && audio && !audio.paused && audio.currentTime > 0 && Number.isFinite(audio.duration));
+    if (!finishBgm) stopTitleBgm();
+    if (onStartHomeworkChapter) {
+      onStartHomeworkChapter(chapterId, finishBgm);
+    } else {
+      onStart(finishBgm);
+    }
+  };
+
   useEffect(() => {
     if (!finishingBgm) return;
     // バックグラウンドや音源読み込みの中断で、ホームBGMの開始を待ち続けない。
@@ -338,6 +355,7 @@ export function LaunchScreen({ onStart, bgmEnabled, onBgmToggle, finishingBgm, o
               <li><Swords size={16} aria-hidden="true" /><span><b>オンライン対戦</b><small>友だち・全国・AI と</small></span></li>
             </ul>
             <div className="launch-actions">
+              <SugorokuTitleHomeworkBanner onStartChapter={enterHomeworkChapter} />
               <p className="launch-countdown-mini"><Headphones size={16} aria-hidden="true" />英検 <strong>5級〜1級</strong></p>
               <button type="button" className="launch-start mt-btn mt-btn-accent" onClick={() => { fadeOutLaunchSfx(); enter(); }}><Headphones size={20} aria-hidden="true" />はじめる<ArrowRight size={20} aria-hidden="true" /></button>
               <p className="launch-note">{auth.currentUser ? '学習のつづきから始まります' : FIREBASE_CONFIGURED ? 'ログインして記録を同期、または端末で練習できます' : 'この端末に記録を保存して練習できます'}</p>

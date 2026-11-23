@@ -13,7 +13,7 @@ if (!phase) {
   for (const p of ['sugoroku', 'components', 'hooks_utils', 'data']) {
     execFileSync(
       process.execPath,
-      ['--max-old-space-size=800', '--max-semi-space-size=8', self, p],
+      ['--max-old-space-size=680', '--max-semi-space-size=8', self, p],
       { stdio: 'inherit' },
     );
   }

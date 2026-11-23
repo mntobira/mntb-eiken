@@ -1266,6 +1266,15 @@ service cloud.firestore {
         );
     }
 
+    // 担当クラス講師 または すごろく塾スタッフによる読み取り権限（plan 昇格前のクラスでも空一覧の list 等でエラーを出さない）
+    function sgCanReadClassAdminData(classId) {
+      return isAuthenticated()
+        && (
+          (sgIsClassTeacher(classId) && sgIsNotSuspended(request.auth.uid))
+          || sgIsActiveStaffForClass(classId)
+        );
+    }
+
     // 生徒の学習ログ・集計を読める講師か：
     //   - study_access/{studentUid}_{teacherUid} の同意がある担当講師
     //   - または active な塾 owner
@@ -1644,7 +1653,7 @@ service cloud.firestore {
         return r is map
           && r.keys().hasOnly([
             'reviewerUid', 'reviewerName', 'score', 'maxScore',
-            'rubricScores', 'comment', 'correctedText', 'reviewedAt'
+            'rubricScores', 'comment', 'correctedText', 'strengths', 'nextActions', 'reviewedAt'
           ])
           && r.keys().hasAll(['reviewerUid', 'score', 'comment', 'reviewedAt'])
           && r.reviewerUid == request.auth.uid
@@ -1654,11 +1663,13 @@ service cloud.firestore {
           && (!('rubricScores' in r) || (r.rubricScores is map && r.rubricScores.size() <= 8))
           && r.comment is string && r.comment.size() <= 8000
           && (!('correctedText' in r) || (r.correctedText is string && r.correctedText.size() <= 12000))
+          && (!('strengths' in r) || (r.strengths is string && r.strengths.size() <= 4000))
+          && (!('nextActions' in r) || (r.nextActions is string && r.nextActions.size() <= 4000))
           && (r.reviewedAt == request.time || (r.reviewedAt is int && r.reviewedAt > 0));
       }
 
       allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
-        || sgCanManageClass(classId);
+        || sgCanReadClassAdminData(classId);
 
       // 生徒本人による初回提出：在籍塾クラスのみ、退塾停止中は不可、review は付けられない
       allow create: if isAuthenticated()
@@ -1762,7 +1773,7 @@ service cloud.firestore {
       }
 
       allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
-        || sgCanManageClass(classId);
+        || sgCanReadClassAdminData(classId);
 
       allow create: if isAuthenticated()
         && request.resource.data.studentUid == request.auth.uid

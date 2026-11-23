@@ -130,30 +130,25 @@ export function fallbackSubjectId(candidates: readonly string[]): string | null 
 }
 
 /**
- * まだ公開しない「みんなで」系の機能（2026-10-05）。false の間は入口に「準備中」を出し、中身は開かない。
- *   classroom … 設定 › クラス（先生が作ったクラスに参加）
- *   manaClan  … 対戦 › マナクラン／ランキングのマナクランタブ
- * 理由：サーバー側（Cloud Functions・ルール）の公開準備がまだのため。公開するときは true にするだけ。
- *   classroom を true にする前に docs/JUKU_PLAN.md の「公開前のチェック」を必ず済ませる
- *   （クラス機能は Cloud Functions を使わない。本番にルールが反映されているかだけが条件）。
+ * 「みんなで」系の機能（2026-11-23 クラス参加機能を全生徒アカウントへ正式公開）。
+ *   classroom … 設定 › クラス（生徒は6文字コードで参加、管理アカウントは直接すごろく管理画面へ遷移）
+ *   manaClan  … 対戦 › マナクラン／ランキングのマナクランタブ（未公開のため false）
  */
-export const SOCIAL_FEATURES = { classroom: false, manaClan: false } as const;
+export const SOCIAL_FEATURES = { classroom: true, manaClan: false } as const;
 
 /**
- * クラス機能の先行確認（2026-10-28 ご要望）。
- *   公開前（classroom: false）でも、この一覧のメールでログインした人だけは
- *   設定 › クラス（参加・先生ダッシュボード）と解説の「選んだ理由」を使える。教師役として動作を確かめるため。
- *   ほかの人には今までどおり「準備中」。公開するときは SOCIAL_FEATURES.classroom を true にする（この一覧は消してよい）。
- *   ※画面の入口を開けるだけ。読み書きできるかは本番の firestore.rules で決まる（docs/JUKU_PLAN.md の4）。
+ * すごろく塾・クラス機能の先行確認アカウント一覧（後方互換のため定数は保持）。
  */
 export const CLASSROOM_PREVIEW_EMAILS: readonly string[] = [
   'mntobira@gmail.com',
   'hirokingz0927@gmail.com',
 ];
 
-/** クラス機能をこの人に見せるか（公開済み、または先行確認のメールで、メール確認済みのとき） */
+/** クラス機能をこの人に見せるか（classroom: true 公開済みのためメール確認済みユーザー全員に開放。明示的な emailVerified === false は除外） */
 export function isClassroomEnabledFor(user: { email?: string | null; emailVerified?: boolean } | null | undefined): boolean {
+  if (!user) return false;
+  if (user.emailVerified === false) return false;
   if (SOCIAL_FEATURES.classroom) return true;
-  const email = (user?.email || '').trim().toLowerCase();
-  return !!email && user?.emailVerified === true && CLASSROOM_PREVIEW_EMAILS.includes(email);
+  const email = (user.email || '').trim().toLowerCase();
+  return !!email && user.emailVerified === true && CLASSROOM_PREVIEW_EMAILS.includes(email);
 }

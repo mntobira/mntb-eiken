@@ -84,9 +84,12 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
       // 広告の出し分けが Firestore を読まずに判断できるようにする（送れるかはルールが決める）。
       saveJukuMemberships(
         uid,
-        rows
-          .filter((row) => row.plan === 'juku')
-          .map((row) => ({ classId: row.classId, teacherUid: row.teacherUid, className: row.className, subject: row.subject })),
+        rows.map((row) => ({
+          classId: row.classId,
+          teacherUid: row.teacherUid,
+          className: row.className,
+          subject: row.subject,
+        })),
       );
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : '参加クラスの取得に失敗しました。');
@@ -211,9 +214,8 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
                       抜ける
                     </button>
                   </div>
-                  {membership.plan === 'juku' && (
-                    <StudentAssignments membership={membership} onStartChapter={onStartChapter} />
-                  )}
+                  {/* クラスに参加していれば「今日の課題・今週の宿題」を常に見やすく表示 */}
+                  <StudentAssignments membership={membership} onStartChapter={onStartChapter} />
                 </li>
               );
             })}

@@ -18,8 +18,9 @@
 
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from '../../utils/firestoreMetered';
 import { db } from '../../firebase';
+import { fetchMyMembershipDetails } from '../../utils/classroom';
 import { requireUid, toFriendlyError } from '../../utils/classroomShared';
-import { fetchAssignments, loadJukuMemberships } from '../../utils/classAssignments';
+import { fetchAssignments, loadJukuMemberships, saveJukuMemberships } from '../../utils/classAssignments';
 import type { AssignmentDoc } from '../../utils/classAssignmentsCore';
 import { isPlainObject, readStoredJson } from '../../utils/safeLocalStorage';
 import { safeSetItem } from '../../utils/storageGuard';
@@ -124,6 +125,12 @@ export async function saveHomeworkPlan(
   }
   if (typeof input.dailyQuotaProblems === 'number' && input.dailyQuotaProblems > 0) {
     payload.dailyQuotaProblems = Math.min(DAILY_QUOTA_MAX, Math.floor(input.dailyQuotaProblems));
+  }
+  if (typeof input.targetLaps === 'number' && Number.isFinite(input.targetLaps) && input.targetLaps >= 1) {
+    payload.targetLaps = Math.min(10, Math.floor(input.targetLaps));
+  }
+  if (typeof input.coachInstruction === 'string' && input.coachInstruction.trim()) {
+    payload.coachInstruction = input.coachInstruction.trim().slice(0, 140);
   }
   if (input.skillBreakdown && typeof input.skillBreakdown === 'object') {
     const breakdown: SugorokuSkillBreakdown = {};
@@ -304,6 +311,13 @@ export function normalizePlan(raw: Record<string, unknown> | null | undefined): 
   if (Number.isFinite(quota) && quota > 0) {
     plan.dailyQuotaProblems = Math.min(DAILY_QUOTA_MAX, Math.floor(quota));
   }
+  const targetLaps = Number(raw.targetLaps);
+  if (Number.isFinite(targetLaps) && targetLaps >= 1) {
+    plan.targetLaps = Math.min(10, Math.floor(targetLaps));
+  }
+  if (typeof raw.coachInstruction === 'string' && raw.coachInstruction.trim()) {
+    plan.coachInstruction = raw.coachInstruction.trim().slice(0, 140);
+  }
   if (raw.skillBreakdown && typeof raw.skillBreakdown === 'object') {
     const breakdown: SugorokuSkillBreakdown = {};
     (Object.keys(raw.skillBreakdown) as string[]).forEach((k) => {
@@ -338,7 +352,27 @@ export async function fetchMyHomeworkAssignments(
 ): Promise<Array<AssignmentDoc & { plan: SugorokuHomeworkPlan | null }>> {
   const myUid = String(uid || '').trim();
   if (!myUid) return [];
-  const memberships = loadJukuMemberships(myUid);
+  let memberships = loadJukuMemberships(myUid);
+  if (memberships.length === 0) {
+    // 初回ログイン直後や別端末で設定＞クラスを開く前でもタイトル画面・ホームで即座に宿題が見えるよう自動同期する
+    try {
+      const details = await fetchMyMembershipDetails();
+      const jukuRows = details
+        .filter((d) => d.plan === 'juku' || d.classId.length > 0)
+        .map((d) => ({
+          classId: d.classId,
+          teacherUid: d.teacherUid,
+          className: d.className,
+          subject: d.subject,
+        }));
+      if (jukuRows.length > 0) {
+        saveJukuMemberships(myUid, jukuRows);
+        memberships = jukuRows;
+      }
+    } catch {
+      /* オフライン・テスト環境等は無視 */
+    }
+  }
   if (memberships.length === 0) return [];
 
   const rows: Array<AssignmentDoc & { plan: SugorokuHomeworkPlan | null }> = [];
@@ -404,6 +438,8 @@ export async function attachPlanToAssignment(
   assignment: AssignmentDoc,
   extra: {
     dailyQuotaProblems?: number;
+    targetLaps?: number;
+    coachInstruction?: string;
     skillBreakdown?: SugorokuSkillBreakdown;
     targetStudentUids?: string[];
     presetId?: string;
@@ -419,6 +455,8 @@ export async function attachPlanToAssignment(
       chapterIds: assignment.chapterIds,
       dueAt: assignment.dueAt,
       dailyQuotaProblems: extra.dailyQuotaProblems,
+      targetLaps: extra.targetLaps,
+      coachInstruction: extra.coachInstruction,
       skillBreakdown: extra.skillBreakdown,
       targetStudentUids: extra.targetStudentUids,
       presetId: extra.presetId,
