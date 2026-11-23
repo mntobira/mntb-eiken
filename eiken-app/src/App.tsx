@@ -604,6 +604,27 @@ export default function App() {
   };
 
   /**
+   * タイトル画面の「今日の課題」カードから未完了単元の演習へワンタップ直行する。
+   */
+  const enterAndStartHomeworkChapter = useCallback((chapterId: string, finishBgm: boolean) => {
+    battleAudio().unlock();
+    setHasInteracted(true);
+    setFinishingLaunchBgm(finishBgm);
+    setDirectAdminPortal(false);
+    setSettingsTab('general');
+
+    const subject = subjectOfChapterId(chapterId);
+    if (!subject || !isSubjectEnabled(subject)) {
+      enter(finishBgm);
+      return;
+    }
+    setSelectedSubject(subject);
+    setAppMode('practice');
+    handleSelectChapter(chapterId, 0, false, null, 'practice');
+    setHasEntered(true);
+  }, [handleSelectChapter, setAppMode, setHasInteracted, setSelectedSubject]);
+
+  /**
    * 管理者画面から生徒向けアプリ／タイトルへ戻る共通ハンドラ。
    * appState を管理者状態のまま残さないことで、戻ったあとにオレンジの「はじめる」を押した際も
    * 二度と管理者ログイン画面へ誤遷移しないようにする。
@@ -705,7 +726,7 @@ export default function App() {
   return (
     <SugorokuAuthGate enforce={sugorokuPortalMode === 'juku'}>
       {(!hasEntered || keepLaunchBgm) && (
-        <LaunchScreen onStart={enter} skipIntro={skipLaunchIntro} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
+        <LaunchScreen onStart={enter} onStartHomeworkChapter={enterAndStartHomeworkChapter} skipIntro={skipLaunchIntro} bgmEnabled={isBgmEnabled} onBgmToggle={handleToggleBgm}
           finishingBgm={hasEntered} onBgmFinished={finishLaunchBgm} />
       )}
       {hasEntered && <>

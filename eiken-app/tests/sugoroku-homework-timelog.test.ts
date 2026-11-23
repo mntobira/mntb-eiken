@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildHomeworkTask,
   buildWeeklyRoute,
+  chapterIdsOfAppRound,
   compactSkillBreakdown,
   computeTodayQuota,
   countBySkill,
@@ -210,6 +211,41 @@ describe('AI 2: すごろく宿題エンジン（homeworkCore & chapterTotals）
     const sampleCounts = countBySkill(chapterIdsOfGrade('eiken_2').slice(0, 5), totals);
     const compact = compactSkillBreakdown(sampleCounts);
     expect(Object.values(compact).every((v) => (v ?? 0) > 0)).toBe(true);
+
+    // アプリ内の回数（第1回〜第15回）指定で筆記＋リスニングの全該当単元を取得できる
+    for (const grade of ['eiken_2', 'eiken_pre2plus', 'eiken_pre2', 'eiken_3', 'eiken_4', 'eiken_5', 'eiken_pre1', 'eiken_1']) {
+      const avail = chapterIdsOfGrade(grade);
+      const r1 = chapterIdsOfAppRound(grade, 1, avail);
+      expect(r1.length).toBeGreaterThanOrEqual(4);
+      expect(r1.length).toBeLessThanOrEqual(10);
+      expect(r1.some((id) => id.includes('_written_01_'))).toBe(true);
+      expect(r1.some((id) => id.includes('_listening_r01_'))).toBe(true);
+    }
+
+    // 目標周回数（targetLaps）と講師メモ（coachInstruction）が task に透過伝搬される
+    const nowMs = Date.now();
+    const lapTask = buildHomeworkTask({
+      assignment: {
+        id: 'lap-1',
+        classId: 'cls-1',
+        title: '英検2級 アプリ第1回（2周）',
+        chapterIds: ['eiken_2_written_01_short'],
+        dueAt: nowMs + 7 * 86_400_000,
+      },
+      className: 'すごろく塾',
+      plan: normalizePlan({
+        id: 'lap-1',
+        classId: 'cls-1',
+        dailyQuotaProblems: 6,
+        targetLaps: 2,
+        coachInstruction: '間違えた問題は音読2回！',
+      }),
+      totals,
+      solved: {},
+      now: nowMs,
+    });
+    expect(lapTask.targetLaps).toBe(2);
+    expect(lapTask.coachInstruction).toBe('間違えた問題は音読2回！');
   });
 
   it('pickPrimaryTask & sortHomeworkTasks: 未完了かつ期限超過・締切間近の宿題を最優先でピン留めする', () => {

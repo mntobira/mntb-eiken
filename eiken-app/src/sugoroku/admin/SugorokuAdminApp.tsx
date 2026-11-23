@@ -65,11 +65,12 @@ import {
   updateManagedClassroom,
   type JukuClassSettings,
 } from './classroomSettings';
-import { createAssignment } from '../../utils/classAssignments';
+import { createAssignment, deleteAssignment } from '../../utils/classAssignments';
 import { dueDateToMs } from '../../utils/classAssignmentsCore';
 import type { StudentRawProgress } from '../../utils/classroom';
-import { attachPlanToAssignment } from '../homework/homeworkStore';
-import { allEikenChapterCatalog } from '../homework/chapterTotals';
+import { attachPlanToAssignment, deleteHomeworkPlan } from '../homework/homeworkStore';
+import { allEikenChapterCatalog, chapterTotals } from '../homework/chapterTotals';
+import { compactSkillBreakdown, countBySkill } from '../homework/homeworkCore';
 import {
   SugorokuHomeworkComposerModal,
   type PacemakerSubmitPayload,
@@ -89,7 +90,10 @@ import {
   SugorokuStudentDetailView,
   buildLineEncourageMessage,
 } from './SugorokuStudentDetailView';
-import { SugorokuPdfShelfTab } from './SugorokuPdfShelfTab';
+import {
+  SugorokuPdfShelfTab,
+  type CustomQuickAssignmentInput,
+} from './SugorokuPdfShelfTab';
 import {
   SugorokuSpeakingExtensionSlot,
   SugorokuWritingExtensionSlot,
@@ -144,6 +148,9 @@ export function SugorokuAdminApp({
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [staffSheetOpen, setStaffSheetOpen] = useState(false);
   const [homeworkModalOpen, setHomeworkModalOpen] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState<
+    import('../shared/types').SugorokuAssignmentDoc | null
+  >(null);
   const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
   const [classFormMode, setClassFormMode] = useState<'create' | 'edit' | null>(null);
   const [savingClassForm, setSavingClassForm] = useState(false);
@@ -698,7 +705,7 @@ export function SugorokuAdminApp({
       const now = Date.now();
       const dueMs = dueDateToMs(payload.dueDate);
       const nextAssignment = {
-        id: `demo_assign_${now}`,
+        id: payload.editingAssignmentId || `demo_assign_${now}`,
         classId: demoBundle.classId,
         teacherUid: 'teacher_sugoroku_nishi',
         title: payload.title,
@@ -707,6 +714,8 @@ export function SugorokuAdminApp({
         startAt: payload.startAt ?? now,
         targetStudentUids: payload.targetStudentUids,
         dailyQuotaProblems: payload.dailyQuotaProblems,
+        targetLaps: payload.targetLaps,
+        coachInstruction: payload.coachInstruction,
         skillBreakdown: payload.skillBreakdown,
         presetId: payload.presetId,
         presetWeek: payload.presetWeek,
@@ -715,10 +724,20 @@ export function SugorokuAdminApp({
       };
       setDemoBundle((prev) => ({
         ...prev,
-        assignments: [nextAssignment, ...prev.assignments],
+        assignments: payload.editingAssignmentId
+          ? prev.assignments.map((a) =>
+              a.id === payload.editingAssignmentId ? nextAssignment : a,
+            )
+          : [nextAssignment, ...prev.assignments],
       }));
+      setEditingAssignment(null);
       setHomeworkModalOpen(false);
-      showToast(`宿題「${payload.title}」を配信しました`, 'done');
+      showToast(
+        payload.editingAssignmentId
+          ? `課題「${payload.title}」を更新しました`
+          : `課題「${payload.title}」を配信しました`,
+        'done',
+      );
       return;
     }
 
@@ -726,6 +745,14 @@ export function SugorokuAdminApp({
       showToast('先に配信先のクラスを作成または選択してください', 'warn');
       return;
     }
+
+    if (payload.editingAssignmentId) {
+      await deleteAssignment(payload.editingAssignmentId).catch(() => undefined);
+      await deleteHomeworkPlan(payload.editingAssignmentId, sourceInfo.classId).catch(
+        () => undefined,
+      );
+    }
+
     const created = await createAssignment(sourceInfo.classId, {
       title: payload.title,
       chapterIds: payload.chapterIds,
@@ -733,6 +760,8 @@ export function SugorokuAdminApp({
     });
     await attachPlanToAssignment(created, {
       dailyQuotaProblems: payload.dailyQuotaProblems,
+      targetLaps: payload.targetLaps,
+      coachInstruction: payload.coachInstruction,
       skillBreakdown: payload.skillBreakdown,
       targetStudentUids: payload.targetStudentUids,
       presetId: payload.presetId,
@@ -740,8 +769,51 @@ export function SugorokuAdminApp({
       startAt: payload.startAt,
     });
     await reloadLiveClasses();
+    setEditingAssignment(null);
     setHomeworkModalOpen(false);
-    showToast(`宿題「${created.title}」を配信しました`, 'done');
+    showToast(
+      payload.editingAssignmentId
+        ? `課題「${created.title}」を更新しました`
+        : `課題「${created.title}」を配信しました`,
+      'done',
+    );
+  };
+
+  const handleDeleteHomework = async (
+    target: import('../shared/types').SugorokuAssignmentDoc,
+  ) => {
+    const ok = confirmAction(`課題「${target.title}」を削除します。よろしいですか？`);
+    if (!ok) return;
+    if (dataMode === 'demo') {
+      setDemoBundle((prev) => ({
+        ...prev,
+        assignments: prev.assignments.filter((a) => a.id !== target.id),
+      }));
+      showToast(`課題「${target.title}」を削除しました`, 'done');
+      return;
+    }
+    if (!sourceInfo.classId) return;
+    await deleteAssignment(target.id).catch(() => undefined);
+    await deleteHomeworkPlan(target.id, sourceInfo.classId).catch(() => undefined);
+    await reloadLiveClasses();
+    showToast(`課題「${target.title}」を削除しました`, 'done');
+  };
+
+  const handleQuickAssignCustom = async (input: CustomQuickAssignmentInput) => {
+    const dueMs = Date.now() + Math.max(1, input.dueInDays) * 86_400_000;
+    const totals = chapterTotals();
+    await handleSubmitHomework({
+      title: input.title,
+      chapterIds: input.chapterIds,
+      dueDate: dueMsToDateInput(dueMs),
+      dailyQuotaProblems: input.dailyQuotaProblems,
+      targetLaps: input.targetLaps,
+      coachInstruction: input.coachInstruction,
+      skillBreakdown: compactSkillBreakdown(countBySkill(input.chapterIds, totals)),
+      presetId: input.presetId,
+      presetWeek: input.presetWeek,
+      startAt: Date.now(),
+    });
   };
 
   const handleAssignRoutePreset = async (routePayload: SugorokuCompatibleAssignmentPayload) => {
@@ -1024,7 +1096,16 @@ export function SugorokuAdminApp({
                   activeSubject={sourceInfo.subject}
                   assignments={sourceInfo.assignments}
                   onAssignRoutePreset={handleAssignRoutePreset}
-                  onOpenCustomHomework={() => setHomeworkModalOpen(true)}
+                  onQuickAssignCustom={handleQuickAssignCustom}
+                  onOpenCustomHomework={() => {
+                    setEditingAssignment(null);
+                    setHomeworkModalOpen(true);
+                  }}
+                  onEditAssignment={(asg) => {
+                    setEditingAssignment(asg);
+                    setHomeworkModalOpen(true);
+                  }}
+                  onDeleteAssignment={handleDeleteHomework}
                 />
               ) : activeTab === 'writing_review' ? (
                 <SugorokuWritingExtensionSlot
@@ -1195,7 +1276,10 @@ export function SugorokuAdminApp({
 
                     <div className="sg-chip-group">
                       <PrimaryButton
-                        onClick={() => setHomeworkModalOpen(true)}
+                        onClick={() => {
+                          setEditingAssignment(null);
+                          setHomeworkModalOpen(true);
+                        }}
                         icon={<Route size={14} aria-hidden="true" />}
                       >
                         宿題配信
@@ -1544,14 +1628,18 @@ export function SugorokuAdminApp({
         />
       )}
 
-      {/* モーダル：全級対応・宿題一括/個別配信 */}
+      {/* モーダル：全級対応・宿題一括/個別配信＆編集 */}
       {homeworkModalOpen && (
         <SugorokuHomeworkComposerModal
           subject={sourceInfo.subject || 'eiken_2'}
           catalog={homeworkCatalog}
           students={composerStudents}
           accent="#1c2a39"
-          onClose={() => setHomeworkModalOpen(false)}
+          editingAssignment={editingAssignment}
+          onClose={() => {
+            setEditingAssignment(null);
+            setHomeworkModalOpen(false);
+          }}
           onSubmit={handleSubmitHomework}
         />
       )}

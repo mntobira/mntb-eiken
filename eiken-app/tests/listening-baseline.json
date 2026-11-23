@@ -173,7 +173,6 @@
     "src/components/battle-rank-switch.css": "0b50a17bcbeec86a303d335f1514023e44c21405",
     "src/components/chapter-title-celebration.css": "ebafd659b4c6a785d7de22bcb4d158f4f7843d9b",
     "src/components/cinematic-celebration.css": "b1eed2afbd59dc187ed5f715c77d7565783c0563",
-    "src/components/classroom/StudentAssignments.tsx": "e054dd9861e228cb20478d6abbf1f0983883ec9e",
     "src/components/coin-celebration.css": "0665ce253dbefdbfc3343ad3dc3ebd7ee1e174b3",
     "src/components/explanation/CompactWeakAreas.tsx": "992ea490a9c91f743b8b677d15f897db0f2ddee5",
     "src/components/explanation/ExplanationAnswerItem.tsx": "4d123b9509f9d2a9cf42dbf1f6109388756c5aee",
@@ -609,6 +608,7 @@
     "src/components/teacher/CreateClassModal.tsx": "Sugoroku juku class creation/editing modal with daily/weekly goal minutes and course presets; covered by sugoroku-auth.test.ts.",
     "src/components/teacher/EmptyState.tsx": "Sugoroku juku-first empty state; covered by sugoroku-auth.test.ts.",
     "src/components/teacher/StudentsTab.tsx": "Sugoroku juku invite URL/LINE template kit when student count is zero; covered by sugoroku-auth.test.ts.",
-    "src/components/teacher/teacherSubjects.ts": "Eiken classroom default subject (eiken_2) and allowed grade subjects; covered by sugoroku-auth.test.ts."
+    "src/components/teacher/teacherSubjects.ts": "Eiken classroom default subject (eiken_2) and allowed grade subjects; covered by sugoroku-auth.test.ts.",
+    "src/components/classroom/StudentAssignments.tsx": "Sugoroku daily homework quota, target laps, coach instructions, and cross-grade chapter launch in student ClassPanel; covered by sugoroku-homework-timelog.test.ts."
   }
 }
