@@ -10,6 +10,7 @@ import {
   Trash2,
   Info,
   ShieldCheck,
+  MessageCircle,
 } from 'lucide-react';
 import { auth } from '../firebase';
 import {
@@ -23,6 +24,8 @@ import { subjectTheme } from '../data/subjectTheme';
 import { confirmAction } from '../utils/dialog';
 import { saveJukuMemberships } from '../utils/classAssignments';
 import { StudentAssignments } from './classroom/StudentAssignments';
+import { AdminClassHubSection } from './classroom/AdminClassHubSection';
+import { ClassChatModal, subscribeUserChatInbox } from '../sugoroku/chat';
 
 /**
  * ===================================================================
@@ -58,9 +61,18 @@ interface ClassPanelProps {
   defaultDisplayName?: string;
   /** 課題の「解く」から演習を始める（塾クラスだけ。無ければボタンを出さない） */
   onStartChapter?: (chapterId: string, subject: MembershipDetail['subject']) => void;
+  /** 管理者・講師アカウントのとき、上部に「管理しているクラス一覧＋クラス追加」を表示する */
+  showAdminHub?: boolean;
+  /** 管理クラスの一覧から特定のクラス管理画面を開く */
+  onOpenClassAdmin?: (classId: string) => void;
 }
 
-export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPanelProps) {
+export function ClassPanel({
+  defaultDisplayName = '',
+  onStartChapter,
+  showAdminHub = false,
+  onOpenClassAdmin,
+}: ClassPanelProps) {
   const [memberships, setMemberships] = useState<MembershipDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState('');
@@ -68,6 +80,8 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [leavingClassId, setLeavingClassId] = useState('');
+  const [chatMembership, setChatMembership] = useState<MembershipDetail | null>(null);
+  const [unreadByClassId, setUnreadByClassId] = useState<Record<string, number>>({});
 
   const uid = auth.currentUser?.uid || '';
 
@@ -101,6 +115,20 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!uid) return;
+    return subscribeUserChatInbox({
+      uid,
+      onSummary: ({ studentThreadsByClassId }) => {
+        const next: Record<string, number> = {};
+        for (const [cid, t] of Object.entries(studentThreadsByClassId)) {
+          if (t.unreadByStudent > 0) next[cid] = t.unreadByStudent;
+        }
+        setUnreadByClassId(next);
+      },
+    });
+  }, [uid]);
 
   const handleJoin = async () => {
     setJoining(true);
@@ -161,6 +189,11 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
 
   return (
     <div className="space-y-2.5">
+      {/* A1：管理者・先生アカウント向け「管理しているクラス一覧 ＋ クラスを追加する」 */}
+      {showAdminHub && onOpenClassAdmin && (
+        <AdminClassHubSection onOpenClassAdmin={onOpenClassAdmin} />
+      )}
+
       {/* 参加中のクラス（＝いま見られている相手） */}
       <section className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
@@ -201,18 +234,33 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleLeave(membership)}
-                      disabled={leavingClassId === membership.classId}
-                      className="shrink-0 flex min-h-[44px] items-center gap-1 px-2.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
-                    >
-                      {leavingClassId === membership.classId ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : (
-                        <Trash2 size={12} />
-                      )}
-                      抜ける
-                    </button>
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setChatMembership(membership)}
+                        className="flex min-h-[40px] items-center gap-1.5 px-3 rounded-xl bg-[#06C755] hover:bg-[#05b34c] text-white text-xs font-extrabold shadow-sm cursor-pointer"
+                      >
+                        <MessageCircle size={13} />
+                        先生とチャット
+                        {(unreadByClassId[membership.classId] || 0) > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-full bg-white text-[#06C755] text-[10px] font-extrabold leading-none">
+                            {unreadByClassId[membership.classId]}
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleLeave(membership)}
+                        disabled={leavingClassId === membership.classId}
+                        className="shrink-0 flex min-h-[40px] items-center gap-1 px-2.5 rounded-lg border border-red-100 bg-red-50 text-xs font-bold text-red-600 disabled:opacity-50"
+                      >
+                        {leavingClassId === membership.classId ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : (
+                          <Trash2 size={12} />
+                        )}
+                        抜ける
+                      </button>
+                    </div>
                   </div>
                   {/* クラスに参加していれば「今日の課題・今週の宿題」を常に見やすく表示 */}
                   <StudentAssignments membership={membership} onStartChapter={onStartChapter} />
@@ -330,6 +378,32 @@ export function ClassPanel({ defaultDisplayName = '', onStartChapter }: ClassPan
           このコード入力があなたの「見せていいですよ」という意思表示になります。
         </span>
       </p>
+
+      {/* A3：先生との1対1 LINE風トークモーダル */}
+      {chatMembership && (
+        <ClassChatModal
+          open={true}
+          classId={chatMembership.classId}
+          className={chatMembership.className}
+          schoolName={chatMembership.schoolName}
+          teacherUid={chatMembership.teacherUid}
+          studentUid={uid}
+          studentName={
+            chatMembership.rosterName ||
+            defaultDisplayName ||
+            auth.currentUser?.displayName ||
+            '生徒'
+          }
+          viewerRole="student"
+          viewerName={
+            chatMembership.rosterName ||
+            defaultDisplayName ||
+            auth.currentUser?.displayName ||
+            '生徒'
+          }
+          onClose={() => setChatMembership(null)}
+        />
+      )}
     </div>
   );
 }

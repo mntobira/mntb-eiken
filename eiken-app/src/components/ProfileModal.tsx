@@ -45,8 +45,8 @@ interface ProfileModalProps {
    *   先生は設定を探すことを苦にしないので、ここに置く。
    */
   onOpenTeacherDashboard?: () => void;
-  /** すごろく塾 管理者ポータル（個人別タイムログ・PDF教材棚）を開く */
-  onOpenSugorokuAdmin?: () => void;
+  /** すごろく塾・クラス管理画面を開く（選択した classId を指定可能） */
+  onOpenSugorokuAdmin?: (classId?: string) => void;
   /**
    * フィードバック管理画面（運営専用）を開く。
    * 運営メールでログインしているときだけボタンを出す。
@@ -85,9 +85,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   const [isAdminAccount, setIsAdminAccount] = useState<boolean>(() => isImmediateSugorokuAdminUser(auth.currentUser));
   const [tab, setTab] = useState<SettingsTab>(() => {
     if (initialTab && initialTab !== 'general' && auth.currentUser) {
-      if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser)) {
-        return 'general';
-      }
       return initialTab;
     }
     return 'general';
@@ -100,6 +97,12 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialTab && auth.currentUser) {
+      setTab(initialTab);
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
     let alive = true;
     const currentUser = auth.currentUser;
     const immediate = isImmediateSugorokuAdminUser(currentUser);
@@ -109,21 +112,12 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
       .then((res) => {
         if (!alive) return;
         setIsAdminAccount(res.allowed);
-        if (res.allowed && initialTab === 'class' && onOpenSugorokuAdmin) {
-          onOpenSugorokuAdmin();
-        }
       })
       .catch(() => undefined);
     return () => {
       alive = false;
     };
-  }, [initialTab, onOpenSugorokuAdmin]);
-
-  useEffect(() => {
-    if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser) && onOpenSugorokuAdmin) {
-      onOpenSugorokuAdmin();
-    }
-  }, [initialTab, onOpenSugorokuAdmin]);
+  }, []);
 
   useEffect(() => {
     try {
@@ -149,10 +143,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
   const handleClickClassTab = () => {
     if (!auth.currentUser) return;
-    if (isAdminAccount && onOpenSugorokuAdmin) {
-      onOpenSugorokuAdmin();
-      return;
-    }
     setTab('class');
   };
 
@@ -204,7 +194,12 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
             <ComingSoon title="クラス">先生が作ったクラスに参加して、課題や進み具合を共有できるようになります。もうすぐ公開します。</ComingSoon>
           ) : tab === 'class' && auth.currentUser ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
-              <ClassPanel defaultDisplayName={name} onStartChapter={onStartClassChapter} />
+              <ClassPanel
+                defaultDisplayName={name}
+                onStartChapter={onStartClassChapter}
+                showAdminHub={isAdminAccount}
+                onOpenClassAdmin={(classId) => onOpenSugorokuAdmin?.(classId)}
+              />
             </div>
           ) : (
             <div className="h-full flex flex-col gap-2">

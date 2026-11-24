@@ -1,0 +1,438 @@
+/* ============================================================================
+ * LINE風 1対1 生徒×先生チャット スタイル
+ * ============================================================================ */
+
+.cchat-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 440px;
+  max-height: 78dvh;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #d5e0ec;
+  background: #eaf1f8;
+  box-shadow: 0 10px 28px rgba(20, 36, 56, 0.08);
+}
+
+.cchat-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(18, 28, 42, 0.56);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .cchat-modal-backdrop {
+    align-items: center;
+    padding: 16px;
+  }
+}
+
+.cchat-modal-frame {
+  width: 100%;
+  max-width: 560px;
+  height: 88dvh;
+  max-height: 720px;
+  display: flex;
+  flex-direction: column;
+  background: #eaf1f8;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.28);
+}
+
+@media (min-width: 640px) {
+  .cchat-modal-frame {
+    border-radius: 24px;
+  }
+}
+
+.cchat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #22354d;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.cchat-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cchat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38b26f, #1f9d57);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cchat-header-titles {
+  min-width: 0;
+}
+
+.cchat-header-titles strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cchat-header-titles small {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.78);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cchat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cchat-head-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cchat-head-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cchat-timeline {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #dce8f5 0%, #e7eff8 100%);
+}
+
+.cchat-date-divider {
+  align-self: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(34, 53, 77, 0.18);
+  color: #2c3e50;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 4px 0;
+}
+
+.cchat-empty {
+  margin: auto 12px;
+  padding: 18px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  color: #3e5266;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.cchat-msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 88%;
+}
+
+.cchat-msg-row[data-mine='true'] {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.cchat-msg-row[data-mine='false'] {
+  align-self: flex-start;
+}
+
+.cchat-peer-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #2458a6;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.cchat-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cchat-sender-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4d6278;
+  padding-left: 4px;
+}
+
+.cchat-bubble-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.cchat-msg-row[data-mine='true'] .cchat-bubble-line {
+  flex-direction: row-reverse;
+}
+
+.cchat-bubble {
+  padding: 9px 13px;
+  border-radius: 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+/* LINE風の自分の吹き出し（やさしいグリーン） */
+.cchat-msg-row[data-mine='true'] .cchat-bubble {
+  background: #8de055;
+  color: #162415;
+  border-bottom-right-radius: 5px;
+}
+
+/* 相手の吹き出し（白） */
+.cchat-msg-row[data-mine='false'] .cchat-bubble {
+  background: #ffffff;
+  color: #1b2631;
+  border-bottom-left-radius: 5px;
+}
+
+.cchat-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #52677d;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+
+.cchat-msg-row[data-mine='true'] .cchat-meta {
+  align-items: flex-end;
+}
+
+.cchat-read-flag {
+  font-weight: 800;
+  color: #28517a;
+}
+
+.cchat-quick-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  background: #f6f9fc;
+  border-top: 1px solid #dde6f0;
+  flex-shrink: 0;
+}
+
+.cchat-quick-chip {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #cbd8e6;
+  background: #ffffff;
+  color: #2458a6;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cchat-quick-chip:hover {
+  background: #edf4fc;
+}
+
+.cchat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border-top: 1px solid #d5e0ec;
+  flex-shrink: 0;
+}
+
+.cchat-textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 112px;
+  resize: none;
+  padding: 9px 12px;
+  border-radius: 18px;
+  border: 1px solid #cbd8e6;
+  background: #f7fafc;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1b2631;
+}
+
+.cchat-textarea:focus {
+  outline: 2px solid #2458a6;
+  background: #ffffff;
+}
+
+.cchat-send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: #06c755;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(6, 199, 85, 0.28);
+}
+
+.cchat-send-btn:disabled {
+  background: #c5d1de;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* 講師側のLINE風トークルーム一覧＋チャット2ペイン */
+.cchat-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 820px) {
+  .cchat-board {
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.cchat-room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: 18px;
+  padding: 10px;
+}
+
+.cchat-room-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cchat-room-item:hover {
+  background: #f6f8fb;
+}
+
+.cchat-room-item[aria-selected='true'] {
+  background: #edf4ff;
+  border-color: #b7d2fb;
+}
+
+.cchat-unread-pill {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #06c755;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 新着メッセージ到着時の画面上部LINE風ポップアップバナー */
+.cchat-arrival-banner {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  width: min(94vw, 440px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: #1b2838;
+  color: #ffffff;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: cchatSlideIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes cchatSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

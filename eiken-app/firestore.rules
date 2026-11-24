@@ -1847,6 +1847,130 @@ service cloud.firestore {
       allow delete: if sgIsClassTeacher(classId) || sgCanManageClass(classId);
     }
 
+    // ---- 7. 生徒×先生 1対1リアルタイムチャット（eiken_class_chat_threads/{threadId} ＆ messages/{messageId}） ----
+    match /eiken_class_chat_threads/{threadId} {
+      function sgCanAccessChatThread(classId, studentUid, teacherUid) {
+        return isAuthenticated()
+          && (
+            (studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
+            || teacherUid == request.auth.uid
+            || sgCanReadClassAdminData(classId)
+          );
+      }
+
+      function validClassChatThread(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'className', 'schoolName',
+            'teacherUid', 'studentUid', 'studentName',
+            'lastMessageText', 'lastSenderRole', 'lastSenderName',
+            'lastMessageAt', 'unreadByTeacher', 'unreadByStudent',
+            'teacherLastReadAt', 'studentLastReadAt', 'updatedAt'
+          ])
+          && d.keys().hasAll([
+            'classId', 'teacherUid', 'studentUid', 'studentName',
+            'lastMessageText', 'lastSenderRole', 'lastMessageAt',
+            'unreadByTeacher', 'unreadByStudent', 'updatedAt'
+          ])
+          && (!('id' in d) || d.id == threadId)
+          && d.classId is string && d.classId.size() > 0 && d.classId.size() <= 80
+          && d.studentUid is string && d.studentUid.size() > 0 && d.studentUid.size() <= 128
+          && threadId == d.classId + '_' + d.studentUid
+          && d.teacherUid is string && d.teacherUid.size() > 0 && d.teacherUid.size() <= 128
+          && (!('className' in d) || (d.className is string && d.className.size() <= 80))
+          && (!('schoolName' in d) || (d.schoolName is string && d.schoolName.size() <= 80))
+          && d.studentName is string && d.studentName.size() > 0 && d.studentName.size() <= 40
+          && d.lastMessageText is string && d.lastMessageText.size() <= 1000
+          && d.lastSenderRole in ['student', 'teacher']
+          && (!('lastSenderName' in d) || (d.lastSenderName is string && d.lastSenderName.size() <= 40))
+          && d.lastMessageAt is int && d.lastMessageAt >= 0
+          && d.unreadByTeacher is int && d.unreadByTeacher >= 0 && d.unreadByTeacher <= 9999
+          && d.unreadByStudent is int && d.unreadByStudent >= 0 && d.unreadByStudent <= 9999
+          && (!('teacherLastReadAt' in d) || (d.teacherLastReadAt is int && d.teacherLastReadAt >= 0))
+          && (!('studentLastReadAt' in d) || (d.studentLastReadAt is int && d.studentLastReadAt >= 0))
+          && d.updatedAt is int && d.updatedAt >= 0;
+      }
+
+      // get は未作成スレッドの存在確認（snap.exists() == false）も当事者なら許可する
+      allow get: if isAuthenticated()
+        && (
+          resource == null
+          || sgCanAccessChatThread(resource.data.classId, resource.data.studentUid, resource.data.teacherUid)
+        );
+
+      // list は where('studentUid','==',自分) / where('teacherUid','==',自分) / where('classId','==',担当クラス) のみ通る
+      allow list: if isAuthenticated()
+        && (
+          resource.data.studentUid == request.auth.uid
+          || resource.data.teacherUid == request.auth.uid
+          || sgCanReadClassAdminData(resource.data.classId)
+        );
+
+      allow create: if validClassChatThread(request.resource.data)
+        && sgCanAccessChatThread(
+             request.resource.data.classId,
+             request.resource.data.studentUid,
+             request.resource.data.teacherUid
+           );
+
+      allow update: if resource != null
+        && sgCanAccessChatThread(resource.data.classId, resource.data.studentUid, resource.data.teacherUid)
+        && request.resource.data.classId == resource.data.classId
+        && request.resource.data.studentUid == resource.data.studentUid
+        && validClassChatThread(request.resource.data);
+
+      allow delete: if resource != null && sgCanReadClassAdminData(resource.data.classId);
+
+      match /messages/{messageId} {
+        function parentThreadExists() {
+          return exists(/databases/$(database)/documents/eiken_class_chat_threads/$(threadId));
+        }
+        function parentThread() {
+          return get(/databases/$(database)/documents/eiken_class_chat_threads/$(threadId)).data;
+        }
+        function validChatMessage(m) {
+          return m.keys().hasOnly([
+              'id', 'threadId', 'classId', 'studentUid',
+              'senderUid', 'senderRole', 'senderName', 'text', 'createdAt'
+            ])
+            && m.keys().hasAll([
+              'threadId', 'classId', 'studentUid',
+              'senderUid', 'senderRole', 'senderName', 'text', 'createdAt'
+            ])
+            && m.threadId == threadId
+            && m.classId is string && m.classId.size() > 0 && m.classId.size() <= 80
+            && m.studentUid is string && m.studentUid.size() > 0 && m.studentUid.size() <= 128
+            && threadId == m.classId + '_' + m.studentUid
+            && m.senderUid == request.auth.uid
+            && m.senderRole in ['student', 'teacher']
+            && m.senderName is string && m.senderName.size() <= 40
+            && m.text is string && m.text.size() > 0 && m.text.size() <= 1000
+            && m.createdAt is int && m.createdAt > 0;
+        }
+
+        allow get, list: if parentThreadExists()
+          && sgCanAccessChatThread(
+               parentThread().classId,
+               parentThread().studentUid,
+               parentThread().teacherUid
+             );
+
+        allow create: if validChatMessage(request.resource.data)
+          && (
+            (
+              request.resource.data.senderRole == 'student'
+              && request.resource.data.studentUid == request.auth.uid
+              && sgIsEnrolledInClass(request.resource.data.classId, request.auth.uid)
+            )
+            || (
+              request.resource.data.senderRole == 'teacher'
+              && sgCanReadClassAdminData(request.resource.data.classId)
+            )
+          );
+
+        allow update, delete: if false;
+      }
+    }
+
 // ###################################################################
 // ###################################################################
 //
