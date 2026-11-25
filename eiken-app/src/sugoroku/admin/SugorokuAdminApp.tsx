@@ -102,9 +102,9 @@ import {
   usePortalToast,
 } from './SugorokuInteractiveUi';
 import {
-  ClassChatView,
   ensureDemoChatSeed,
   subscribeClassThreadsForTeacher,
+  TeacherClassChatBoard,
   type ClassChatThreadDoc,
 } from '../chat';
 import './sugoroku-admin.css';
@@ -1088,69 +1088,30 @@ export function SugorokuAdminApp({
                       まだ在籍している生徒がいません。生徒が6文字コード（{sourceInfo.joinCode || '---'}）で参加すると、ここで1対1チャットができます。
                     </Card>
                   ) : (
-                    <div className="cchat-board">
-                      <div className="cchat-room-list" role="listbox" aria-label="生徒トーク一覧">
-                        <div style={{ padding: '4px 8px 6px', fontSize: 12, fontWeight: 800, color: 'var(--mt-ink-3)' }}>
-                          生徒との1対1トーク（{allStudentOverviews.length}名）
-                        </div>
-                        {allStudentOverviews.map((st) => {
-                          const thread = chatThreadsByUid[st.uid];
-                          const activeUid = chatStudentUid ?? allStudentOverviews[0]?.uid;
-                          const selected = st.uid === activeUid;
-                          const unread = thread?.unreadByTeacher || 0;
-                          return (
-                            <button
-                              key={st.uid}
-                              type="button"
-                              role="option"
-                              aria-selected={selected}
-                              className="cchat-room-item"
-                              onClick={() => setChatStudentUid(st.uid)}
-                            >
-                              <div style={{ minWidth: 0, flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                  <strong style={{ fontSize: 13.5, color: 'var(--mt-ink-warm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {st.rosterName}
-                                  </strong>
-                                  <span className="sg-grade-tag" style={{ fontSize: 10 }}>
-                                    {getGradeLabel(st.targetGrade).replace('英検', '')}
-                                  </span>
-                                </div>
-                                <small style={{ display: 'block', marginTop: 2, fontSize: 11.5, color: 'var(--mt-ink-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {thread?.lastMessageText
-                                    ? thread.lastMessageText
-                                    : 'まだメッセージはありません（タップして送信）'}
-                                </small>
-                              </div>
-                              {unread > 0 && (
-                                <span className="cchat-unread-pill">{unread}</span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {(() => {
-                        const targetStudent =
-                          allStudentOverviews.find((s) => s.uid === chatStudentUid) ??
-                          allStudentOverviews[0];
-                        if (!targetStudent) return null;
-                        return (
-                          <ClassChatView
-                            classId={sourceInfo.classId}
-                            className={sourceInfo.className || 'クラス'}
-                            schoolName={sourceInfo.schoolName}
-                            teacherUid={sourceInfo.teacherUid || user?.uid || 'owner'}
-                            studentUid={targetStudent.uid}
-                            studentName={targetStudent.rosterName}
-                            viewerRole="teacher"
-                            viewerName={user?.displayName || sourceInfo.ownerName || '担当先生'}
-                            isDemoMode={sourceInfo.isDemo}
-                            embedded={true}
-                          />
-                        );
-                      })()}
-                    </div>
+                    <TeacherClassChatBoard
+                      classId={sourceInfo.classId}
+                      className={sourceInfo.className || 'クラス'}
+                      schoolName={sourceInfo.schoolName}
+                      teacherUid={sourceInfo.teacherUid || user?.uid || 'owner'}
+                      teacherName={user?.displayName || sourceInfo.ownerName || '担当先生'}
+                      students={allStudentOverviews}
+                      threadsByUid={chatThreadsByUid}
+                      selectedStudentUid={chatStudentUid}
+                      onSelectStudentUid={setChatStudentUid}
+                      onIssueHomeworkForStudent={(st) => {
+                        setEditingAssignment(null);
+                        setHomeworkTargetStudent({
+                          uid: st.uid,
+                          name: st.rosterName.split('（')[0] || st.rosterName,
+                        });
+                        setHomeworkModalOpen(true);
+                      }}
+                      onOpenStudentDetail={(uid) => {
+                        setSelectedStudentUid(uid);
+                        setActiveTab('students');
+                      }}
+                      isDemoMode={sourceInfo.isDemo}
+                    />
                   )}
                 </section>
               ) : activeTab === 'pdf_shelf' ? (

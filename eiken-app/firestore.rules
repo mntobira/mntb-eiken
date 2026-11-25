@@ -1864,7 +1864,9 @@ service cloud.firestore {
             'teacherUid', 'studentUid', 'studentName',
             'lastMessageText', 'lastSenderRole', 'lastSenderName',
             'lastMessageAt', 'unreadByTeacher', 'unreadByStudent',
-            'teacherLastReadAt', 'studentLastReadAt', 'updatedAt'
+            'teacherLastReadAt', 'studentLastReadAt',
+            'resolutionStatus', 'pinnedNotice', 'lastTopic',
+            'updatedAt'
           ])
           && d.keys().hasAll([
             'classId', 'teacherUid', 'studentUid', 'studentName',
@@ -1887,6 +1889,9 @@ service cloud.firestore {
           && d.unreadByStudent is int && d.unreadByStudent >= 0 && d.unreadByStudent <= 9999
           && (!('teacherLastReadAt' in d) || (d.teacherLastReadAt is int && d.teacherLastReadAt >= 0))
           && (!('studentLastReadAt' in d) || (d.studentLastReadAt is int && d.studentLastReadAt >= 0))
+          && (!('resolutionStatus' in d) || d.resolutionStatus in ['open', 'resolved'])
+          && (!('pinnedNotice' in d) || (d.pinnedNotice is string && d.pinnedNotice.size() <= 300))
+          && (!('lastTopic' in d) || d.lastTopic in ['question', 'homework', 'pace', 'report', 'encourage'])
           && d.updatedAt is int && d.updatedAt >= 0;
       }
 
@@ -1927,10 +1932,18 @@ service cloud.firestore {
         function parentThread() {
           return get(/databases/$(database)/documents/eiken_class_chat_threads/$(threadId)).data;
         }
+        function validReactionMap(r) {
+          return r is map
+            && r.keys().hasOnly(['student', 'teacher'])
+            && (!('student' in r) || r.student in ['thumbsup', 'clap', 'fire', 'bulb', 'pray'])
+            && (!('teacher' in r) || r.teacher in ['thumbsup', 'clap', 'fire', 'bulb', 'pray']);
+        }
         function validChatMessage(m) {
           return m.keys().hasOnly([
               'id', 'threadId', 'classId', 'studentUid',
-              'senderUid', 'senderRole', 'senderName', 'text', 'createdAt'
+              'senderUid', 'senderRole', 'senderName', 'text', 'createdAt',
+              'topic', 'replyToId', 'replyToSenderName', 'replyToText',
+              'linkedChapterId', 'linkedChapterTitle', 'reactions', 'unsent'
             ])
             && m.keys().hasAll([
               'threadId', 'classId', 'studentUid',
@@ -1940,11 +1953,18 @@ service cloud.firestore {
             && m.classId is string && m.classId.size() > 0 && m.classId.size() <= 80
             && m.studentUid is string && m.studentUid.size() > 0 && m.studentUid.size() <= 128
             && threadId == m.classId + '_' + m.studentUid
-            && m.senderUid == request.auth.uid
             && m.senderRole in ['student', 'teacher']
             && m.senderName is string && m.senderName.size() <= 40
             && m.text is string && m.text.size() > 0 && m.text.size() <= 1000
-            && m.createdAt is int && m.createdAt > 0;
+            && m.createdAt is int && m.createdAt > 0
+            && (!('topic' in m) || m.topic in ['question', 'homework', 'pace', 'report', 'encourage'])
+            && (!('replyToId' in m) || (m.replyToId is string && m.replyToId.size() <= 128))
+            && (!('replyToSenderName' in m) || (m.replyToSenderName is string && m.replyToSenderName.size() <= 40))
+            && (!('replyToText' in m) || (m.replyToText is string && m.replyToText.size() <= 300))
+            && (!('linkedChapterId' in m) || (m.linkedChapterId is string && m.linkedChapterId.size() <= 100))
+            && (!('linkedChapterTitle' in m) || (m.linkedChapterTitle is string && m.linkedChapterTitle.size() <= 120))
+            && (!('reactions' in m) || validReactionMap(m.reactions))
+            && (!('unsent' in m) || m.unsent is bool);
         }
 
         allow get, list: if parentThreadExists()
@@ -1955,6 +1975,7 @@ service cloud.firestore {
              );
 
         allow create: if validChatMessage(request.resource.data)
+          && request.resource.data.senderUid == request.auth.uid
           && (
             (
               request.resource.data.senderRole == 'student'
@@ -1967,7 +1988,35 @@ service cloud.firestore {
             )
           );
 
-        allow update, delete: if false;
+        // リアクション付与・外し、または送信者本人による送信取消（unsent）のみ許可（本文改ざん・なりすまし禁止）
+        allow update: if resource != null
+          && parentThreadExists()
+          && sgCanAccessChatThread(
+               parentThread().classId,
+               parentThread().studentUid,
+               parentThread().teacherUid
+             )
+          && validChatMessage(request.resource.data)
+          && request.resource.data.threadId == resource.data.threadId
+          && request.resource.data.classId == resource.data.classId
+          && request.resource.data.studentUid == resource.data.studentUid
+          && request.resource.data.senderUid == resource.data.senderUid
+          && request.resource.data.senderRole == resource.data.senderRole
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (
+            // (a) 当事者によるリアクション更新（本文・取消状態は不変）
+            (
+              request.resource.data.text == resource.data.text
+              && request.resource.data.get('unsent', false) == resource.data.get('unsent', false)
+            )
+            // (b) 送信者本人による送信取り消し
+            || (
+              resource.data.senderUid == request.auth.uid
+              && request.resource.data.get('unsent', false) == true
+            )
+          );
+
+        allow delete: if false;
       }
     }
 

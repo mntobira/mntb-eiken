@@ -26,6 +26,7 @@ import { saveJukuMemberships } from '../utils/classAssignments';
 import { StudentAssignments } from './classroom/StudentAssignments';
 import { AdminClassHubSection } from './classroom/AdminClassHubSection';
 import { ClassChatModal, subscribeUserChatInbox } from '../sugoroku/chat';
+import { chapterSubjectOf } from '../sugoroku/homework/chapterTotals';
 
 /**
  * ===================================================================
@@ -400,6 +401,18 @@ export function ClassPanel({
             defaultDisplayName ||
             auth.currentUser?.displayName ||
             '生徒'
+          }
+          defaultGrade={chatMembership.subject}
+          onStartChapter={
+            onStartChapter
+              ? (chapterId) => {
+                  const targetSubject =
+                    (chapterSubjectOf(chapterId) as MembershipDetail['subject'] | null) ||
+                    chatMembership.subject;
+                  setChatMembership(null);
+                  onStartChapter(chapterId, targetSubject);
+                }
+              : undefined
           }
           onClose={() => setChatMembership(null)}
         />

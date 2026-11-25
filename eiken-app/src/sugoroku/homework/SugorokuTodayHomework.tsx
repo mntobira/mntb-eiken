@@ -27,6 +27,7 @@ import {
   Clock,
   Flame,
   Headphones,
+  MessageCircle,
   RefreshCw,
   Repeat,
   Sparkles,
@@ -48,6 +49,7 @@ import {
 import { chapterTitleOf, chapterTotals } from './chapterTotals';
 import { formatDuration } from '../timelog/timelogCore';
 import { subscribeTimelogChanges, summarize } from '../timelog/timelogStore';
+import { ClassChatModal, subscribeUserChatInbox } from '../chat';
 import type { SugorokuHomeworkPlan, SugorokuHomeworkTask } from '../shared/types';
 import './homework.css';
 
@@ -91,6 +93,8 @@ export function SugorokuTodayHomework({
   const [revision, setRevision] = useState(0);
   const [showMore, setShowMore] = useState(false);
   const [toastText, setToastText] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatUnreadByClass, setChatUnreadByClass] = useState<Record<string, number>>({});
 
   const load = useCallback(async (silent = false) => {
     const me = auth.currentUser;
@@ -180,6 +184,24 @@ export function SugorokuTodayHomework({
     return () => window.clearTimeout(t);
   }, [toastText]);
 
+  // 塾クラス参加生徒のみ、先生からの新着トーク未読バッジを購読
+  useEffect(() => {
+    if (!uid || !hasJukuMembership) {
+      setChatUnreadByClass({});
+      return;
+    }
+    return subscribeUserChatInbox({
+      uid,
+      onSummary: (summary) => {
+        const next: Record<string, number> = {};
+        Object.entries(summary.studentThreadsByClassId).forEach(([cid, t]) => {
+          next[cid] = Math.max(0, t.unreadByStudent || 0);
+        });
+        setChatUnreadByClass(next);
+      },
+    });
+  }, [uid, hasJukuMembership]);
+
   const tasks: Array<{ task: SugorokuHomeworkTask; nextTitle: string }> = useMemo(() => {
     if (sources.length === 0) return [];
     const now = Date.now();
@@ -252,6 +274,11 @@ export function SugorokuTodayHomework({
   const dueLabel = formatDueLabel(primary.dueAt, primary.daysLeft, now);
   const ringTone = complete || quotaDoneToday ? 'done' : primary.overdue ? 'warn' : 'brand';
   const breakdown = primary.skillBreakdown || {};
+  const jukuMemberships = loadJukuMemberships(uid);
+  const chatTarget =
+    jukuMemberships.find((m) => m.classId === primary.classId) || jukuMemberships[0] || null;
+  const chatUnread = chatTarget ? chatUnreadByClass[chatTarget.classId] || 0 : 0;
+  const studentDisplayName = auth.currentUser?.displayName || '生徒';
 
   const handleRefresh = async () => {
     await load(true);
@@ -406,22 +433,40 @@ export function SugorokuTodayHomework({
         {primary.message}
       </p>
 
-      {/* アクションボタン（「今すぐ解く」ワンタップ直行） */}
-      {!complete && onStartChapter && primary.nextChapterId && (
-        <button
-          type="button"
-          className="sgr-homework-start"
-          onClick={() => onStartChapter(primary.nextChapterId)}
-        >
-          <span className="sgr-homework-start-main">
-            {quotaDoneToday ? 'もう少し進める' : '今日の宿題を今すぐ解く'}
-          </span>
-          {primaryRow.nextTitle && (
-            <small className="sgr-homework-start-sub">次：{primaryRow.nextTitle}</small>
-          )}
-          <ChevronRight size={18} className="sgr-homework-start-arrow" aria-hidden="true" />
-        </button>
-      )}
+      {/* アクションボタン（「今すぐ解く」ワンタップ直行 ＋ 先生に質問・相談トーク） */}
+      <div className="sgr-homework-actions">
+        {!complete && onStartChapter && primary.nextChapterId && (
+          <button
+            type="button"
+            className="sgr-homework-start"
+            onClick={() => onStartChapter(primary.nextChapterId)}
+          >
+            <span className="sgr-homework-start-main">
+              {quotaDoneToday ? 'もう少し進める' : '今日の宿題を今すぐ解く'}
+            </span>
+            {primaryRow.nextTitle && (
+              <small className="sgr-homework-start-sub">次：{primaryRow.nextTitle}</small>
+            )}
+            <ChevronRight size={18} className="sgr-homework-start-arrow" aria-hidden="true" />
+          </button>
+        )}
+
+        {chatTarget && (
+          <button
+            type="button"
+            className="sgr-homework-chat-btn"
+            data-testid="homework-open-chat-btn"
+            onClick={() => setChatOpen(true)}
+            aria-label={`先生に質問・相談トークを開く${chatUnread > 0 ? `（未読${chatUnread}件）` : ''}`}
+          >
+            <MessageCircle size={16} aria-hidden="true" />
+            <span>{complete ? '先生に完了報告・相談' : '先生に質問・相談'}</span>
+            {chatUnread > 0 && (
+              <span className="sgr-homework-chat-badge">{chatUnread > 99 ? '99+' : chatUnread}</span>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* 今週の有効学習時間ミニストリップ（スクショ報告不要化の実感フィードバック） */}
       {timelogSummary && timelogSummary.weekSeconds > 0 && (
@@ -478,6 +523,29 @@ export function SugorokuTodayHomework({
             </ul>
           )}
         </div>
+      )}
+
+      {chatOpen && chatTarget && (
+        <ClassChatModal
+          open={true}
+          classId={chatTarget.classId}
+          className={chatTarget.className}
+          teacherUid={chatTarget.teacherUid}
+          studentUid={uid}
+          studentName={studentDisplayName}
+          viewerRole="student"
+          viewerName={studentDisplayName}
+          defaultGrade={chatTarget.subject}
+          onStartChapter={
+            onStartChapter
+              ? (chapterId) => {
+                  setChatOpen(false);
+                  onStartChapter(chapterId);
+                }
+              : undefined
+          }
+          onClose={() => setChatOpen(false)}
+        />
       )}
 
       {toastText && (

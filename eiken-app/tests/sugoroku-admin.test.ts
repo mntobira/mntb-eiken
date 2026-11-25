@@ -50,6 +50,10 @@ import {
   loadLocalChatThreads,
   markClassChatThreadRead,
   sendClassChatMessage,
+  TeacherClassChatBoard,
+  toggleClassChatReaction,
+  unsendClassChatMessage,
+  updateClassChatThreadMeta,
 } from '../src/sugoroku/chat';
 import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubSection';
 
@@ -286,7 +290,7 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       nowMs: 1_760_000_000_000,
     });
 
-    await sendClassChatMessage({
+    const stuMsg = await sendClassChatMessage({
       classId: 'cls_chat_test',
       className: '英検2級コース',
       schoolName: 'すごろく塾',
@@ -296,12 +300,60 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       senderRole: 'student',
       senderName: '田中 蓮',
       text: '大問3の長文の進め方を相談したいです！',
+      topic: 'question',
       isDemoMode: true,
     });
 
     const tid = buildClassChatThreadId('cls_chat_test', 'stu_test_1');
     expect(loadLocalChatThreads()[tid]?.unreadByTeacher).toBe(1);
+    expect(loadLocalChatThreads()[tid]?.resolutionStatus).toBe('open');
     expect(loadLocalChatMessages(tid).at(-1)?.text).toContain('大問3の長文の進め方');
+
+    // 先生からの引用リプライ＋単元カード添付送信
+    const teacherReply = await sendClassChatMessage({
+      classId: 'cls_chat_test',
+      className: '英検2級コース',
+      schoolName: 'すごろく塾',
+      teacherUid: 'teacher_1',
+      studentUid: 'stu_test_1',
+      studentName: '田中 蓮',
+      senderRole: 'teacher',
+      senderName: '西 講師',
+      text: 'まずは段落ごとに接続語に線を引いて、この単元から1題やってみよう！',
+      replyTo: {
+        id: stuMsg.id,
+        senderName: '田中 蓮',
+        text: stuMsg.text,
+      },
+      linkedChapter: {
+        id: 'e2_reading_3b',
+        title: '[2級] 長文内容一致 3B',
+      },
+      isDemoMode: true,
+    });
+
+    // リアクション付与・ピン留め約束メモ・解決ステータス更新
+    await toggleClassChatReaction({
+      classId: 'cls_chat_test',
+      studentUid: 'stu_test_1',
+      messageId: teacherReply.id,
+      viewerRole: 'student',
+      reaction: 'bulb',
+      isDemoMode: true,
+    });
+    expect(
+      loadLocalChatMessages(tid).find((m) => m.id === teacherReply.id)?.reactions?.student,
+    ).toBe('bulb');
+
+    await updateClassChatThreadMeta({
+      classId: 'cls_chat_test',
+      studentUid: 'stu_test_1',
+      pinnedNotice: '毎週水曜までに2級リスニング第1部を20問クリアしよう！',
+      resolutionStatus: 'resolved',
+      isDemoMode: true,
+    });
+    expect(loadLocalChatThreads()[tid]?.pinnedNotice).toContain('毎週水曜まで');
+    expect(loadLocalChatThreads()[tid]?.resolutionStatus).toBe('resolved');
 
     await markClassChatThreadRead({
       classId: 'cls_chat_test',
@@ -319,15 +371,68 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
         teacherUid: 'teacher_1',
         studentUid: 'stu_test_1',
         studentName: '田中 蓮',
-        viewerRole: 'teacher',
-        viewerName: '西 講師',
+        viewerRole: 'student',
+        viewerName: '田中 蓮',
         isDemoMode: true,
         embedded: true,
+        onStartChapter: () => {},
       }),
     );
-    expect(chatHtml).toContain('田中 蓮');
-    expect(chatHtml).toContain('1対1個別トーク');
+    expect(chatHtml).toContain('他の生徒には一切見えません');
+    expect(chatHtml).toContain('ここから未読メッセージ');
     expect(chatHtml).toContain('大問3の長文の進め方を相談したいです！');
+    expect(chatHtml).toContain('class-chat-chapter-card');
+    expect(chatHtml).toContain('[2級] 長文内容一致 3B');
+    expect(chatHtml).toContain('毎週水曜までに2級リスニング第1部を20問クリアしよう！');
+    expect(chatHtml).toContain('💡');
+
+    // 送信取消（送信者本人のロールでのみ取り消し可能・他者ロールでは無視されることも検証）
+    await unsendClassChatMessage({
+      classId: 'cls_chat_test',
+      studentUid: 'stu_test_1',
+      messageId: stuMsg.id,
+      viewerRole: 'teacher',
+      isDemoMode: true,
+    });
+    expect(loadLocalChatMessages(tid).find((m) => m.id === stuMsg.id)?.unsent).toBeUndefined();
+
+    await unsendClassChatMessage({
+      classId: 'cls_chat_test',
+      studentUid: 'stu_test_1',
+      messageId: stuMsg.id,
+      viewerRole: 'student',
+      isDemoMode: true,
+    });
+    expect(loadLocalChatMessages(tid).find((m) => m.id === stuMsg.id)?.unsent).toBe(true);
+
+    // 先生側LINE公式アカウント風トーク管理ボード（フィルタ・検索・生徒カルテストリップ）
+    const demo = createSugorokuDemoBundle(1_760_000_000_000);
+    const overviews = demo.members.map((member) =>
+      buildStudentOverview({
+        member,
+        logs: demo.logsByUid[member.uid] ?? [],
+        assignments: demo.assignments,
+        solvedByChapter: demo.solvedByUid[member.uid] ?? {},
+        nowMs: 1_760_000_000_000,
+      }),
+    );
+    const boardHtml = renderToStaticMarkup(
+      createElement(TeacherClassChatBoard, {
+        classId: 'cls_chat_test',
+        className: '英検2級コース',
+        schoolName: 'すごろく塾',
+        teacherUid: 'teacher_1',
+        teacherName: '西 講師',
+        students: overviews,
+        isDemoMode: true,
+        onIssueHomeworkForStudent: () => {},
+        onOpenStudentDetail: () => {},
+      }),
+    );
+    expect(boardHtml).toContain('data-testid="teacher-class-chat-board"');
+    expect(boardHtml).toContain('相談中');
+    expect(boardHtml).toContain('学習遅れ');
+    expect(boardHtml).toContain('この生徒に課題を出す');
   });
 
   it('複数講師（owner / staff）招待ID生成・メール検証・講師管理ボトムシートが正しく描画される', () => {

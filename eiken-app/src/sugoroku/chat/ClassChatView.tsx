@@ -1,35 +1,82 @@
 /**
  * ============================================================================
- * LINE風 1対1 生徒×先生チャットビュー（埋め込み ＆ モーダル両対応）
+ * LINE本格仕様 1対1 生徒×先生リアルタイムチャットビュー（埋め込み ＆ モーダル両対応）
  * ============================================================================
  *
- * - 生徒側：「先生に質問・ペース相談」として、課題・勉強法・部活との両立をすぐ相談できる
- * - 講師側：「生徒との1対1トーク」として、声掛け・宿題フォロー・質問回答をその場で完結できる
- * - 相手の既読時刻（`teacherLastReadAt` / `studentLastReadAt`）と照合し、LINEと同じ「既読」を表示
- * - 通知許可ボタンからワンタップでブラウザ着信通知をONにできる
+ * ■ 主な機能
+ * - LINEそのままの視覚体験：ブルーグレー背景・吹き出しのしっぽ・同一送信者の連続グルーピング・
+ *   日付ピル・「ここから未読メッセージ」境界ライン・「既読」時刻表示
+ * - メッセージタップ操作：👍👏🔥💡🙏 ワンタップリアクション、引用リプライ、コピー、送信取り消し
+ * - 学習直結リッチ添付：
+ *   1) 相談トピックタグ（質問・宿題相談・ペース調整・完了報告・声掛け）
+ *   2) アプリ内の英検単元カード添付（相手がタップするとその単元の演習が即座に開く！）
+ *   3) LINEスタンプ感覚のワンタップ学習スタンプ＆定型チップ
+ * - 先生専用ツール：トーク上部にその生徒の今週学習時間・宿題消化率ミニカルテを表示し、
+ *   「相談中 ⇄ 解決済み」ステータス切替、「ピン留め約束メモ」編集、その場での「課題配信」まで直結
+ * - 通知＆サウンド制御：ブラウザ通知ON・着信チャイム音ON/OFF・会話内キーワード検索
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Bell, BellRing, Check, MessageCircle, Send, Sparkles, X } from 'lucide-react';
+import {
+  ArrowDown,
+  Bell,
+  BellRing,
+  BookOpen,
+  Check,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  CornerUpLeft,
+  MessageCircle,
+  Pin,
+  Plus,
+  Search,
+  Send,
+  Smile,
+  Sparkles,
+  Trash2,
+  Volume2,
+  VolumeX,
+  X,
+} from 'lucide-react';
+import { allEikenChapterCatalog } from '../homework/chapterTotals';
 import {
   CLASS_CHAT_MAX_MESSAGE_LENGTH,
   getBrowserNotificationPermission,
+  isChatSoundEnabled,
   loadLocalChatMessages,
   loadLocalChatThreads,
   markClassChatThreadRead,
   requestBrowserNotificationPermission,
   sendClassChatMessage,
+  setChatSoundEnabled,
   subscribeClassChatConversation,
+  toggleClassChatReaction,
+  unsendClassChatMessage,
+  updateClassChatThreadMeta,
 } from './chatStore';
 import {
   buildClassChatThreadId,
+  CHAT_QUICK_STAMPS,
+  CHAT_REACTIONS,
+  CHAT_TOPIC_META,
   STUDENT_CHAT_QUICK_TEMPLATES,
   TEACHER_CHAT_QUICK_TEMPLATES,
   type ClassChatMessageDoc,
+  type ClassChatReactionKey,
   type ClassChatSenderRole,
   type ClassChatThreadDoc,
+  type ClassChatTopicTag,
 } from './chatTypes';
 import './class-chat.css';
+
+export interface StudentPulseSummary {
+  targetGradeLabel: string;
+  weeklyTimeLabel: string;
+  homeworkPct: number;
+  homeworkCountLabel?: string;
+}
 
 export interface ClassChatViewProps {
   classId: string;
@@ -40,7 +87,19 @@ export interface ClassChatViewProps {
   studentName: string;
   viewerRole: ClassChatSenderRole;
   viewerName: string;
+  /** 対象級（単元カード添付の初期フィルタに使用） */
+  defaultGrade?: string;
+  /** 先生側に表示するこの生徒の学習状況ミニサマリー */
+  studentPulse?: StudentPulseSummary;
   isDemoMode?: boolean;
+  /** モバイル2ペイン時にトーク一覧へ戻るハンドラ */
+  onBackToList?: () => void;
+  /** 先生側：この生徒にそのまま課題を出すハンドラ */
+  onIssueHomework?: () => void;
+  /** 先生側：生徒詳細カルテを開くハンドラ */
+  onOpenStudentDetail?: () => void;
+  /** 添付された単元カードの「今すぐ解く」押下ハンドラ */
+  onStartChapter?: (chapterId: string) => void;
   onClose?: () => void;
   embedded?: boolean;
 }
@@ -52,6 +111,14 @@ function formatTimeHm(ms: number): string {
 
 function formatDateLabel(ms: number): string {
   const d = new Date(ms);
+  const today = new Date();
+  if (
+    d.getFullYear() === today.getFullYear() &&
+    d.getMonth() === today.getMonth() &&
+    d.getDate() === today.getDate()
+  ) {
+    return '今日';
+  }
   const w = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()] || '';
   return `${d.getMonth() + 1}月${d.getDate()}日(${w})`;
 }
@@ -65,7 +132,13 @@ export function ClassChatView({
   studentName,
   viewerRole,
   viewerName,
+  defaultGrade = 'eiken_2',
+  studentPulse,
   isDemoMode = false,
+  onBackToList,
+  onIssueHomework,
+  onOpenStudentDetail,
+  onStartChapter,
   onClose,
   embedded = false,
 }: ClassChatViewProps) {
@@ -76,19 +149,72 @@ export function ClassChatView({
   const [messages, setMessages] = useState<ClassChatMessageDoc[]>(() =>
     loadLocalChatMessages(initialThreadId),
   );
+
+  // 開いた瞬間の自分の既読時刻を保持し、「ここから未読メッセージ」ラインを出す
+  const initialViewerReadAtRef = useRef<number | null>(null);
+  if (initialViewerReadAtRef.current === null) {
+    const initialT = loadLocalChatThreads()[initialThreadId];
+    initialViewerReadAtRef.current = initialT
+      ? viewerRole === 'teacher'
+        ? initialT.teacherLastReadAt
+        : initialT.studentLastReadAt
+      : Date.now();
+  }
+
   const [draft, setDraft] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState<ClassChatTopicTag | undefined>(undefined);
+  const [replyTo, setReplyTo] = useState<{
+    id: string;
+    senderName: string;
+    text: string;
+  } | null>(null);
+  const [attachedChapter, setAttachedChapter] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+
+  const [activeActionMsgId, setActiveActionMsgId] = useState<string | null>(null);
+  const [drawerTab, setDrawerTab] = useState<'none' | 'stamps' | 'chapters' | 'pin'>('none');
+  const [chapterGradeFilter, setChapterGradeFilter] = useState<string>(() =>
+    defaultGrade.startsWith('eiken_') ? defaultGrade : 'eiken_2',
+  );
+  const [chapterQuery, setChapterQuery] = useState('');
+  const [pinDraft, setPinDraft] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [atBottom, setAtBottom] = useState(true);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
-  const [showTemplates, setShowTemplates] = useState(true);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [soundOn, setSoundOn] = useState<boolean>(() => isChatSoundEnabled());
   const [notifPerm, setNotifPerm] = useState<NotificationPermission | 'unsupported'>(() =>
     getBrowserNotificationPermission(),
   );
 
   const timelineRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // スレッド切替時の状態リセット
+  useEffect(() => {
+    const tid = buildClassChatThreadId(classId, studentUid);
+    const localT = loadLocalChatThreads()[tid] ?? null;
+    initialViewerReadAtRef.current = localT
+      ? viewerRole === 'teacher'
+        ? localT.teacherLastReadAt
+        : localT.studentLastReadAt
+      : Date.now();
+    setThread(localT);
+    setMessages(loadLocalChatMessages(tid));
+    setReplyTo(null);
+    setAttachedChapter(null);
+    setSelectedTopic(undefined);
+    setActiveActionMsgId(null);
+    setDrawerTab('none');
+  }, [classId, studentUid, viewerRole]);
 
   useEffect(() => {
     if (!classId || !studentUid) return;
-    const unsub = subscribeClassChatConversation({
+    return subscribeClassChatConversation({
       classId,
       studentUid,
       isDemoMode,
@@ -97,10 +223,9 @@ export function ClassChatView({
         setMessages(nextMsgs);
       },
     });
-    return unsub;
   }, [classId, studentUid, isDemoMode]);
 
-  // 開いている間、相手からの未読があれば自動で既読にする
+  // 開いている間、相手からの未読があれば既読にする
   useEffect(() => {
     if (!classId || !studentUid) return;
     void markClassChatThreadRead({
@@ -111,12 +236,38 @@ export function ClassChatView({
     });
   }, [classId, studentUid, viewerRole, isDemoMode, messages.length]);
 
-  // 新しいメッセージが追加されたら一番下へスクロール
-  useEffect(() => {
+  const scrollToBottom = (smooth = false) => {
     const el = timelineRef.current;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
+    if (smooth && typeof el.scrollTo === 'function') {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    } else {
+      el.scrollTop = el.scrollHeight;
+    }
+    setAtBottom(true);
+  };
+
+  useEffect(() => {
+    if (atBottom) {
+      scrollToBottom(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, studentUid]);
+
+  // テキストエリアの高さ自動調整（1〜5行）
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = `${Math.min(120, Math.max(38, ta.scrollHeight))}px`;
+  }, [draft]);
+
+  const handleTimelineScroll = () => {
+    const el = timelineRef.current;
+    if (!el) return;
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setAtBottom(distance < 72);
+  };
 
   const peerReadAt =
     viewerRole === 'teacher'
@@ -126,30 +277,86 @@ export function ClassChatView({
   const quickTemplates =
     viewerRole === 'teacher' ? TEACHER_CHAT_QUICK_TEMPLATES : STUDENT_CHAT_QUICK_TEMPLATES;
 
+  const allChapters = useMemo(() => allEikenChapterCatalog(), []);
+  const pickableChapters = useMemo(() => {
+    const q = chapterQuery.trim().toLowerCase();
+    return allChapters
+      .filter((c) => {
+        if (chapterGradeFilter !== 'all' && c.grade !== chapterGradeFilter) return false;
+        if (q && !c.title.toLowerCase().includes(q)) return false;
+        return true;
+      })
+      .slice(0, 36);
+  }, [allChapters, chapterGradeFilter, chapterQuery]);
+
+  const visibleMessages = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return messages;
+    return messages.filter(
+      (m) => !m.unsent && m.text.toLowerCase().includes(q),
+    );
+  }, [messages, searchQuery]);
+
+  // 日付区切り・未読区切り・連続送信グルーピング付きのタイムライン構築
   const groupedTimeline = useMemo(() => {
     const items: Array<
       | { kind: 'date'; key: string; label: string }
-      | { kind: 'msg'; msg: ClassChatMessageDoc }
+      | { kind: 'unread'; key: string }
+      | { kind: 'msg'; msg: ClassChatMessageDoc; groupedWithPrev: boolean }
     > = [];
     let lastDay = '';
-    for (const msg of messages) {
+    let prevSenderRole: ClassChatSenderRole | null = null;
+    let prevCreatedAt = 0;
+    let unreadInserted = false;
+    const baseReadAt = initialViewerReadAtRef.current ?? Date.now();
+
+    for (const msg of visibleMessages) {
       const dayLabel = formatDateLabel(msg.createdAt);
       if (dayLabel !== lastDay) {
         items.push({ kind: 'date', key: `date_${dayLabel}_${msg.id}`, label: dayLabel });
         lastDay = dayLabel;
+        prevSenderRole = null;
       }
-      items.push({ kind: 'msg', msg });
+      if (
+        !unreadInserted &&
+        !searchQuery &&
+        baseReadAt > 0 &&
+        msg.senderRole !== viewerRole &&
+        msg.createdAt > baseReadAt
+      ) {
+        items.push({ kind: 'unread', key: `unread_${msg.id}` });
+        unreadInserted = true;
+        prevSenderRole = null;
+      }
+
+      const groupedWithPrev =
+        !msg.unsent &&
+        prevSenderRole === msg.senderRole &&
+        msg.createdAt - prevCreatedAt < 3 * 60_000;
+
+      items.push({ kind: 'msg', msg, groupedWithPrev });
+      prevSenderRole = msg.unsent ? null : msg.senderRole;
+      prevCreatedAt = msg.createdAt;
     }
     return items;
-  }, [messages]);
+  }, [visibleMessages, viewerRole, searchQuery]);
 
   const handleEnableNotifications = async () => {
     const perm = await requestBrowserNotificationPermission();
     setNotifPerm(perm);
   };
 
-  const handleSend = async (textOverride?: string) => {
-    const body = (textOverride ?? draft).trim();
+  const handleToggleSound = () => {
+    const next = !soundOn;
+    setSoundOn(next);
+    setChatSoundEnabled(next);
+  };
+
+  const handleSend = async (override?: {
+    text: string;
+    topic?: ClassChatTopicTag;
+  }) => {
+    const body = (override ? override.text : draft).trim();
     if (!body || sending) return;
     setSending(true);
     setSendError('');
@@ -164,11 +371,20 @@ export function ClassChatView({
         senderRole: viewerRole,
         senderName: viewerName,
         text: body,
+        topic: override?.topic ?? selectedTopic,
+        replyTo,
+        linkedChapter: attachedChapter,
         isDemoMode,
       });
-      if (textOverride === undefined) {
+      if (!override) {
         setDraft('');
       }
+      setReplyTo(null);
+      setAttachedChapter(null);
+      setSelectedTopic(undefined);
+      setDrawerTab('none');
+      setAtBottom(true);
+      window.setTimeout(() => scrollToBottom(true), 30);
     } catch (e) {
       setSendError(e instanceof Error ? e.message : '送信に失敗しました。');
     } finally {
@@ -176,67 +392,179 @@ export function ClassChatView({
     }
   };
 
+  const handleToggleReaction = async (msgId: string, key: ClassChatReactionKey) => {
+    setActiveActionMsgId(null);
+    await toggleClassChatReaction({
+      classId,
+      studentUid,
+      messageId: msgId,
+      viewerRole,
+      reaction: key,
+      isDemoMode,
+    });
+  };
+
+  const handleUnsend = async (msgId: string) => {
+    setActiveActionMsgId(null);
+    await unsendClassChatMessage({
+      classId,
+      studentUid,
+      messageId: msgId,
+      viewerRole,
+      isDemoMode,
+    });
+  };
+
+  const handleCopyText = async (msg: ClassChatMessageDoc) => {
+    try {
+      await navigator.clipboard.writeText(msg.text);
+      setCopiedId(msg.id);
+      setActiveActionMsgId(null);
+      window.setTimeout(() => setCopiedId((c) => (c === msg.id ? null : c)), 1500);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleToggleResolution = async () => {
+    const next = thread?.resolutionStatus === 'open' ? 'resolved' : 'open';
+    await updateClassChatThreadMeta({
+      classId,
+      studentUid,
+      resolutionStatus: next,
+      isDemoMode,
+    });
+  };
+
+  const handleSavePinnedNotice = async () => {
+    await updateClassChatThreadMeta({
+      classId,
+      studentUid,
+      pinnedNotice: pinDraft,
+      isDemoMode,
+    });
+    setDrawerTab('none');
+  };
+
+  const shortStudentName = studentName.split('（')[0] || studentName;
   const peerTitle =
     viewerRole === 'teacher'
       ? studentName
       : `${schoolName ? `${schoolName} ` : ''}${className} 担当先生`;
-
   const peerInitial =
+    viewerRole === 'teacher' ? (shortStudentName.trim()[0] || '生') : '先';
+
+  const topicChoices: ClassChatTopicTag[] =
     viewerRole === 'teacher'
-      ? (studentName.trim()[0] || '生')
-      : '先';
+      ? ['encourage', 'homework', 'question', 'pace']
+      : ['question', 'homework', 'pace', 'report'];
 
   return (
     <div
-      className={embedded ? 'cchat-shell' : 'h-full flex flex-col'}
+      className={embedded ? 'cchat-shell' : 'h-full flex flex-col relative'}
       data-testid="class-chat-view"
+      onClick={() => setActiveActionMsgId(null)}
     >
-      {/* ヘッダー */}
-      <header className="cchat-header">
+      {/* 1. LINE風ヘッダー */}
+      <header className="cchat-header" onClick={(e) => e.stopPropagation()}>
         <div className="cchat-header-main">
+          {onBackToList && (
+            <button
+              type="button"
+              className="cchat-back-btn cchat-mobile-only"
+              onClick={onBackToList}
+              aria-label="トーク一覧へ戻る"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
           <span className="cchat-avatar" aria-hidden="true">
             {peerInitial}
+            <i className="cchat-avatar-online" />
           </span>
           <div className="cchat-header-titles">
-            <strong>{peerTitle}</strong>
+            <div className="cchat-header-title-row">
+              <strong>{peerTitle}</strong>
+              {thread?.resolutionStatus && (
+                <span
+                  className="cchat-status-pill"
+                  data-status={thread.resolutionStatus}
+                >
+                  {thread.resolutionStatus === 'open' ? '相談中' : '解決済'}
+                </span>
+              )}
+            </div>
             <small>
               {viewerRole === 'teacher'
                 ? `${className} · 1対1個別トーク（他生徒には非公開）`
-                : '宿題・勉強法・ペース相談（他の生徒には見えません）'}
+                : '質問・宿題・ペース相談（他の生徒には一切見えません）'}
             </small>
           </div>
         </div>
 
         <div className="cchat-header-actions">
+          {viewerRole === 'teacher' && (
+            <button
+              type="button"
+              className="cchat-head-btn"
+              data-active={thread?.resolutionStatus === 'resolved' ? 'true' : undefined}
+              onClick={() => void handleToggleResolution()}
+              title="質問・相談の対応状態を切り替え"
+            >
+              <CheckCircle2 size={13} />
+              <span className="hidden sm:inline">
+                {thread?.resolutionStatus === 'open' ? '解決にする' : '相談中にする'}
+              </span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="cchat-head-btn"
+            data-active={searchOpen ? 'true' : undefined}
+            onClick={() => {
+              setSearchOpen((v) => !v);
+              if (searchOpen) setSearchQuery('');
+            }}
+            title="トーク履歴を検索"
+            aria-label="トーク内検索"
+          >
+            <Search size={13} />
+          </button>
+
+          <button
+            type="button"
+            className="cchat-head-btn"
+            data-active={soundOn ? 'true' : undefined}
+            onClick={handleToggleSound}
+            title={soundOn ? '着信チャイム音 ON' : '着信チャイム音 OFF'}
+            aria-label="着信音の切り替え"
+          >
+            {soundOn ? <Volume2 size={13} /> : <VolumeX size={13} />}
+          </button>
+
           {notifPerm !== 'unsupported' && (
             <button
               type="button"
               className="cchat-head-btn"
+              data-active={notifPerm === 'granted' ? 'true' : undefined}
               onClick={() => void handleEnableNotifications()}
-              title="メッセージが届いたときに端末通知を受け取る"
+              title="メッセージ着信時のプッシュ通知設定"
             >
               {notifPerm === 'granted' ? (
                 <>
-                  <BellRing size={13} aria-hidden="true" />
-                  通知ON
+                  <BellRing size={13} />
+                  <span className="hidden sm:inline">通知ON</span>
                 </>
               ) : (
                 <>
-                  <Bell size={13} aria-hidden="true" />
-                  着信通知をON
+                  <Bell size={13} />
+                  <span>通知ONにする</span>
                 </>
               )}
             </button>
           )}
-          <button
-            type="button"
-            className="cchat-head-btn"
-            onClick={() => setShowTemplates((v) => !v)}
-            title="定型メッセージの表示切替"
-          >
-            <Sparkles size={13} aria-hidden="true" />
-            定型文
-          </button>
+
           {onClose && (
             <button
               type="button"
@@ -250,21 +578,123 @@ export function ClassChatView({
         </div>
       </header>
 
-      {/* メッセージタイムライン */}
-      <div ref={timelineRef} className="cchat-timeline" role="log" aria-live="polite">
+      {/* 2. サブバー：先生用生徒カルテ帯 ／ ピン留め約束アナウンス ／ トーク検索 */}
+      {(studentPulse || thread?.pinnedNotice || viewerRole === 'teacher' || searchOpen) && (
+        <div className="cchat-subbar" onClick={(e) => e.stopPropagation()}>
+          {viewerRole === 'teacher' && studentPulse && (
+            <div className="cchat-student-pulse">
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 800, color: '#1e3a8a' }}>
+                  {studentPulse.targetGradeLabel}
+                </span>
+                <span>
+                  今週の学習: <b>{studentPulse.weeklyTimeLabel}</b>
+                </span>
+                <span>
+                  宿題消化: <b>{studentPulse.homeworkPct}%</b>
+                  {studentPulse.homeworkCountLabel ? ` (${studentPulse.homeworkCountLabel})` : ''}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {onIssueHomework && (
+                  <button
+                    type="button"
+                    onClick={onIssueHomework}
+                    className="px-2.5 py-1 rounded-lg bg-[#2458A6] text-white text-[11px] font-extrabold hover:bg-[#1c4687] cursor-pointer"
+                  >
+                    ＋ この生徒に課題を出す
+                  </button>
+                )}
+                {onOpenStudentDetail && (
+                  <button
+                    type="button"
+                    onClick={onOpenStudentDetail}
+                    className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-slate-700 text-[11px] font-bold hover:bg-slate-50 cursor-pointer"
+                  >
+                    詳細カルテ
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPinDraft(thread?.pinnedNotice || '');
+                    setDrawerTab((cur) => (cur === 'pin' ? 'none' : 'pin'));
+                  }}
+                  className="px-2 py-1 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <Pin size={11} />
+                  約束メモ
+                </button>
+              </div>
+            </div>
+          )}
+
+          {thread?.pinnedNotice && (
+            <div className="cchat-pinned-bar">
+              <Pin size={13} className="text-amber-600 shrink-0" />
+              <span className="flex-1 min-w-0 truncate font-bold text-[#1e293b]">
+                {thread.pinnedNotice}
+              </span>
+              {viewerRole === 'teacher' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPinDraft(thread.pinnedNotice || '');
+                    setDrawerTab('pin');
+                  }}
+                  className="text-[11px] font-bold text-[#2458A6] hover:underline shrink-0"
+                >
+                  編集
+                </button>
+              )}
+            </div>
+          )}
+
+          {searchOpen && (
+            <div className="cchat-search-bar">
+              <Search size={13} className="text-slate-400 shrink-0" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="トーク内のメッセージを検索…"
+                aria-label="トーク内検索キーワード"
+              />
+              {searchQuery && (
+                <span className="text-[11px] font-bold text-slate-500">
+                  {visibleMessages.length}件
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 3. LINEタイムライン本体 */}
+      <div
+        ref={timelineRef}
+        onScroll={handleTimelineScroll}
+        className="cchat-timeline"
+        role="log"
+        aria-live="polite"
+      >
         {groupedTimeline.length === 0 ? (
           <div className="cchat-empty">
-            <MessageCircle className="w-7 h-7 mx-auto mb-1.5 text-[#2458A6]" />
-            <p className="font-bold text-[#1B2631] mb-1">
-              {viewerRole === 'teacher'
-                ? `${studentName}さんとの1対1トークルームです`
-                : '先生との1対1相談チャットです'}
+            <MessageCircle className="w-8 h-8 mx-auto mb-2 text-[#06C755]" />
+            <p className="font-extrabold text-sm text-[#1B2631] mb-1">
+              {searchQuery
+                ? '一致するメッセージが見つかりませんでした'
+                : viewerRole === 'teacher'
+                  ? `${shortStudentName}さんとの1対1トークルーム`
+                  : '先生との1対1相談トークルーム'}
             </p>
-            <p>
-              {viewerRole === 'teacher'
-                ? '今週の宿題の声掛けや、学習ペース・質問へのアドバイスをそのまま送れます。メッセージを送ると生徒のアプリに通知が届きます。'
-                : 'わからない問題・今週の宿題の進め方・部活やテスト期間のペース調整など、なんでも気軽にメッセージを送れます。'}
-            </p>
+            {!searchQuery && (
+              <p>
+                {viewerRole === 'teacher'
+                  ? '声掛け・質問回答はもちろん、左下の「＋」から英検の演習単元カードを添付して送ると、生徒がチャットから1タップでその単元を解き始められます。'
+                  : 'わからない問題・今週の宿題のやり方・部活やテスト期間のペース相談など、下のチップやスタンプからLINE感覚で気軽に送れます！'}
+              </p>
+            )}
           </div>
         ) : (
           groupedTimeline.map((entry) => {
@@ -275,37 +705,198 @@ export function ClassChatView({
                 </div>
               );
             }
+            if (entry.kind === 'unread') {
+              return (
+                <div key={entry.key} className="cchat-unread-divider">
+                  <span>ここから未読メッセージ</span>
+                </div>
+              );
+            }
+
             const m = entry.msg;
+            if (m.unsent) {
+              return (
+                <div key={m.id} className="cchat-unsent-pill">
+                  {m.senderRole === viewerRole
+                    ? 'メッセージの送信を取り消しました'
+                    : `${m.senderName || '相手'}がメッセージの送信を取り消しました`}
+                </div>
+              );
+            }
+
             const isMine = m.senderRole === viewerRole;
             const isReadByPeer = isMine && peerReadAt >= m.createdAt;
+            const topicMeta = m.topic ? CHAT_TOPIC_META[m.topic] : null;
+            const reactionEntries = Object.entries(m.reactions || {}) as Array<
+              [ClassChatSenderRole, ClassChatReactionKey]
+            >;
+            const menuOpen = activeActionMsgId === m.id;
+
             return (
               <div
                 key={m.id}
                 className="cchat-msg-row"
                 data-mine={isMine ? 'true' : 'false'}
+                data-grouped={entry.groupedWithPrev ? 'true' : 'false'}
+                onClick={(e) => e.stopPropagation()}
               >
-                {!isMine && (
-                  <span className="cchat-peer-badge" aria-hidden="true">
-                    {m.senderRole === 'teacher' ? '先' : (m.senderName.trim()[0] || '生')}
-                  </span>
-                )}
+                {!isMine &&
+                  (entry.groupedWithPrev ? (
+                    <span className="cchat-peer-spacer" aria-hidden="true" />
+                  ) : (
+                    <span className="cchat-peer-badge" aria-hidden="true">
+                      {m.senderRole === 'teacher' ? '先' : (m.senderName.trim()[0] || '生')}
+                    </span>
+                  ))}
+
                 <div className="cchat-bubble-wrap">
-                  {!isMine && (
+                  {!isMine && !entry.groupedWithPrev && (
                     <span className="cchat-sender-label">
-                      {m.senderName || (m.senderRole === 'teacher' ? '担当先生' : studentName)}
+                      {m.senderName || (m.senderRole === 'teacher' ? '担当先生' : shortStudentName)}
                     </span>
                   )}
+
                   <div className="cchat-bubble-line">
-                    <div className="cchat-bubble">{m.text}</div>
-                    <div className="cchat-meta">
-                      {isReadByPeer && (
-                        <span className="cchat-read-flag">
-                          既読
+                    <div
+                      className="cchat-bubble"
+                      onClick={() =>
+                        setActiveActionMsgId((cur) => (cur === m.id ? null : m.id))
+                      }
+                      title="タップしてリアクション・返信・メニューを表示"
+                    >
+                      {topicMeta && (
+                        <span
+                          className="cchat-topic-badge"
+                          style={{
+                            backgroundColor: topicMeta.bg,
+                            color: topicMeta.fg,
+                            borderColor: topicMeta.border,
+                          }}
+                        >
+                          {topicMeta.shortLabel}
                         </span>
                       )}
-                      <span>{formatTimeHm(m.createdAt)}</span>
+
+                      {m.replyToText && (
+                        <div className="cchat-reply-quote">
+                          <strong>↩ {m.replyToSenderName || '返信元'}</strong>
+                          <span className="line-clamp-2">{m.replyToText}</span>
+                        </div>
+                      )}
+
+                      <div>{m.text}</div>
+
+                      {m.linkedChapterId && (
+                        <button
+                          type="button"
+                          data-testid="class-chat-chapter-card"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            onStartChapter?.(m.linkedChapterId!);
+                          }}
+                          className="cchat-chapter-card"
+                        >
+                          <div className="min-w-0">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#2458A6]">
+                              <BookOpen size={11} />
+                              アプリ内演習リンク
+                            </span>
+                            <strong className="block text-xs font-extrabold text-[#1B2631] truncate">
+                              {m.linkedChapterTitle || m.linkedChapterId}
+                            </strong>
+                          </div>
+                          {onStartChapter && (
+                            <span className="shrink-0 inline-flex items-center gap-0.5 px-2.5 py-1 rounded-lg bg-[#2458A6] text-white text-[11px] font-extrabold">
+                              解く
+                              <ChevronRight size={12} />
+                            </span>
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="cchat-meta">
+                      {isReadByPeer && <span className="cchat-read-flag">既読</span>}
+                      <span>{copiedId === m.id ? 'コピー済' : formatTimeHm(m.createdAt)}</span>
                     </div>
                   </div>
+
+                  {/* 付与済みリアクションピル */}
+                  {reactionEntries.length > 0 && (
+                    <div className="cchat-reaction-pills">
+                      {reactionEntries.map(([role, rKey]) => {
+                        const meta = CHAT_REACTIONS.find((r) => r.key === rKey);
+                        if (!meta) return null;
+                        return (
+                          <button
+                            key={`${m.id}_${role}`}
+                            type="button"
+                            className="cchat-reaction-pill"
+                            onClick={() => void handleToggleReaction(m.id, rKey)}
+                            title={`${role === 'teacher' ? '先生' : shortStudentName}: ${meta.label}`}
+                          >
+                            <span>{meta.emoji}</span>
+                            <span style={{ fontSize: 10, color: '#64748b' }}>
+                              {role === 'teacher' ? '先生' : '生徒'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* メッセージタップで開くLINE風クイックリアクション＆リプライバー */}
+                  {menuOpen && (
+                    <div className="cchat-action-popover" role="toolbar" aria-label="メッセージ操作">
+                      {CHAT_REACTIONS.map((r) => (
+                        <button
+                          key={r.key}
+                          type="button"
+                          className="cchat-action-emoji-btn"
+                          onClick={() => void handleToggleReaction(m.id, r.key)}
+                          title={r.label}
+                        >
+                          {r.emoji}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="cchat-action-text-btn"
+                        onClick={() => {
+                          setReplyTo({
+                            id: m.id,
+                            senderName:
+                              m.senderName ||
+                              (m.senderRole === 'teacher' ? '先生' : shortStudentName),
+                            text: m.text,
+                          });
+                          setActiveActionMsgId(null);
+                          textareaRef.current?.focus();
+                        }}
+                      >
+                        <CornerUpLeft size={11} />
+                        返信
+                      </button>
+                      <button
+                        type="button"
+                        className="cchat-action-text-btn"
+                        onClick={() => void handleCopyText(m)}
+                      >
+                        <Copy size={11} />
+                        コピー
+                      </button>
+                      {isMine && (
+                        <button
+                          type="button"
+                          className="cchat-action-text-btn"
+                          onClick={() => void handleUnsend(m.id)}
+                        >
+                          <Trash2 size={11} />
+                          送信取消
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -313,65 +904,281 @@ export function ClassChatView({
         )}
       </div>
 
-      {/* ワンタップ定型チップ */}
-      {showTemplates && (
-        <div className="cchat-quick-bar" aria-label="クイック返信">
+      {/* 最新メッセージへ一気に降りるフローティングボタン */}
+      {!atBottom && (
+        <button
+          type="button"
+          className="cchat-JumpBottom"
+          onClick={() => scrollToBottom(true)}
+        >
+          <ArrowDown size={13} />
+          最新へ移動
+        </button>
+      )}
+
+      {/* 4. コンポーザートレイ（返信プレビュー・単元添付・スタンプ・定型チップ・自動伸長入力） */}
+      <div className="cchat-composer-tray" onClick={(e) => e.stopPropagation()}>
+        {/* 返信引用中 / 単元添付中 / トピック選択中のステータスバー */}
+        {(replyTo || attachedChapter || selectedTopic) && (
+          <div className="cchat-active-AttachmentBar">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
+              {selectedTopic && (
+                <span
+                  className="px-2 py-0.5 rounded-full text-[11px] font-extrabold"
+                  style={{
+                    backgroundColor: CHAT_TOPIC_META[selectedTopic].bg,
+                    color: CHAT_TOPIC_META[selectedTopic].fg,
+                    border: `1px solid ${CHAT_TOPIC_META[selectedTopic].border}`,
+                  }}
+                >
+                  #{CHAT_TOPIC_META[selectedTopic].shortLabel}
+                </span>
+              )}
+              {replyTo && (
+                <span className="truncate text-xs">
+                  <b>↩ {replyTo.senderName}へ返信:</b> {replyTo.text}
+                </span>
+              )}
+              {attachedChapter && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-blue-200 text-xs font-bold text-[#2458A6]">
+                  <BookOpen size={12} />
+                  {attachedChapter.title}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setReplyTo(null);
+                setAttachedChapter(null);
+                setSelectedTopic(undefined);
+              }}
+              aria-label="添付・返信を解除"
+              className="p-1 text-slate-500 hover:text-slate-800 shrink-0"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* 拡張ドロワー：スタンプ / 単元カード添付 / ピン留め約束メモ編集 */}
+        {drawerTab === 'stamps' && (
+          <div className="cchat-tool-drawer" aria-label="ワンタップスタンプ">
+            <div className="flex items-center justify-between text-xs font-extrabold text-slate-600">
+              <span>ワンタップで送れる学習スタンプ（押すと即時送信）</span>
+              <button type="button" onClick={() => setDrawerTab('none')} className="text-slate-400">
+                閉じる
+              </button>
+            </div>
+            <div className="cchat-stamp-grid">
+              {CHAT_QUICK_STAMPS.map((st) => (
+                <button
+                  key={st.id}
+                  type="button"
+                  className="cchat-stamp-btn"
+                  disabled={sending}
+                  onClick={() => void handleSend({ text: st.text, topic: st.topic })}
+                >
+                  <span style={{ fontSize: 18 }}>{st.emoji}</span>
+                  <span>{st.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {drawerTab === 'chapters' && (
+          <div className="cchat-tool-drawer" aria-label="英検単元カードを添付">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-extrabold text-[#1e3a8a]">
+                メッセージに添えるアプリ内単元を選択（相手が1タップで開けます）
+              </span>
+              <input
+                type="search"
+                value={chapterQuery}
+                onChange={(e) => setChapterQuery(e.target.value)}
+                placeholder="第1回 / リスニング…"
+                className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs"
+              />
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {[
+                { id: 'eiken_2', label: '2級' },
+                { id: 'eiken_pre2plus', label: '準2+' },
+                { id: 'eiken_pre2', label: '準2級' },
+                { id: 'eiken_3', label: '3級' },
+                { id: 'eiken_4', label: '4級' },
+                { id: 'eiken_5', label: '5級' },
+                { id: 'eiken_pre1', label: '準1級' },
+                { id: 'eiken_1', label: '1級' },
+              ].map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => setChapterGradeFilter(g.id)}
+                  className={`px-2 py-0.5 rounded-md text-[11px] font-bold border ${
+                    chapterGradeFilter === g.id
+                      ? 'bg-[#2458A6] text-white border-[#2458A6]'
+                      : 'bg-white text-slate-600 border-slate-300'
+                  }`}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {pickableChapters.map((ch) => (
+                <button
+                  key={ch.id}
+                  type="button"
+                  onClick={() => {
+                    setAttachedChapter({ id: ch.id, title: ch.title });
+                    setDrawerTab('none');
+                    textareaRef.current?.focus();
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:border-[#2458A6] text-xs font-bold text-slate-800 text-left"
+                >
+                  {ch.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {drawerTab === 'pin' && viewerRole === 'teacher' && (
+          <div className="cchat-tool-drawer" aria-label="ピン留め約束メモ設定">
+            <span className="text-xs font-extrabold text-amber-900">
+              トーク上部に常時ピン留めする「今週の約束・目標メモ」（生徒にも表示されます）
+            </span>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                maxLength={200}
+                value={pinDraft}
+                onChange={(e) => setPinDraft(e.target.value)}
+                placeholder="例：今週は部活後にリスニング第1部を毎日10問ずつ進めよう！"
+                className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs font-bold text-slate-800"
+              />
+              <button
+                type="button"
+                onClick={() => void handleSavePinnedNotice()}
+                className="px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-extrabold shrink-0"
+              >
+                ピン留め保存
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 相談トピック＆定型クイックバー */}
+        <div className="cchat-quick-bar" aria-label="相談タグと定型メッセージ">
+          {topicChoices.map((tp) => {
+            const active = selectedTopic === tp;
+            const meta = CHAT_TOPIC_META[tp];
+            return (
+              <button
+                key={tp}
+                type="button"
+                onClick={() => setSelectedTopic((cur) => (cur === tp ? undefined : tp))}
+                className="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-extrabold border cursor-pointer"
+                style={
+                  active
+                    ? { backgroundColor: meta.fg, color: '#ffffff', borderColor: meta.fg }
+                    : { backgroundColor: meta.bg, color: meta.fg, borderColor: meta.border }
+                }
+              >
+                #{meta.shortLabel}
+              </button>
+            );
+          })}
+
           {quickTemplates.map((tpl) => (
             <button
-              key={tpl}
+              key={tpl.label}
               type="button"
               className="cchat-quick-chip"
-              onClick={() => setDraft((prev) => (prev ? `${prev}\n${tpl}` : tpl))}
+              onClick={() => {
+                setSelectedTopic(tpl.topic);
+                setDraft((prev) => (prev ? `${prev}\n${tpl.text}` : tpl.text));
+                textareaRef.current?.focus();
+              }}
             >
-              ＋ {tpl.length > 22 ? `${tpl.slice(0, 22)}…` : tpl}
+              <Sparkles size={11} className="inline mr-1 text-[#2458A6]" />
+              {tpl.label}
             </button>
           ))}
         </div>
-      )}
 
-      {sendError && (
-        <div className="px-3 py-1.5 bg-red-50 border-t border-red-200 text-xs font-bold text-red-600">
-          {sendError}
-        </div>
-      )}
+        {sendError && (
+          <div className="px-3 py-1.5 bg-red-50 border-b border-red-200 text-xs font-bold text-red-600">
+            {sendError}
+          </div>
+        )}
 
-      {/* 入力欄（Enterキー：Shift+Enterで改行、スマホ・PCどちらも送信ボタン対応） */}
-      <div className="cchat-composer">
-        <textarea
-          value={draft}
-          rows={1}
-          maxLength={CLASS_CHAT_MAX_MESSAGE_LENGTH}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-              e.preventDefault();
-              void handleSend();
+        {/* LINE風メイン入力バー（＋単元添付 / スタンプ / 自動伸長テキスト / 送信ボタン） */}
+        <div className="cchat-composer">
+          <button
+            type="button"
+            className="cchat-plus-btn"
+            aria-expanded={drawerTab === 'chapters'}
+            onClick={() =>
+              setDrawerTab((cur) => (cur === 'chapters' ? 'none' : 'chapters'))
             }
-          }}
-          placeholder={
-            viewerRole === 'teacher'
-              ? `${studentName.split('（')[0]}さんへメッセージを入力…`
-              : '先生に質問・相談メッセージを送る…'
-          }
-          className="cchat-textarea"
-          aria-label="メッセージ入力"
-        />
-        <button
-          type="button"
-          disabled={!draft.trim() || sending}
-          onClick={() => void handleSend()}
-          className="cchat-send-btn"
-          aria-label="送信"
-          title="送信"
-        >
-          {sending ? <Check size={18} /> : <Send size={18} />}
-        </button>
+            title="英検の単元カードを添付する"
+            aria-label="単元カードを添付"
+          >
+            <Plus size={18} />
+          </button>
+
+          <button
+            type="button"
+            className="cchat-plus-btn"
+            aria-expanded={drawerTab === 'stamps'}
+            onClick={() => setDrawerTab((cur) => (cur === 'stamps' ? 'none' : 'stamps'))}
+            title="ワンタップ学習スタンプを開く"
+            aria-label="スタンプを開く"
+          >
+            <Smile size={18} />
+          </button>
+
+          <textarea
+            ref={textareaRef}
+            value={draft}
+            rows={1}
+            maxLength={CLASS_CHAT_MAX_MESSAGE_LENGTH}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                void handleSend();
+              }
+            }}
+            placeholder={
+              viewerRole === 'teacher'
+                ? `${shortStudentName}さんへメッセージ（Enterで送信・Shift+Enterで改行）`
+                : '先生に質問・相談メッセージを送る…'
+            }
+            className="cchat-textarea"
+            aria-label="メッセージ入力"
+          />
+
+          <button
+            type="button"
+            disabled={!draft.trim() || sending}
+            onClick={() => void handleSend()}
+            className="cchat-send-btn"
+            aria-label="送信"
+            title="送信"
+          >
+            {sending ? <Check size={18} /> : <Send size={18} />}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-/** モーダル表示ラッパー（生徒のクラス画面・通知バナーからワンタップで開く用） */
+/** モーダル表示ラッパー（生徒のホーム・クラス画面・通知バナーからワンタップで開く用） */
 export function ClassChatModal(props: ClassChatViewProps & { open: boolean }) {
   const { open, onClose, ...rest } = props;
   if (!open) return null;

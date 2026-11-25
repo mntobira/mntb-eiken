@@ -1,14 +1,14 @@
 /**
  * ============================================================================
- * クラス内 1対1 LINE風チャット — Firestoreリアルタイム同期＋ローカル即時ミラー＋通知制御
+ * クラス内 1対1 LINE品質リアルタイムチャット — Firestore双方向同期・リアクション・既読・着信音・通知制御
  * ============================================================================
  *
  * ■ 特徴
- * 1. Firestore `onSnapshot` によるリアルタイム双方向同期（メッセージ送受信・既読反映・未読件数）
- * 2. localStorage ミラー＆BroadcastChannel/CustomEvent により、デモモードやオフライン環境でも
- *    LINE風のトーク・既読・着信通知を完全動作
- * 3. 初回スナップショットは「既存履歴」として扱い通知を鳴らさず、購読開始後に相手から届いた
- *    新着メッセージ（`lastMessageAt` が増加かつ `lastSenderRole !== viewerRole`）のみ着信通知を発火
+ * 1. Firestore `onSnapshot` によるリアルタイム双方向同期（メッセージ送受信・引用リプライ・
+ *    リアクション・送信取消・相談中/解決済みステータス・ピン留めアナウンス・既読時刻）
+ * 2. Web Audio API による優しいLINE風2音チャイム着信音 ＋ 端末バイブレーション ＋
+ *    ブラウザ通知（Web Notification API）＋ アプリ内スライドダウン着信バナー
+ * 3. localStorage ミラー＆CustomEvent により、デモ環境・オフライン復帰時も即座に反映
  */
 
 import {
@@ -28,9 +28,14 @@ import { auth, db, FIREBASE_CONFIGURED } from '../../firebase';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
 import {
   buildClassChatThreadId,
+  CHAT_REACTIONS,
+  CHAT_TOPIC_META,
   type ClassChatMessageDoc,
+  type ClassChatReactionKey,
+  type ClassChatResolutionStatus,
   type ClassChatSenderRole,
   type ClassChatThreadDoc,
+  type ClassChatTopicTag,
   type IncomingClassChatAlert,
 } from './chatTypes';
 
@@ -40,7 +45,13 @@ export const CLASS_CHAT_MAX_MESSAGE_LENGTH = 1000;
 
 const LOCAL_THREADS_KEY = 'mntb_eiken_class_chat_threads_v1';
 const LOCAL_MESSAGES_PREFIX = 'mntb_eiken_class_chat_msgs_v1:';
+const LOCAL_SOUND_PREF_KEY = 'mntb_eiken_class_chat_sound_v1';
 const LOCAL_EVENT_NAME = 'mntb:class-chat-updated';
+
+type LocalChatEventDetail = {
+  threadId?: string;
+  incomingAlert?: IncomingClassChatAlert;
+};
 
 // Node(SSR/Vitest)環境など globalThis.localStorage が未定義の場合のメモリフォールバック
 const memoryStore = new Map<string, string>();
@@ -62,12 +73,8 @@ function getChatStorage(): Pick<Storage, 'getItem' | 'setItem'> {
   };
 }
 
-type LocalChatEventDetail = {
-  threadId?: string;
-  incomingAlert?: IncomingClassChatAlert;
-};
-
 const alertSubscribers = new Set<(alert: IncomingClassChatAlert) => void>();
+const recentlyEmittedAlertIds = new Set<string>();
 
 export function subscribeIncomingChatAlerts(
   listener: (alert: IncomingClassChatAlert) => void,
@@ -78,7 +85,75 @@ export function subscribeIncomingChatAlerts(
   };
 }
 
+export function isChatSoundEnabled(): boolean {
+  try {
+    return getChatStorage().getItem(LOCAL_SOUND_PREF_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+export function setChatSoundEnabled(enabled: boolean): void {
+  try {
+    getChatStorage().setItem(LOCAL_SOUND_PREF_KEY, enabled ? 'on' : 'off');
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Web Audio API による心地よい2音着信チャイム（外部音源ファイル不要・超軽量） */
+export function playChatArrivalChime(): void {
+  if (typeof window === 'undefined' || !isChatSoundEnabled()) return;
+  try {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    const notes = [
+      { freq: 783.99, start: 0, dur: 0.11 }, // G5
+      { freq: 1046.5, start: 0.09, dur: 0.18 }, // C6
+    ];
+    for (const n of notes) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(n.freq, now + n.start);
+      gain.gain.setValueAtTime(0.0001, now + n.start);
+      gain.gain.exponentialRampToValueAtTime(0.085, now + n.start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + n.start + n.dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + n.start);
+      osc.stop(now + n.start + n.dur + 0.02);
+    }
+    window.setTimeout(() => {
+      void ctx.close().catch(() => undefined);
+    }, 500);
+  } catch {
+    /* 自動再生制限時は静かにスキップ */
+  }
+}
+
 function emitIncomingAlert(alert: IncomingClassChatAlert): void {
+  if (recentlyEmittedAlertIds.has(alert.id)) return;
+  recentlyEmittedAlertIds.add(alert.id);
+  if (recentlyEmittedAlertIds.size > 100) {
+    const first = recentlyEmittedAlertIds.values().next().value;
+    if (first) recentlyEmittedAlertIds.delete(first);
+  }
+
+  playChatArrivalChime();
+  try {
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      navigator.vibrate([35, 45, 35]);
+    }
+  } catch {
+    /* ignore */
+  }
+
   for (const fn of alertSubscribers) {
     try {
       fn(alert);
@@ -116,12 +191,13 @@ function maybeFireBrowserNotification(alert: IncomingClassChatAlert): void {
   if (typeof window === 'undefined' || typeof Notification === 'undefined') return;
   if (Notification.permission !== 'granted') return;
   try {
+    const topicPrefix = alert.topic ? `【${CHAT_TOPIC_META[alert.topic].shortLabel}】` : '';
     const title =
       alert.senderRole === 'teacher'
-        ? `${alert.className || 'クラス'}の先生からメッセージ`
+        ? `${alert.className || 'クラス'}の先生から新着メッセージ`
         : `${alert.studentName}さんからメッセージ（${alert.className || 'クラス'}）`;
     const n = new Notification(title, {
-      body: alert.text.slice(0, 120),
+      body: `${topicPrefix}${alert.text}`.slice(0, 120),
       tag: `mntb-chat-${alert.threadId}`,
     });
     n.onclick = () => {
@@ -203,13 +279,19 @@ function saveLocalChatMessages(threadId: string, messages: ClassChatMessageDoc[]
   }
 }
 
-function appendLocalChatMessage(msg: ClassChatMessageDoc): void {
+function upsertLocalChatMessage(msg: ClassChatMessageDoc): void {
   const existing = loadLocalChatMessages(msg.threadId);
-  if (existing.some((m) => m.id === msg.id)) return;
-  saveLocalChatMessages(msg.threadId, [...existing, msg]);
+  const idx = existing.findIndex((m) => m.id === msg.id);
+  if (idx >= 0) {
+    const next = [...existing];
+    next[idx] = msg;
+    saveLocalChatMessages(msg.threadId, next);
+  } else {
+    saveLocalChatMessages(msg.threadId, [...existing, msg]);
+  }
 }
 
-/** デモモード用：リアルな生徒×講師の相談サンプルスレッドを初期投入 */
+/** デモモード用：リアルな生徒×講師のLINE相談サンプルスレッドを初期投入 */
 export function ensureDemoChatSeed(params: {
   classId: string;
   className: string;
@@ -227,11 +309,21 @@ export function ensureDemoChatSeed(params: {
     unreadByTeacher: number;
     teacherLastReadAt: number;
     studentLastReadAt: number;
+    resolutionStatus: ClassChatResolutionStatus;
+    pinnedNotice?: string;
     messages: Array<{
+      id: string;
       senderRole: ClassChatSenderRole;
       senderName: string;
       text: string;
       offsetMin: number;
+      topic?: ClassChatTopicTag;
+      replyToId?: string;
+      replyToSenderName?: string;
+      replyToText?: string;
+      linkedChapterId?: string;
+      linkedChapterTitle?: string;
+      reactions?: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>>;
     }>;
   }> = [
     {
@@ -239,19 +331,31 @@ export function ensureDemoChatSeed(params: {
       studentName: '山本 陸（高2・野球部）',
       unreadByTeacher: 1,
       teacherLastReadAt: now - 55 * 60_000,
-      studentLastReadAt: now - 12 * 60_000,
+      studentLastReadAt: now - 10 * 60_000,
+      resolutionStatus: 'open',
+      pinnedNotice: '今週の約束：部活後はリスニング第1部を1日10分（10問）ずつ進める！',
       messages: [
         {
+          id: 'demo_msg_stu_yamamoto_riku_1',
           senderRole: 'teacher',
           senderName: '西 講師',
-          text: '陸くん、週末の遠征お疲れさま！今週の英検2級 第1回課題、まずはリスニング第1部だけでも今日10分開いてみよう！',
+          text: '陸くん、週末の遠征お疲れさま！今週の英検2級 第1回課題、まずは下のリスニング第1部だけでも今日10分開いてみよう！',
           offsetMin: -60,
+          topic: 'encourage',
+          linkedChapterId: 'eiken_2_listening_r01_part1',
+          linkedChapterTitle: '英検2級 第1回 リスニング 第1部',
+          reactions: { student: 'pray' },
         },
         {
+          id: 'demo_msg_stu_yamamoto_riku_2',
           senderRole: 'student',
           senderName: '山本 陸',
-          text: 'ありがとうございます！今日部活が19時に終わるので、帰りの電車で単語とリスニング第1部やります！大問3の長文の解き方も相談したいです。',
+          text: 'ありがとうございます！今日部活が19時に終わるので、帰りの電車でリスニング第1部やります！あと大問3の長文の時間配分も相談したいです。',
           offsetMin: -12,
+          topic: 'question',
+          replyToId: 'demo_msg_stu_yamamoto_riku_1',
+          replyToSenderName: '西 講師',
+          replyToText: '陸くん、週末の遠征お疲れさま！今週の英検2級 第1回課題、まずは下のリスニング第1部だけでも今日10分開いてみよう！',
         },
       ],
     },
@@ -261,18 +365,29 @@ export function ensureDemoChatSeed(params: {
       unreadByTeacher: 0,
       teacherLastReadAt: now - 90 * 60_000,
       studentLastReadAt: now - 85 * 60_000,
+      resolutionStatus: 'resolved',
+      pinnedNotice: '目標：5月S-CBTで2級合格（間違えた語彙は必ず2周目まで！）',
       messages: [
         {
+          id: 'demo_msg_stu_takahashi_haruto_1',
           senderRole: 'student',
           senderName: '高橋 陽斗',
           text: '先生、今週分の第1回筆記とリスニング1周終わりました！間違えた語彙だけもう1周やります！',
           offsetMin: -120,
+          topic: 'report',
+          reactions: { teacher: 'clap' },
         },
         {
+          id: 'demo_msg_stu_takahashi_haruto_2',
           senderRole: 'teacher',
           senderName: '西 講師',
           text: '陽斗くん素晴らしいペース！間違えた問題の2周目が一番スコアが伸びるから、その調子で進めよう！',
           offsetMin: -95,
+          topic: 'encourage',
+          replyToId: 'demo_msg_stu_takahashi_haruto_1',
+          replyToSenderName: '高橋 陽斗',
+          replyToText: '先生、今週分の第1回筆記とリスニング1周終わりました！間違えた語彙だけもう1周やります！',
+          reactions: { student: 'fire' },
         },
       ],
     },
@@ -280,8 +395,8 @@ export function ensureDemoChatSeed(params: {
 
   for (const item of sampleThreads) {
     const threadId = buildClassChatThreadId(params.classId, item.studentUid);
-    const msgs: ClassChatMessageDoc[] = item.messages.map((m, idx) => ({
-      id: `demo_msg_${item.studentUid}_${idx + 1}`,
+    const msgs: ClassChatMessageDoc[] = item.messages.map((m) => ({
+      id: m.id,
       threadId,
       classId: params.classId,
       studentUid: item.studentUid,
@@ -290,6 +405,13 @@ export function ensureDemoChatSeed(params: {
       senderName: m.senderName,
       text: m.text,
       createdAt: now + m.offsetMin * 60_000,
+      ...(m.topic ? { topic: m.topic } : {}),
+      ...(m.replyToId ? { replyToId: m.replyToId } : {}),
+      ...(m.replyToSenderName ? { replyToSenderName: m.replyToSenderName } : {}),
+      ...(m.replyToText ? { replyToText: m.replyToText } : {}),
+      ...(m.linkedChapterId ? { linkedChapterId: m.linkedChapterId } : {}),
+      ...(m.linkedChapterTitle ? { linkedChapterTitle: m.linkedChapterTitle } : {}),
+      ...(m.reactions ? { reactions: m.reactions } : {}),
     }));
     const last = msgs[msgs.length - 1];
     const thread: ClassChatThreadDoc = {
@@ -308,6 +430,9 @@ export function ensureDemoChatSeed(params: {
       unreadByStudent: 0,
       teacherLastReadAt: item.teacherLastReadAt,
       studentLastReadAt: item.studentLastReadAt,
+      resolutionStatus: item.resolutionStatus,
+      ...(item.pinnedNotice ? { pinnedNotice: item.pinnedNotice } : {}),
+      ...(last.topic ? { lastTopic: last.topic } : {}),
       updatedAt: last.createdAt,
     };
     all[threadId] = thread;
@@ -320,9 +445,17 @@ export function ensureDemoChatSeed(params: {
 // 正規化ヘルパー
 // ============================================================================
 
+const VALID_TOPICS = new Set<string>(['question', 'homework', 'pace', 'report', 'encourage']);
+const VALID_REACTIONS = new Set<string>(CHAT_REACTIONS.map((r) => r.key));
+
 function toMillisSafe(val: unknown, fallback: number): number {
   if (typeof val === 'number' && Number.isFinite(val)) return val;
-  if (val && typeof val === 'object' && 'toMillis' in val && typeof (val as { toMillis: () => number }).toMillis === 'function') {
+  if (
+    val &&
+    typeof val === 'object' &&
+    'toMillis' in val &&
+    typeof (val as { toMillis: () => number }).toMillis === 'function'
+  ) {
     return (val as { toMillis: () => number }).toMillis();
   }
   return fallback;
@@ -333,6 +466,19 @@ function parseThreadDoc(id: string, raw: Record<string, unknown>): ClassChatThre
   const studentUid = typeof raw.studentUid === 'string' ? raw.studentUid : '';
   if (!classId || !studentUid) return null;
   const now = Date.now();
+  const resolutionStatus: ClassChatResolutionStatus | undefined =
+    raw.resolutionStatus === 'open' || raw.resolutionStatus === 'resolved'
+      ? raw.resolutionStatus
+      : undefined;
+  const lastTopic =
+    typeof raw.lastTopic === 'string' && VALID_TOPICS.has(raw.lastTopic)
+      ? (raw.lastTopic as ClassChatTopicTag)
+      : undefined;
+  const pinnedNotice =
+    typeof raw.pinnedNotice === 'string' && raw.pinnedNotice.trim()
+      ? raw.pinnedNotice
+      : undefined;
+
   return {
     id,
     classId,
@@ -349,6 +495,9 @@ function parseThreadDoc(id: string, raw: Record<string, unknown>): ClassChatThre
     unreadByStudent: typeof raw.unreadByStudent === 'number' ? Math.max(0, raw.unreadByStudent) : 0,
     teacherLastReadAt: toMillisSafe(raw.teacherLastReadAt, 0),
     studentLastReadAt: toMillisSafe(raw.studentLastReadAt, 0),
+    ...(resolutionStatus ? { resolutionStatus } : {}),
+    ...(pinnedNotice ? { pinnedNotice } : {}),
+    ...(lastTopic ? { lastTopic } : {}),
     updatedAt: toMillisSafe(raw.updatedAt, now),
   };
 }
@@ -360,6 +509,24 @@ function parseMessageDoc(
 ): ClassChatMessageDoc | null {
   const text = typeof raw.text === 'string' ? raw.text : '';
   if (!text) return null;
+  const topic =
+    typeof raw.topic === 'string' && VALID_TOPICS.has(raw.topic)
+      ? (raw.topic as ClassChatTopicTag)
+      : undefined;
+
+  let reactions: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> | undefined;
+  if (raw.reactions && typeof raw.reactions === 'object') {
+    const rObj = raw.reactions as Record<string, unknown>;
+    const parsedR: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> = {};
+    if (typeof rObj.student === 'string' && VALID_REACTIONS.has(rObj.student)) {
+      parsedR.student = rObj.student as ClassChatReactionKey;
+    }
+    if (typeof rObj.teacher === 'string' && VALID_REACTIONS.has(rObj.teacher)) {
+      parsedR.teacher = rObj.teacher as ClassChatReactionKey;
+    }
+    if (Object.keys(parsedR).length > 0) reactions = parsedR;
+  }
+
   return {
     id,
     threadId,
@@ -370,11 +537,36 @@ function parseMessageDoc(
     senderName: typeof raw.senderName === 'string' ? raw.senderName : '',
     text,
     createdAt: toMillisSafe(raw.createdAt, Date.now()),
+    ...(topic ? { topic } : {}),
+    ...(typeof raw.replyToId === 'string' && raw.replyToId ? { replyToId: raw.replyToId } : {}),
+    ...(typeof raw.replyToSenderName === 'string' && raw.replyToSenderName
+      ? { replyToSenderName: raw.replyToSenderName }
+      : {}),
+    ...(typeof raw.replyToText === 'string' && raw.replyToText
+      ? { replyToText: raw.replyToText }
+      : {}),
+    ...(typeof raw.linkedChapterId === 'string' && raw.linkedChapterId
+      ? { linkedChapterId: raw.linkedChapterId }
+      : {}),
+    ...(typeof raw.linkedChapterTitle === 'string' && raw.linkedChapterTitle
+      ? { linkedChapterTitle: raw.linkedChapterTitle }
+      : {}),
+    ...(reactions ? { reactions } : {}),
+    ...(raw.unsent === true ? { unsent: true } : {}),
   };
 }
 
+/** Firestore が undefined フィールドを拒否しないようクリーンアップする */
+function stripUndefined<T extends object>(obj: T): T {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    if (v !== undefined) out[k] = v;
+  }
+  return out as T;
+}
+
 // ============================================================================
-// メッセージ送信 ＆ 既読処理
+// メッセージ送信・リアクション・送信取消・ステータス＆ピン留め・既読更新
 // ============================================================================
 
 export interface SendClassChatMessageInput {
@@ -387,6 +579,16 @@ export interface SendClassChatMessageInput {
   senderRole: ClassChatSenderRole;
   senderName: string;
   text: string;
+  topic?: ClassChatTopicTag;
+  replyTo?: {
+    id: string;
+    senderName: string;
+    text: string;
+  } | null;
+  linkedChapter?: {
+    id: string;
+    title: string;
+  } | null;
   isDemoMode?: boolean;
 }
 
@@ -398,17 +600,24 @@ export async function sendClassChatMessage(
     throw new Error('メッセージを入力してください。');
   }
 
-  const now = Date.now();
   const threadId = buildClassChatThreadId(input.classId, input.studentUid);
+  const localExisting = loadLocalChatThreads()[threadId];
+  const now = Math.max(Date.now(), (localExisting?.lastMessageAt ?? 0) + 1);
   const senderUid =
     auth.currentUser?.uid ||
     (input.senderRole === 'teacher' ? input.teacherUid || 'teacher_demo' : input.studentUid);
 
-  const localExisting = loadLocalChatThreads()[threadId];
   const prevUnreadTeacher = localExisting?.unreadByTeacher ?? 0;
   const prevUnreadStudent = localExisting?.unreadByStudent ?? 0;
 
-  const nextThread: ClassChatThreadDoc = {
+  // 生徒が「質問」「宿題相談」「ペース調整」を送ったら自動で「相談中（open）」にして先生の対応漏れを防ぐ
+  const nextResolution: ClassChatResolutionStatus | undefined =
+    input.senderRole === 'student' &&
+    (input.topic === 'question' || input.topic === 'homework' || input.topic === 'pace')
+      ? 'open'
+      : localExisting?.resolutionStatus;
+
+  const baseThread: ClassChatThreadDoc = stripUndefined({
     id: threadId,
     classId: input.classId,
     className: input.className || localExisting?.className || 'クラス',
@@ -418,7 +627,7 @@ export async function sendClassChatMessage(
     studentName: input.studentName || localExisting?.studentName || '生徒',
     lastMessageText: trimmed,
     lastSenderRole: input.senderRole,
-    lastSenderName: input.senderName,
+    lastSenderName: input.senderName.slice(0, 40),
     lastMessageAt: now,
     unreadByTeacher: input.senderRole === 'student' ? prevUnreadTeacher + 1 : 0,
     unreadByStudent: input.senderRole === 'teacher' ? prevUnreadStudent + 1 : 0,
@@ -426,24 +635,37 @@ export async function sendClassChatMessage(
       input.senderRole === 'teacher' ? now : (localExisting?.teacherLastReadAt ?? 0),
     studentLastReadAt:
       input.senderRole === 'student' ? now : (localExisting?.studentLastReadAt ?? 0),
+    resolutionStatus: nextResolution,
+    pinnedNotice: localExisting?.pinnedNotice,
+    lastTopic: input.topic,
     updatedAt: now,
-  };
+  });
 
-  const optimisticMsg: ClassChatMessageDoc = {
+  const optimisticMsg: ClassChatMessageDoc = stripUndefined({
     id: `local_${now}_${Math.random().toString(36).slice(2, 8)}`,
     threadId,
     classId: input.classId,
     studentUid: input.studentUid,
     senderUid,
     senderRole: input.senderRole,
-    senderName: input.senderName,
+    senderName: input.senderName.slice(0, 40),
     text: trimmed,
     createdAt: now,
-  };
+    topic: input.topic,
+    replyToId: input.replyTo?.id ? input.replyTo.id.slice(0, 128) : undefined,
+    replyToSenderName: input.replyTo?.senderName
+      ? input.replyTo.senderName.slice(0, 40)
+      : undefined,
+    replyToText: input.replyTo?.text ? input.replyTo.text.slice(0, 280) : undefined,
+    linkedChapterId: input.linkedChapter?.id ? input.linkedChapter.id.slice(0, 100) : undefined,
+    linkedChapterTitle: input.linkedChapter?.title
+      ? input.linkedChapter.title.slice(0, 120)
+      : undefined,
+  });
 
   if (input.isDemoMode || !FIREBASE_CONFIGURED || !auth.currentUser) {
-    upsertLocalChatThread(nextThread);
-    appendLocalChatMessage(optimisticMsg);
+    upsertLocalChatThread(baseThread);
+    upsertLocalChatMessage(optimisticMsg);
     dispatchLocalChatUpdated({ threadId });
     return optimisticMsg;
   }
@@ -451,9 +673,11 @@ export async function sendClassChatMessage(
   const threadRef = doc(db, CLASS_CHAT_THREADS_COLLECTION, threadId);
   let remotePrevTeacherUnread = prevUnreadTeacher;
   let remotePrevStudentUnread = prevUnreadStudent;
-  let remoteTeacherReadAt = nextThread.teacherLastReadAt;
-  let remoteStudentReadAt = nextThread.studentLastReadAt;
-  let remoteTeacherUid = nextThread.teacherUid;
+  let remoteTeacherReadAt = baseThread.teacherLastReadAt;
+  let remoteStudentReadAt = baseThread.studentLastReadAt;
+  let remoteTeacherUid = baseThread.teacherUid;
+  let remotePinnedNotice = baseThread.pinnedNotice;
+  let remoteResolution = baseThread.resolutionStatus;
 
   try {
     const snap = await getDoc(threadRef);
@@ -467,20 +691,31 @@ export async function sendClassChatMessage(
         remoteStudentReadAt =
           input.senderRole === 'student' ? now : existing.studentLastReadAt;
         remoteTeacherUid = existing.teacherUid || remoteTeacherUid;
+        remotePinnedNotice = existing.pinnedNotice ?? remotePinnedNotice;
+        if (
+          !(
+            input.senderRole === 'student' &&
+            (input.topic === 'question' || input.topic === 'homework' || input.topic === 'pace')
+          )
+        ) {
+          remoteResolution = existing.resolutionStatus;
+        }
       }
     }
   } catch {
     /* proceed with optimistic values */
   }
 
-  const threadPayload: ClassChatThreadDoc = {
-    ...nextThread,
+  const threadPayload: ClassChatThreadDoc = stripUndefined({
+    ...baseThread,
     teacherUid: remoteTeacherUid,
     unreadByTeacher: input.senderRole === 'student' ? remotePrevTeacherUnread + 1 : 0,
     unreadByStudent: input.senderRole === 'teacher' ? remotePrevStudentUnread + 1 : 0,
     teacherLastReadAt: remoteTeacherReadAt,
     studentLastReadAt: remoteStudentReadAt,
-  };
+    pinnedNotice: remotePinnedNotice,
+    resolutionStatus: remoteResolution,
+  });
 
   await setDoc(threadRef, threadPayload);
   const messagesCol = collection(
@@ -489,7 +724,7 @@ export async function sendClassChatMessage(
     threadId,
     CLASS_CHAT_MESSAGES_SUBCOLLECTION,
   );
-  const createdRef = await addDoc(messagesCol, {
+  const firestoreMsgPayload = stripUndefined({
     threadId,
     classId: input.classId,
     studentUid: input.studentUid,
@@ -498,7 +733,15 @@ export async function sendClassChatMessage(
     senderName: input.senderName.slice(0, 40),
     text: trimmed,
     createdAt: now,
-  }) as { id?: string };
+    topic: optimisticMsg.topic,
+    replyToId: optimisticMsg.replyToId,
+    replyToSenderName: optimisticMsg.replyToSenderName,
+    replyToText: optimisticMsg.replyToText,
+    linkedChapterId: optimisticMsg.linkedChapterId,
+    linkedChapterTitle: optimisticMsg.linkedChapterTitle,
+  });
+
+  const createdRef = (await addDoc(messagesCol, firestoreMsgPayload)) as { id?: string };
 
   const savedMsg: ClassChatMessageDoc = {
     ...optimisticMsg,
@@ -506,9 +749,168 @@ export async function sendClassChatMessage(
     senderUid: auth.currentUser.uid,
   };
   upsertLocalChatThread(threadPayload);
-  appendLocalChatMessage(savedMsg);
+  upsertLocalChatMessage(savedMsg);
   dispatchLocalChatUpdated({ threadId });
   return savedMsg;
+}
+
+/** メッセージへのLINE風リアクション付与・トグル解除 */
+export async function toggleClassChatReaction(params: {
+  classId: string;
+  studentUid: string;
+  messageId: string;
+  viewerRole: ClassChatSenderRole;
+  reaction: ClassChatReactionKey;
+  isDemoMode?: boolean;
+}): Promise<void> {
+  const threadId = buildClassChatThreadId(params.classId, params.studentUid);
+  const localMsgs = loadLocalChatMessages(threadId);
+  const target = localMsgs.find((m) => m.id === params.messageId);
+  if (!target || target.unsent) return;
+
+  const currentReactions = { ...(target.reactions || {}) };
+  if (currentReactions[params.viewerRole] === params.reaction) {
+    delete currentReactions[params.viewerRole];
+  } else {
+    currentReactions[params.viewerRole] = params.reaction;
+  }
+
+  const nextReactions = Object.keys(currentReactions).length > 0 ? currentReactions : undefined;
+  const updatedMsg: ClassChatMessageDoc = stripUndefined({
+    ...target,
+    reactions: nextReactions,
+  });
+  if (!nextReactions) {
+    delete (updatedMsg as { reactions?: unknown }).reactions;
+  }
+
+  upsertLocalChatMessage(updatedMsg);
+  dispatchLocalChatUpdated({ threadId });
+
+  if (
+    params.isDemoMode ||
+    !FIREBASE_CONFIGURED ||
+    !auth.currentUser ||
+    params.messageId.startsWith('local_') ||
+    params.messageId.startsWith('demo_')
+  ) {
+    return;
+  }
+
+  try {
+    const msgRef = doc(
+      db,
+      CLASS_CHAT_THREADS_COLLECTION,
+      threadId,
+      CLASS_CHAT_MESSAGES_SUBCOLLECTION,
+      params.messageId,
+    );
+    await updateDoc(msgRef, { reactions: nextReactions ?? {} });
+  } catch {
+    /* ignore */
+  }
+}
+
+/** 自分のメッセージを「送信取り消し」にする（LINE同様の取り消し体験） */
+export async function unsendClassChatMessage(params: {
+  classId: string;
+  studentUid: string;
+  messageId: string;
+  viewerRole: ClassChatSenderRole;
+  isDemoMode?: boolean;
+}): Promise<void> {
+  const threadId = buildClassChatThreadId(params.classId, params.studentUid);
+  const localMsgs = loadLocalChatMessages(threadId);
+  const target = localMsgs.find((m) => m.id === params.messageId);
+  if (!target || target.senderRole !== params.viewerRole) return;
+
+  const updatedMsg: ClassChatMessageDoc = {
+    ...target,
+    unsent: true,
+  };
+  upsertLocalChatMessage(updatedMsg);
+
+  const threads = loadLocalChatThreads();
+  const curThread = threads[threadId];
+  if (curThread && curThread.lastMessageAt === target.createdAt) {
+    threads[threadId] = {
+      ...curThread,
+      lastMessageText: 'メッセージの送信を取り消しました',
+      updatedAt: Date.now(),
+    };
+    saveLocalChatThreads(threads);
+  }
+  dispatchLocalChatUpdated({ threadId });
+
+  if (
+    params.isDemoMode ||
+    !FIREBASE_CONFIGURED ||
+    !auth.currentUser ||
+    params.messageId.startsWith('local_') ||
+    params.messageId.startsWith('demo_')
+  ) {
+    return;
+  }
+
+  try {
+    const msgRef = doc(
+      db,
+      CLASS_CHAT_THREADS_COLLECTION,
+      threadId,
+      CLASS_CHAT_MESSAGES_SUBCOLLECTION,
+      params.messageId,
+    );
+    await updateDoc(msgRef, { unsent: true });
+  } catch {
+    /* ignore */
+  }
+}
+
+/** トークルーム上部の「ピン留め約束メモ」または「相談中 ⇄ 解決済み」を更新 */
+export async function updateClassChatThreadMeta(params: {
+  classId: string;
+  studentUid: string;
+  resolutionStatus?: ClassChatResolutionStatus;
+  pinnedNotice?: string;
+  isDemoMode?: boolean;
+}): Promise<void> {
+  const threadId = buildClassChatThreadId(params.classId, params.studentUid);
+  const now = Date.now();
+  const threads = loadLocalChatThreads();
+  const cur = threads[threadId];
+  if (cur) {
+    const next: ClassChatThreadDoc = stripUndefined({
+      ...cur,
+      resolutionStatus: params.resolutionStatus ?? cur.resolutionStatus,
+      pinnedNotice:
+        params.pinnedNotice !== undefined
+          ? params.pinnedNotice.trim().slice(0, 300) || undefined
+          : cur.pinnedNotice,
+      updatedAt: now,
+    });
+    if (params.pinnedNotice !== undefined && !params.pinnedNotice.trim()) {
+      delete (next as { pinnedNotice?: string }).pinnedNotice;
+    }
+    threads[threadId] = next;
+    saveLocalChatThreads(threads);
+    dispatchLocalChatUpdated({ threadId });
+  }
+
+  if (params.isDemoMode || !FIREBASE_CONFIGURED || !auth.currentUser) return;
+
+  try {
+    const threadRef = doc(db, CLASS_CHAT_THREADS_COLLECTION, threadId);
+    const snap = await getDoc(threadRef);
+    if (!snap.exists()) return;
+    const patch: Record<string, unknown> = { updatedAt: now };
+    if (params.resolutionStatus) patch.resolutionStatus = params.resolutionStatus;
+    if (params.pinnedNotice !== undefined) {
+      patch.pinnedNotice = params.pinnedNotice.trim().slice(0, 300);
+    }
+    await updateDoc(threadRef, patch);
+  } catch {
+    /* ignore */
+  }
 }
 
 /** チャット画面を開いた際に自分の未読数を0にし、既読時刻を更新する */
@@ -523,13 +925,18 @@ export async function markClassChatThreadRead(params: {
   const localAll = loadLocalChatThreads();
   const cur = localAll[threadId];
   if (cur) {
-    const updated: ClassChatThreadDoc =
+    const alreadyClean =
       params.viewerRole === 'teacher'
-        ? { ...cur, unreadByTeacher: 0, teacherLastReadAt: now, updatedAt: now }
-        : { ...cur, unreadByStudent: 0, studentLastReadAt: now, updatedAt: now };
-    localAll[threadId] = updated;
-    saveLocalChatThreads(localAll);
-    dispatchLocalChatUpdated({ threadId });
+        ? cur.unreadByTeacher === 0 && cur.teacherLastReadAt >= cur.lastMessageAt
+        : cur.unreadByStudent === 0 && cur.studentLastReadAt >= cur.lastMessageAt;
+    if (!alreadyClean) {
+      localAll[threadId] =
+        params.viewerRole === 'teacher'
+          ? { ...cur, unreadByTeacher: 0, teacherLastReadAt: now, updatedAt: now }
+          : { ...cur, unreadByStudent: 0, studentLastReadAt: now, updatedAt: now };
+      saveLocalChatThreads(localAll);
+      dispatchLocalChatUpdated({ threadId });
+    }
   }
 
   if (params.isDemoMode || !FIREBASE_CONFIGURED || !auth.currentUser) return;
@@ -623,7 +1030,7 @@ export function subscribeClassChatConversation(params: {
   const msgsQuery = query(
     collection(db, CLASS_CHAT_THREADS_COLLECTION, threadId, CLASS_CHAT_MESSAGES_SUBCOLLECTION),
     orderBy('createdAt', 'asc'),
-    limit(150),
+    limit(200),
   );
   const unsubMsgs = onSnapshot(
     msgsQuery,
@@ -718,6 +1125,7 @@ export function subscribeClassThreadsForTeacher(params: {
             senderRole: 'student',
             senderName: parsed.lastSenderName || parsed.studentName,
             text: parsed.lastMessageText,
+            topic: parsed.lastTopic,
             createdAt: parsed.lastMessageAt,
           });
         }
@@ -847,6 +1255,7 @@ export function subscribeUserChatInbox(params: {
             senderRole: 'teacher',
             senderName: parsed.lastSenderName || '先生',
             text: parsed.lastMessageText,
+            topic: parsed.lastTopic,
             createdAt: parsed.lastMessageAt,
           });
         }
@@ -894,6 +1303,7 @@ export function subscribeUserChatInbox(params: {
             senderRole: 'student',
             senderName: parsed.lastSenderName || parsed.studentName,
             text: parsed.lastMessageText,
+            topic: parsed.lastTopic,
             createdAt: parsed.lastMessageAt,
           });
         }

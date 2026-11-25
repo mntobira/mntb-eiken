@@ -1,11 +1,7 @@
 /**
  * ============================================================================
- * アプリ常駐チャット着信通知ホスト（リアルタイム監視 ＋ LINE風ポップアップ通知）
+ * アプリ常駐チャット着信通知ホスト（リアルタイム監視 ＋ LINE風リッチポップアップ通知）
  * ============================================================================
- *
- * - ログイン中の生徒・先生どちらに対しても、メッセージが届いた瞬間に画面上部へ
- *   LINE風の着信バナーを表示し、タップ1回でそのトーク画面へジャンプできる。
- * - 同時に未読件数の合計を親（`App.tsx`）へ返し、下部ナビ「設定」のバッジに反映する。
  */
 
 import { useEffect, useState } from 'react';
@@ -16,7 +12,7 @@ import {
   subscribeIncomingChatAlerts,
   subscribeUserChatInbox,
 } from './chatStore';
-import type { IncomingClassChatAlert } from './chatTypes';
+import { CHAT_TOPIC_META, type IncomingClassChatAlert } from './chatTypes';
 import './class-chat.css';
 
 interface ClassChatNotificationHostProps {
@@ -39,27 +35,25 @@ export function ClassChatNotificationHost({
   }, []);
 
   useEffect(() => {
-    const unsubInbox = subscribeUserChatInbox({
+    return subscribeUserChatInbox({
       uid,
       onSummary: ({ totalUnread }) => {
         onUnreadTotalChange?.(totalUnread);
       },
     });
-    return unsubInbox;
   }, [uid, onUnreadTotalChange]);
 
   useEffect(() => {
-    const unsubAlert = subscribeIncomingChatAlerts((alert) => {
+    return subscribeIncomingChatAlerts((alert) => {
       setActiveAlert(alert);
     });
-    return unsubAlert;
   }, []);
 
   useEffect(() => {
     if (!activeAlert) return;
     const timer = window.setTimeout(() => {
       setActiveAlert((cur) => (cur?.id === activeAlert.id ? null : cur));
-    }, 6500);
+    }, 7000);
     return () => window.clearTimeout(timer);
   }, [activeAlert]);
 
@@ -67,8 +61,9 @@ export function ClassChatNotificationHost({
 
   const senderTitle =
     activeAlert.senderRole === 'teacher'
-      ? `${activeAlert.className || 'クラス'}の先生から新着メッセージ`
-      : `${activeAlert.studentName}さんから新着メッセージ`;
+      ? `${activeAlert.className || 'クラス'}の先生からメッセージ`
+      : `${activeAlert.studentName}さんからメッセージ`;
+  const topicMeta = activeAlert.topic ? CHAT_TOPIC_META[activeAlert.topic] : null;
 
   return (
     <div
@@ -78,10 +73,10 @@ export function ClassChatNotificationHost({
       data-testid="class-chat-arrival-banner"
     >
       <span
-        className="w-9 h-9 rounded-full bg-[#06C755] text-white flex items-center justify-center shrink-0"
+        className="w-10 h-10 rounded-full bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-md"
         aria-hidden="true"
       >
-        <MessageCircle size={18} />
+        <MessageCircle size={19} />
       </span>
       <button
         type="button"
@@ -92,11 +87,24 @@ export function ClassChatNotificationHost({
         }}
         className="flex-1 min-w-0 text-left cursor-pointer"
       >
-        <strong className="block text-xs font-extrabold text-white truncate">
-          {senderTitle}
-        </strong>
-        <span className="block text-xs text-white/85 truncate mt-0.5">
+        <div className="flex items-center gap-1.5">
+          <strong className="text-xs font-extrabold text-white truncate">
+            {senderTitle}
+          </strong>
+          {topicMeta && (
+            <span
+              className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0"
+              style={{ backgroundColor: topicMeta.bg, color: topicMeta.fg }}
+            >
+              {topicMeta.shortLabel}
+            </span>
+          )}
+        </div>
+        <span className="block text-xs text-white/90 truncate mt-0.5">
           {activeAlert.text}
+        </span>
+        <span className="block text-[10px] text-[#86EFAC] font-bold mt-0.5">
+          タップして返信する →
         </span>
       </button>
       <button
