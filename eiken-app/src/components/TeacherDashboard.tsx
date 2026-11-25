@@ -13,8 +13,13 @@ import {
   BarChart3,
   Settings2,
   ShieldCheck,
+  Printer,
+  Copy,
+  Check,
+  Target,
 } from 'lucide-react';
 import { auth } from '../firebase';
+import { openClassInviteSheetPrint } from '../sugoroku/admin/printClassInviteSheet';
 import {
   fetchMyClassrooms,
   fetchClassSummaries,
@@ -43,6 +48,7 @@ import {
   createManagedClassroom,
   deleteManagedClassroom,
   fetchClassSettings,
+  getExamSessionShortLabel,
   loadCachedClassSettings,
   loadLastOrgName,
   updateManagedClassroom,
@@ -479,22 +485,66 @@ export function TeacherDashboard({
                   塾プラン稼働中
                 </span>
               )}
+              {activeClass && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#FAF8F2] text-[#4B5563] border border-[#E5E0D5]">
+                  <Target className="w-3 h-3 text-[#3E9C93]" />
+                  1日{activeSettings.dailyGoalMinutes}分×週{activeSettings.weeklyGoalDays}日 ·{' '}
+                  {getExamSessionShortLabel(activeSettings.examSession)}
+                </span>
+              )}
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-[#1B2631] flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#1B2631] flex flex-wrap items-center gap-2">
               <Users className="w-6 h-6 shrink-0" style={{ color: theme.accent }} />
               <span>{activeClass ? activeClass.className : 'コース・クラスの学習管理'}</span>
+              {activeClass && (
+                <button
+                  type="button"
+                  onClick={() => handleCopyCode(activeClass.joinCode)}
+                  title="招待コードをコピー"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-[#D8D5CC] hover:border-[#3E9C93] text-xs font-extrabold font-mono tracking-[0.15em] text-[#1B2631] transition-colors"
+                >
+                  {copiedCode === activeClass.joinCode ? (
+                    <Check className="w-3.5 h-3.5 text-[#059669]" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-[#6B7280]" />
+                  )}
+                  {activeClass.joinCode}
+                </button>
+              )}
             </h1>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="flex min-h-[44px] items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-extrabold text-white shadow-xs transition-transform active:scale-95"
-            style={{ backgroundColor: theme.accent }}
-          >
-            <Plus className="w-4 h-4" />
-            新しいクラスを開設
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {activeClass && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => openClassInviteSheetPrint({ room: activeClass, settings: activeSettings })}
+                  className="inline-flex min-h-[44px] items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold bg-white border border-[#D8D5CC] text-[#1B2631] hover:bg-[#FAF8F2] transition-colors"
+                >
+                  <Printer className="w-3.5 h-3.5 text-[#3E9C93]" />
+                  A4招待シート
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingRoom(activeClass)}
+                  className="inline-flex min-h-[44px] items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white border border-[#E0E1DD] text-[#4B5563] hover:text-[#1B2631] hover:bg-[#FAF8F2] transition-colors"
+                >
+                  <Settings2 className="w-3.5 h-3.5" />
+                  目標編集
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="flex min-h-[44px] items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-extrabold text-white shadow-xs transition-transform active:scale-95"
+              style={{ backgroundColor: theme.accent }}
+            >
+              <Plus className="w-4 h-4" />
+              新しいクラスを開設
+            </button>
+          </div>
         </div>
 
         {/* コース・クラス切り替えピル */}
@@ -510,15 +560,18 @@ export function TeacherDashboard({
                   onClick={() => setActiveClassId(room.id)}
                   className={`shrink-0 min-h-[42px] px-3.5 py-2 rounded-xl text-xs sm:text-sm border flex items-center gap-2 transition-all ${
                     isSelected
-                      ? 'bg-white border-[#3E9C93] font-extrabold text-[#1B2631] shadow-xs'
-                      : 'bg-white/55 border-[#E0E1DD] text-[#4B5563] hover:bg-white'
+                      ? 'bg-white border-[#3E9C93] font-extrabold text-[#1B2631] shadow-xs ring-2 ring-[#3E9C93]/15'
+                      : 'bg-white/65 border-[#E0E1DD] text-[#4B5563] hover:bg-white'
                   }`}
                 >
                   <span>{room.className}</span>
                   <span
                     className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${roomTheme.chipTextClass} ${roomTheme.chipBgClass}`}
                   >
-                    {roomTheme.label}
+                    {room.className.includes('全級') ? '5級〜1級全級' : roomTheme.label}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold tracking-wider text-[#6B7280]">
+                    {room.joinCode}
                   </span>
                 </button>
               );

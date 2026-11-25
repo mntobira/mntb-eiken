@@ -56,6 +56,9 @@ import {
   updateClassChatThreadMeta,
 } from '../src/sugoroku/chat';
 import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubSection';
+import { buildClassInviteSheetHtml } from '../src/sugoroku/admin/printClassInviteSheet';
+import { createDefaultClassSettings } from '../src/sugoroku/admin/classroomSettings';
+import { ClassPanel } from '../src/components/ClassPanel';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
   it('URLクエリ ?portal=admin および VITE_SUGOROKU_PORTAL=admin を正しく判定する', () => {
@@ -504,5 +507,44 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       expect(classifyEikenMaterial(pdf)).toBe('sugoroku_pack');
       expect(pdf.file.startsWith('/sugoroku/')).toBe(true);
     }
+  });
+
+  it('A4招待シートHTML出力と生徒側クラス参加パネル（ClassPanel）が正しく描画される', () => {
+    const inviteHtml = buildClassInviteSheetHtml({
+      room: {
+        id: 'cls_2026_2kyu',
+        schoolName: '学習塾すごろく 自由が丘校',
+        className: '2026夏 英検5級〜1級 全級合格コース',
+        subject: 'eiken_2',
+        joinCode: 'SG2026',
+        teacherUid: 'teacher_1',
+        joinOpen: true,
+        plan: 'juku',
+        createdAt: 1700000000000,
+      },
+      settings: {
+        ...createDefaultClassSettings('cls_2026_2kyu'),
+        dailyGoalMinutes: 35,
+        weeklyGoalDays: 6,
+        examSession: 'scbt_monthly',
+        coachNote: '毎日リスニング15分＋単語20分を続けましょう！',
+      },
+      origin: 'https://eiken.manatobi.jp',
+    });
+    expect(inviteHtml).toContain('学習塾すごろく 自由が丘校');
+    expect(inviteHtml).toContain('2026夏 英検5級〜1級 全級合格コース');
+    expect(inviteHtml).toContain('https://eiken.manatobi.jp/?sugoroku_invite=SG2026');
+    expect(inviteHtml).toContain('英検5級〜1級（全級一括対応）');
+    expect(inviteHtml).toContain('1日35分 × 週6日');
+    expect(inviteHtml).toContain('S-CBT受験');
+    expect(inviteHtml).toContain('塾生専用クラス招待状（広告完全非表示）');
+    expect(inviteHtml).toContain('毎日リスニング15分＋単語20分を続けましょう！');
+
+    const unauthPanelHtml = renderToStaticMarkup(
+      createElement(ClassPanel, { defaultDisplayName: 'たくと' }),
+    );
+    expect(unauthPanelHtml).toContain('クラス参加には Google ログインが必要です');
+    expect(unauthPanelHtml).toContain('6文字コードでクラスに参加できます');
+    expect(unauthPanelHtml).toContain('先生にチャット相談');
   });
 });

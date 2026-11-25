@@ -16,6 +16,7 @@ import {
   LogIn,
   MessageCircle,
   Plus,
+  Printer,
   RefreshCw,
   Settings2,
   Trash2,
@@ -57,11 +58,13 @@ import {
   createManagedClassroom,
   deleteManagedClassroom,
   fetchClassSettings,
+  getExamSessionShortLabel,
   loadCachedClassSettings,
   loadLastOrgName,
   updateManagedClassroom,
   type JukuClassSettings,
 } from './classroomSettings';
+import { openClassInviteSheetPrint } from './printClassInviteSheet';
 import { createAssignment, deleteAssignment } from '../../utils/classAssignments';
 import { dueDateToMs } from '../../utils/classAssignmentsCore';
 import type { StudentRawProgress } from '../../utils/classroom';
@@ -1057,27 +1060,76 @@ export function SugorokuAdminApp({
           ) : (
             <>
               {/* 複数クラスを持っているときだけシンプルな切替ピルを表示（ボタン乱立を排除） */}
-              {dataMode === 'firestore' && classrooms.length > 1 && (
-                <div className="sg-chip-group" role="group" aria-label="クラス切り替え">
-                  {classrooms.map((room) => (
+              {dataMode === 'firestore' && classrooms.length > 0 && (
+                <div
+                  className="sg-chip-group"
+                  role="group"
+                  aria-label="クラス切り替え・クイック操作"
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: 14,
+                    background: '#fff',
+                    border: '1px solid #dfe5ec',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                    {classrooms.map((room) => (
+                      <button
+                        key={room.id}
+                        type="button"
+                        className="sg-chip"
+                        aria-pressed={room.id === activeClassId}
+                        onClick={() => void handleSelectLiveClass(room.id)}
+                      >
+                        {room.className}
+                        <small style={{ opacity: 0.72, marginLeft: 4, fontFamily: 'monospace' }}>
+                          {room.joinCode}
+                        </small>
+                      </button>
+                    ))}
                     <button
-                      key={room.id}
                       type="button"
                       className="sg-chip"
-                      aria-pressed={room.id === activeClassId}
-                      onClick={() => void handleSelectLiveClass(room.id)}
+                      onClick={() => setClassFormMode('create')}
                     >
-                      {room.className}
+                      <Plus size={12} aria-hidden="true" />
+                      新規クラス
                     </button>
-                  ))}
-                  <button
-                    type="button"
-                    className="sg-chip"
-                    onClick={() => setClassFormMode('create')}
-                  >
-                    <Plus size={12} aria-hidden="true" />
-                    クラス追加
-                  </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                        background: '#f2faf8',
+                        color: '#1f635b',
+                        border: '1px solid #bfe6e0',
+                      }}
+                    >
+                      1日{activeClassSettings.dailyGoalMinutes}分×週{activeClassSettings.weeklyGoalDays}日 ·{' '}
+                      {getExamSessionShortLabel(activeClassSettings.examSession)}
+                    </span>
+                    {activeLiveRoom && (
+                      <button
+                        type="button"
+                        className="sg-chip"
+                        onClick={() =>
+                          openClassInviteSheetPrint({
+                            room: activeLiveRoom,
+                            settings: activeClassSettings,
+                          })
+                        }
+                      >
+                        <Printer size={12} aria-hidden="true" />
+                        A4招待シート
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -1594,6 +1646,30 @@ export function SugorokuAdminApp({
                 コード {sourceInfo.joinCode}
               </SecondaryButton>
             </div>
+            {sourceInfo.joinCode && (
+              <SecondaryButton
+                onClick={() => {
+                  const roomForPrint: ClassroomDoc = activeLiveRoom ?? {
+                    id: sourceInfo.classId || 'demo',
+                    schoolName: sourceInfo.schoolName || 'すごろく学習塾',
+                    className: sourceInfo.className || '全級一括コース（英検5級〜1級）',
+                    subject: sourceInfo.subject || 'eiken_2',
+                    joinCode: sourceInfo.joinCode,
+                    teacherUid: sourceInfo.teacherUid || 'owner',
+                    joinOpen: true,
+                    plan: 'juku',
+                    createdAt: Date.now(),
+                  };
+                  openClassInviteSheetPrint({
+                    room: roomForPrint,
+                    settings: activeClassSettings,
+                  });
+                }}
+                icon={<Printer size={15} aria-hidden="true" />}
+              >
+                教室配布・画面提示用のA4招待シートを開く
+              </SecondaryButton>
+            )}
           </div>
 
           {!sourceInfo.isDemo && activeLiveRoom && (
