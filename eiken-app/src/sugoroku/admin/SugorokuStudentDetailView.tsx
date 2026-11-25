@@ -1,12 +1,31 @@
 /**
- * すごろく塾 管理者ポータル：生徒別詳細（学習時間の詳細可視化対応版）
- * 「今日・今週・直近30日・累計の学習時間」「連続学習日数・1日平均」「5技能別の時間割合＆正答率」
- * 「14日/30日切替タイムライン」「日別学習セッション明細」を1画面で詳しく把握できる構成。
+ * クラス管理ポータル：生徒別詳細（目標設定・個別課題管理＆反映状況・1対1チャット・学習時間分析の統合画面）
+ *
+ * ■ A2・A3 ご要望への対応
+ * - 「誰に・どの目標を立てて・どの課題を出していて・生徒のどの画面に反映されているか」をこの1画面の上部に集約。
+ * - 「＋ この生徒に課題を出す」で最初からその生徒を個別指定した課題モーダルが開き、
+ *   出題中の課題の編集・削除・進捗確認もここで迷わず完結。
+ * - 「チャットで話す」ボタンからLINE風の1対1トークルームを即座に開ける。
  */
 
 import { useMemo, useState, type CSSProperties } from 'react';
-import { Calendar, Clock, Download, Edit3, Flame, MessageCircle, Save } from 'lucide-react';
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Download,
+  Edit3,
+  Flame,
+  MessageCircle,
+  Plus,
+  Repeat,
+  Save,
+  Target,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import { EIKEN_GRADES, type EikenGrade } from '../../eiken/config';
+import { formatDue } from '../../utils/classAssignmentsCore';
 import { KineticText, ScoreRing } from '../../motion';
 import { CountUp } from '../../components/ui/CountUp';
 import {
@@ -16,7 +35,8 @@ import {
   SecondaryButton,
   SectionHeader,
 } from '../../components/ui';
-import type { SugorokuStudyLogDoc } from '../shared/types';
+import type { SugorokuAssignmentDoc, SugorokuStudyLogDoc } from '../shared/types';
+import { chapterTitleOf, chapterTotals } from '../homework/chapterTotals';
 import {
   buildSugorokuStudentDetailCsv,
   formatDateKey,
@@ -42,6 +62,14 @@ interface SugorokuStudentDetailViewProps {
   student: SugorokuStudentOverview;
   /** 生の日次ログ配列（渡された場合は30日推移・全履歴・最終学習時刻まで完全表示） */
   rawLogs?: readonly SugorokuStudyLogDoc[];
+  /** クラスの全課題一覧（この生徒が対象の課題を抽出して表示） */
+  assignments?: readonly SugorokuAssignmentDoc[];
+  /** この生徒の既習単元マップ（単元別の消化問数算出用） */
+  solvedByChapter?: Record<string, number>;
+  /** クラス既定の1日目標分・週目標日 */
+  classGoalSummary?: { dailyGoalMinutes: number; weeklyGoalDays: number };
+  /** 未読チャットメッセージ数 */
+  unreadChatCount?: number;
   isDemoMode: boolean;
   onBack: () => void;
   onSaveProfile: (params: {
@@ -50,6 +78,10 @@ interface SugorokuStudentDetailViewProps {
     targetGrade: EikenGrade;
     note: string;
   }) => Promise<void> | void;
+  onCreateHomeworkForStudent?: () => void;
+  onEditAssignment?: (assignment: SugorokuAssignmentDoc) => void;
+  onDeleteAssignment?: (assignment: SugorokuAssignmentDoc) => void;
+  onOpenChat?: () => void;
   onOpenWritingTab?: () => void;
   onOpenSpeakingTab?: () => void;
   onToast?: (message: string, tone?: ToastTone) => void;
@@ -64,12 +96,37 @@ export function buildLineEncourageMessage(student: SugorokuStudentOverview): str
   return `${student.rosterName.split('（')[0]}さん、今週${weekMin}分も${grade}の演習を進められていて素晴らしいペースです！宿題消化も${student.homework.completionRate}%まで来ているので、この調子で進めよう！`;
 }
 
+function countSolvedInChapter(
+  solvedMap: Record<string, number> | undefined,
+  chapterId: string,
+  maxTotal: number,
+): number {
+  if (!solvedMap) return 0;
+  if (typeof solvedMap[chapterId] === 'number') {
+    return Math.min(maxTotal, Math.max(0, solvedMap[chapterId]));
+  }
+  const prefix = `${chapterId}::`;
+  let count = 0;
+  for (const key of Object.keys(solvedMap)) {
+    if (key.startsWith(prefix)) count += 1;
+  }
+  return maxTotal > 0 ? Math.min(maxTotal, count) : count;
+}
+
 export function SugorokuStudentDetailView({
   student,
   rawLogs,
+  assignments = [],
+  solvedByChapter,
+  classGoalSummary,
+  unreadChatCount = 0,
   isDemoMode,
   onBack,
   onSaveProfile,
+  onCreateHomeworkForStudent,
+  onEditAssignment,
+  onDeleteAssignment,
+  onOpenChat,
   onOpenWritingTab,
   onOpenSpeakingTab,
   onToast,
@@ -82,6 +139,18 @@ export function SugorokuStudentDetailView({
   const [rangeDays, setRangeDays] = useState<14 | 30>(14);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
   const [showAllSessions, setShowAllSessions] = useState(false);
+
+  const totalsMap = useMemo(() => chapterTotals(), []);
+
+  // この生徒に配信されている課題一覧（個別指定 または クラス全員向け）
+  const studentAssignments = useMemo(() => {
+    return assignments
+      .filter((a) => {
+        if (!a.targetStudentUids || a.targetStudentUids.length === 0) return true;
+        return a.targetStudentUids.includes(student.uid);
+      })
+      .sort((a, b) => a.dueAt - b.dueAt);
+  }, [assignments, student.uid]);
 
   const timeReport = useMemo(
     () =>
@@ -133,6 +202,13 @@ export function SugorokuStudentDetailView({
     ? timeReport.sessionHistory.slice(0, 30)
     : timeReport.sessionHistory.slice(0, 10);
 
+  const openGoalEditor = () => {
+    setRosterName(student.rosterName);
+    setTargetGrade(student.targetGrade);
+    setNote(student.note || '');
+    setEditSheetOpen(true);
+  };
+
   const handleExportStudentCsv = () => {
     const csv =
       rawLogs && rawLogs.length > 0
@@ -156,15 +232,6 @@ export function SugorokuStudentDetailView({
     onToast?.('学習時間詳細CSVを保存しました', 'done');
   };
 
-  const handleCopyEncourage = async () => {
-    try {
-      await navigator.clipboard.writeText(buildLineEncourageMessage(student));
-      onToast?.('声掛け文をコピーしました', 'done');
-    } catch {
-      onToast?.('コピーできませんでした', 'warn');
-    }
-  };
-
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -175,7 +242,7 @@ export function SugorokuStudentDetailView({
         note,
       });
       setEditSheetOpen(false);
-      onToast?.('保存しました', 'done');
+      onToast?.('目標級・指導方針を保存しました', 'done');
     } finally {
       setSaving(false);
     }
@@ -187,37 +254,35 @@ export function SugorokuStudentDetailView({
       className="sg-stagger"
       style={{ display: 'grid', gap: 14 }}
     >
-      {/* 上部バー */}
+      {/* 上部バー：戻る ＋ チャット ＋ 目標編集 ＋ CSV（役割が明確な3ボタンに整理） */}
       <div className="sg-toolbar">
-        <BackButton label="一覧" onClick={onBack} />
+        <BackButton label="生徒一覧へ戻る" onClick={onBack} />
         <div className="sg-chip-group">
+          {onOpenChat && (
+            <PrimaryButton
+              onClick={onOpenChat}
+              icon={<MessageCircle size={15} aria-hidden="true" />}
+            >
+              チャットで話す
+              {unreadChatCount > 0 ? ` (${unreadChatCount})` : ''}
+            </PrimaryButton>
+          )}
           <SecondaryButton
-            onClick={() => void handleCopyEncourage()}
-            icon={<MessageCircle size={15} aria-hidden="true" />}
+            onClick={openGoalEditor}
+            icon={<Target size={15} aria-hidden="true" />}
           >
-            声掛けコピー
-          </SecondaryButton>
-          <SecondaryButton
-            onClick={() => {
-              setRosterName(student.rosterName);
-              setTargetGrade(student.targetGrade);
-              setNote(student.note || '');
-              setEditSheetOpen(true);
-            }}
-            icon={<Edit3 size={15} aria-hidden="true" />}
-          >
-            編集
+            目標・メモ設定
           </SecondaryButton>
           <SecondaryButton
             onClick={handleExportStudentCsv}
             icon={<Download size={15} aria-hidden="true" />}
           >
-            詳細CSV
+            CSV保存
           </SecondaryButton>
         </div>
       </div>
 
-      {/* 1. 生徒プロフィール＆学習時間 4大サマリー（本日 / 今週 / 直近30日 / 累計） */}
+      {/* 1. 生徒プロフィール＆個別目標カード */}
       <Card style={{ display: 'grid', gap: 14 }}>
         <div className="sg-toolbar" style={{ alignItems: 'flex-start' }}>
           <div style={{ display: 'grid', gap: 6 }}>
@@ -226,8 +291,13 @@ export function SugorokuStudentDetailView({
                 <KineticText text={student.rosterName} variant="rise" />
               </h2>
               <span className="sg-grade-tag">
-                {getGradeLabel(student.targetGrade).replace('英検', '')}
+                目標：{getGradeLabel(student.targetGrade)}
               </span>
+              {classGoalSummary && (
+                <span className="sg-grade-tag" style={{ background: 'var(--mt-bg-sunken)', color: 'var(--mt-ink-2)' }}>
+                  目安：1日{classGoalSummary.dailyGoalMinutes}分 × 週{classGoalSummary.weeklyGoalDays}日
+                </span>
+              )}
               {student.alerts[0] && (
                 <span
                   className="sg-alert-text"
@@ -238,11 +308,34 @@ export function SugorokuStudentDetailView({
               )}
             </div>
 
-            {student.note && (
-              <p style={{ margin: 0, font: '500 13px/1.5 var(--mt-font-body)', color: 'var(--mt-ink-2)' }}>
-                {student.note}
-              </p>
-            )}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 12px',
+                borderRadius: 12,
+                background: 'var(--mt-bg-sunken)',
+                fontSize: 12.5,
+                color: 'var(--mt-ink-2)',
+              }}
+            >
+              <Target size={14} style={{ color: 'var(--mt-brand)', flexShrink: 0 }} aria-hidden="true" />
+              <span style={{ flex: 1, minWidth: 180 }}>
+                <b>個別目標・指導メモ：</b>
+                {student.note ? student.note : '未設定（「目標・メモ設定」から受験時期や学習方針を記録できます）'}
+              </span>
+              <button
+                type="button"
+                className="sg-chip"
+                onClick={openGoalEditor}
+                style={{ fontSize: 11.5 }}
+              >
+                <Edit3 size={12} aria-hidden="true" />
+                変更
+              </button>
+            </div>
           </div>
 
           <StudyDoorsWeek recentDailyLogs={student.recentDailyLogs} />
@@ -370,31 +463,215 @@ export function SugorokuStudentDetailView({
           </div>
         </div>
 
-        <p style={{ margin: 0, fontSize: 12, color: 'var(--mt-ink-3)', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Clock size={13} aria-hidden="true" />
-          <span>
-            ※ 1分以上操作がない放置時間は自動除外した「実学習時間」のみを集計しています（最終学習日:{' '}
-            <b>{student.lastStudiedDateKey ?? '未学習'}</b>）
-          </span>
-        </p>
-
         {(student.pendingWritingCount > 0 || student.pendingSpeakingCount > 0) && (
           <div className="sg-chip-group">
             {student.pendingWritingCount > 0 && (
               <button type="button" className="sg-chip" onClick={onOpenWritingTab}>
-                英作文 未確認 {student.pendingWritingCount}
+                英作文 未確認 {student.pendingWritingCount}件を確認
               </button>
             )}
             {student.pendingSpeakingCount > 0 && (
               <button type="button" className="sg-chip" onClick={onOpenSpeakingTab}>
-                スピーキング 未確認 {student.pendingSpeakingCount}
+                スピーキング 未確認 {student.pendingSpeakingCount}件を確認
               </button>
             )}
           </div>
         )}
       </Card>
 
-      {/* 2. 分野別の学習時間配分（今週・累計・時間比率・正答率） */}
+      {/* 2. 【A2中核】この生徒に出している課題・宿題の反映状況 ＆ 個別出題 */}
+      <Card
+        style={{ display: 'grid', gap: 12 }}
+        data-testid="student-individual-homework-section"
+      >
+        <div className="sg-toolbar">
+          <div>
+            <SectionHeader
+              title={`${student.rosterName.split('（')[0]}さんに出している課題（${studentAssignments.length}件）`}
+              aside="生徒のタイトル画面・ホーム最上部・設定＞クラスに自動反映"
+            />
+          </div>
+
+          {onCreateHomeworkForStudent && (
+            <PrimaryButton
+              onClick={onCreateHomeworkForStudent}
+              icon={<Plus size={14} aria-hidden="true" />}
+            >
+              この生徒に課題を出す
+            </PrimaryButton>
+          )}
+        </div>
+
+        {studentAssignments.length === 0 ? (
+          <div
+            style={{
+              padding: '14px 16px',
+              borderRadius: 14,
+              background: 'var(--mt-bg-sunken)',
+              fontSize: 13,
+              color: 'var(--mt-ink-2)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 10,
+            }}
+          >
+            <span>
+              現在この生徒に出している課題はありません。右上の「＋ この生徒に課題を出す」から、この生徒の級・ペースに合わせた回数を配信できます。
+            </span>
+          </div>
+        ) : (
+          <div className="slog-rows">
+            {studentAssignments.map((asg) => {
+              const isIndividual =
+                Array.isArray(asg.targetStudentUids) && asg.targetStudentUids.length > 0;
+              let solvedSum = 0;
+              let totalSum = 0;
+              for (const cid of asg.chapterIds) {
+                const chTotal = totalsMap[cid] || 0;
+                totalSum += chTotal;
+                solvedSum += countSolvedInChapter(solvedByChapter, cid, chTotal);
+              }
+              const pct =
+                totalSum > 0
+                  ? Math.min(100, Math.round((solvedSum / totalSum) * 100))
+                  : student.homework.completionRate;
+              const dueLabel = formatDue(asg.dueAt);
+              const isOverdue = asg.dueAt < Date.now() && pct < 100;
+
+              return (
+                <div
+                  key={asg.id}
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: 14,
+                    border: '1px solid var(--mt-line)',
+                    background: 'var(--mt-bg-card)',
+                    display: 'grid',
+                    gap: 8,
+                  }}
+                >
+                  <div className="sg-toolbar" style={{ alignItems: 'flex-start' }}>
+                    <div style={{ display: 'grid', gap: 4 }}>
+                      <div className="sg-row-head" style={{ flexWrap: 'wrap', gap: 6 }}>
+                        <span
+                          className="sg-grade-tag"
+                          style={{
+                            background: isIndividual ? '#E6F4EC' : '#EDF4FF',
+                            color: isIndividual ? '#166534' : '#1E40AF',
+                          }}
+                        >
+                          {isIndividual ? '個別課題' : 'クラス全員課題'}
+                        </span>
+                        <span
+                          className="sg-grade-tag"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: '#F0FDF4',
+                            color: '#15803D',
+                          }}
+                        >
+                          <CheckCircle2 size={11} aria-hidden="true" />
+                          生徒のタイトル・ホーム・クラス画面に反映中
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 11.5,
+                            fontWeight: 700,
+                            color: isOverdue ? '#B91C1C' : 'var(--mt-ink-3)',
+                          }}
+                        >
+                          締切：{dueLabel}
+                        </span>
+                      </div>
+
+                      <strong style={{ fontSize: 14.5, color: 'var(--mt-ink-warm)' }}>
+                        {asg.title}
+                      </strong>
+
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: 'var(--mt-ink-2)' }}>
+                        <span>
+                          進捗：<b>{pct}%</b>{totalSum > 0 ? `（${solvedSum}/${totalSum}問）` : ''}
+                        </span>
+                        {asg.dailyQuotaProblems && (
+                          <span>· 1日目標 {asg.dailyQuotaProblems}問</span>
+                        )}
+                        {asg.targetLaps && asg.targetLaps >= 2 && (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                            · <Repeat size={12} /> 目標 {asg.targetLaps}周
+                          </span>
+                        )}
+                        {asg.targetStudentUids && asg.targetStudentUids.length > 1 && (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                            · <Users size={12} /> {asg.targetStudentUids.length}名対象
+                          </span>
+                        )}
+                      </div>
+
+                      {asg.coachInstruction && (
+                        <p style={{ margin: 0, fontSize: 12, color: '#2458A6', fontWeight: 700 }}>
+                          指示メモ：{asg.coachInstruction}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="sg-chip-group">
+                      {onEditAssignment && (
+                        <SecondaryButton
+                          onClick={() => onEditAssignment(asg)}
+                          icon={<Edit3 size={13} aria-hidden="true" />}
+                        >
+                          編集
+                        </SecondaryButton>
+                      )}
+                      {onDeleteAssignment && (
+                        <SecondaryButton
+                          onClick={() => onDeleteAssignment(asg)}
+                          icon={<Trash2 size={13} aria-hidden="true" />}
+                        >
+                          削除
+                        </SecondaryButton>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-meter mt-progress">
+                    <i
+                      style={{
+                        width: `${Math.max(pct > 0 ? 4 : 0, pct)}%`,
+                        backgroundColor: pct >= 100 ? '#16A34A' : 'var(--mt-brand)',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {asg.chapterIds.map((cid) => (
+                      <span
+                        key={cid}
+                        style={{
+                          padding: '2px 8px',
+                          borderRadius: 8,
+                          background: 'var(--mt-bg-sunken)',
+                          fontSize: 11,
+                          fontWeight: 600,
+                          color: 'var(--mt-ink-2)',
+                        }}
+                      >
+                        {chapterTitleOf(cid)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      {/* 3. 分野別の学習時間配分（今週・累計・時間比率・正答率） */}
       <Card style={{ display: 'grid', gap: 12 }}>
         <SectionHeader
           title="分野別の学習時間・時間配分"
@@ -414,7 +691,6 @@ export function SugorokuStudentDetailView({
               }))}
             />
 
-            {/* 5技能サマリーピル（全体の何%をどの技能に使っているか） */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {timeReport.skillShares
                 .filter((s) => s.totalSeconds > 0)
@@ -486,7 +762,7 @@ export function SugorokuStudentDetailView({
         )}
       </Card>
 
-      {/* 3. 日別学習時間グラフ（直近14日 / 直近30日 切替 ＆ 日付タップで内訳展開） */}
+      {/* 4. 日別学習時間グラフ（直近14日 / 直近30日 切替 ＆ 日付タップで内訳展開） */}
       <Card style={{ display: 'grid', gap: 12 }}>
         <div className="sg-toolbar">
           <SectionHeader
@@ -602,12 +878,12 @@ export function SugorokuStudentDetailView({
         )}
       </Card>
 
-      {/* 4. 日別学習ログ明細一覧（いつ・何分・何問・どの分野をやったか） */}
+      {/* 5. 日別学習ログ明細一覧 */}
       <Card style={{ display: 'grid', gap: 12 }}>
         <div className="sg-toolbar">
           <SectionHeader
             title="日別の学習ログ明細"
-            aside={`記録のある日 ${timeReport.sessionHistory.length}日分`}
+            aside={`記録のある日 ${timeReport.sessionHistory.length}日分（最終学習: ${student.lastStudiedDateKey ?? '未学習'}）`}
           />
           {timeReport.sessionHistory.length > 10 && (
             <button
@@ -660,17 +936,22 @@ export function SugorokuStudentDetailView({
             })}
           </div>
         )}
+
+        <p style={{ margin: 0, fontSize: 11.5, color: 'var(--mt-ink-3)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Clock size={12} aria-hidden="true" />
+          <span>※ 1分以上操作がない放置時間は自動除外した実学習時間のみを集計しています。</span>
+        </p>
       </Card>
 
-      {/* Bottom Sheet：名簿・目標級・メモ編集 */}
+      {/* Bottom Sheet：名簿名・目標級・個別目標メモ設定 */}
       <SugorokuBottomSheet
         open={editSheetOpen}
-        title="生徒設定"
+        title={`${student.rosterName.split('（')[0]}さんの目標・メモ設定`}
         onClose={() => setEditSheetOpen(false)}
       >
         <div className="slog-form">
           <label className="f">
-            <span>表示名（管理画面のみ）</span>
+            <span>表示名（先生の管理画面・チャット用）</span>
             <input
               type="text"
               value={rosterName}
@@ -679,7 +960,7 @@ export function SugorokuStudentDetailView({
           </label>
 
           <label className="f">
-            <span>目標級</span>
+            <span>目標の英検級</span>
             <select
               value={targetGrade}
               onChange={(e) => setTargetGrade(e.target.value as EikenGrade)}
@@ -693,11 +974,12 @@ export function SugorokuStudentDetailView({
           </label>
 
           <label className="f">
-            <span>メモ</span>
+            <span>個別目標・受験予定・指導メモ（例：6月S-CBTで2級合格／平日15分リスニング優先）</span>
             <textarea
               rows={3}
               value={note}
               onChange={(e) => setNote(e.target.value)}
+              placeholder="生徒ごとの目標時期・部活スケジュール・重点分野などを記録"
             />
           </label>
 

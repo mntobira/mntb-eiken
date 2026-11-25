@@ -55,6 +55,14 @@ export function chapterTitleOf(chapterId: string): string {
   return chapterId;
 }
 
+/** 章ID → 所属する教科ID（例: 'eiken_2'）。見つからなければ null */
+export function chapterSubjectOf(chapterId: string): string | null {
+  for (const subject of SUBJECT_INDEX) {
+    if (subject.chapters.some((c) => c.id === chapterId)) return subject.id;
+  }
+  return null;
+}
+
 export interface AllGradesChapterCatalogItem {
   id: string;
   grade: string;

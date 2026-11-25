@@ -17,7 +17,6 @@ import {
   MessageCircle,
   Plus,
   RefreshCw,
-  Route,
   Settings2,
   Trash2,
   Users,
@@ -41,7 +40,6 @@ import type {
   SugorokuAdminExtensionSlots,
   SugorokuStaffInviteDoc,
 } from '../shared/types';
-import type { SugorokuCompatibleAssignmentPayload } from '../curriculum';
 import {
   buildStudentOverview,
   buildSugorokuSummaryCsv,
@@ -59,7 +57,6 @@ import {
   createManagedClassroom,
   deleteManagedClassroom,
   fetchClassSettings,
-  getExamSessionShortLabel,
   loadCachedClassSettings,
   loadLastOrgName,
   updateManagedClassroom,
@@ -69,8 +66,7 @@ import { createAssignment, deleteAssignment } from '../../utils/classAssignments
 import { dueDateToMs } from '../../utils/classAssignmentsCore';
 import type { StudentRawProgress } from '../../utils/classroom';
 import { attachPlanToAssignment, deleteHomeworkPlan } from '../homework/homeworkStore';
-import { allEikenChapterCatalog, chapterTotals } from '../homework/chapterTotals';
-import { compactSkillBreakdown, countBySkill } from '../homework/homeworkCore';
+import { allEikenChapterCatalog } from '../homework/chapterTotals';
 import {
   SugorokuHomeworkComposerModal,
   type PacemakerSubmitPayload,
@@ -90,10 +86,7 @@ import {
   SugorokuStudentDetailView,
   buildLineEncourageMessage,
 } from './SugorokuStudentDetailView';
-import {
-  SugorokuPdfShelfTab,
-  type CustomQuickAssignmentInput,
-} from './SugorokuPdfShelfTab';
+import { SugorokuPdfShelfTab } from './SugorokuPdfShelfTab';
 import {
   SugorokuSpeakingExtensionSlot,
   SugorokuWritingExtensionSlot,
@@ -108,16 +101,29 @@ import {
   SwipeableRow,
   usePortalToast,
 } from './SugorokuInteractiveUi';
+import {
+  ensureDemoChatSeed,
+  subscribeClassThreadsForTeacher,
+  TeacherClassChatBoard,
+  type ClassChatThreadDoc,
+} from '../chat';
 import './sugoroku-admin.css';
 
 export type SugorokuAdminTabId =
   | 'students'
+  | 'chat'
   | 'pdf_shelf'
   | 'writing_review'
   | 'speaking_review';
 
 export interface SugorokuAdminAppProps {
   onBack?: () => void;
+  /** 設定＞クラスの「管理しているクラス一覧」から選択されたクラスID */
+  initialClassId?: string;
+  /** 開いた直後に表示するタブ（新着チャット通知タップ時は 'chat'） */
+  initialTab?: SugorokuAdminTabId;
+  /** チャットタブで初期選択する生徒UID */
+  initialChatStudentUid?: string;
   /** 後方互換のために型のみ保持（現在はポータル内蔵モーダルで完結） */
   onOpenTeacherDashboard?: () => void;
   onOpenCreateClass?: () => void;
@@ -125,15 +131,11 @@ export interface SugorokuAdminAppProps {
   extensionSlots?: SugorokuAdminExtensionSlots;
 }
 
-function dueMsToDateInput(dueAtMs: number): string {
-  const d = new Date(dueAtMs);
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${mm}-${dd}`;
-}
-
 export function SugorokuAdminApp({
   onBack,
+  initialClassId,
+  initialTab,
+  initialChatStudentUid,
   initialDataMode = 'auto',
   extensionSlots,
 }: SugorokuAdminAppProps) {
@@ -143,11 +145,19 @@ export function SugorokuAdminApp({
     if (initialDataMode === 'firestore') return 'firestore';
     return FIREBASE_CONFIGURED ? 'firestore' : 'demo';
   });
-  const [activeTab, setActiveTab] = useState<SugorokuAdminTabId>('students');
+  const [activeTab, setActiveTab] = useState<SugorokuAdminTabId>(initialTab ?? 'students');
   const [selectedStudentUid, setSelectedStudentUid] = useState<string | null>(null);
+  const [chatStudentUid, setChatStudentUid] = useState<string | null>(
+    initialChatStudentUid ?? null,
+  );
+  const [chatThreadsByUid, setChatThreadsByUid] = useState<Record<string, ClassChatThreadDoc>>({});
   const [quickSheetStudentUid, setQuickSheetStudentUid] = useState<string | null>(null);
   const [staffSheetOpen, setStaffSheetOpen] = useState(false);
   const [homeworkModalOpen, setHomeworkModalOpen] = useState(false);
+  const [homeworkTargetStudent, setHomeworkTargetStudent] = useState<{
+    uid: string;
+    name: string;
+  } | null>(null);
   const [editingAssignment, setEditingAssignment] = useState<
     import('../shared/types').SugorokuAssignmentDoc | null
   >(null);
@@ -173,11 +183,23 @@ export function SugorokuAdminApp({
 
   const [classrooms, setClassrooms] = useState<ClassroomDoc[]>([]);
   const [classSettingsMap, setClassSettingsMap] = useState<Record<string, JukuClassSettings>>({});
-  const [activeClassId, setActiveClassId] = useState<string>('');
+  const [activeClassId, setActiveClassId] = useState<string>(initialClassId || '');
   const [livePortalData, setLivePortalData] = useState<LoadedClassPortalData | null>(null);
   const [loadingLive, setLoadingLive] = useState(false);
   const [liveError, setLiveError] = useState<string | null>(null);
   const [authBusy, setAuthBusy] = useState(false);
+
+  useEffect(() => {
+    if (initialClassId) setActiveClassId(initialClassId);
+  }, [initialClassId]);
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (initialChatStudentUid) setChatStudentUid(initialChatStudentUid);
+  }, [initialChatStudentUid]);
 
   useEffect(() => {
     installRipple();
@@ -207,7 +229,7 @@ export function SugorokuAdminApp({
       setClassSettingsMap(initialSettings);
 
       if (rooms.length > 0) {
-        const targetId = preferredClassId ?? activeClassId;
+        const targetId = preferredClassId ?? (activeClassId || initialClassId || '');
         const nextRoom = rooms.find((r) => r.id === targetId) ?? rooms[0];
         setActiveClassId(nextRoom.id);
         const [portal, fetchedEntries] = await Promise.all([
@@ -228,7 +250,7 @@ export function SugorokuAdminApp({
     } finally {
       setLoadingLive(false);
     }
-  }, [activeClassId, initialDataMode]);
+  }, [activeClassId, initialClassId, initialDataMode]);
 
   useEffect(() => {
     if (user && FIREBASE_CONFIGURED) {
@@ -283,6 +305,7 @@ export function SugorokuAdminApp({
       return {
         isDemo: true,
         viewerRole: 'owner' as const,
+        teacherUid: 'teacher_sugoroku_nishi',
         ownerName: demoBundle.ownerName,
         ownerEmail: demoBundle.ownerEmail,
         staffInvites: demoBundle.staffInvites.filter((inv) => inv.status !== 'revoked'),
@@ -304,6 +327,7 @@ export function SugorokuAdminApp({
       return {
         isDemo: false,
         viewerRole: 'owner' as const,
+        teacherUid: activeLiveRoom?.teacherUid || user?.uid || '',
         ownerName: user?.displayName || '代表講師',
         ownerEmail: user?.email || undefined,
         staffInvites: [] as SugorokuStaffInviteDoc[],
@@ -324,6 +348,7 @@ export function SugorokuAdminApp({
     return {
       isDemo: false,
       viewerRole: livePortalData.viewerRole,
+      teacherUid: livePortalData.classroom.teacherUid || user?.uid || '',
       ownerName:
         livePortalData.viewerRole === 'owner'
           ? user?.displayName || '代表講師'
@@ -344,6 +369,26 @@ export function SugorokuAdminApp({
       speakingSubmissions: livePortalData.speakingSubmissions,
     };
   }, [dataMode, demoBundle, livePortalData, activeLiveRoom, user]);
+
+  // クラスの1対1チャット一覧をリアルタイム購読（デモ時は初期サンプルも自動投入）
+  useEffect(() => {
+    if (!sourceInfo.classId) {
+      setChatThreadsByUid({});
+      return;
+    }
+    if (sourceInfo.isDemo) {
+      ensureDemoChatSeed({
+        classId: sourceInfo.classId,
+        className: sourceInfo.className,
+        schoolName: sourceInfo.schoolName,
+      });
+    }
+    return subscribeClassThreadsForTeacher({
+      classId: sourceInfo.classId,
+      isDemoMode: sourceInfo.isDemo,
+      onThreads: setChatThreadsByUid,
+    });
+  }, [sourceInfo.classId, sourceInfo.className, sourceInfo.schoolName, sourceInfo.isDemo]);
 
   const allStudentOverviews: SugorokuStudentOverview[] = useMemo(() => {
     const built = sourceInfo.members
@@ -399,6 +444,10 @@ export function SugorokuAdminApp({
     const pendingSpeaking = sourceInfo.speakingSubmissions.filter(
       (sp) => sp.status === 'submitted',
     ).length;
+    const unreadChats = Object.values(chatThreadsByUid).reduce(
+      (sum, t) => sum + (t.unreadByTeacher || 0),
+      0,
+    );
 
     return {
       count,
@@ -407,8 +456,9 @@ export function SugorokuAdminApp({
       avgHomeworkPct,
       pendingWriting,
       pendingSpeaking,
+      unreadChats,
     };
-  }, [allStudentOverviews, sourceInfo]);
+  }, [allStudentOverviews, sourceInfo, chatThreadsByUid]);
 
   const handleExportSummaryCsv = () => {
     if (filteredStudents.length === 0) return;
@@ -731,11 +781,12 @@ export function SugorokuAdminApp({
           : [nextAssignment, ...prev.assignments],
       }));
       setEditingAssignment(null);
+      setHomeworkTargetStudent(null);
       setHomeworkModalOpen(false);
       showToast(
         payload.editingAssignmentId
           ? `課題「${payload.title}」を更新しました`
-          : `課題「${payload.title}」を配信しました`,
+          : `課題「${payload.title}」を配信しました（生徒のタイトル・ホーム・クラス画面に反映）`,
         'done',
       );
       return;
@@ -770,11 +821,12 @@ export function SugorokuAdminApp({
     });
     await reloadLiveClasses();
     setEditingAssignment(null);
+    setHomeworkTargetStudent(null);
     setHomeworkModalOpen(false);
     showToast(
       payload.editingAssignmentId
         ? `課題「${created.title}」を更新しました`
-        : `課題「${created.title}」を配信しました`,
+        : `課題「${created.title}」を配信しました（生徒のタイトル・ホーム・クラス画面に反映）`,
       'done',
     );
   };
@@ -799,36 +851,6 @@ export function SugorokuAdminApp({
     showToast(`課題「${target.title}」を削除しました`, 'done');
   };
 
-  const handleQuickAssignCustom = async (input: CustomQuickAssignmentInput) => {
-    const dueMs = Date.now() + Math.max(1, input.dueInDays) * 86_400_000;
-    const totals = chapterTotals();
-    await handleSubmitHomework({
-      title: input.title,
-      chapterIds: input.chapterIds,
-      dueDate: dueMsToDateInput(dueMs),
-      dailyQuotaProblems: input.dailyQuotaProblems,
-      targetLaps: input.targetLaps,
-      coachInstruction: input.coachInstruction,
-      skillBreakdown: compactSkillBreakdown(countBySkill(input.chapterIds, totals)),
-      presetId: input.presetId,
-      presetWeek: input.presetWeek,
-      startAt: Date.now(),
-    });
-  };
-
-  const handleAssignRoutePreset = async (routePayload: SugorokuCompatibleAssignmentPayload) => {
-    await handleSubmitHomework({
-      title: routePayload.title,
-      chapterIds: routePayload.chapterIds,
-      dueDate: dueMsToDateInput(routePayload.dueAt),
-      dailyQuotaProblems: routePayload.dailyQuotaProblems,
-      skillBreakdown: routePayload.skillBreakdown,
-      presetId: routePayload.presetId,
-      presetWeek: routePayload.presetWeek,
-      startAt: routePayload.startAt,
-    });
-  };
-
   const showSkeleton =
     skeletonTransition || (dataMode === 'firestore' && loadingLive && !livePortalData);
 
@@ -841,32 +863,32 @@ export function SugorokuAdminApp({
         <div className="sg-topbar-inner">
           <div className="sg-brand-row">
             <div className="sg-title-group">
-              {onBack && <BackButton label="戻る" onClick={onBack} />}
-              <h1>
-                <KineticText text="すごろく塾 管理" variant="rise" />
-              </h1>
+              {onBack && <BackButton label="クラス一覧へ" onClick={onBack} />}
+              <div>
+                <h1 style={{ margin: 0 }}>
+                  <KineticText
+                    text={sourceInfo.className || 'すごろく塾 管理'}
+                    variant="rise"
+                  />
+                </h1>
+                {sourceInfo.schoolName && sourceInfo.className && (
+                  <small style={{ display: 'block', fontSize: 11, color: 'var(--mt-ink-3)', fontWeight: 700 }}>
+                    {sourceInfo.schoolName} · すごろく塾 管理
+                  </small>
+                )}
+              </div>
             </div>
 
             <div className="sg-head-tools">
-              <button
-                type="button"
-                className="sg-code-btn"
-                onClick={() => setClassFormMode('create')}
-                title="新しいクラス・コースを作成（この画面内で完結）"
-              >
-                <Plus size={13} aria-hidden="true" />
-                クラス管理・作成
-              </button>
-
               {sourceInfo.joinCode && (
                 <button
                   type="button"
                   className="sg-code-btn"
                   onClick={() => setInviteSheetOpen(true)}
-                  title="招待コード・LINE案内文・クラス設定"
+                  title="生徒招待コード・LINE案内文・クラスの目標設定"
                 >
-                  <Copy size={13} aria-hidden="true" />
-                  {sourceInfo.joinCode}
+                  <Settings2 size={13} aria-hidden="true" />
+                  招待・設定（{sourceInfo.joinCode}）
                 </button>
               )}
 
@@ -904,10 +926,29 @@ export function SugorokuAdminApp({
               aria-current={activeTab === 'students' ? 'page' : undefined}
               onClick={() => setActiveTab('students')}
             >
-              <span>生徒</span>
+              <span>生徒・課題</span>
               {kpi.alertCount > 0 && (
                 <span className="sg-tab-count" data-alert="true">
                   {kpi.alertCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              aria-current={activeTab === 'chat' ? 'page' : undefined}
+              onClick={() => {
+                setSelectedStudentUid(null);
+                if (!chatStudentUid && allStudentOverviews[0]) {
+                  setChatStudentUid(allStudentOverviews[0].uid);
+                }
+                setActiveTab('chat');
+              }}
+            >
+              <span>チャット</span>
+              {kpi.unreadChats > 0 && (
+                <span className="sg-tab-count" style={{ background: '#06C755', color: '#fff' }}>
+                  {kpi.unreadChats}
                 </span>
               )}
             </button>
@@ -920,7 +961,7 @@ export function SugorokuAdminApp({
                 setActiveTab('pdf_shelf');
               }}
             >
-              <span>ルート・教材PDF</span>
+              <span>教材PDF</span>
             </button>
 
             <button
@@ -1015,97 +1056,68 @@ export function SugorokuAdminApp({
             </Card>
           ) : (
             <>
-              {/* 所持・管理クラス一覧バー（1クラスのみでも常に表示し、切り替え・新規作成・設定・招待がこの画面で完結） */}
-              {dataMode === 'firestore' && classrooms.length > 0 && (
-                <section className="sg-class-strip" aria-label="担当クラス一覧">
-                  <div className="sg-class-strip-head">
-                    <span className="sg-class-strip-title">
-                      担当クラス一覧（{classrooms.length}クラス）— タップして切り替え
-                    </span>
-                    <div className="sg-chip-group">
-                      {activeLiveRoom && (
-                        <>
-                          <SecondaryButton
-                            onClick={() => setInviteSheetOpen(true)}
-                            icon={<MessageCircle size={13} aria-hidden="true" />}
-                          >
-                            生徒招待キット
-                          </SecondaryButton>
-                          <SecondaryButton
-                            onClick={() => setClassFormMode('edit')}
-                            icon={<Settings2 size={13} aria-hidden="true" />}
-                          >
-                            クラス・目標設定
-                          </SecondaryButton>
-                        </>
-                      )}
-                      <PrimaryButton
-                        onClick={() => setClassFormMode('create')}
-                        icon={<Plus size={13} aria-hidden="true" />}
-                      >
-                        クラス追加
-                      </PrimaryButton>
-                    </div>
-                  </div>
-
-                  <div className="sg-class-cards-row" role="group" aria-label="クラス選択">
-                    {classrooms.map((room) => {
-                      const selected = room.id === activeClassId;
-                      const st = classSettingsMap[room.id] ?? loadCachedClassSettings(room.id);
-                      return (
-                        <button
-                          key={room.id}
-                          type="button"
-                          className="sg-class-card-btn"
-                          aria-pressed={selected}
-                          onClick={() => void handleSelectLiveClass(room.id)}
-                        >
-                          <div className="sg-class-card-top">
-                            <span className="sg-class-card-school">
-                              {room.schoolName || 'すごろく塾'}
-                            </span>
-                            <span
-                              className="sg-class-status-dot"
-                              data-closed={room.joinOpen === false || undefined}
-                            >
-                              {room.joinOpen === false ? '受付締切' : '参加受付中'}
-                            </span>
-                          </div>
-                          <strong className="sg-class-card-name">{room.className}</strong>
-                          <div className="sg-class-card-meta">
-                            <span>コード: {room.joinCode}</span>
-                            <span>·</span>
-                            <span>{getGradeLabel(room.subject as EikenGrade)}中心</span>
-                            <span>·</span>
-                            <span>
-                              1日{st.dailyGoalMinutes}分×週{st.weeklyGoalDays}日
-                            </span>
-                            <span>·</span>
-                            <span>{getExamSessionShortLabel(st.examSession)}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
+              {/* 複数クラスを持っているときだけシンプルな切替ピルを表示（ボタン乱立を排除） */}
+              {dataMode === 'firestore' && classrooms.length > 1 && (
+                <div className="sg-chip-group" role="group" aria-label="クラス切り替え">
+                  {classrooms.map((room) => (
+                    <button
+                      key={room.id}
+                      type="button"
+                      className="sg-chip"
+                      aria-pressed={room.id === activeClassId}
+                      onClick={() => void handleSelectLiveClass(room.id)}
+                    >
+                      {room.className}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="sg-chip"
+                    onClick={() => setClassFormMode('create')}
+                  >
+                    <Plus size={12} aria-hidden="true" />
+                    クラス追加
+                  </button>
+                </div>
               )}
 
-              {activeTab === 'pdf_shelf' ? (
+              {activeTab === 'chat' ? (
+                <section aria-label="生徒とのチャット" className="sg-stagger sg-grid-12">
+                  {allStudentOverviews.length === 0 ? (
+                    <Card className="slog-empty">
+                      まだ在籍している生徒がいません。生徒が6文字コード（{sourceInfo.joinCode || '---'}）で参加すると、ここで1対1チャットができます。
+                    </Card>
+                  ) : (
+                    <TeacherClassChatBoard
+                      classId={sourceInfo.classId}
+                      className={sourceInfo.className || 'クラス'}
+                      schoolName={sourceInfo.schoolName}
+                      teacherUid={sourceInfo.teacherUid || user?.uid || 'owner'}
+                      teacherName={user?.displayName || sourceInfo.ownerName || '担当先生'}
+                      students={allStudentOverviews}
+                      threadsByUid={chatThreadsByUid}
+                      selectedStudentUid={chatStudentUid}
+                      onSelectStudentUid={setChatStudentUid}
+                      onIssueHomeworkForStudent={(st) => {
+                        setEditingAssignment(null);
+                        setHomeworkTargetStudent({
+                          uid: st.uid,
+                          name: st.rosterName.split('（')[0] || st.rosterName,
+                        });
+                        setHomeworkModalOpen(true);
+                      }}
+                      onOpenStudentDetail={(uid) => {
+                        setSelectedStudentUid(uid);
+                        setActiveTab('students');
+                      }}
+                      isDemoMode={sourceInfo.isDemo}
+                    />
+                  )}
+                </section>
+              ) : activeTab === 'pdf_shelf' ? (
                 <SugorokuPdfShelfTab
                   onToast={showToast}
                   activeSubject={sourceInfo.subject}
-                  assignments={sourceInfo.assignments}
-                  onAssignRoutePreset={handleAssignRoutePreset}
-                  onQuickAssignCustom={handleQuickAssignCustom}
-                  onOpenCustomHomework={() => {
-                    setEditingAssignment(null);
-                    setHomeworkModalOpen(true);
-                  }}
-                  onEditAssignment={(asg) => {
-                    setEditingAssignment(asg);
-                    setHomeworkModalOpen(true);
-                  }}
-                  onDeleteAssignment={handleDeleteHomework}
                 />
               ) : activeTab === 'writing_review' ? (
                 <SugorokuWritingExtensionSlot
@@ -1145,9 +1157,36 @@ export function SugorokuAdminApp({
               ) : selectedStudent ? (
                 <SugorokuStudentDetailView
                   student={selectedStudent}
+                  rawLogs={sourceInfo.logsByUid[selectedStudent.uid] ?? []}
+                  assignments={sourceInfo.assignments}
+                  solvedByChapter={sourceInfo.solvedByUid[selectedStudent.uid]}
+                  classGoalSummary={{
+                    dailyGoalMinutes: activeClassSettings.dailyGoalMinutes,
+                    weeklyGoalDays: activeClassSettings.weeklyGoalDays,
+                  }}
+                  unreadChatCount={chatThreadsByUid[selectedStudent.uid]?.unreadByTeacher || 0}
                   isDemoMode={sourceInfo.isDemo}
                   onBack={() => setSelectedStudentUid(null)}
                   onSaveProfile={handleSaveStudentProfile}
+                  onCreateHomeworkForStudent={() => {
+                    setEditingAssignment(null);
+                    setHomeworkTargetStudent({
+                      uid: selectedStudent.uid,
+                      name: selectedStudent.rosterName.split('（')[0] || selectedStudent.rosterName,
+                    });
+                    setHomeworkModalOpen(true);
+                  }}
+                  onEditAssignment={(asg) => {
+                    setHomeworkTargetStudent(null);
+                    setEditingAssignment(asg);
+                    setHomeworkModalOpen(true);
+                  }}
+                  onDeleteAssignment={(asg) => void handleDeleteHomework(asg)}
+                  onOpenChat={() => {
+                    setChatStudentUid(selectedStudent.uid);
+                    setSelectedStudentUid(null);
+                    setActiveTab('chat');
+                  }}
                   onToast={showToast}
                   onOpenWritingTab={() => {
                     setSelectedStudentUid(null);
@@ -1278,11 +1317,12 @@ export function SugorokuAdminApp({
                       <PrimaryButton
                         onClick={() => {
                           setEditingAssignment(null);
+                          setHomeworkTargetStudent(null);
                           setHomeworkModalOpen(true);
                         }}
-                        icon={<Route size={14} aria-hidden="true" />}
+                        icon={<Plus size={14} aria-hidden="true" />}
                       >
-                        宿題配信
+                        クラス全員・指定生徒に課題を出す
                       </PrimaryButton>
                       <SecondaryButton
                         disabled={filteredStudents.length === 0}
@@ -1376,6 +1416,9 @@ export function SugorokuAdminApp({
                                   </span>
                                   <span>
                                     宿題 <b>{st.homework.completionRate}%</b>
+                                    {st.homework.activeAssignmentTitle
+                                      ? `（${st.homework.completedProblems}/${st.homework.totalProblems}問）`
+                                      : '（未配信）'}
                                   </span>
                                   {overallAccuracyPct !== null && (
                                     <span>
@@ -1400,14 +1443,20 @@ export function SugorokuAdminApp({
                                 <button
                                   type="button"
                                   className="sg-icon-btn"
-                                  aria-label={`${st.rosterName}の概要`}
-                                  title="概要シート"
+                                  aria-label={`${st.rosterName}とチャット`}
+                                  title="1対1チャットを開く"
+                                  style={
+                                    (chatThreadsByUid[st.uid]?.unreadByTeacher || 0) > 0
+                                      ? { background: '#06C755', color: '#fff', borderColor: '#06C755' }
+                                      : undefined
+                                  }
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setQuickSheetStudentUid(st.uid);
+                                    setChatStudentUid(st.uid);
+                                    setActiveTab('chat');
                                   }}
                                 >
-                                  <Eye size={15} />
+                                  <MessageCircle size={15} />
                                 </button>
 
                                 <ChevronRight
@@ -1636,8 +1685,13 @@ export function SugorokuAdminApp({
           students={composerStudents}
           accent="#1c2a39"
           editingAssignment={editingAssignment}
+          defaultTargetStudentUids={
+            homeworkTargetStudent ? [homeworkTargetStudent.uid] : undefined
+          }
+          targetStudentLabel={homeworkTargetStudent?.name}
           onClose={() => {
             setEditingAssignment(null);
+            setHomeworkTargetStudent(null);
             setHomeworkModalOpen(false);
           }}
           onSubmit={handleSubmitHomework}
