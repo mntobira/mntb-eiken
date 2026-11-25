@@ -40,7 +40,7 @@ import {
   VolumeX,
   X,
 } from 'lucide-react';
-import { allEikenChapterCatalog } from '../homework/chapterTotals';
+import { allEikenChapterCatalog, isValidEikenChapterId } from '../homework/chapterTotals';
 import {
   CLASS_CHAT_MAX_MESSAGE_LENGTH,
   getBrowserNotificationPermission,
@@ -144,16 +144,16 @@ export function ClassChatView({
 }: ClassChatViewProps) {
   const initialThreadId = buildClassChatThreadId(classId, studentUid);
   const [thread, setThread] = useState<ClassChatThreadDoc | null>(
-    () => loadLocalChatThreads()[initialThreadId] ?? null,
+    () => loadLocalChatThreads({ isDemoMode })[initialThreadId] ?? null,
   );
   const [messages, setMessages] = useState<ClassChatMessageDoc[]>(() =>
-    loadLocalChatMessages(initialThreadId),
+    loadLocalChatMessages(initialThreadId, { isDemoMode }),
   );
 
   // 開いた瞬間の自分の既読時刻を保持し、「ここから未読メッセージ」ラインを出す
   const initialViewerReadAtRef = useRef<number | null>(null);
   if (initialViewerReadAtRef.current === null) {
-    const initialT = loadLocalChatThreads()[initialThreadId];
+    const initialT = loadLocalChatThreads({ isDemoMode })[initialThreadId];
     initialViewerReadAtRef.current = initialT
       ? viewerRole === 'teacher'
         ? initialT.teacherLastReadAt
@@ -197,20 +197,20 @@ export function ClassChatView({
   // スレッド切替時の状態リセット
   useEffect(() => {
     const tid = buildClassChatThreadId(classId, studentUid);
-    const localT = loadLocalChatThreads()[tid] ?? null;
+    const localT = loadLocalChatThreads({ isDemoMode })[tid] ?? null;
     initialViewerReadAtRef.current = localT
       ? viewerRole === 'teacher'
         ? localT.teacherLastReadAt
         : localT.studentLastReadAt
       : Date.now();
     setThread(localT);
-    setMessages(loadLocalChatMessages(tid));
+    setMessages(loadLocalChatMessages(tid, { isDemoMode }));
     setReplyTo(null);
     setAttachedChapter(null);
     setSelectedTopic(undefined);
     setActiveActionMsgId(null);
     setDrawerTab('none');
-  }, [classId, studentUid, viewerRole]);
+  }, [classId, studentUid, viewerRole, isDemoMode]);
 
   useEffect(() => {
     if (!classId || !studentUid) return;
@@ -431,15 +431,18 @@ export function ClassChatView({
     await updateClassChatThreadMeta({
       classId,
       studentUid,
+      viewerRole,
       resolutionStatus: next,
       isDemoMode,
     });
   };
 
   const handleSavePinnedNotice = async () => {
+    if (viewerRole !== 'teacher') return;
     await updateClassChatThreadMeta({
       classId,
       studentUid,
+      viewerRole,
       pinnedNotice: pinDraft,
       isDemoMode,
     });
@@ -786,12 +789,13 @@ export function ClassChatView({
 
                       <div>{m.text}</div>
 
-                      {m.linkedChapterId && (
+                      {m.linkedChapterId && (isDemoMode || isValidEikenChapterId(m.linkedChapterId)) && (
                         <button
                           type="button"
                           data-testid="class-chat-chapter-card"
                           onClick={(ev) => {
                             ev.stopPropagation();
+                            if (!isDemoMode && !isValidEikenChapterId(m.linkedChapterId)) return;
                             onStartChapter?.(m.linkedChapterId!);
                           }}
                           className="cchat-chapter-card"

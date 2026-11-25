@@ -26,7 +26,7 @@ import { saveJukuMemberships } from '../utils/classAssignments';
 import { StudentAssignments } from './classroom/StudentAssignments';
 import { AdminClassHubSection } from './classroom/AdminClassHubSection';
 import { ClassChatModal, subscribeUserChatInbox } from '../sugoroku/chat';
-import { chapterSubjectOf } from '../sugoroku/homework/chapterTotals';
+import { chapterSubjectOf, isValidEikenChapterId } from '../sugoroku/homework/chapterTotals';
 
 /**
  * ===================================================================
@@ -406,6 +406,7 @@ export function ClassPanel({
           onStartChapter={
             onStartChapter
               ? (chapterId) => {
+                  if (!isValidEikenChapterId(chapterId)) return;
                   const targetSubject =
                     (chapterSubjectOf(chapterId) as MembershipDetail['subject'] | null) ||
                     chatMembership.subject;

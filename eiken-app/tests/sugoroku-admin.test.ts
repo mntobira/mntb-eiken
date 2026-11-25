@@ -52,9 +52,12 @@ import {
   sendClassChatMessage,
   TeacherClassChatBoard,
   toggleClassChatReaction,
+  UNSENT_TOMBSTONE_TEXT,
   unsendClassChatMessage,
   updateClassChatThreadMeta,
+  upsertLocalChatThread,
 } from '../src/sugoroku/chat';
+import { isValidEikenChapterId } from '../src/sugoroku/homework/chapterTotals';
 import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubSection';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
@@ -305,9 +308,11 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     });
 
     const tid = buildClassChatThreadId('cls_chat_test', 'stu_test_1');
-    expect(loadLocalChatThreads()[tid]?.unreadByTeacher).toBe(1);
-    expect(loadLocalChatThreads()[tid]?.resolutionStatus).toBe('open');
-    expect(loadLocalChatMessages(tid).at(-1)?.text).toContain('大問3の長文の進め方');
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.unreadByTeacher).toBe(1);
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.resolutionStatus).toBe('open');
+    expect(loadLocalChatMessages(tid, { isDemoMode: true }).at(-1)?.text).toContain(
+      '大問3の長文の進め方',
+    );
 
     // 先生からの引用リプライ＋単元カード添付送信
     const teacherReply = await sendClassChatMessage({
@@ -342,18 +347,34 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       isDemoMode: true,
     });
     expect(
-      loadLocalChatMessages(tid).find((m) => m.id === teacherReply.id)?.reactions?.student,
+      loadLocalChatMessages(tid, { isDemoMode: true }).find((m) => m.id === teacherReply.id)
+        ?.reactions?.student,
     ).toBe('bulb');
 
     await updateClassChatThreadMeta({
       classId: 'cls_chat_test',
       studentUid: 'stu_test_1',
+      viewerRole: 'teacher',
       pinnedNotice: '毎週水曜までに2級リスニング第1部を20問クリアしよう！',
       resolutionStatus: 'resolved',
       isDemoMode: true,
     });
-    expect(loadLocalChatThreads()[tid]?.pinnedNotice).toContain('毎週水曜まで');
-    expect(loadLocalChatThreads()[tid]?.resolutionStatus).toBe('resolved');
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.pinnedNotice).toContain(
+      '毎週水曜まで',
+    );
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.resolutionStatus).toBe('resolved');
+
+    // セキュリティ検証1：生徒ロールからは先生専用の pinnedNotice を書き換えられないこと
+    await updateClassChatThreadMeta({
+      classId: 'cls_chat_test',
+      studentUid: 'stu_test_1',
+      viewerRole: 'student',
+      pinnedNotice: '生徒による偽装ピン留め',
+      isDemoMode: true,
+    });
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.pinnedNotice).toBe(
+      '毎週水曜までに2級リスニング第1部を20問クリアしよう！',
+    );
 
     await markClassChatThreadRead({
       classId: 'cls_chat_test',
@@ -361,7 +382,7 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       viewerRole: 'teacher',
       isDemoMode: true,
     });
-    expect(loadLocalChatThreads()[tid]?.unreadByTeacher).toBe(0);
+    expect(loadLocalChatThreads({ isDemoMode: true })[tid]?.unreadByTeacher).toBe(0);
 
     const chatHtml = renderToStaticMarkup(
       createElement(ClassChatView, {
@@ -386,24 +407,79 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(chatHtml).toContain('毎週水曜までに2級リスニング第1部を20問クリアしよう！');
     expect(chatHtml).toContain('💡');
 
-    // 送信取消（送信者本人のロールでのみ取り消し可能・他者ロールでは無視されることも検証）
+    // 送信取消（送信者本人のロールでのみ取り消し可能・取り消し後は元本文・引用・添付・リアクションが完全消去されること）
     await unsendClassChatMessage({
       classId: 'cls_chat_test',
       studentUid: 'stu_test_1',
-      messageId: stuMsg.id,
-      viewerRole: 'teacher',
+      messageId: teacherReply.id,
+      viewerRole: 'student',
       isDemoMode: true,
     });
-    expect(loadLocalChatMessages(tid).find((m) => m.id === stuMsg.id)?.unsent).toBeUndefined();
+    expect(
+      loadLocalChatMessages(tid, { isDemoMode: true }).find((m) => m.id === teacherReply.id)
+        ?.unsent,
+    ).toBeUndefined();
 
     await unsendClassChatMessage({
       classId: 'cls_chat_test',
       studentUid: 'stu_test_1',
-      messageId: stuMsg.id,
-      viewerRole: 'student',
+      messageId: teacherReply.id,
+      viewerRole: 'teacher',
       isDemoMode: true,
     });
-    expect(loadLocalChatMessages(tid).find((m) => m.id === stuMsg.id)?.unsent).toBe(true);
+    const scrubbed = loadLocalChatMessages(tid, { isDemoMode: true }).find(
+      (m) => m.id === teacherReply.id,
+    );
+    expect(scrubbed?.unsent).toBe(true);
+    expect(scrubbed?.text).toBe(UNSENT_TOMBSTONE_TEXT);
+    expect(scrubbed?.replyToText).toBeUndefined();
+    expect(scrubbed?.linkedChapterId).toBeUndefined();
+    expect(scrubbed?.reactions).toBeUndefined();
+
+    // セキュリティ検証2：共有端末でのUID別ローカルストレージ完全分離＆プロトタイプ汚染防止＆不正単元ID拒否
+    upsertLocalChatThread(
+      {
+        id: 'cls_sec_uid_alice',
+        classId: 'cls_sec',
+        className: 'セキュリティ検証クラス',
+        schoolName: 'すごろく塾',
+        teacherUid: 'teacher_1',
+        studentUid: 'uid_alice',
+        studentName: 'アリス',
+        lastMessageText: 'アリスの秘密の相談です',
+        lastSenderRole: 'student',
+        lastSenderName: 'アリス',
+        lastMessageAt: 1_760_000_100_000,
+        unreadByTeacher: 1,
+        unreadByStudent: 0,
+        teacherLastReadAt: 0,
+        studentLastReadAt: 1_760_000_100_000,
+        updatedAt: 1_760_000_100_000,
+      },
+      { ownerUid: 'uid_alice' },
+    );
+    expect(loadLocalChatThreads({ ownerUid: 'uid_alice' })['cls_sec_uid_alice']?.lastMessageText).toBe(
+      'アリスの秘密の相談です',
+    );
+    // 同じブラウザで別ユーザー（uid_bob）に切り替えた際、アリスのキャッシュが1件も見えないこと
+    expect(loadLocalChatThreads({ ownerUid: 'uid_bob' })['cls_sec_uid_alice']).toBeUndefined();
+
+    // 不正キー（__proto__ / パストラバーサル）での送信拒否・単元IDホワイトリスト検証
+    await expect(
+      sendClassChatMessage({
+        classId: '__proto__',
+        className: 'x',
+        teacherUid: 'teacher_1',
+        studentUid: 'stu_1',
+        studentName: 'x',
+        senderRole: 'student',
+        senderName: 'x',
+        text: 'test',
+        isDemoMode: true,
+      }),
+    ).rejects.toThrow();
+    expect(isValidEikenChapterId('javascript:alert(1)')).toBe(false);
+    expect(isValidEikenChapterId('../../etc/passwd')).toBe(false);
 
     // 先生側LINE公式アカウント風トーク管理ボード（フィルタ・検索・生徒カルテストリップ）
     const demo = createSugorokuDemoBundle(1_760_000_000_000);

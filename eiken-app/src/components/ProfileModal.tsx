@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { LogOut, Settings, Volume2, VolumeX, LogIn, Users, Check, Loader2, AlertTriangle, School, ClipboardList, Swords } from 'lucide-react';
 // ★対戦の音（BGM / 効果音 / 音量）★ 通常 BGM とは別の設定（src/battle/core/audioSettings.ts の説明を参照）
 import { useBattleAudioSettings } from '../battle/hooks/useBattleAudio';
@@ -70,7 +71,7 @@ function isImmediateSugorokuAdminUser(user: typeof auth.currentUser): boolean {
     hasVerifiedPreAuthorizedInstructorEmail({
       email: user.email,
       emailVerified: user.emailVerified,
-      providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
+      providerIds,
     })
   ) {
     return true;
@@ -104,18 +105,32 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
   useEffect(() => {
     let alive = true;
-    const currentUser = auth.currentUser;
-    const immediate = isImmediateSugorokuAdminUser(currentUser);
-    setIsAdminAccount(immediate);
-    if (!currentUser) return;
-    void checkCurrentUserAdminAccess(currentUser, { strictSpecifiedEmailsOnly: false })
-      .then((res) => {
-        if (!alive) return;
-        setIsAdminAccount(res.allowed);
-      })
-      .catch(() => undefined);
+    const syncAdmin = (currentUser: typeof auth.currentUser) => {
+      const immediate = isImmediateSugorokuAdminUser(currentUser);
+      setIsAdminAccount(immediate);
+      if (!currentUser) return;
+      void checkCurrentUserAdminAccess(currentUser, { strictSpecifiedEmailsOnly: false })
+        .then((res) => {
+          if (!alive) return;
+          setIsAdminAccount(res.allowed);
+        })
+        .catch(() => {
+          if (!alive) return;
+          setIsAdminAccount(false);
+        });
+    };
+    syncAdmin(auth.currentUser);
+    let offAuth: () => void = () => {};
+    try {
+      offAuth = onAuthStateChanged(auth, (u) => {
+        if (alive) syncAdmin(u);
+      });
+    } catch {
+      /* ignore in mock/SSR */
+    }
     return () => {
       alive = false;
+      offAuth();
     };
   }, []);
 

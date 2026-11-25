@@ -1,14 +1,21 @@
 /**
  * ============================================================================
- * クラス内 1対1 LINE品質リアルタイムチャット — Firestore双方向同期・リアクション・既読・着信音・通知制御
+ * クラス内 1対1 LINE品質リアルタイムチャット — セキュリティ強化版ストア
  * ============================================================================
  *
- * ■ 特徴
- * 1. Firestore `onSnapshot` によるリアルタイム双方向同期（メッセージ送受信・引用リプライ・
- *    リアクション・送信取消・相談中/解決済みステータス・ピン留めアナウンス・既読時刻）
- * 2. Web Audio API による優しいLINE風2音チャイム着信音 ＋ 端末バイブレーション ＋
- *    ブラウザ通知（Web Notification API）＋ アプリ内スライドダウン着信バナー
- * 3. localStorage ミラー＆CustomEvent により、デモ環境・オフライン復帰時も即座に反映
+ * ■ セキュリティ設計（共有端末・なりすまし・改ざん・情報漏洩対策）
+ * 1. UID完全分離ストレージ：
+ *    塾の共有iPad・学校の共有PC・兄弟端末でも別アカウントのトーク履歴が一切見えないよう、
+ *    localStorage キーを `auth.currentUser.uid` 単位で厳格に分離（未ログイン時は読み書き拒否、
+ *    旧グローバルキーは起動時に自動パージ）。
+ * 2. プロトタイプ汚染＆制御文字サニタイズ：
+ *    `__proto__` / `constructor` / `prototype` キーを拒否し、NUL等の不可視制御文字を除去。
+ * 3. Firestore ゼロトラスト整合：
+ *    - スレッド作成時は `eiken_classrooms/{classId}.teacherUid` と一致する正規 `teacherUid` を解決
+ *    - 送信取消（`unsendClassChatMessage`）時は `unsent: true` だけでなく、元テキスト・引用・
+ *      添付単元・リアクションを Firestore ドキュメント上からも完全消去（DevTools覗き見防止）
+ *    - 生徒側の受信トレイ監視は在籍中クラス（`loadJukuMemberships`）の個別スレッドのみ購読し、
+ *      退会済みクラスへのアクセス拒否（permission-denied）にも完全対応
  */
 
 import {
@@ -25,7 +32,10 @@ import {
   where,
 } from '../../utils/firestoreMetered';
 import { auth, db, FIREBASE_CONFIGURED } from '../../firebase';
+import { CLASSROOMS_COLLECTION } from '../../utils/classroomShared';
+import { loadJukuMemberships, subscribeJukuMemberships } from '../../utils/classAssignments';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
+import { isValidEikenChapterId } from '../homework/chapterTotals';
 import {
   buildClassChatThreadId,
   CHAT_REACTIONS,
@@ -42,25 +52,62 @@ import {
 export const CLASS_CHAT_THREADS_COLLECTION = 'class_chat_threads';
 export const CLASS_CHAT_MESSAGES_SUBCOLLECTION = 'messages';
 export const CLASS_CHAT_MAX_MESSAGE_LENGTH = 1000;
+export const UNSENT_TOMBSTONE_TEXT = 'メッセージの送信を取り消しました';
 
-const LOCAL_THREADS_KEY = 'mntb_eiken_class_chat_threads_v1';
-const LOCAL_MESSAGES_PREFIX = 'mntb_eiken_class_chat_msgs_v1:';
+const LEGACY_UNSCOPED_THREADS_KEY = 'mntb_eiken_class_chat_threads_v1';
+const SCOPED_THREADS_PREFIX = 'mntb_eiken_class_chat_threads_v2:';
+const SCOPED_MESSAGES_PREFIX = 'mntb_eiken_class_chat_msgs_v2:';
 const LOCAL_SOUND_PREF_KEY = 'mntb_eiken_class_chat_sound_v1';
 const LOCAL_EVENT_NAME = 'mntb:class-chat-updated';
+
+const SAFE_ID_RE = /^[A-Za-z0-9:._-]{1,210}$/;
+// 改行・タブ以外の制御文字を除去
+const UNSAFE_CTRL_CHARS_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
 type LocalChatEventDetail = {
   threadId?: string;
   incomingAlert?: IncomingClassChatAlert;
 };
 
+export interface ChatStorageScopeOptions {
+  isDemoMode?: boolean;
+  ownerUid?: string;
+}
+
+function isSafeRecordKey(key: string): boolean {
+  return (
+    Boolean(key) &&
+    key !== '__proto__' &&
+    key !== 'constructor' &&
+    key !== 'prototype' &&
+    SAFE_ID_RE.test(key)
+  );
+}
+
+function sanitizeChatText(raw: string, maxLen: number): string {
+  return raw.replace(UNSAFE_CTRL_CHARS_RE, '').trim().slice(0, maxLen);
+}
+
 // Node(SSR/Vitest)環境など globalThis.localStorage が未定義の場合のメモリフォールバック
 const memoryStore = new Map<string, string>();
-function getChatStorage(): Pick<Storage, 'getItem' | 'setItem'> {
+function getChatStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
   try {
     const raw = (globalThis as { localStorage?: Storage }).localStorage;
     if (raw && typeof raw.getItem === 'function' && typeof raw.setItem === 'function') {
       const ls = safeLocalStorage();
-      if (ls) return ls;
+      if (ls) {
+        return {
+          getItem: (k: string) => ls.getItem(k),
+          setItem: (k: string, v: string) => ls.setItem(k, v),
+          removeItem: (k: string) => {
+            try {
+              ls.removeItem(k);
+            } catch {
+              /* ignore */
+            }
+          },
+        };
+      }
     }
   } catch {
     /* ignore */
@@ -70,11 +117,46 @@ function getChatStorage(): Pick<Storage, 'getItem' | 'setItem'> {
     setItem: (k: string, v: string) => {
       memoryStore.set(k, v);
     },
+    removeItem: (k: string) => {
+      memoryStore.delete(k);
+    },
   };
+}
+
+let legacyPurged = false;
+function purgeLegacyUnscopedCacheOnce(): void {
+  if (legacyPurged) return;
+  legacyPurged = true;
+  try {
+    getChatStorage().removeItem(LEGACY_UNSCOPED_THREADS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * 現在のストレージ分離スコープを解決する。
+ * - `isDemoMode: true` または Firebase 未構成環境（単体テスト等）では `'demo'` スコープ
+ * - 本番/実データ環境では `ownerUid || auth.currentUser?.uid`。未ログインなら `null`（読み書き禁止）
+ */
+function resolveChatStorageScope(opts?: ChatStorageScopeOptions): string | null {
+  purgeLegacyUnscopedCacheOnce();
+  if (opts?.isDemoMode) return 'demo';
+  const explicitUid = opts?.ownerUid?.trim();
+  if (explicitUid && isSafeRecordKey(explicitUid)) return `u_${explicitUid}`;
+  const currentUid = auth.currentUser?.uid?.trim();
+  if (currentUid && isSafeRecordKey(currentUid)) return `u_${currentUid}`;
+  if (!FIREBASE_CONFIGURED) return 'demo';
+  return null;
 }
 
 const alertSubscribers = new Set<(alert: IncomingClassChatAlert) => void>();
 const recentlyEmittedAlertIds = new Set<string>();
+
+/** ログアウト・アカウント切替時にランタイム通知履歴をクリアする */
+export function clearChatRuntimeSessionCache(): void {
+  recentlyEmittedAlertIds.clear();
+}
 
 export function subscribeIncomingChatAlerts(
   listener: (alert: IncomingClassChatAlert) => void,
@@ -101,7 +183,7 @@ export function setChatSoundEnabled(enabled: boolean): void {
   }
 }
 
-/** Web Audio API による心地よい2音着信チャイム（外部音源ファイル不要・超軽量） */
+/** Web Audio API による心地よい2音着信チャイム（再生後 AudioContext を確実にクローズしリーク防止） */
 export function playChatArrivalChime(): void {
   if (typeof window === 'undefined' || !isChatSoundEnabled()) return;
   try {
@@ -194,10 +276,12 @@ function maybeFireBrowserNotification(alert: IncomingClassChatAlert): void {
     const topicPrefix = alert.topic ? `【${CHAT_TOPIC_META[alert.topic].shortLabel}】` : '';
     const title =
       alert.senderRole === 'teacher'
-        ? `${alert.className || 'クラス'}の先生から新着メッセージ`
-        : `${alert.studentName}さんからメッセージ（${alert.className || 'クラス'}）`;
+        ? `${sanitizeChatText(alert.className || 'クラス', 40)}の先生から新着メッセージ`
+        : `${sanitizeChatText(alert.studentName, 30)}さんからメッセージ`;
+    // ロック画面・共有画面での覗き見リスクを抑えるため60文字で安全に丸める
+    const safeBody = sanitizeChatText(`${topicPrefix}${alert.text}`, 60);
     const n = new Notification(title, {
-      body: `${topicPrefix}${alert.text}`.slice(0, 120),
+      body: safeBody,
       tag: `mntb-chat-${alert.threadId}`,
     });
     n.onclick = () => {
@@ -223,82 +307,132 @@ function dispatchLocalChatUpdated(detail: LocalChatEventDetail = {}): void {
 }
 
 // ============================================================================
-// LocalStorage ミラー（オフライン・デモモード・即時UI反映用）
+// UIDスコープ分離 LocalStorage ミラー（共有端末漏洩・プロトタイプ汚染防止）
 // ============================================================================
 
-export function loadLocalChatThreads(): Record<string, ClassChatThreadDoc> {
+export function loadLocalChatThreads(
+  opts?: ChatStorageScopeOptions,
+): Record<string, ClassChatThreadDoc> {
+  const scope = resolveChatStorageScope(opts);
+  if (!scope) return {};
   const storage = getChatStorage();
   try {
-    const raw = storage.getItem(LOCAL_THREADS_KEY);
+    const raw = storage.getItem(`${SCOPED_THREADS_PREFIX}${scope}`);
     if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, ClassChatThreadDoc>;
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const safeOut: Record<string, ClassChatThreadDoc> = {};
+    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+      if (!isSafeRecordKey(k) || !v || typeof v !== 'object') continue;
+      const docParsed = parseThreadDoc(k, v as Record<string, unknown>);
+      if (docParsed) safeOut[k] = docParsed;
+    }
+    return safeOut;
   } catch {
     return {};
   }
 }
 
-function saveLocalChatThreads(map: Record<string, ClassChatThreadDoc>): void {
+function saveLocalChatThreads(
+  map: Record<string, ClassChatThreadDoc>,
+  opts?: ChatStorageScopeOptions,
+): void {
+  const scope = resolveChatStorageScope(opts);
+  if (!scope) return;
   const storage = getChatStorage();
   try {
-    storage.setItem(LOCAL_THREADS_KEY, JSON.stringify(map));
+    const clean: Record<string, ClassChatThreadDoc> = {};
+    for (const [k, v] of Object.entries(map)) {
+      if (isSafeRecordKey(k) && v) clean[k] = v;
+    }
+    storage.setItem(`${SCOPED_THREADS_PREFIX}${scope}`, JSON.stringify(clean));
   } catch {
     /* ignore quota */
   }
 }
 
-export function upsertLocalChatThread(thread: ClassChatThreadDoc): void {
-  const all = loadLocalChatThreads();
+export function upsertLocalChatThread(
+  thread: ClassChatThreadDoc,
+  opts?: ChatStorageScopeOptions,
+): void {
+  if (!isSafeRecordKey(thread.id)) return;
+  const all = loadLocalChatThreads(opts);
   all[thread.id] = thread;
-  saveLocalChatThreads(all);
+  saveLocalChatThreads(all, opts);
 }
 
-export function loadLocalChatMessages(threadId: string): ClassChatMessageDoc[] {
+export function loadLocalChatMessages(
+  threadId: string,
+  opts?: ChatStorageScopeOptions,
+): ClassChatMessageDoc[] {
+  if (!isSafeRecordKey(threadId)) return [];
+  const scope = resolveChatStorageScope(opts);
+  if (!scope) return [];
   const storage = getChatStorage();
   try {
-    const raw = storage.getItem(LOCAL_MESSAGES_PREFIX + threadId);
+    const raw = storage.getItem(`${SCOPED_MESSAGES_PREFIX}${scope}:${threadId}`);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as ClassChatMessageDoc[];
-    return Array.isArray(parsed)
-      ? parsed.sort((a, b) => a.createdAt - b.createdAt)
-      : [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    const out: ClassChatMessageDoc[] = [];
+    for (const item of parsed) {
+      if (!item || typeof item !== 'object') continue;
+      const rec = item as Record<string, unknown>;
+      const id = typeof rec.id === 'string' && isSafeRecordKey(rec.id) ? rec.id : '';
+      if (!id) continue;
+      const msg = parseMessageDoc(id, threadId, rec);
+      if (msg) out.push(msg);
+    }
+    return out.sort((a, b) => a.createdAt - b.createdAt);
   } catch {
     return [];
   }
 }
 
-function saveLocalChatMessages(threadId: string, messages: ClassChatMessageDoc[]): void {
+function saveLocalChatMessages(
+  threadId: string,
+  messages: ClassChatMessageDoc[],
+  opts?: ChatStorageScopeOptions,
+): void {
+  if (!isSafeRecordKey(threadId)) return;
+  const scope = resolveChatStorageScope(opts);
+  if (!scope) return;
   const storage = getChatStorage();
   try {
     const trimmed = [...messages]
       .sort((a, b) => a.createdAt - b.createdAt)
       .slice(-200);
-    storage.setItem(LOCAL_MESSAGES_PREFIX + threadId, JSON.stringify(trimmed));
+    storage.setItem(`${SCOPED_MESSAGES_PREFIX}${scope}:${threadId}`, JSON.stringify(trimmed));
   } catch {
     /* ignore quota */
   }
 }
 
-function upsertLocalChatMessage(msg: ClassChatMessageDoc): void {
-  const existing = loadLocalChatMessages(msg.threadId);
+function upsertLocalChatMessage(
+  msg: ClassChatMessageDoc,
+  opts?: ChatStorageScopeOptions,
+): void {
+  if (!isSafeRecordKey(msg.threadId) || !isSafeRecordKey(msg.id)) return;
+  const existing = loadLocalChatMessages(msg.threadId, opts);
   const idx = existing.findIndex((m) => m.id === msg.id);
   if (idx >= 0) {
     const next = [...existing];
     next[idx] = msg;
-    saveLocalChatMessages(msg.threadId, next);
+    saveLocalChatMessages(msg.threadId, next, opts);
   } else {
-    saveLocalChatMessages(msg.threadId, [...existing, msg]);
+    saveLocalChatMessages(msg.threadId, [...existing, msg], opts);
   }
 }
 
-/** デモモード用：リアルな生徒×講師のLINE相談サンプルスレッドを初期投入 */
+/** デモモード用：リアルな生徒×講師のLINE相談サンプルスレッドを初期投入（demoスコープ専用） */
 export function ensureDemoChatSeed(params: {
   classId: string;
   className: string;
   schoolName: string;
   nowMs?: number;
 }): void {
-  const all = loadLocalChatThreads();
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: true };
+  const all = loadLocalChatThreads(scopeOpts);
   const rikuThreadId = buildClassChatThreadId(params.classId, 'stu_yamamoto_riku');
   if (all[rikuThreadId]) return;
 
@@ -355,7 +489,8 @@ export function ensureDemoChatSeed(params: {
           topic: 'question',
           replyToId: 'demo_msg_stu_yamamoto_riku_1',
           replyToSenderName: '西 講師',
-          replyToText: '陸くん、週末の遠征お疲れさま！今週の英検2級 第1回課題、まずは下のリスニング第1部だけでも今日10分開いてみよう！',
+          replyToText:
+            '陸くん、週末の遠征お疲れさま！今週の英検2級 第1回課題、まずは下のリスニング第1部だけでも今日10分開いてみよう！',
         },
       ],
     },
@@ -386,7 +521,8 @@ export function ensureDemoChatSeed(params: {
           topic: 'encourage',
           replyToId: 'demo_msg_stu_takahashi_haruto_1',
           replyToSenderName: '高橋 陽斗',
-          replyToText: '先生、今週分の第1回筆記とリスニング1周終わりました！間違えた語彙だけもう1周やります！',
+          replyToText:
+            '先生、今週分の第1回筆記とリスニング1周終わりました！間違えた語彙だけもう1周やります！',
           reactions: { student: 'fire' },
         },
       ],
@@ -436,17 +572,18 @@ export function ensureDemoChatSeed(params: {
       updatedAt: last.createdAt,
     };
     all[threadId] = thread;
-    saveLocalChatMessages(threadId, msgs);
+    saveLocalChatMessages(threadId, msgs, scopeOpts);
   }
-  saveLocalChatThreads(all);
+  saveLocalChatThreads(all, scopeOpts);
 }
 
 // ============================================================================
-// 正規化ヘルパー
+// 正規化・検証ヘルパー
 // ============================================================================
 
 const VALID_TOPICS = new Set<string>(['question', 'homework', 'pace', 'report', 'encourage']);
 const VALID_REACTIONS = new Set<string>(CHAT_REACTIONS.map((r) => r.key));
+const SAFE_CHAPTER_ID_RE = /^[A-Za-z0-9_-]{1,100}$/;
 
 function toMillisSafe(val: unknown, fallback: number): number {
   if (typeof val === 'number' && Number.isFinite(val)) return val;
@@ -462,9 +599,12 @@ function toMillisSafe(val: unknown, fallback: number): number {
 }
 
 function parseThreadDoc(id: string, raw: Record<string, unknown>): ClassChatThreadDoc | null {
+  if (!isSafeRecordKey(id)) return null;
   const classId = typeof raw.classId === 'string' ? raw.classId : '';
   const studentUid = typeof raw.studentUid === 'string' ? raw.studentUid : '';
-  if (!classId || !studentUid) return null;
+  if (!isSafeRecordKey(classId) || !isSafeRecordKey(studentUid)) return null;
+  if (id !== `${classId}_${studentUid}`) return null;
+
   const now = Date.now();
   const resolutionStatus: ClassChatResolutionStatus | undefined =
     raw.resolutionStatus === 'open' || raw.resolutionStatus === 'resolved'
@@ -475,24 +615,33 @@ function parseThreadDoc(id: string, raw: Record<string, unknown>): ClassChatThre
       ? (raw.lastTopic as ClassChatTopicTag)
       : undefined;
   const pinnedNotice =
-    typeof raw.pinnedNotice === 'string' && raw.pinnedNotice.trim()
-      ? raw.pinnedNotice
+    typeof raw.pinnedNotice === 'string' && sanitizeChatText(raw.pinnedNotice, 300)
+      ? sanitizeChatText(raw.pinnedNotice, 300)
       : undefined;
 
   return {
     id,
     classId,
-    className: typeof raw.className === 'string' ? raw.className : '',
-    schoolName: typeof raw.schoolName === 'string' ? raw.schoolName : '',
-    teacherUid: typeof raw.teacherUid === 'string' ? raw.teacherUid : '',
+    className: typeof raw.className === 'string' ? sanitizeChatText(raw.className, 80) : '',
+    schoolName: typeof raw.schoolName === 'string' ? sanitizeChatText(raw.schoolName, 80) : '',
+    teacherUid: typeof raw.teacherUid === 'string' ? sanitizeChatText(raw.teacherUid, 128) : '',
     studentUid,
-    studentName: typeof raw.studentName === 'string' ? raw.studentName : '生徒',
-    lastMessageText: typeof raw.lastMessageText === 'string' ? raw.lastMessageText : '',
+    studentName:
+      typeof raw.studentName === 'string' && sanitizeChatText(raw.studentName, 40)
+        ? sanitizeChatText(raw.studentName, 40)
+        : '生徒',
+    lastMessageText:
+      typeof raw.lastMessageText === 'string'
+        ? sanitizeChatText(raw.lastMessageText, CLASS_CHAT_MAX_MESSAGE_LENGTH)
+        : '',
     lastSenderRole: raw.lastSenderRole === 'teacher' ? 'teacher' : 'student',
-    lastSenderName: typeof raw.lastSenderName === 'string' ? raw.lastSenderName : '',
+    lastSenderName:
+      typeof raw.lastSenderName === 'string' ? sanitizeChatText(raw.lastSenderName, 40) : '',
     lastMessageAt: toMillisSafe(raw.lastMessageAt, now),
-    unreadByTeacher: typeof raw.unreadByTeacher === 'number' ? Math.max(0, raw.unreadByTeacher) : 0,
-    unreadByStudent: typeof raw.unreadByStudent === 'number' ? Math.max(0, raw.unreadByStudent) : 0,
+    unreadByTeacher:
+      typeof raw.unreadByTeacher === 'number' ? Math.max(0, Math.min(9999, raw.unreadByTeacher)) : 0,
+    unreadByStudent:
+      typeof raw.unreadByStudent === 'number' ? Math.max(0, Math.min(9999, raw.unreadByStudent)) : 0,
     teacherLastReadAt: toMillisSafe(raw.teacherLastReadAt, 0),
     studentLastReadAt: toMillisSafe(raw.studentLastReadAt, 0),
     ...(resolutionStatus ? { resolutionStatus } : {}),
@@ -507,52 +656,61 @@ function parseMessageDoc(
   threadId: string,
   raw: Record<string, unknown>,
 ): ClassChatMessageDoc | null {
-  const text = typeof raw.text === 'string' ? raw.text : '';
+  if (!isSafeRecordKey(id) || !isSafeRecordKey(threadId)) return null;
+  const isUnsent = raw.unsent === true;
+  const rawText = typeof raw.text === 'string' ? sanitizeChatText(raw.text, CLASS_CHAT_MAX_MESSAGE_LENGTH) : '';
+  const text = isUnsent ? UNSENT_TOMBSTONE_TEXT : rawText;
   if (!text) return null;
+
   const topic =
     typeof raw.topic === 'string' && VALID_TOPICS.has(raw.topic)
       ? (raw.topic as ClassChatTopicTag)
       : undefined;
 
   let reactions: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> | undefined;
-  if (raw.reactions && typeof raw.reactions === 'object') {
+  if (!isUnsent && raw.reactions && typeof raw.reactions === 'object' && !Array.isArray(raw.reactions)) {
     const rObj = raw.reactions as Record<string, unknown>;
-    const parsedR: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> = {};
+    const cleaned: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> = {};
     if (typeof rObj.student === 'string' && VALID_REACTIONS.has(rObj.student)) {
-      parsedR.student = rObj.student as ClassChatReactionKey;
+      cleaned.student = rObj.student as ClassChatReactionKey;
     }
     if (typeof rObj.teacher === 'string' && VALID_REACTIONS.has(rObj.teacher)) {
-      parsedR.teacher = rObj.teacher as ClassChatReactionKey;
+      cleaned.teacher = rObj.teacher as ClassChatReactionKey;
     }
-    if (Object.keys(parsedR).length > 0) reactions = parsedR;
+    if (Object.keys(cleaned).length > 0) reactions = cleaned;
   }
+
+  const rawChapterId =
+    !isUnsent && typeof raw.linkedChapterId === 'string' && SAFE_CHAPTER_ID_RE.test(raw.linkedChapterId)
+      ? raw.linkedChapterId
+      : undefined;
 
   return {
     id,
     threadId,
-    classId: typeof raw.classId === 'string' ? raw.classId : '',
-    studentUid: typeof raw.studentUid === 'string' ? raw.studentUid : '',
-    senderUid: typeof raw.senderUid === 'string' ? raw.senderUid : '',
+    classId: typeof raw.classId === 'string' ? sanitizeChatText(raw.classId, 80) : '',
+    studentUid: typeof raw.studentUid === 'string' ? sanitizeChatText(raw.studentUid, 128) : '',
+    senderUid: typeof raw.senderUid === 'string' ? sanitizeChatText(raw.senderUid, 128) : '',
     senderRole: raw.senderRole === 'teacher' ? 'teacher' : 'student',
-    senderName: typeof raw.senderName === 'string' ? raw.senderName : '',
+    senderName: typeof raw.senderName === 'string' ? sanitizeChatText(raw.senderName, 40) : '',
     text,
     createdAt: toMillisSafe(raw.createdAt, Date.now()),
     ...(topic ? { topic } : {}),
-    ...(typeof raw.replyToId === 'string' && raw.replyToId ? { replyToId: raw.replyToId } : {}),
-    ...(typeof raw.replyToSenderName === 'string' && raw.replyToSenderName
-      ? { replyToSenderName: raw.replyToSenderName }
+    ...(!isUnsent && typeof raw.replyToId === 'string' && isSafeRecordKey(raw.replyToId)
+      ? { replyToId: raw.replyToId.slice(0, 128) }
       : {}),
-    ...(typeof raw.replyToText === 'string' && raw.replyToText
-      ? { replyToText: raw.replyToText }
+    ...(!isUnsent && typeof raw.replyToSenderName === 'string' && raw.replyToSenderName
+      ? { replyToSenderName: sanitizeChatText(raw.replyToSenderName, 40) }
       : {}),
-    ...(typeof raw.linkedChapterId === 'string' && raw.linkedChapterId
-      ? { linkedChapterId: raw.linkedChapterId }
+    ...(!isUnsent && typeof raw.replyToText === 'string' && raw.replyToText
+      ? { replyToText: sanitizeChatText(raw.replyToText, 300) }
       : {}),
-    ...(typeof raw.linkedChapterTitle === 'string' && raw.linkedChapterTitle
-      ? { linkedChapterTitle: raw.linkedChapterTitle }
+    ...(rawChapterId ? { linkedChapterId: rawChapterId } : {}),
+    ...(rawChapterId && typeof raw.linkedChapterTitle === 'string' && raw.linkedChapterTitle
+      ? { linkedChapterTitle: sanitizeChatText(raw.linkedChapterTitle, 120) }
       : {}),
     ...(reactions ? { reactions } : {}),
-    ...(raw.unsent === true ? { unsent: true } : {}),
+    ...(isUnsent ? { unsent: true } : {}),
   };
 }
 
@@ -560,7 +718,7 @@ function parseMessageDoc(
 function stripUndefined<T extends object>(obj: T): T {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
-    if (v !== undefined) out[k] = v;
+    if (v !== undefined && isSafeRecordKey(k)) out[k] = v;
   }
   return out as T;
 }
@@ -595,13 +753,17 @@ export interface SendClassChatMessageInput {
 export async function sendClassChatMessage(
   input: SendClassChatMessageInput,
 ): Promise<ClassChatMessageDoc> {
-  const trimmed = input.text.trim().slice(0, CLASS_CHAT_MAX_MESSAGE_LENGTH);
+  const trimmed = sanitizeChatText(input.text, CLASS_CHAT_MAX_MESSAGE_LENGTH);
   if (!trimmed) {
     throw new Error('メッセージを入力してください。');
   }
+  if (!isSafeRecordKey(input.classId) || !isSafeRecordKey(input.studentUid)) {
+    throw new Error('不正なクラスまたは生徒IDです。');
+  }
 
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: input.isDemoMode };
   const threadId = buildClassChatThreadId(input.classId, input.studentUid);
-  const localExisting = loadLocalChatThreads()[threadId];
+  const localExisting = loadLocalChatThreads(scopeOpts)[threadId];
   const now = Math.max(Date.now(), (localExisting?.lastMessageAt ?? 0) + 1);
   const senderUid =
     auth.currentUser?.uid ||
@@ -617,17 +779,24 @@ export async function sendClassChatMessage(
       ? 'open'
       : localExisting?.resolutionStatus;
 
+  const safeLinkedChapterId =
+    input.linkedChapter?.id &&
+    SAFE_CHAPTER_ID_RE.test(input.linkedChapter.id) &&
+    (input.isDemoMode || isValidEikenChapterId(input.linkedChapter.id))
+      ? input.linkedChapter.id
+      : undefined;
+
   const baseThread: ClassChatThreadDoc = stripUndefined({
     id: threadId,
     classId: input.classId,
-    className: input.className || localExisting?.className || 'クラス',
-    schoolName: input.schoolName ?? localExisting?.schoolName ?? '',
-    teacherUid: input.teacherUid || localExisting?.teacherUid || senderUid,
+    className: sanitizeChatText(input.className || localExisting?.className || 'クラス', 80),
+    schoolName: sanitizeChatText(input.schoolName ?? localExisting?.schoolName ?? '', 80),
+    teacherUid: sanitizeChatText(input.teacherUid || localExisting?.teacherUid || senderUid, 128),
     studentUid: input.studentUid,
-    studentName: input.studentName || localExisting?.studentName || '生徒',
+    studentName: sanitizeChatText(input.studentName || localExisting?.studentName || '生徒', 40) || '生徒',
     lastMessageText: trimmed,
     lastSenderRole: input.senderRole,
-    lastSenderName: input.senderName.slice(0, 40),
+    lastSenderName: sanitizeChatText(input.senderName, 40),
     lastMessageAt: now,
     unreadByTeacher: input.senderRole === 'student' ? prevUnreadTeacher + 1 : 0,
     unreadByStudent: input.senderRole === 'teacher' ? prevUnreadStudent + 1 : 0,
@@ -648,24 +817,28 @@ export async function sendClassChatMessage(
     studentUid: input.studentUid,
     senderUid,
     senderRole: input.senderRole,
-    senderName: input.senderName.slice(0, 40),
+    senderName: sanitizeChatText(input.senderName, 40),
     text: trimmed,
     createdAt: now,
     topic: input.topic,
-    replyToId: input.replyTo?.id ? input.replyTo.id.slice(0, 128) : undefined,
+    replyToId:
+      input.replyTo?.id && isSafeRecordKey(input.replyTo.id)
+        ? input.replyTo.id.slice(0, 128)
+        : undefined,
     replyToSenderName: input.replyTo?.senderName
-      ? input.replyTo.senderName.slice(0, 40)
+      ? sanitizeChatText(input.replyTo.senderName, 40)
       : undefined,
-    replyToText: input.replyTo?.text ? input.replyTo.text.slice(0, 280) : undefined,
-    linkedChapterId: input.linkedChapter?.id ? input.linkedChapter.id.slice(0, 100) : undefined,
-    linkedChapterTitle: input.linkedChapter?.title
-      ? input.linkedChapter.title.slice(0, 120)
-      : undefined,
+    replyToText: input.replyTo?.text ? sanitizeChatText(input.replyTo.text, 280) : undefined,
+    linkedChapterId: safeLinkedChapterId,
+    linkedChapterTitle:
+      safeLinkedChapterId && input.linkedChapter?.title
+        ? sanitizeChatText(input.linkedChapter.title, 120)
+        : undefined,
   });
 
   if (input.isDemoMode || !FIREBASE_CONFIGURED || !auth.currentUser) {
-    upsertLocalChatThread(baseThread);
-    upsertLocalChatMessage(optimisticMsg);
+    upsertLocalChatThread(baseThread, scopeOpts);
+    upsertLocalChatMessage(optimisticMsg, scopeOpts);
     dispatchLocalChatUpdated({ threadId });
     return optimisticMsg;
   }
@@ -678,10 +851,12 @@ export async function sendClassChatMessage(
   let remoteTeacherUid = baseThread.teacherUid;
   let remotePinnedNotice = baseThread.pinnedNotice;
   let remoteResolution = baseThread.resolutionStatus;
+  let remoteExists = false;
 
   try {
     const snap = await getDoc(threadRef);
     if (snap.exists()) {
+      remoteExists = true;
       const existing = parseThreadDoc(snap.id, snap.data() as Record<string, unknown>);
       if (existing) {
         remotePrevTeacherUnread = existing.unreadByTeacher;
@@ -701,18 +876,35 @@ export async function sendClassChatMessage(
           remoteResolution = existing.resolutionStatus;
         }
       }
+    } else {
+      // 初回スレッド作成時：招待講師（staff）からの送信でも rules の `teacherUid == classroom.teacherUid` を満たすよう正規解決
+      const roomSnap = await getDoc(doc(db, CLASSROOMS_COLLECTION, input.classId));
+      if (roomSnap.exists()) {
+        const roomData = roomSnap.data() as { teacherUid?: string };
+        if (typeof roomData.teacherUid === 'string' && roomData.teacherUid) {
+          remoteTeacherUid = roomData.teacherUid;
+        }
+      }
+      if (input.senderRole === 'student') {
+        remotePinnedNotice = undefined;
+      }
     }
   } catch {
     /* proceed with optimistic values */
   }
 
+  const effectiveNow = remoteExists ? now : Math.max(now, Date.now());
   const threadPayload: ClassChatThreadDoc = stripUndefined({
     ...baseThread,
+    lastMessageAt: effectiveNow,
+    updatedAt: effectiveNow,
     teacherUid: remoteTeacherUid,
     unreadByTeacher: input.senderRole === 'student' ? remotePrevTeacherUnread + 1 : 0,
     unreadByStudent: input.senderRole === 'teacher' ? remotePrevStudentUnread + 1 : 0,
-    teacherLastReadAt: remoteTeacherReadAt,
-    studentLastReadAt: remoteStudentReadAt,
+    teacherLastReadAt:
+      input.senderRole === 'teacher' ? effectiveNow : remoteTeacherReadAt,
+    studentLastReadAt:
+      input.senderRole === 'student' ? effectiveNow : remoteStudentReadAt,
     pinnedNotice: remotePinnedNotice,
     resolutionStatus: remoteResolution,
   });
@@ -730,9 +922,9 @@ export async function sendClassChatMessage(
     studentUid: input.studentUid,
     senderUid: auth.currentUser.uid,
     senderRole: input.senderRole,
-    senderName: input.senderName.slice(0, 40),
+    senderName: sanitizeChatText(input.senderName, 40),
     text: trimmed,
-    createdAt: now,
+    createdAt: effectiveNow,
     topic: optimisticMsg.topic,
     replyToId: optimisticMsg.replyToId,
     replyToSenderName: optimisticMsg.replyToSenderName,
@@ -747,14 +939,15 @@ export async function sendClassChatMessage(
     ...optimisticMsg,
     id: createdRef?.id || optimisticMsg.id,
     senderUid: auth.currentUser.uid,
+    createdAt: effectiveNow,
   };
-  upsertLocalChatThread(threadPayload);
-  upsertLocalChatMessage(savedMsg);
+  upsertLocalChatThread(threadPayload, scopeOpts);
+  upsertLocalChatMessage(savedMsg, scopeOpts);
   dispatchLocalChatUpdated({ threadId });
   return savedMsg;
 }
 
-/** メッセージへのLINE風リアクション付与・トグル解除 */
+/** メッセージへのLINE風リアクション付与・トグル解除（自分のロール枠のみ変更可） */
 export async function toggleClassChatReaction(params: {
   classId: string;
   studentUid: string;
@@ -763,12 +956,16 @@ export async function toggleClassChatReaction(params: {
   reaction: ClassChatReactionKey;
   isDemoMode?: boolean;
 }): Promise<void> {
+  if (!VALID_REACTIONS.has(params.reaction)) return;
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
   const threadId = buildClassChatThreadId(params.classId, params.studentUid);
-  const localMsgs = loadLocalChatMessages(threadId);
+  const localMsgs = loadLocalChatMessages(threadId, scopeOpts);
   const target = localMsgs.find((m) => m.id === params.messageId);
   if (!target || target.unsent) return;
 
-  const currentReactions = { ...(target.reactions || {}) };
+  const currentReactions: Partial<Record<ClassChatSenderRole, ClassChatReactionKey>> = {
+    ...(target.reactions || {}),
+  };
   if (currentReactions[params.viewerRole] === params.reaction) {
     delete currentReactions[params.viewerRole];
   } else {
@@ -784,7 +981,7 @@ export async function toggleClassChatReaction(params: {
     delete (updatedMsg as { reactions?: unknown }).reactions;
   }
 
-  upsertLocalChatMessage(updatedMsg);
+  upsertLocalChatMessage(updatedMsg, scopeOpts);
   dispatchLocalChatUpdated({ threadId });
 
   if (
@@ -811,7 +1008,10 @@ export async function toggleClassChatReaction(params: {
   }
 }
 
-/** 自分のメッセージを「送信取り消し」にする（LINE同様の取り消し体験） */
+/**
+ * 自分のメッセージを「送信取り消し」にする
+ * - 元テキスト・引用・単元添付・リアクションをローカルおよび Firestore ドキュメント上から完全消去する
+ */
 export async function unsendClassChatMessage(params: {
   classId: string;
   studentUid: string;
@@ -819,26 +1019,41 @@ export async function unsendClassChatMessage(params: {
   viewerRole: ClassChatSenderRole;
   isDemoMode?: boolean;
 }): Promise<void> {
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
   const threadId = buildClassChatThreadId(params.classId, params.studentUid);
-  const localMsgs = loadLocalChatMessages(threadId);
+  const localMsgs = loadLocalChatMessages(threadId, scopeOpts);
   const target = localMsgs.find((m) => m.id === params.messageId);
-  if (!target || target.senderRole !== params.viewerRole) return;
+  if (!target || target.unsent || target.senderRole !== params.viewerRole) return;
+  if (!params.isDemoMode && auth.currentUser?.uid && target.senderUid && target.senderUid !== auth.currentUser.uid) {
+    return;
+  }
 
-  const updatedMsg: ClassChatMessageDoc = {
-    ...target,
+  // 元テキスト・引用・添付・リアクションを完全消去したトゥームストーンを作成
+  const scrubbedMsg: ClassChatMessageDoc = stripUndefined({
+    id: target.id,
+    threadId: target.threadId,
+    classId: target.classId,
+    studentUid: target.studentUid,
+    senderUid: target.senderUid,
+    senderRole: target.senderRole,
+    senderName: target.senderName,
+    text: UNSENT_TOMBSTONE_TEXT,
+    createdAt: target.createdAt,
+    topic: target.topic,
     unsent: true,
-  };
-  upsertLocalChatMessage(updatedMsg);
+  });
+  upsertLocalChatMessage(scrubbedMsg, scopeOpts);
 
-  const threads = loadLocalChatThreads();
+  const threads = loadLocalChatThreads(scopeOpts);
   const curThread = threads[threadId];
-  if (curThread && curThread.lastMessageAt === target.createdAt) {
+  const wasLatest = Boolean(curThread && curThread.lastMessageAt === target.createdAt);
+  if (curThread && wasLatest) {
     threads[threadId] = {
       ...curThread,
-      lastMessageText: 'メッセージの送信を取り消しました',
+      lastMessageText: UNSENT_TOMBSTONE_TEXT,
       updatedAt: Date.now(),
     };
-    saveLocalChatThreads(threads);
+    saveLocalChatThreads(threads, scopeOpts);
   }
   dispatchLocalChatUpdated({ threadId });
 
@@ -860,39 +1075,64 @@ export async function unsendClassChatMessage(params: {
       CLASS_CHAT_MESSAGES_SUBCOLLECTION,
       params.messageId,
     );
-    await updateDoc(msgRef, { unsent: true });
+    const firestoreTombstone = stripUndefined({
+      threadId: scrubbedMsg.threadId,
+      classId: scrubbedMsg.classId,
+      studentUid: scrubbedMsg.studentUid,
+      senderUid: scrubbedMsg.senderUid,
+      senderRole: scrubbedMsg.senderRole,
+      senderName: scrubbedMsg.senderName,
+      text: UNSENT_TOMBSTONE_TEXT,
+      createdAt: scrubbedMsg.createdAt,
+      topic: scrubbedMsg.topic,
+      unsent: true,
+    });
+    await setDoc(msgRef, firestoreTombstone);
+
+    if (wasLatest) {
+      const threadRef = doc(db, CLASS_CHAT_THREADS_COLLECTION, threadId);
+      await updateDoc(threadRef, {
+        lastMessageText: UNSENT_TOMBSTONE_TEXT,
+        updatedAt: Date.now(),
+      });
+    }
   } catch {
     /* ignore */
   }
 }
 
-/** トークルーム上部の「ピン留め約束メモ」または「相談中 ⇄ 解決済み」を更新 */
+/** トークルーム上部の「ピン留め約束メモ（先生専用）」または「相談中 ⇄ 解決済み」を更新 */
 export async function updateClassChatThreadMeta(params: {
   classId: string;
   studentUid: string;
+  viewerRole?: ClassChatSenderRole;
   resolutionStatus?: ClassChatResolutionStatus;
   pinnedNotice?: string;
   isDemoMode?: boolean;
 }): Promise<void> {
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
+  const canEditPin = params.viewerRole !== 'student';
+  const safePinInput =
+    canEditPin && params.pinnedNotice !== undefined
+      ? sanitizeChatText(params.pinnedNotice, 300)
+      : undefined;
+
   const threadId = buildClassChatThreadId(params.classId, params.studentUid);
   const now = Date.now();
-  const threads = loadLocalChatThreads();
+  const threads = loadLocalChatThreads(scopeOpts);
   const cur = threads[threadId];
   if (cur) {
     const next: ClassChatThreadDoc = stripUndefined({
       ...cur,
       resolutionStatus: params.resolutionStatus ?? cur.resolutionStatus,
-      pinnedNotice:
-        params.pinnedNotice !== undefined
-          ? params.pinnedNotice.trim().slice(0, 300) || undefined
-          : cur.pinnedNotice,
+      pinnedNotice: safePinInput !== undefined ? safePinInput || undefined : cur.pinnedNotice,
       updatedAt: now,
     });
-    if (params.pinnedNotice !== undefined && !params.pinnedNotice.trim()) {
+    if (safePinInput !== undefined && !safePinInput) {
       delete (next as { pinnedNotice?: string }).pinnedNotice;
     }
     threads[threadId] = next;
-    saveLocalChatThreads(threads);
+    saveLocalChatThreads(threads, scopeOpts);
     dispatchLocalChatUpdated({ threadId });
   }
 
@@ -904,8 +1144,8 @@ export async function updateClassChatThreadMeta(params: {
     if (!snap.exists()) return;
     const patch: Record<string, unknown> = { updatedAt: now };
     if (params.resolutionStatus) patch.resolutionStatus = params.resolutionStatus;
-    if (params.pinnedNotice !== undefined) {
-      patch.pinnedNotice = params.pinnedNotice.trim().slice(0, 300);
+    if (safePinInput !== undefined) {
+      patch.pinnedNotice = safePinInput;
     }
     await updateDoc(threadRef, patch);
   } catch {
@@ -920,9 +1160,10 @@ export async function markClassChatThreadRead(params: {
   viewerRole: ClassChatSenderRole;
   isDemoMode?: boolean;
 }): Promise<void> {
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
   const threadId = buildClassChatThreadId(params.classId, params.studentUid);
   const now = Date.now();
-  const localAll = loadLocalChatThreads();
+  const localAll = loadLocalChatThreads(scopeOpts);
   const cur = localAll[threadId];
   if (cur) {
     const alreadyClean =
@@ -934,7 +1175,7 @@ export async function markClassChatThreadRead(params: {
         params.viewerRole === 'teacher'
           ? { ...cur, unreadByTeacher: 0, teacherLastReadAt: now, updatedAt: now }
           : { ...cur, unreadByStudent: 0, studentLastReadAt: now, updatedAt: now };
-      saveLocalChatThreads(localAll);
+      saveLocalChatThreads(localAll, scopeOpts);
       dispatchLocalChatUpdated({ threadId });
     }
   }
@@ -978,11 +1219,12 @@ export function subscribeClassChatConversation(params: {
     messages: ClassChatMessageDoc[];
   }) => void;
 }): () => void {
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
   const threadId = buildClassChatThreadId(params.classId, params.studentUid);
 
   const emitFromLocal = () => {
-    const t = loadLocalChatThreads()[threadId] ?? null;
-    const msgs = loadLocalChatMessages(threadId);
+    const t = loadLocalChatThreads(scopeOpts)[threadId] ?? null;
+    const msgs = loadLocalChatMessages(threadId, scopeOpts);
     params.onUpdate({ thread: t, messages: msgs });
   };
 
@@ -1006,8 +1248,8 @@ export function subscribeClassChatConversation(params: {
     };
   }
 
-  let latestThread: ClassChatThreadDoc | null = loadLocalChatThreads()[threadId] ?? null;
-  let latestMessages: ClassChatMessageDoc[] = loadLocalChatMessages(threadId);
+  let latestThread: ClassChatThreadDoc | null = loadLocalChatThreads(scopeOpts)[threadId] ?? null;
+  let latestMessages: ClassChatMessageDoc[] = loadLocalChatMessages(threadId, scopeOpts);
 
   const threadRef = doc(db, CLASS_CHAT_THREADS_COLLECTION, threadId);
   const unsubThread = onSnapshot(
@@ -1017,7 +1259,7 @@ export function subscribeClassChatConversation(params: {
         const parsed = parseThreadDoc(snap.id, snap.data() as Record<string, unknown>);
         if (parsed) {
           latestThread = parsed;
-          upsertLocalChatThread(parsed);
+          upsertLocalChatThread(parsed, scopeOpts);
         }
       }
       params.onUpdate({ thread: latestThread, messages: latestMessages });
@@ -1042,7 +1284,7 @@ export function subscribeClassChatConversation(params: {
       });
       rows.sort((a, b) => a.createdAt - b.createdAt);
       latestMessages = rows;
-      saveLocalChatMessages(threadId, rows);
+      saveLocalChatMessages(threadId, rows, scopeOpts);
       params.onUpdate({ thread: latestThread, messages: latestMessages });
     },
     () => {
@@ -1065,11 +1307,13 @@ export function subscribeClassThreadsForTeacher(params: {
   isDemoMode?: boolean;
   onThreads: (threadsByStudentUid: Record<string, ClassChatThreadDoc>) => void;
 }): () => void {
+  const scopeOpts: ChatStorageScopeOptions = { isDemoMode: params.isDemoMode };
+
   const emitLocal = () => {
-    const all = loadLocalChatThreads();
+    const all = loadLocalChatThreads(scopeOpts);
     const map: Record<string, ClassChatThreadDoc> = {};
     for (const t of Object.values(all)) {
-      if (t.classId === params.classId) {
+      if (t.classId === params.classId && isSafeRecordKey(t.studentUid)) {
         map[t.studentUid] = t;
       }
     }
@@ -1106,7 +1350,7 @@ export function subscribeClassThreadsForTeacher(params: {
         const parsed = parseThreadDoc(d.id, d.data() as Record<string, unknown>);
         if (!parsed) return;
         map[parsed.studentUid] = parsed;
-        upsertLocalChatThread(parsed);
+        upsertLocalChatThread(parsed, scopeOpts);
 
         const prev = prevLastAt.get(parsed.id) ?? 0;
         if (
@@ -1148,8 +1392,10 @@ export function subscribeClassThreadsForTeacher(params: {
 }
 
 /**
- * アプリ常駐用：ログイン中ユーザー（生徒としての全参加クラス＋先生としての担当クラス）の
- * 未読合計と新着メッセージ着信をリアルタイム監視する。
+ * アプリ常駐用：ログイン中ユーザーの未読合計と新着着信をリアルタイム監視する。
+ * - 生徒側：在籍中クラス（`loadJukuMemberships(uid)`）の個別スレッドのみをピンポイント購読
+ *   （過去に退出したクラスが残っていても permission-denied を起こさず、退出と同時に即時遮断）
+ * - 先生側：自分がオーナーの担当クラス（`where('teacherUid','==',uid)`）を購読
  */
 export function subscribeUserChatInbox(params: {
   uid: string;
@@ -1162,7 +1408,7 @@ export function subscribeUserChatInbox(params: {
   }) => void;
 }): () => void {
   const { uid } = params;
-  if (!uid) {
+  if (!uid || !isSafeRecordKey(uid)) {
     params.onSummary({
       unreadAsStudent: 0,
       unreadAsTeacher: 0,
@@ -1173,6 +1419,7 @@ export function subscribeUserChatInbox(params: {
     return () => {};
   }
 
+  const scopeOpts: ChatStorageScopeOptions = { ownerUid: uid };
   let studentMap: Record<string, ClassChatThreadDoc> = {};
   let teacherMap: Record<string, ClassChatThreadDoc> = {};
 
@@ -1195,12 +1442,17 @@ export function subscribeUserChatInbox(params: {
   };
 
   const syncFromLocal = () => {
-    const all = loadLocalChatThreads();
+    const all = loadLocalChatThreads(scopeOpts);
+    const enrolledSet = new Set(loadJukuMemberships(uid).map((m) => m.classId));
     const sNext: Record<string, ClassChatThreadDoc> = {};
     const tNext: Record<string, ClassChatThreadDoc> = {};
     for (const t of Object.values(all)) {
-      if (t.studentUid === uid) sNext[t.classId] = t;
-      if (t.teacherUid === uid) tNext[t.id] = t;
+      if (t.studentUid === uid && ( enrolledSet.size === 0 || enrolledSet.has(t.classId) )) {
+        sNext[t.classId] = t;
+      }
+      if (t.teacherUid === uid) {
+        tNext[t.id] = t;
+      }
     }
     studentMap = sNext;
     teacherMap = tNext;
@@ -1222,54 +1474,81 @@ export function subscribeUserChatInbox(params: {
     };
   }
 
-  let studentInit = false;
+  // 生徒側：在籍クラスごとの個別スレッド doc 購読（退出クラスは即座に購読解除）
+  const studentDocUnsubs = new Map<string, () => void>();
   const prevStudentAt = new Map<string, number>();
-  const qStudent = query(
-    collection(db, CLASS_CHAT_THREADS_COLLECTION),
-    where('studentUid', '==', uid),
-  );
-  const unsubStudent = onSnapshot(
-    qStudent,
-    (snap) => {
-      const next: Record<string, ClassChatThreadDoc> = {};
-      snap.forEach((d) => {
-        const parsed = parseThreadDoc(d.id, d.data() as Record<string, unknown>);
-        if (!parsed) return;
-        next[parsed.classId] = parsed;
-        upsertLocalChatThread(parsed);
+  const initializedClasses = new Set<string>();
 
-        const prev = prevStudentAt.get(parsed.id) ?? 0;
-        if (
-          studentInit &&
-          parsed.lastMessageAt > prev &&
-          parsed.lastSenderRole === 'teacher' &&
-          parsed.unreadByStudent > 0
-        ) {
-          emitIncomingAlert({
-            id: `${parsed.id}_${parsed.lastMessageAt}`,
-            threadId: parsed.id,
-            classId: parsed.classId,
-            className: parsed.className,
-            studentUid: parsed.studentUid,
-            studentName: parsed.studentName,
-            senderRole: 'teacher',
-            senderName: parsed.lastSenderName || '先生',
-            text: parsed.lastMessageText,
-            topic: parsed.lastTopic,
-            createdAt: parsed.lastMessageAt,
-          });
-        }
-        prevStudentAt.set(parsed.id, parsed.lastMessageAt);
-      });
-      studentInit = true;
-      studentMap = next;
-      recompute();
-    },
-    () => {
-      /* ignore */
-    },
-  );
+  const syncStudentSubscriptions = () => {
+    const memberships = loadJukuMemberships(uid);
+    const activeClassIds = new Set(memberships.map((m) => m.classId).filter(isSafeRecordKey));
 
+    // 退出したクラスのリスナーを即解除
+    for (const [cid, unsub] of studentDocUnsubs.entries()) {
+      if (!activeClassIds.has(cid)) {
+        unsub();
+        studentDocUnsubs.delete(cid);
+        delete studentMap[cid];
+      }
+    }
+
+    for (const cid of activeClassIds) {
+      if (studentDocUnsubs.has(cid)) continue;
+      const tid = buildClassChatThreadId(cid, uid);
+      const ref = doc(db, CLASS_CHAT_THREADS_COLLECTION, tid);
+      const unsub = onSnapshot(
+        ref,
+        (snap) => {
+          if (snap.exists()) {
+            const parsed = parseThreadDoc(snap.id, snap.data() as Record<string, unknown>);
+            if (parsed && parsed.studentUid === uid) {
+              studentMap = { ...studentMap, [cid]: parsed };
+              upsertLocalChatThread(parsed, scopeOpts);
+
+              const prev = prevStudentAt.get(parsed.id) ?? 0;
+              if (
+                initializedClasses.has(cid) &&
+                parsed.lastMessageAt > prev &&
+                parsed.lastSenderRole === 'teacher' &&
+                parsed.unreadByStudent > 0
+              ) {
+                emitIncomingAlert({
+                  id: `${parsed.id}_${parsed.lastMessageAt}`,
+                  threadId: parsed.id,
+                  classId: parsed.classId,
+                  className: parsed.className,
+                  studentUid: parsed.studentUid,
+                  studentName: parsed.studentName,
+                  senderRole: 'teacher',
+                  senderName: parsed.lastSenderName || '先生',
+                  text: parsed.lastMessageText,
+                  topic: parsed.lastTopic,
+                  createdAt: parsed.lastMessageAt,
+                });
+              }
+              prevStudentAt.set(parsed.id, parsed.lastMessageAt);
+            }
+          } else if (studentMap[cid]) {
+            const copy = { ...studentMap };
+            delete copy[cid];
+            studentMap = copy;
+          }
+          initializedClasses.add(cid);
+          recompute();
+        },
+        () => {
+          /* ignore */
+        },
+      );
+      studentDocUnsubs.set(cid, unsub);
+    }
+    recompute();
+  };
+
+  syncStudentSubscriptions();
+  const offJuku = subscribeJukuMemberships(syncStudentSubscriptions);
+
+  // 先生側：自分が担任オーナーのクラス全スレッド購読
   let teacherInit = false;
   const prevTeacherAt = new Map<string, number>();
   const qTeacher = query(
@@ -1284,7 +1563,7 @@ export function subscribeUserChatInbox(params: {
         const parsed = parseThreadDoc(d.id, d.data() as Record<string, unknown>);
         if (!parsed) return;
         next[parsed.id] = parsed;
-        upsertLocalChatThread(parsed);
+        upsertLocalChatThread(parsed, scopeOpts);
 
         const prev = prevTeacherAt.get(parsed.id) ?? 0;
         if (
@@ -1319,7 +1598,11 @@ export function subscribeUserChatInbox(params: {
   );
 
   return () => {
-    unsubStudent();
+    offJuku();
+    for (const unsub of studentDocUnsubs.values()) {
+      unsub();
+    }
+    studentDocUnsubs.clear();
     unsubTeacher();
     if (typeof window !== 'undefined') {
       window.removeEventListener(LOCAL_EVENT_NAME, onLocal);

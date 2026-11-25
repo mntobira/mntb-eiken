@@ -9,6 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { MessageCircle, X } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
 import {
+  clearChatRuntimeSessionCache,
   subscribeIncomingChatAlerts,
   subscribeUserChatInbox,
 } from './chatStore';
@@ -30,7 +31,14 @@ export function ClassChatNotificationHost({
   useEffect(() => {
     if (!FIREBASE_CONFIGURED) return;
     return onAuthStateChanged(auth, (u) => {
-      setUid(u?.uid || '');
+      const nextUid = u?.uid || '';
+      setUid((prev) => {
+        if (prev !== nextUid) {
+          clearChatRuntimeSessionCache();
+          setActiveAlert(null);
+        }
+        return nextUid;
+      });
     });
   }, []);
 
@@ -45,9 +53,11 @@ export function ClassChatNotificationHost({
 
   useEffect(() => {
     return subscribeIncomingChatAlerts((alert) => {
+      if (!uid) return;
+      if (alert.senderRole === 'teacher' && alert.studentUid !== uid) return;
       setActiveAlert(alert);
     });
-  }, []);
+  }, [uid]);
 
   useEffect(() => {
     if (!activeAlert) return;

@@ -46,7 +46,7 @@ import {
   pickPrimaryTask,
   sortHomeworkTasks,
 } from './homeworkCore';
-import { chapterTitleOf, chapterTotals } from './chapterTotals';
+import { chapterTitleOf, chapterTotals, isValidEikenChapterId } from './chapterTotals';
 import { formatDuration } from '../timelog/timelogCore';
 import { subscribeTimelogChanges, summarize } from '../timelog/timelogStore';
 import { ClassChatModal, subscribeUserChatInbox } from '../chat';
@@ -539,6 +539,7 @@ export function SugorokuTodayHomework({
           onStartChapter={
             onStartChapter
               ? (chapterId) => {
+                  if (!isValidEikenChapterId(chapterId)) return;
                   setChatOpen(false);
                   onStartChapter(chapterId);
                 }
