@@ -25,6 +25,7 @@ import { confirmAction } from '../utils/dialog';
 import { saveJukuMemberships } from '../utils/classAssignments';
 import { StudentAssignments } from './classroom/StudentAssignments';
 import { AdminClassHubSection } from './classroom/AdminClassHubSection';
+import type { SugorokuAdminTabId } from '../sugoroku/admin/SugorokuAdminApp';
 import { ClassChatModal, subscribeUserChatInbox } from '../sugoroku/chat';
 import { chapterSubjectOf, isValidEikenChapterId } from '../sugoroku/homework/chapterTotals';
 
@@ -64,8 +65,8 @@ interface ClassPanelProps {
   onStartChapter?: (chapterId: string, subject: MembershipDetail['subject']) => void;
   /** 管理者・講師アカウントのとき、上部に「管理しているクラス一覧＋クラス追加」を表示する */
   showAdminHub?: boolean;
-  /** 管理クラスの一覧から特定のクラス管理画面を開く */
-  onOpenClassAdmin?: (classId: string) => void;
+  /** 管理クラスの一覧から特定のクラス管理画面（および開く初期タブ）を開く */
+  onOpenClassAdmin?: (classId: string, initialTab?: SugorokuAdminTabId) => void;
 }
 
 export function ClassPanel({
@@ -264,7 +265,11 @@ export function ClassPanel({
                     </div>
                   </div>
                   {/* クラスに参加していれば「今日の課題・今週の宿題」を常に見やすく表示 */}
-                  <StudentAssignments membership={membership} onStartChapter={onStartChapter} />
+                  <StudentAssignments
+                    membership={membership}
+                    onStartChapter={onStartChapter}
+                    onOpenChat={() => setChatMembership(membership)}
+                  />
                 </li>
               );
             })}

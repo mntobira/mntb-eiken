@@ -147,6 +147,15 @@ export function SugorokuTitleHomeworkBanner({
         </span>
 
         <div className="launch-today-hw-pills">
+          {task.isPersonalized && (
+            <span
+              className="launch-today-hw-badge"
+              data-testid="launch-hw-personalized"
+              style={{ background: '#ede9fe', color: '#6d28d9' }}
+            >
+              個別課題
+            </span>
+          )}
           {complete ? (
             <span className="launch-today-hw-badge" data-tone="done">
               <CheckCircle2 size={12} aria-hidden="true" />
@@ -184,6 +193,25 @@ export function SugorokuTitleHomeworkBanner({
       <div className="launch-today-hw-bar" aria-hidden="true">
         <i style={{ width: `${task.percent}%` }} />
       </div>
+
+      {task.coachInstruction && (
+        <p
+          data-testid="launch-hw-coach-instruction"
+          style={{
+            marginTop: 6,
+            padding: '5px 9px',
+            borderRadius: 10,
+            background: '#fff8e8',
+            border: '1px solid #f2dfb6',
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: '#7a4b00',
+            lineHeight: 1.4,
+          }}
+        >
+          先生メモ：{task.coachInstruction}
+        </p>
+      )}
 
       {!complete && onStartChapter && task.nextChapterId && (
         <button

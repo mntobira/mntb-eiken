@@ -66,6 +66,7 @@ import {
 import { buildFeedbackSheetHtml } from '../src/sugoroku/writing-review/printFeedbackSheet';
 import { buildSpeakingFeedbackSheetHtml } from '../src/sugoroku/speaking-scbt/speakingFeedbackSheet';
 import { isValidEikenChapterId } from '../src/sugoroku/homework/chapterTotals';
+import { buildHomeworkTask } from '../src/sugoroku/homework/homeworkCore';
 import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubSection';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
@@ -733,5 +734,106 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       expect(classifyEikenMaterial(pdf)).toBe('sugoroku_pack');
       expect(pdf.file.startsWith('/sugoroku/')).toBe(true);
     }
+  });
+
+  it('個別指導品質強化：生徒データ自動差し込み声掛けチップ・個別課題(isPersonalized)判定・先生メモ継承が正しく機能する', () => {
+    // 1. 先生側 ClassChatView に studentPulse を渡すと、生徒名・今週学習時間・消化率が自動挿入された声掛けチップが出る
+    const highProgressHtml = renderToStaticMarkup(
+      createElement(ClassChatView, {
+        classId: 'cls_q_1',
+        className: '英検2級コース',
+        schoolName: 'すごろく塾',
+        teacherUid: 'teacher_1',
+        studentUid: 'stu_pulse_1',
+        studentName: '佐藤 翔太（高2・野球部）',
+        viewerRole: 'teacher',
+        viewerName: '西 講師',
+        studentPulse: {
+          targetGradeLabel: '目標 英検2級',
+          weeklyTimeLabel: '1時間20分',
+          homeworkPct: 85,
+          homeworkCountLabel: '17/20問',
+        },
+        isDemoMode: true,
+        embedded: true,
+      }),
+    );
+    expect(highProgressHtml).toContain('data-testid="personalized-coach-chip"');
+    expect(highProgressHtml).toContain('85%達成を褒める');
+
+    const zeroProgressHtml = renderToStaticMarkup(
+      createElement(ClassChatView, {
+        classId: 'cls_q_1',
+        className: '英検2級コース',
+        schoolName: 'すごろく塾',
+        teacherUid: 'teacher_1',
+        studentUid: 'stu_pulse_2',
+        studentName: '高橋 健太（中3・サッカー部）',
+        viewerRole: 'teacher',
+        viewerName: '西 講師',
+        studentPulse: {
+          targetGradeLabel: '目標 英検3級',
+          weeklyTimeLabel: '0分',
+          homeworkPct: 0,
+        },
+        isDemoMode: true,
+        embedded: true,
+      }),
+    );
+    expect(zeroProgressHtml).toContain('最初の5分声掛け');
+
+    // 2. buildHomeworkTask が個別指定課題 (targetStudentUids) とクラス全体課題を正確に区別し、目標周回・先生メモを保持する
+    const now = 1_760_000_000_000;
+    const dueAt = now + 5 * 86_400_000;
+    const personalizedTask = buildHomeworkTask({
+      assignment: {
+        id: 'hw_ind_1',
+        classId: 'cls_q_1',
+        title: '翔太くん専用：リスニング第1部強化',
+        chapterIds: ['eiken_2_listening_r01_part1'],
+        dueAt,
+      },
+      className: '英検2級コース',
+      plan: {
+        id: 'hw_ind_1',
+        classId: 'cls_q_1',
+        teacherUid: 'teacher_1',
+        title: '翔太くん専用：リスニング第1部強化',
+        chapterIds: ['eiken_2_listening_r01_part1'],
+        dueAt,
+        targetStudentUids: ['stu_pulse_1'],
+        targetLaps: 2,
+        coachInstruction: '間違えた問題はスクリプトを見ながら2回音読しよう！',
+      },
+      totals: { eiken_2_listening_r01_part1: 15 },
+      solved: {},
+      now,
+    });
+    expect(personalizedTask.isPersonalized).toBe(true);
+    expect(personalizedTask.targetLaps).toBe(2);
+    expect(personalizedTask.coachInstruction).toContain('2回音読');
+
+    const classWideTask = buildHomeworkTask({
+      assignment: {
+        id: 'hw_all_1',
+        classId: 'cls_q_1',
+        title: 'クラス共通：第1回短文語彙',
+        chapterIds: ['eiken_2_written_01_short'],
+        dueAt,
+      },
+      className: '英検2級コース',
+      plan: {
+        id: 'hw_all_1',
+        classId: 'cls_q_1',
+        teacherUid: 'teacher_1',
+        title: 'クラス共通：第1回短文語彙',
+        chapterIds: ['eiken_2_written_01_short'],
+        dueAt,
+      },
+      totals: { eiken_2_written_01_short: 20 },
+      solved: {},
+      now,
+    });
+    expect(classWideTask.isPersonalized).toBe(false);
   });
 });

@@ -18,6 +18,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowDown,
   Bell,
   BellRing,
@@ -41,6 +42,7 @@ import {
   X,
 } from 'lucide-react';
 import { allEikenChapterCatalog, isValidEikenChapterId } from '../homework/chapterTotals';
+import { checkClassChatSafety } from './chatSafety';
 import {
   CLASS_CHAT_MAX_MESSAGE_LENGTH,
   getBrowserNotificationPermission,
@@ -186,6 +188,7 @@ export function ClassChatView({
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [soundOn, setSoundOn] = useState<boolean>(() => isChatSoundEnabled());
   const [notifPerm, setNotifPerm] = useState<NotificationPermission | 'unsupported'>(() =>
     getBrowserNotificationPermission(),
@@ -193,6 +196,59 @@ export function ClassChatView({
 
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const msgDomMapRef = useRef<Record<string, HTMLDivElement | null>>({});
+  const composingRef = useRef(false);
+
+  const shortStudentName = studentName.split('（')[0] || studentName;
+
+  // 入力中リアルタイム安全性プレビュー（送信ボタンを押す前に優しく事前案内）
+  const liveSafetyCheck = useMemo(() => {
+    if (!draft.trim()) return { ok: true as const };
+    return checkClassChatSafety(draft);
+  }, [draft]);
+
+  // 先生用：目の前の生徒の実データ（名前・今週学習時間・宿題消化率）を自動差し込みした個別声掛けチップ
+  const personalizedCoachChips = useMemo<
+    Array<{ label: string; topic: ClassChatTopicTag; text: string }>
+  >(() => {
+    if (viewerRole !== 'teacher' || !studentPulse) return [];
+    const gradeClean = studentPulse.targetGradeLabel.replace(/^目標\s*/, '');
+    const chips: Array<{ label: string; topic: ClassChatTopicTag; text: string }> = [];
+
+    if (studentPulse.homeworkPct >= 80) {
+      chips.push({
+        label: `👏 ${studentPulse.homeworkPct}%達成を褒める`,
+        topic: 'encourage',
+        text: `${shortStudentName}さん、今週${studentPulse.weeklyTimeLabel}も学習を積み上げて、宿題も${studentPulse.homeworkPct}%まで進んでいて素晴らしいペースです！この調子で${gradeClean}合格へ向かって進めよう！`,
+      });
+    } else if (studentPulse.homeworkPct > 0) {
+      chips.push({
+        label: `🔥 今週${studentPulse.weeklyTimeLabel}を応援`,
+        topic: 'encourage',
+        text: `${shortStudentName}さん、今週${studentPulse.weeklyTimeLabel}しっかり取り組めているね！宿題も現在${studentPulse.homeworkPct}%${studentPulse.homeworkCountLabel ? `（${studentPulse.homeworkCountLabel}）` : ''}まで進んでいるので、今日はあと1パートだけ一緒に進めよう！`,
+      });
+    } else {
+      chips.push({
+        label: '🌱 最初の5分声掛け',
+        topic: 'pace',
+        text: `${shortStudentName}さん、部活や学校お疲れさま！今週の${gradeClean}の課題、まずは今日5分（短文語彙かリスニング第1部の最初の5問）だけ開いてみよう！`,
+      });
+    }
+    return chips;
+  }, [viewerRole, studentPulse, shortStudentName]);
+
+  const jumpToQuotedMessage = (targetMsgId: string | undefined) => {
+    if (!targetMsgId) return;
+    const node = msgDomMapRef.current[targetMsgId];
+    if (!node) return;
+    if (typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setHighlightedMsgId(targetMsgId);
+    window.setTimeout(() => {
+      setHighlightedMsgId((cur) => (cur === targetMsgId ? null : cur));
+    }, 1800);
+  };
 
   // スレッド切替時の状態リセット
   useEffect(() => {
@@ -449,7 +505,6 @@ export function ClassChatView({
     setDrawerTab('none');
   };
 
-  const shortStudentName = studentName.split('（')[0] || studentName;
   const peerTitle =
     viewerRole === 'teacher'
       ? studentName
@@ -467,6 +522,23 @@ export function ClassChatView({
       className={embedded ? 'cchat-shell' : 'h-full flex flex-col relative'}
       data-testid="class-chat-view"
       onClick={() => setActiveActionMsgId(null)}
+      onKeyDown={(ev) => {
+        if (ev.key === 'Escape') {
+          if (activeActionMsgId) {
+            ev.stopPropagation();
+            setActiveActionMsgId(null);
+          } else if (drawerTab !== 'none') {
+            ev.stopPropagation();
+            setDrawerTab('none');
+          } else if (searchOpen) {
+            ev.stopPropagation();
+            setSearchOpen(false);
+            setSearchQuery('');
+          } else if (onClose) {
+            onClose();
+          }
+        }
+      }}
     >
       {/* 1. LINE風ヘッダー */}
       <header className="cchat-header" onClick={(e) => e.stopPropagation()}>
@@ -738,9 +810,13 @@ export function ClassChatView({
             return (
               <div
                 key={m.id}
+                ref={(el) => {
+                  msgDomMapRef.current[m.id] = el;
+                }}
                 className="cchat-msg-row"
                 data-mine={isMine ? 'true' : 'false'}
                 data-grouped={entry.groupedWithPrev ? 'true' : 'false'}
+                data-highlighted={highlightedMsgId === m.id ? 'true' : undefined}
                 onClick={(e) => e.stopPropagation()}
               >
                 {!isMine &&
@@ -781,10 +857,18 @@ export function ClassChatView({
                       )}
 
                       {m.replyToText && (
-                        <div className="cchat-reply-quote">
+                        <button
+                          type="button"
+                          className="cchat-reply-quote w-full text-left cursor-pointer hover:opacity-90"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            jumpToQuotedMessage(m.replyToId);
+                          }}
+                          title={m.replyToId ? 'タップして返信元のメッセージへ移動' : undefined}
+                        >
                           <strong>↩ {m.replyToSenderName || '返信元'}</strong>
                           <span className="line-clamp-2">{m.replyToText}</span>
-                        </div>
+                        </button>
                       )}
 
                       <div>{m.text}</div>
@@ -1096,6 +1180,22 @@ export function ClassChatView({
             );
           })}
 
+          {personalizedCoachChips.map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              data-testid="personalized-coach-chip"
+              className="cchat-quick-chip cchat-quick-chip-personalized"
+              onClick={() => {
+                setSelectedTopic(chip.topic);
+                setDraft(chip.text);
+                textareaRef.current?.focus();
+              }}
+            >
+              {chip.label}
+            </button>
+          ))}
+
           {quickTemplates.map((tpl) => (
             <button
               key={tpl.label}
@@ -1112,6 +1212,18 @@ export function ClassChatView({
             </button>
           ))}
         </div>
+
+        {/* 入力中リアルタイム安全ガイド（電話番号・外部SNS誘導等を送信前に優しく警告） */}
+        {!liveSafetyCheck.ok && liveSafetyCheck.message && (
+          <div
+            role="status"
+            data-testid="class-chat-safety-warning"
+            className="px-3 py-1.5 bg-amber-50 border-b border-amber-200 text-xs font-bold text-amber-800 flex items-start gap-1.5"
+          >
+            <AlertTriangle size={14} className="shrink-0 mt-0.5 text-amber-600" />
+            <span>{liveSafetyCheck.message}</span>
+          </div>
+        )}
 
         {sendError && (
           <div className="px-3 py-1.5 bg-red-50 border-b border-red-200 text-xs font-bold text-red-600">
@@ -1145,30 +1257,66 @@ export function ClassChatView({
             <Smile size={18} />
           </button>
 
-          <textarea
-            ref={textareaRef}
-            value={draft}
-            rows={1}
-            maxLength={CLASS_CHAT_MAX_MESSAGE_LENGTH}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                void handleSend();
+          <div className="flex-1 min-w-0 flex flex-col">
+            <textarea
+              ref={textareaRef}
+              value={draft}
+              rows={1}
+              maxLength={CLASS_CHAT_MAX_MESSAGE_LENGTH}
+              onCompositionStart={() => {
+                composingRef.current = true;
+              }}
+              onCompositionEnd={() => {
+                composingRef.current = false;
+              }}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                if (sendError) setSendError('');
+              }}
+              onKeyDown={(e) => {
+                if (composingRef.current || e.nativeEvent.isComposing || e.keyCode === 229) {
+                  return;
+                }
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  e.preventDefault();
+                  void handleSend();
+                  return;
+                }
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  const isCoarseTouch =
+                    typeof window !== 'undefined' &&
+                    typeof window.matchMedia === 'function' &&
+                    window.matchMedia('(pointer: coarse)').matches;
+                  if (!isCoarseTouch) {
+                    e.preventDefault();
+                    void handleSend();
+                  }
+                }
+              }}
+              placeholder={
+                viewerRole === 'teacher'
+                  ? `${shortStudentName}さんへメッセージ（Enterで送信・Shift+Enterで改行）`
+                  : '先生に質問・相談メッセージを送る…'
               }
-            }}
-            placeholder={
-              viewerRole === 'teacher'
-                ? `${shortStudentName}さんへメッセージ（Enterで送信・Shift+Enterで改行）`
-                : '先生に質問・相談メッセージを送る…'
-            }
-            className="cchat-textarea"
-            aria-label="メッセージ入力"
-          />
+              className="cchat-textarea w-full"
+              aria-label="メッセージ入力"
+            />
+            {draft.length >= CLASS_CHAT_MAX_MESSAGE_LENGTH - 120 && (
+              <span
+                className={`self-end text-[10px] font-bold pr-2 pt-0.5 ${
+                  draft.length >= CLASS_CHAT_MAX_MESSAGE_LENGTH
+                    ? 'text-red-500'
+                    : 'text-slate-400'
+                }`}
+              >
+                {draft.length} / {CLASS_CHAT_MAX_MESSAGE_LENGTH}
+              </span>
+            )}
+          </div>
 
           <button
             type="button"
-            disabled={!draft.trim() || sending}
+            disabled={!draft.trim() || sending || !liveSafetyCheck.ok}
             onClick={() => void handleSend()}
             className="cchat-send-btn"
             aria-label="送信"

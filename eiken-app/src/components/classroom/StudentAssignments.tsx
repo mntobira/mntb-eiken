@@ -3,6 +3,7 @@ import {
   Check,
   ClipboardList,
   Flame,
+  MessageCircle,
   Play,
   Repeat,
   Sparkles,
@@ -37,9 +38,12 @@ import type { SugorokuHomeworkPlan } from '../../sugoroku/shared/types';
 export function StudentAssignments({
   membership,
   onStartChapter,
+  onOpenChat,
 }: {
   membership: MembershipDetail;
   onStartChapter?: (chapterId: string, subject: MembershipDetail['subject']) => void;
+  /** この課題について先生に1対1質問・相談トークを開く */
+  onOpenChat?: () => void;
 }) {
   const [items, setItems] = useState<Array<{ doc: AssignmentDoc; plan: SugorokuHomeworkPlan | null }>>([]);
   const [loaded, setLoaded] = useState(false);
@@ -178,6 +182,14 @@ export function StudentAssignments({
                 {/* 上段：ステータスバッジ ＋ 締切 */}
                 <div className="flex flex-wrap items-center justify-between gap-1.5">
                   <div className="flex flex-wrap items-center gap-1">
+                    {t.isPersonalized && (
+                      <span
+                        data-testid="student-assignment-personalized"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[11px] font-extrabold"
+                      >
+                        あなたへの個別課題
+                      </span>
+                    )}
                     {finished ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E3F3EA] text-[#1F7A4D] text-[11px] font-extrabold">
                         <Check size={11} />
@@ -247,28 +259,43 @@ export function StudentAssignments({
                   </p>
                 )}
 
-                {/* ワンタップ開始ボタン */}
-                {!finished && onStartChapter && t.nextChapterId && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onStartChapter(
-                        t.nextChapterId,
-                        targetSubject as MembershipDetail['subject'],
-                      )
-                    }
-                    className="w-full flex min-h-[44px] items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#2458A6] hover:bg-[#1C4687] text-white text-xs font-extrabold shadow-xs transition-colors"
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <Play size={14} />
-                      {quotaClearedToday ? '続けて次の問題を解く' : '今日の課題を今すぐ解く'}
-                    </span>
-                    {nextTitle && (
-                      <span className="text-[11px] font-semibold text-blue-100 truncate max-w-[48%]">
-                        {nextTitle}
-                      </span>
+                {/* ワンタップ開始ボタン ＋ 先生に質問ボタン */}
+                {((!finished && onStartChapter && t.nextChapterId) || onOpenChat) && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {!finished && onStartChapter && t.nextChapterId && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onStartChapter(
+                            t.nextChapterId,
+                            targetSubject as MembershipDetail['subject'],
+                          )
+                        }
+                        className="flex-1 min-w-[180px] flex min-h-[44px] items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#2458A6] hover:bg-[#1C4687] text-white text-xs font-extrabold shadow-xs transition-colors cursor-pointer"
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          <Play size={14} />
+                          {quotaClearedToday ? '続けて次の問題を解く' : '今日の課題を今すぐ解く'}
+                        </span>
+                        {nextTitle && (
+                          <span className="text-[11px] font-semibold text-blue-100 truncate max-w-[44%]">
+                            {nextTitle}
+                          </span>
+                        )}
+                      </button>
                     )}
-                  </button>
+
+                    {onOpenChat && (
+                      <button
+                        type="button"
+                        onClick={onOpenChat}
+                        className="inline-flex min-h-[44px] items-center gap-1.5 px-3 py-2 rounded-xl border border-[#BBE5CD] bg-[#F0FDF4] hover:bg-[#DCFCE7] text-[#047857] text-xs font-extrabold cursor-pointer shrink-0"
+                      >
+                        <MessageCircle size={14} />
+                        {finished ? '完了報告・相談' : '先生に質問'}
+                      </button>
+                    )}
+                  </div>
                 )}
               </li>
             );
