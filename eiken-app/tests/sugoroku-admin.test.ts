@@ -59,6 +59,8 @@ import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubS
 import { buildClassInviteSheetHtml } from '../src/sugoroku/admin/printClassInviteSheet';
 import { createDefaultClassSettings } from '../src/sugoroku/admin/classroomSettings';
 import { ClassPanel } from '../src/components/ClassPanel';
+import { Home } from '../src/components/Home';
+import { ProfileModal } from '../src/components/ProfileModal';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
   it('URLクエリ ?portal=admin および VITE_SUGOROKU_PORTAL=admin を正しく判定する', () => {
@@ -541,10 +543,42 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     expect(inviteHtml).toContain('毎日リスニング15分＋単語20分を続けましょう！');
 
     const unauthPanelHtml = renderToStaticMarkup(
-      createElement(ClassPanel, { defaultDisplayName: 'たくと' }),
+      createElement(ClassPanel, {
+        defaultDisplayName: 'たくと',
+        onLinkGoogle: () => {},
+      }),
     );
     expect(unauthPanelHtml).toContain('クラス参加には Google ログインが必要です');
     expect(unauthPanelHtml).toContain('6文字コードでクラスに参加できます');
     expect(unauthPanelHtml).toContain('先生にチャット相談');
+    expect(unauthPanelHtml).toContain('Google でログインしてクラスへ進む');
+
+    // ホーム画面から1タップで「クラス」へ直行できるボタン＋未読バッジが描画される
+    const homeHtml = renderToStaticMarkup(
+      createElement(Home, {
+        onStart: () => {},
+        onIntro: () => {},
+        onNoteList: () => {},
+        onOpenClass: () => {},
+        unreadClassChatCount: 3,
+        isGuest: true,
+      }),
+    );
+    expect(homeHtml).toContain('data-open-class');
+    expect(homeHtml).toContain('クラスを開く（未読チャット3件）');
+
+    // 未ログイン状態でも「設定 ＞ クラス」タブが無効化されず、1画面でGoogleログイン案内が表示される
+    const modalClassHtml = renderToStaticMarkup(
+      createElement(ProfileModal, {
+        initialTab: 'class',
+        onClose: () => {},
+        isBgmEnabled: false,
+        setIsBgmEnabled: () => {},
+        bgmVolume: 0.5,
+        setBgmVolume: () => {},
+      }),
+    );
+    expect(modalClassHtml).toContain('data-settings-tab="class"');
+    expect(modalClassHtml).toContain('Google でログインしてクラスへ進む');
   });
 });
