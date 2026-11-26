@@ -315,12 +315,12 @@ export function buildFeedbackSheetHtml(
       </thead>
       <tbody>
         <tr>
-          <td>${rubric ? `${rubric.content} / 4` : '― / 4'}</td>
-          <td>${rubric ? `${rubric.structure} / 4` : '― / 4'}</td>
-          <td>${rubric ? `${rubric.vocabulary} / 4` : '― / 4'}</td>
-          <td>${rubric ? `${rubric.grammar} / 4` : '― / 4'}</td>
-          <td class="score-total">${review ? `${review.score} / ${maxScore}` : `未採点 / ${maxScore}`}</td>
-          <td><strong>${submission.wordCount}</strong> words${
+          <td>${rubric ? `${escapeHtml(String(rubric.content))} / 4` : '― / 4'}</td>
+          <td>${rubric ? `${escapeHtml(String(rubric.structure))} / 4` : '― / 4'}</td>
+          <td>${rubric ? `${escapeHtml(String(rubric.vocabulary))} / 4` : '― / 4'}</td>
+          <td>${rubric ? `${escapeHtml(String(rubric.grammar))} / 4` : '― / 4'}</td>
+          <td class="score-total">${review ? `${escapeHtml(String(review.score))} / ${Number(maxScore) || 16}` : `未採点 / ${Number(maxScore) || 16}`}</td>
+          <td><strong>${Number(submission.wordCount) || 0}</strong> words${
     options?.targetWordsLabel
       ? `<br /><span style="font-size:7.8pt;">(${escapeHtml(options.targetWordsLabel)})</span>`
       : ''
@@ -420,6 +420,11 @@ export function openFeedbackSheetPrintWindow(
 
   const win = window.open('', '_blank', 'width=920,height=980');
   if (win && win.document) {
+    try {
+      win.opener = null;
+    } catch {
+      /* ignore */
+    }
     win.document.open();
     win.document.write(html);
     win.document.close();

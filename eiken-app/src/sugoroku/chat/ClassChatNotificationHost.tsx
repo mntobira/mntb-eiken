@@ -13,6 +13,7 @@ import {
   subscribeIncomingChatAlerts,
   subscribeUserChatInbox,
 } from './chatStore';
+import { purgeSugorokuSensitiveLocalCache } from '../auth/sugorokuAuthService';
 import { CHAT_TOPIC_META, type IncomingClassChatAlert } from './chatTypes';
 import './class-chat.css';
 
@@ -33,6 +34,9 @@ export function ClassChatNotificationHost({
     return onAuthStateChanged(auth, (u) => {
       const nextUid = u?.uid || '';
       setUid((prev) => {
+        if (prev && prev !== nextUid) {
+          purgeSugorokuSensitiveLocalCache(prev);
+        }
         if (prev !== nextUid) {
           clearChatRuntimeSessionCache();
           setActiveAlert(null);

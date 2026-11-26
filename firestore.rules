@@ -1433,6 +1433,68 @@ service cloud.firestore {
       allow delete: if sgCanManageClass(classId);
     }
 
+    // ---- 1c. 複数講師メール招待（eiken_sugoroku_staff_invites/{inviteId}：オーナー・クラス担任のみ作成・解除可） ----
+    match /eiken_sugoroku_staff_invites/{inviteId} {
+      function validSugorokuStaffInvite(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'className', 'schoolName', 'email', 'staffName',
+            'role', 'status', 'acceptedUid', 'invitedByUid',
+            'createdAt', 'updatedAt', 'serverUpdatedAt'
+          ])
+          && d.keys().hasAll(['classId', 'email', 'staffName', 'role', 'status', 'invitedByUid', 'createdAt', 'updatedAt'])
+          && (!('id' in d) || d.id == inviteId)
+          && d.classId is string && d.classId.matches('^[A-Za-z0-9_-]{1,80}$')
+          && sgClassroomExists(d.classId)
+          && d.email is string && d.email.size() >= 5 && d.email.size() <= 120
+          && inviteId == d.classId + '_' + d.email
+          && d.staffName is string && d.staffName.size() > 0 && d.staffName.size() <= 40
+          && d.role in ['owner', 'staff']
+          && d.status in ['invited', 'active', 'revoked']
+          && (!('className' in d) || (d.className is string && d.className.size() <= 80))
+          && (!('schoolName' in d) || (d.schoolName is string && d.schoolName.size() <= 80))
+          && (!('acceptedUid' in d) || (d.acceptedUid is string && d.acceptedUid.size() <= 128))
+          && d.invitedByUid is string && d.invitedByUid.size() > 0 && d.invitedByUid.size() <= 128
+          && d.createdAt is int && d.createdAt >= 0
+          && d.updatedAt is int && d.updatedAt >= 0;
+      }
+
+      function sgIsInvitedStaffByVerifiedEmail(d) {
+        return isAuthenticated()
+          && request.auth.token.get('email_verified', false) == true
+          && request.auth.token.get('email', '') == d.email
+          && sgIsNotSuspended(request.auth.uid);
+      }
+
+      allow get, list: if resource != null
+        && (
+          sgIsActiveOwner()
+          || sgCanManageClass(resource.data.classId)
+          || sgIsInvitedStaffByVerifiedEmail(resource.data)
+        );
+
+      allow create: if validSugorokuStaffInvite(request.resource.data)
+        && request.resource.data.invitedByUid == request.auth.uid
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(request.resource.data.classId) && sgIsJukuClass(request.resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+
+      allow update: if resource != null
+        && request.resource.data.classId == resource.data.classId
+        && request.resource.data.email == resource.data.email
+        && validSugorokuStaffInvite(request.resource.data)
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(resource.data.classId) && sgIsJukuClass(resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+
+      allow delete: if resource != null
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(resource.data.classId) && sgIsJukuClass(resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+    }
+
     // ---- 2a. 分野別学習時間ログ（サブコレクション eiken_users/{uid}/sugoroku_study_logs/{dateKey}） ----
     match /eiken_users/{uid}/sugoroku_study_logs/{dateKey} {
       function validStudyLog(d) {
@@ -1529,7 +1591,8 @@ service cloud.firestore {
       function validSugorokuAssignment(d) {
         return d.keys().hasOnly([
             'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
-            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems',
+            'targetLaps', 'coachInstruction', 'skillBreakdown',
             'presetId', 'presetWeek',
             'createdAt', 'updatedAt'
           ])
@@ -1542,6 +1605,8 @@ service cloud.firestore {
           && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
           && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
           && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('targetLaps' in d) || (d.targetLaps is int && d.targetLaps >= 1 && d.targetLaps <= 10))
+          && (!('coachInstruction' in d) || (d.coachInstruction is string && d.coachInstruction.size() <= 300))
           && (!('skillBreakdown' in d) || validSkillBreakdown(d.skillBreakdown))
           && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
           && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && dataPresetWeekValid(d.presetWeek)));
@@ -1564,7 +1629,7 @@ service cloud.firestore {
           );
       }
 
-      allow get, list: if sgCanManageClass(classId) || studentCanReadAssignment(resource.data);
+      allow get, list: if sgCanManageClass(classId) || (resource != null && studentCanReadAssignment(resource.data));
       allow create, update: if sgCanManageClass(classId) && validSugorokuAssignment(request.resource.data);
       allow delete: if sgCanManageClass(classId);
     }
@@ -1584,7 +1649,8 @@ service cloud.firestore {
       function validHomeworkPlanDoc(d) {
         return d.keys().hasOnly([
             'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
-            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems',
+            'targetLaps', 'coachInstruction', 'skillBreakdown',
             'presetId', 'presetWeek', 'createdAt', 'updatedAt'
           ])
           && d.keys().hasAll(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt'])
@@ -1597,6 +1663,8 @@ service cloud.firestore {
           && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
           && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
           && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('targetLaps' in d) || (d.targetLaps is int && d.targetLaps >= 1 && d.targetLaps <= 10))
+          && (!('coachInstruction' in d) || (d.coachInstruction is string && d.coachInstruction.size() <= 300))
           && (!('skillBreakdown' in d) || validHomeworkPlanBreakdown(d.skillBreakdown))
           && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
           && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && d.presetWeek <= 24));
@@ -1618,7 +1686,12 @@ service cloud.firestore {
           )
         );
 
-      allow create, update: if validHomeworkPlanDoc(request.resource.data)
+      allow create: if validHomeworkPlanDoc(request.resource.data)
+        && sgCanManageClass(request.resource.data.classId);
+
+      allow update: if resource != null
+        && request.resource.data.classId == resource.data.classId
+        && validHomeworkPlanDoc(request.resource.data)
         && sgCanManageClass(request.resource.data.classId);
 
       allow delete: if resource != null && sgCanManageClass(resource.data.classId);
@@ -1715,7 +1788,9 @@ service cloud.firestore {
 
       allow delete: if isAuthenticated()
         && resource.data.studentUid == request.auth.uid
-        && resource.data.status == 'submitted';
+        && resource.data.status == 'submitted'
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid);
     }
 
     // ---- 5. S-CBT スピーキング録音提出＆評価（eiken_classrooms/{classId}/speaking_submissions/{submissionId}） ----
@@ -1818,7 +1893,9 @@ service cloud.firestore {
 
       allow delete: if isAuthenticated()
         && resource.data.studentUid == request.auth.uid
-        && resource.data.status == 'submitted';
+        && resource.data.status == 'submitted'
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid);
     }
 
     // ---- 6. クラス別 学習目標・塾運営設定（eiken_classrooms/{classId}/sugoroku_settings/{settingId}） ----
@@ -3599,5 +3676,9 @@ service cloud.firestore {
 //   対戦モードのルール — ★ここまで★
 // ###################################################################
 
+    // 明示的デフォルト拒否（上記で許可したパス以外はすべて読み書き拒否）
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

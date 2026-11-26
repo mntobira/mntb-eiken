@@ -36,6 +36,7 @@ import { CLASSROOMS_COLLECTION } from '../../utils/classroomShared';
 import { loadJukuMemberships, subscribeJukuMemberships } from '../../utils/classAssignments';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
 import { isValidEikenChapterId } from '../homework/chapterTotals';
+import { checkClassChatSafety } from './chatSafety';
 import {
   buildClassChatThreadId,
   CHAT_REACTIONS,
@@ -90,7 +91,9 @@ function sanitizeChatText(raw: string, maxLen: number): string {
 
 // Node(SSR/Vitest)環境など globalThis.localStorage が未定義の場合のメモリフォールバック
 const memoryStore = new Map<string, string>();
-function getChatStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
+function getChatStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> & {
+  keys: () => string[];
+} {
   try {
     const raw = (globalThis as { localStorage?: Storage }).localStorage;
     if (raw && typeof raw.getItem === 'function' && typeof raw.setItem === 'function') {
@@ -106,6 +109,18 @@ function getChatStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
               /* ignore */
             }
           },
+          keys: () => {
+            const out: string[] = [];
+            try {
+              for (let i = 0; i < raw.length; i += 1) {
+                const k = raw.key(i);
+                if (k) out.push(k);
+              }
+            } catch {
+              /* ignore */
+            }
+            return out;
+          },
         };
       }
     }
@@ -120,6 +135,7 @@ function getChatStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
     removeItem: (k: string) => {
       memoryStore.delete(k);
     },
+    keys: () => [...memoryStore.keys()],
   };
 }
 
@@ -156,6 +172,24 @@ const recentlyEmittedAlertIds = new Set<string>();
 /** ログアウト・アカウント切替時にランタイム通知履歴をクリアする */
 export function clearChatRuntimeSessionCache(): void {
   recentlyEmittedAlertIds.clear();
+}
+
+/** 共有端末でのログアウト時に、指定UIDのローカルチャットキャッシュを完全消去する */
+export function purgeUserChatLocalCache(uid: string | null | undefined): void {
+  clearChatRuntimeSessionCache();
+  const cleanUid = (uid || '').trim();
+  if (!cleanUid || !isSafeRecordKey(cleanUid)) return;
+  const storage = getChatStorage();
+  const scope = `u_${cleanUid}`;
+  const threadKey = `${SCOPED_THREADS_PREFIX}${scope}`;
+  const msgPrefix = `${SCOPED_MESSAGES_PREFIX}${scope}:`;
+  storage.removeItem(threadKey);
+  storage.removeItem(LEGACY_UNSCOPED_THREADS_KEY);
+  for (const k of storage.keys()) {
+    if (k.startsWith(msgPrefix) || k.startsWith('mntb_eiken_class_chat_msgs_v1:')) {
+      storage.removeItem(k);
+    }
+  }
 }
 
 export function subscribeIncomingChatAlerts(
@@ -759,6 +793,10 @@ export async function sendClassChatMessage(
   }
   if (!isSafeRecordKey(input.classId) || !isSafeRecordKey(input.studentUid)) {
     throw new Error('不正なクラスまたは生徒IDです。');
+  }
+  const safety = checkClassChatSafety(trimmed);
+  if (!safety.ok) {
+    throw new Error(safety.message || '安全ガイドラインにより送信できません。');
   }
 
   const scopeOpts: ChatStorageScopeOptions = { isDemoMode: input.isDemoMode };

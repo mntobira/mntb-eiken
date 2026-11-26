@@ -499,8 +499,8 @@ export function ClassChatView({
             </div>
             <small>
               {viewerRole === 'teacher'
-                ? `${className} · 1対1個別トーク（他生徒には非公開）`
-                : '質問・宿題・ペース相談（他の生徒には一切見えません）'}
+                ? `${className} · 1対1個別トーク（他生徒には非公開・個人連絡先保護）`
+                : '質問・宿題・ペース相談（他の生徒には一切見えません・個人連絡先の送信は自動保護）'}
             </small>
           </div>
         </div>

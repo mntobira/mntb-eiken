@@ -20,6 +20,7 @@ import {
   hasVerifiedPreAuthorizedInstructorEmail,
   isActiveSugorokuStaff,
   loadCachedSugorokuMember,
+  purgeSugorokuSensitiveLocalCache,
 } from '../sugoroku/auth';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
@@ -148,6 +149,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   };
 
   const logout = async () => {
+    const prevUid = auth.currentUser?.uid;
+    purgeSugorokuSensitiveLocalCache(prevUid);
     await signOutGoogle();
     if (onLogout) {
       onLogout();
@@ -172,6 +175,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
   const switchAccount = async () => {
     setAuthError(null);
+    purgeSugorokuSensitiveLocalCache(auth.currentUser?.uid);
     const outcome = await runSignIn(switchGoogleAccount);
     if (outcome.redirecting) return;
     if (!outcome.ok && !outcome.cancelled) setAuthError(outcome.message || 'ログインに失敗しました。');

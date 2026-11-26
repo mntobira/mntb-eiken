@@ -47,6 +47,7 @@ import {
 } from './sugorokuAuthCore';
 import {
   loadSugorokuInviteDraft,
+  purgeSugorokuSensitiveLocalCache,
   redeemSugorokuInviteCode,
   saveSugorokuInviteDraft,
   signInSugorokuWithGoogle,
@@ -478,7 +479,10 @@ export function SugorokuGateScreen({
                 </div>
                 <button
                   type="button"
-                  onClick={() => void signOutGoogle()}
+                  onClick={() => {
+                    purgeSugorokuSensitiveLocalCache(user.uid);
+                    void signOutGoogle();
+                  }}
                   className="sga-secondary-btn shrink-0"
                 >
                   <LogOut size={14} aria-hidden="true" />
