@@ -1433,6 +1433,68 @@ service cloud.firestore {
       allow delete: if sgCanManageClass(classId);
     }
 
+    // ---- 1c. 複数講師メール招待（eiken_sugoroku_staff_invites/{inviteId}：オーナー・クラス担任のみ作成・解除可） ----
+    match /eiken_sugoroku_staff_invites/{inviteId} {
+      function validSugorokuStaffInvite(d) {
+        return d.keys().hasOnly([
+            'id', 'classId', 'className', 'schoolName', 'email', 'staffName',
+            'role', 'status', 'acceptedUid', 'invitedByUid',
+            'createdAt', 'updatedAt', 'serverUpdatedAt'
+          ])
+          && d.keys().hasAll(['classId', 'email', 'staffName', 'role', 'status', 'invitedByUid', 'createdAt', 'updatedAt'])
+          && (!('id' in d) || d.id == inviteId)
+          && d.classId is string && d.classId.matches('^[A-Za-z0-9_-]{1,80}$')
+          && sgClassroomExists(d.classId)
+          && d.email is string && d.email.size() >= 5 && d.email.size() <= 120
+          && inviteId == d.classId + '_' + d.email
+          && d.staffName is string && d.staffName.size() > 0 && d.staffName.size() <= 40
+          && d.role in ['owner', 'staff']
+          && d.status in ['invited', 'active', 'revoked']
+          && (!('className' in d) || (d.className is string && d.className.size() <= 80))
+          && (!('schoolName' in d) || (d.schoolName is string && d.schoolName.size() <= 80))
+          && (!('acceptedUid' in d) || (d.acceptedUid is string && d.acceptedUid.size() <= 128))
+          && d.invitedByUid is string && d.invitedByUid.size() > 0 && d.invitedByUid.size() <= 128
+          && d.createdAt is int && d.createdAt >= 0
+          && d.updatedAt is int && d.updatedAt >= 0;
+      }
+
+      function sgIsInvitedStaffByVerifiedEmail(d) {
+        return isAuthenticated()
+          && request.auth.token.get('email_verified', false) == true
+          && request.auth.token.get('email', '') == d.email
+          && sgIsNotSuspended(request.auth.uid);
+      }
+
+      allow get, list: if resource != null
+        && (
+          sgIsActiveOwner()
+          || sgCanManageClass(resource.data.classId)
+          || sgIsInvitedStaffByVerifiedEmail(resource.data)
+        );
+
+      allow create: if validSugorokuStaffInvite(request.resource.data)
+        && request.resource.data.invitedByUid == request.auth.uid
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(request.resource.data.classId) && sgIsJukuClass(request.resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+
+      allow update: if resource != null
+        && request.resource.data.classId == resource.data.classId
+        && request.resource.data.email == resource.data.email
+        && validSugorokuStaffInvite(request.resource.data)
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(resource.data.classId) && sgIsJukuClass(resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+
+      allow delete: if resource != null
+        && (
+          sgIsActiveOwner()
+          || (sgIsClassTeacher(resource.data.classId) && sgIsJukuClass(resource.data.classId) && sgIsNotSuspended(request.auth.uid))
+        );
+    }
+
     // ---- 2a. 分野別学習時間ログ（サブコレクション eiken_users/{uid}/sugoroku_study_logs/{dateKey}） ----
     match /eiken_users/{uid}/sugoroku_study_logs/{dateKey} {
       function validStudyLog(d) {
@@ -1529,7 +1591,8 @@ service cloud.firestore {
       function validSugorokuAssignment(d) {
         return d.keys().hasOnly([
             'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
-            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems',
+            'targetLaps', 'coachInstruction', 'skillBreakdown',
             'presetId', 'presetWeek',
             'createdAt', 'updatedAt'
           ])
@@ -1542,6 +1605,8 @@ service cloud.firestore {
           && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
           && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
           && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('targetLaps' in d) || (d.targetLaps is int && d.targetLaps >= 1 && d.targetLaps <= 10))
+          && (!('coachInstruction' in d) || (d.coachInstruction is string && d.coachInstruction.size() <= 300))
           && (!('skillBreakdown' in d) || validSkillBreakdown(d.skillBreakdown))
           && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
           && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && dataPresetWeekValid(d.presetWeek)));
@@ -1564,7 +1629,7 @@ service cloud.firestore {
           );
       }
 
-      allow get, list: if sgCanManageClass(classId) || studentCanReadAssignment(resource.data);
+      allow get, list: if sgCanManageClass(classId) || (resource != null && studentCanReadAssignment(resource.data));
       allow create, update: if sgCanManageClass(classId) && validSugorokuAssignment(request.resource.data);
       allow delete: if sgCanManageClass(classId);
     }
@@ -1584,7 +1649,8 @@ service cloud.firestore {
       function validHomeworkPlanDoc(d) {
         return d.keys().hasOnly([
             'id', 'classId', 'teacherUid', 'title', 'chapterIds', 'dueAt',
-            'targetStudentUids', 'startAt', 'dailyQuotaProblems', 'skillBreakdown',
+            'targetStudentUids', 'startAt', 'dailyQuotaProblems',
+            'targetLaps', 'coachInstruction', 'skillBreakdown',
             'presetId', 'presetWeek', 'createdAt', 'updatedAt'
           ])
           && d.keys().hasAll(['classId', 'teacherUid', 'title', 'chapterIds', 'dueAt'])
@@ -1597,6 +1663,8 @@ service cloud.firestore {
           && (!('targetStudentUids' in d) || (d.targetStudentUids is list && d.targetStudentUids.size() <= 200))
           && (!('startAt' in d) || (d.startAt is int && d.startAt > 0))
           && (!('dailyQuotaProblems' in d) || (d.dailyQuotaProblems is int && d.dailyQuotaProblems >= 1 && d.dailyQuotaProblems <= 500))
+          && (!('targetLaps' in d) || (d.targetLaps is int && d.targetLaps >= 1 && d.targetLaps <= 10))
+          && (!('coachInstruction' in d) || (d.coachInstruction is string && d.coachInstruction.size() <= 300))
           && (!('skillBreakdown' in d) || validHomeworkPlanBreakdown(d.skillBreakdown))
           && (!('presetId' in d) || (d.presetId is string && d.presetId.size() <= 40))
           && (!('presetWeek' in d) || (d.presetWeek is int && d.presetWeek >= 1 && d.presetWeek <= 24));
@@ -1618,7 +1686,12 @@ service cloud.firestore {
           )
         );
 
-      allow create, update: if validHomeworkPlanDoc(request.resource.data)
+      allow create: if validHomeworkPlanDoc(request.resource.data)
+        && sgCanManageClass(request.resource.data.classId);
+
+      allow update: if resource != null
+        && request.resource.data.classId == resource.data.classId
+        && validHomeworkPlanDoc(request.resource.data)
         && sgCanManageClass(request.resource.data.classId);
 
       allow delete: if resource != null && sgCanManageClass(resource.data.classId);
@@ -1715,7 +1788,9 @@ service cloud.firestore {
 
       allow delete: if isAuthenticated()
         && resource.data.studentUid == request.auth.uid
-        && resource.data.status == 'submitted';
+        && resource.data.status == 'submitted'
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid);
     }
 
     // ---- 5. S-CBT スピーキング録音提出＆評価（eiken_classrooms/{classId}/speaking_submissions/{submissionId}） ----
@@ -1818,7 +1893,9 @@ service cloud.firestore {
 
       allow delete: if isAuthenticated()
         && resource.data.studentUid == request.auth.uid
-        && resource.data.status == 'submitted';
+        && resource.data.status == 'submitted'
+        && sgIsEnrolledInClass(classId, request.auth.uid)
+        && sgIsNotSuspended(request.auth.uid);
     }
 
     // ---- 6. クラス別 学習目標・塾運営設定（eiken_classrooms/{classId}/sugoroku_settings/{settingId}） ----
@@ -1849,13 +1926,24 @@ service cloud.firestore {
 
     // ---- 7. 生徒×先生 1対1リアルタイムチャット（eiken_class_chat_threads/{threadId} ＆ messages/{messageId}） ----
     match /eiken_class_chat_threads/{threadId} {
-      function sgCanAccessChatThread(classId, studentUid, teacherUid) {
+      // クライアント申告の teacherUid は一切信用せず、必ず eiken_classrooms / eiken_class_members / 講師権限で検証する
+      function sgIsActiveEnrolledStudentOfChat(classId, studentUid) {
         return isAuthenticated()
-          && (
-            (studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
-            || teacherUid == request.auth.uid
-            || sgCanReadClassAdminData(classId)
-          );
+          && request.auth.uid == studentUid
+          && sgClassroomExists(classId)
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+          && sgIsNotSuspended(request.auth.uid);
+      }
+
+      function sgIsAuthorizedTeacherOfChat(classId) {
+        return isAuthenticated()
+          && sgClassroomExists(classId)
+          && sgCanReadClassAdminData(classId);
+      }
+
+      function sgCanAccessChatThread(classId, studentUid) {
+        return sgIsActiveEnrolledStudentOfChat(classId, studentUid)
+          || sgIsAuthorizedTeacherOfChat(classId);
       }
 
       function validClassChatThread(d) {
@@ -1874,10 +1962,12 @@ service cloud.firestore {
             'unreadByTeacher', 'unreadByStudent', 'updatedAt'
           ])
           && (!('id' in d) || d.id == threadId)
-          && d.classId is string && d.classId.size() > 0 && d.classId.size() <= 80
-          && d.studentUid is string && d.studentUid.size() > 0 && d.studentUid.size() <= 128
+          && d.classId is string && d.classId.matches('^[A-Za-z0-9_-]{1,80}$')
+          && d.studentUid is string && d.studentUid.matches('^[A-Za-z0-9:._-]{1,128}$')
           && threadId == d.classId + '_' + d.studentUid
-          && d.teacherUid is string && d.teacherUid.size() > 0 && d.teacherUid.size() <= 128
+          && sgClassroomExists(d.classId)
+          && d.teacherUid == sgClassroomData(d.classId).teacherUid
+          && sgIsEnrolledInClass(d.classId, d.studentUid)
           && (!('className' in d) || (d.className is string && d.className.size() <= 80))
           && (!('schoolName' in d) || (d.schoolName is string && d.schoolName.size() <= 80))
           && d.studentName is string && d.studentName.size() > 0 && d.studentName.size() <= 40
@@ -1895,35 +1985,76 @@ service cloud.firestore {
           && d.updatedAt is int && d.updatedAt >= 0;
       }
 
-      // get は未作成スレッドの存在確認（snap.exists() == false）も当事者なら許可する
+      // get は未作成スレッドの存在確認（resource == null）または当事者（在籍中生徒本人 / クラス担当講師）のみ許可
       allow get: if isAuthenticated()
+        && threadId.matches('^[A-Za-z0-9:._-]{3,210}$')
         && (
           resource == null
-          || sgCanAccessChatThread(resource.data.classId, resource.data.studentUid, resource.data.teacherUid)
+          || sgCanAccessChatThread(resource.data.classId, resource.data.studentUid)
         );
 
-      // list は where('studentUid','==',自分) / where('teacherUid','==',自分) / where('classId','==',担当クラス) のみ通る
+      // list は在籍中の生徒本人 または 該当クラスの正式な担当講師・管理スタッフのみ許可
       allow list: if isAuthenticated()
-        && (
-          resource.data.studentUid == request.auth.uid
-          || resource.data.teacherUid == request.auth.uid
-          || sgCanReadClassAdminData(resource.data.classId)
-        );
+        && sgCanAccessChatThread(resource.data.classId, resource.data.studentUid);
 
       allow create: if validClassChatThread(request.resource.data)
         && sgCanAccessChatThread(
              request.resource.data.classId,
-             request.resource.data.studentUid,
-             request.resource.data.teacherUid
-           );
+             request.resource.data.studentUid
+           )
+        && (
+          sgIsAuthorizedTeacherOfChat(request.resource.data.classId)
+            ? (
+              request.resource.data.lastSenderRole == 'teacher'
+              && request.resource.data.unreadByTeacher == 0
+            )
+            : (
+              request.resource.data.lastSenderRole == 'student'
+              && request.resource.data.unreadByStudent == 0
+              && request.resource.data.unreadByTeacher == 1
+              && !('pinnedNotice' in request.resource.data)
+              && (!('resolutionStatus' in request.resource.data) || request.resource.data.resolutionStatus == 'open')
+            )
+        );
 
       allow update: if resource != null
-        && sgCanAccessChatThread(resource.data.classId, resource.data.studentUid, resource.data.teacherUid)
+        && sgCanAccessChatThread(resource.data.classId, resource.data.studentUid)
         && request.resource.data.classId == resource.data.classId
         && request.resource.data.studentUid == resource.data.studentUid
-        && validClassChatThread(request.resource.data);
+        && request.resource.data.teacherUid == resource.data.teacherUid
+        && validClassChatThread(request.resource.data)
+        && (
+          sgIsAuthorizedTeacherOfChat(resource.data.classId)
+          || (
+            // 生徒本人による更新：先生専用のピン留めメモ・先生の既読時刻は変更不可、講師発メッセージの偽装も不可
+            request.resource.data.get('pinnedNotice', null) == resource.data.get('pinnedNotice', null)
+            && request.resource.data.get('teacherLastReadAt', 0) == resource.data.get('teacherLastReadAt', 0)
+            && (
+              // (S1) 既読処理・相談解決ステータス変更・自分の直近送信取消に伴うプレビュー更新
+              (
+                request.resource.data.unreadByTeacher == resource.data.unreadByTeacher
+                && request.resource.data.lastMessageAt == resource.data.lastMessageAt
+                && request.resource.data.lastSenderRole == resource.data.lastSenderRole
+                && (
+                  request.resource.data.lastMessageText == resource.data.lastMessageText
+                  || (
+                    resource.data.lastSenderRole == 'student'
+                    && request.resource.data.lastMessageText == 'メッセージの送信を取り消しました'
+                  )
+                )
+              )
+              // (S2) 生徒からの新規メッセージ送信に伴う更新
+              || (
+                request.resource.data.lastSenderRole == 'student'
+                && request.resource.data.unreadByTeacher == resource.data.unreadByTeacher + 1
+                && request.resource.data.unreadByStudent == 0
+                && request.resource.data.lastMessageAt >= resource.data.lastMessageAt
+              )
+            )
+          )
+        );
 
-      allow delete: if resource != null && sgCanReadClassAdminData(resource.data.classId);
+      allow delete: if resource != null && sgIsAuthorizedTeacherOfChat(resource.data.classId);
 
       match /messages/{messageId} {
         function parentThreadExists() {
@@ -1949,9 +2080,10 @@ service cloud.firestore {
               'threadId', 'classId', 'studentUid',
               'senderUid', 'senderRole', 'senderName', 'text', 'createdAt'
             ])
+            && (!('id' in m) || (m.id is string && m.id.size() > 0 && m.id.size() <= 128))
             && m.threadId == threadId
-            && m.classId is string && m.classId.size() > 0 && m.classId.size() <= 80
-            && m.studentUid is string && m.studentUid.size() > 0 && m.studentUid.size() <= 128
+            && m.classId is string && m.classId.matches('^[A-Za-z0-9_-]{1,80}$')
+            && m.studentUid is string && m.studentUid.matches('^[A-Za-z0-9:._-]{1,128}$')
             && threadId == m.classId + '_' + m.studentUid
             && m.senderRole in ['student', 'teacher']
             && m.senderName is string && m.senderName.size() <= 40
@@ -1961,7 +2093,7 @@ service cloud.firestore {
             && (!('replyToId' in m) || (m.replyToId is string && m.replyToId.size() <= 128))
             && (!('replyToSenderName' in m) || (m.replyToSenderName is string && m.replyToSenderName.size() <= 40))
             && (!('replyToText' in m) || (m.replyToText is string && m.replyToText.size() <= 300))
-            && (!('linkedChapterId' in m) || (m.linkedChapterId is string && m.linkedChapterId.size() <= 100))
+            && (!('linkedChapterId' in m) || (m.linkedChapterId is string && m.linkedChapterId.matches('^[A-Za-z0-9_-]{1,100}$')))
             && (!('linkedChapterTitle' in m) || (m.linkedChapterTitle is string && m.linkedChapterTitle.size() <= 120))
             && (!('reactions' in m) || validReactionMap(m.reactions))
             && (!('unsent' in m) || m.unsent is bool);
@@ -1970,31 +2102,38 @@ service cloud.firestore {
         allow get, list: if parentThreadExists()
           && sgCanAccessChatThread(
                parentThread().classId,
-               parentThread().studentUid,
-               parentThread().teacherUid
+               parentThread().studentUid
              );
 
-        allow create: if validChatMessage(request.resource.data)
+        allow create: if parentThreadExists()
+          && validChatMessage(request.resource.data)
           && request.resource.data.senderUid == request.auth.uid
+          && (!('unsent' in request.resource.data) || request.resource.data.unsent == false)
+          && !('reactions' in request.resource.data)
           && (
             (
               request.resource.data.senderRole == 'student'
-              && request.resource.data.studentUid == request.auth.uid
-              && sgIsEnrolledInClass(request.resource.data.classId, request.auth.uid)
+              && sgIsActiveEnrolledStudentOfChat(
+                   request.resource.data.classId,
+                   request.resource.data.studentUid
+                 )
             )
             || (
               request.resource.data.senderRole == 'teacher'
-              && sgCanReadClassAdminData(request.resource.data.classId)
+              && sgIsAuthorizedTeacherOfChat(request.resource.data.classId)
+              && sgIsEnrolledInClass(
+                   request.resource.data.classId,
+                   request.resource.data.studentUid
+                 )
             )
           );
 
-        // リアクション付与・外し、または送信者本人による送信取消（unsent）のみ許可（本文改ざん・なりすまし禁止）
+        // リアクション付与・外し（自分のロール枠のみ）、または送信者本人による送信取消＆本文完全消去のみ許可
         allow update: if resource != null
           && parentThreadExists()
           && sgCanAccessChatThread(
                parentThread().classId,
-               parentThread().studentUid,
-               parentThread().teacherUid
+               parentThread().studentUid
              )
           && validChatMessage(request.resource.data)
           && request.resource.data.threadId == resource.data.threadId
@@ -2002,17 +2141,42 @@ service cloud.firestore {
           && request.resource.data.studentUid == resource.data.studentUid
           && request.resource.data.senderUid == resource.data.senderUid
           && request.resource.data.senderRole == resource.data.senderRole
+          && request.resource.data.senderName == resource.data.senderName
           && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.get('topic', null) == resource.data.get('topic', null)
           && (
-            // (a) 当事者によるリアクション更新（本文・取消状態は不変）
+            // (a) 当事者による自分のロール枠のみのリアクション更新（本文・引用・単元添付・取消フラグは一切不変）
             (
-              request.resource.data.text == resource.data.text
-              && request.resource.data.get('unsent', false) == resource.data.get('unsent', false)
+              resource.data.get('unsent', false) == false
+              && request.resource.data.get('unsent', false) == false
+              && request.resource.data.text == resource.data.text
+              && request.resource.data.get('replyToId', null) == resource.data.get('replyToId', null)
+              && request.resource.data.get('replyToSenderName', null) == resource.data.get('replyToSenderName', null)
+              && request.resource.data.get('replyToText', null) == resource.data.get('replyToText', null)
+              && request.resource.data.get('linkedChapterId', null) == resource.data.get('linkedChapterId', null)
+              && request.resource.data.get('linkedChapterTitle', null) == resource.data.get('linkedChapterTitle', null)
+              && (
+                sgIsAuthorizedTeacherOfChat(resource.data.classId)
+                  ? (
+                    request.auth.uid == resource.data.studentUid
+                    || request.resource.data.get('reactions', {}).get('student', null) == resource.data.get('reactions', {}).get('student', null)
+                  )
+                  : (
+                    request.resource.data.get('reactions', {}).get('teacher', null) == resource.data.get('reactions', {}).get('teacher', null)
+                  )
+              )
             )
-            // (b) 送信者本人による送信取り消し
+            // (b) 送信者本人による送信取り消し（元テキスト・引用・添付・リアクションをサーバ上からも完全消去）
             || (
               resource.data.senderUid == request.auth.uid
               && request.resource.data.get('unsent', false) == true
+              && request.resource.data.text == 'メッセージの送信を取り消しました'
+              && !('replyToId' in request.resource.data)
+              && !('replyToSenderName' in request.resource.data)
+              && !('replyToText' in request.resource.data)
+              && !('linkedChapterId' in request.resource.data)
+              && !('linkedChapterTitle' in request.resource.data)
+              && !('reactions' in request.resource.data)
             )
           );
 
@@ -3512,5 +3676,9 @@ service cloud.firestore {
 //   対戦モードのルール — ★ここまで★
 // ###################################################################
 
+    // 明示的デフォルト拒否（上記で許可したパス以外はすべて読み書き拒否）
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

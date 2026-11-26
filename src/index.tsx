@@ -8,6 +8,15 @@ import { getSet, SETS } from './data/sets'
 
 const app = new Hono()
 
+// 受動防御セキュリティヘッダ（既存ルート・外部呼び出し挙動を変えずにクリックジャッキング・MIMEスニッフィング・不要センサー権限を遮断）
+app.use('*', async (c, next) => {
+  await next()
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Frame-Options', 'DENY')
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  c.header('Permissions-Policy', 'camera=(), geolocation=(), payment=(), usb=(), microphone=(self)')
+})
+
 app.use(renderer)
 
 /** 独立執筆した固定ユニットのみを解決。旧プールへのフォールバックは禁止。 */

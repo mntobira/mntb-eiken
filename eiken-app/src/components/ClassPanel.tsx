@@ -41,7 +41,7 @@ import { extractInviteCodeFromSearch } from '../sugoroku/auth/sugorokuAuthCore';
 import { StudentAssignments } from './classroom/StudentAssignments';
 import { AdminClassHubSection } from './classroom/AdminClassHubSection';
 import { ClassChatModal, subscribeUserChatInbox } from '../sugoroku/chat';
-import { chapterSubjectOf } from '../sugoroku/homework/chapterTotals';
+import { chapterSubjectOf, isValidEikenChapterId } from '../sugoroku/homework/chapterTotals';
 
 /**
  * URL全体（?sugoroku_invite=AB23CD 等）や案内文ごと貼り付けられた場合も
@@ -598,6 +598,7 @@ export function ClassPanel({
           onStartChapter={
             onStartChapter
               ? (chapterId) => {
+                  if (!isValidEikenChapterId(chapterId)) return;
                   const targetSubject =
                     (chapterSubjectOf(chapterId) as MembershipDetail['subject'] | null) ||
                     chatMembership.subject;

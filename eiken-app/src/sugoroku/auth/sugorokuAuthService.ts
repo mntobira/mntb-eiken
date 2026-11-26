@@ -55,6 +55,7 @@ import { safeGetItem, safeRemoveItem } from '../../utils/safeLocalStorage';
 import { safeSetItem } from '../../utils/storageGuard';
 import { isEikenGrade, type EikenGrade } from '../../eiken/config';
 import { SUGOROKU_COLLECTIONS, type SugorokuMemberDoc } from '../shared/types';
+import { purgeUserChatLocalCache } from '../chat/chatStore';
 import {
   SUGOROKU_INVITE_DRAFT_KEY,
   SUGOROKU_MEMBERS_COLLECTION,
@@ -256,6 +257,21 @@ export async function triggerGoogleRedirectSignIn(): Promise<SugorokuSignInResul
 export { consumeGoogleRedirectResult, signOutGoogle };
 
 /**
+ * 塾の共有iPad・学校の共有PCでログアウトまたはアカウント切替が行われた際、
+ * 端末内に残る前の利用者の機密キャッシュ（チャット履歴・提出作文下書き・講師名簿キャッシュ）を完全消去する。
+ */
+export function purgeSugorokuSensitiveLocalCache(uid?: string | null): void {
+  const targetUid = (uid || auth.currentUser?.uid || '').trim();
+  if (targetUid) {
+    saveCachedSugorokuMember(null, targetUid);
+    purgeUserChatLocalCache(targetUid);
+  }
+  safeRemoveItem('eiken:v1:sugoroku_staff_invites');
+  safeRemoveItem('sugoroku_writing_submissions_v1');
+  safeRemoveItem('sugoroku_speaking_submissions_v1');
+}
+
+/**
  * Firestore から sugoroku_members/{uid} を取得し、ローカルキャッシュも更新する。
  */
 export async function fetchSugorokuMemberDoc(uid?: string): Promise<SugorokuMemberDoc | null> {
@@ -318,7 +334,7 @@ export async function ensurePreAuthorizedInstructorMember(
   const isPreAuthorized = hasVerifiedPreAuthorizedInstructorEmail({
     email: currentUser.email,
     emailVerified: currentUser.emailVerified,
-    providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
+    providerIds,
   });
 
   if (!isPreAuthorized) {
