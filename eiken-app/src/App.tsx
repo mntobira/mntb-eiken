@@ -180,6 +180,7 @@ const CoinCelebration = React.lazy(() => import('./components/CoinCelebration').
 const ChapterTitleCelebration = React.lazy(() => import('./components/ChapterTitleCelebration').then(m => ({ default: m.ChapterTitleCelebration })));
 const SugorokuAdminApp = React.lazy(() => import('./sugoroku/admin/SugorokuAdminApp').then(m => ({ default: m.SugorokuAdminApp })));
 import { isSugorokuAdminPortalLaunch } from './sugoroku/admin/portalLaunch';
+import { ClassChatNotificationHost } from './sugoroku/chat';
 
 /**
  * 無操作でホーム画面に戻るまでの時間（30分）。
@@ -260,6 +261,12 @@ export default function App() {
   const [settingsTab, setSettingsTab] = useState<'general' | 'friends' | 'class'>('general');
   /** 管理者画面（sugoroku_admin）をタイトルから開いたか設定＞クラスから開いたか */
   const [adminEntryOrigin, setAdminEntryOrigin] = useState<'launch' | 'settings'>('launch');
+  /** 設定＞クラスの「管理しているクラス一覧」から選択されたクラスID＆初期タブ */
+  const [selectedAdminClassId, setSelectedAdminClassId] = useState<string | undefined>(undefined);
+  const [selectedAdminInitialTab, setSelectedAdminInitialTab] = useState<'students' | 'chat' | undefined>(undefined);
+  const [selectedAdminStudentUid, setSelectedAdminStudentUid] = useState<string | undefined>(undefined);
+  /** 生徒×先生チャットの未読メッセージ合計（設定ナビのバッジに加算） */
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
   /** 先生ダッシュボード（teacher_dashboard）の戻り先と初回クラス開設モーダル自動起動フラグ */
   const [teacherDashboardOrigin, setTeacherDashboardOrigin] = useState<'sugoroku_admin' | 'settings'>('settings');
   const [teacherAutoOpenCreate, setTeacherAutoOpenCreate] = useState(false);
@@ -732,6 +739,22 @@ export default function App() {
       {hasEntered && <>
       {/* お知らせ（notify）はアプリ内のトーストで出す（components/AppToast.tsx） */}
       <AppToast />
+      {/* 生徒×先生の1対1リアルタイムチャット着信監視＆ポップアップ通知 */}
+      <ClassChatNotificationHost
+        onUnreadTotalChange={setUnreadChatCount}
+        onOpenAlertChat={(alert) => {
+          if (alert.senderRole === 'student') {
+            setSelectedAdminClassId(alert.classId);
+            setSelectedAdminInitialTab('chat');
+            setSelectedAdminStudentUid(alert.studentUid);
+            setAdminEntryOrigin('settings');
+            setAppState('sugoroku_admin');
+          } else {
+            setSettingsTab('class');
+            navigateMain('settings');
+          }
+        }}
+      />
       <>
         {/*
           ===== アプリの外枠の高さについて =====
@@ -829,7 +852,7 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} onLogout={returnToTitleScreen} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={() => { setSettingsTab('general'); setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} onLogout={returnToTitleScreen} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={(classId) => { setSelectedAdminClassId(classId); setSelectedAdminInitialTab(undefined); setSelectedAdminStudentUid(undefined); setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
             {/* 先生ダッシュボード（後方互換用に保持。通常は SugorokuAdminApp 内に完全統合済み） */}
             {appState === 'teacher_dashboard' && (
               <SugorokuAdminGuard
@@ -849,7 +872,7 @@ export default function App() {
                 />
               </SugorokuAdminGuard>
             )}
-            {/* すごろく塾・クラス統合管理ポータル（設定＞クラスを管理アカウントで押した際に直行。生徒は SugorokuAdminGuard で完全遮断） */}
+            {/* すごろく塾・クラス管理画面（設定＞クラスの管理クラス一覧から選択して開く。生徒は SugorokuAdminGuard で完全遮断） */}
             {appState === 'sugoroku_admin' && (
               <SugorokuAdminGuard
                 strictSpecifiedEmailsOnly={false}
@@ -858,12 +881,16 @@ export default function App() {
               >
                 <React.Suspense fallback={<ScreenLoading />}>
                   <SugorokuAdminApp
+                    initialClassId={selectedAdminClassId}
+                    initialTab={selectedAdminInitialTab}
+                    initialChatStudentUid={selectedAdminStudentUid}
                     extensionSlots={sugorokuAdminExtensionSlots}
                     onBack={() => {
-                      setSettingsTab('general');
                       if (adminEntryOrigin === 'settings' && auth.currentUser) {
+                        setSettingsTab('class');
                         setAppState('settings');
                       } else {
+                        setSettingsTab('general');
                         const currentUser = auth.currentUser;
                         if (currentUser) {
                           const hasLocalProfile = Boolean(safeGetItem(profileKey(currentUser.uid)));
@@ -899,7 +926,7 @@ export default function App() {
                 onBattle={FEATURES.battle ? () => setAppState('battle') : undefined}
               />
             )}
-            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStartHomeworkChapter={handleStartHomeworkChapter} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
+            {appState === 'home' && <Home onPractice={() => { setFoundationBackTo('home'); setAppState('study'); }} onListeningStart={(chapter,index)=>{setAppMode('practice');handleSelectChapter(chapter,index,false,{startIndex:index,endIndex:index},'practice');}} onPickSubject={value => { if (isSubjectId(value) && isSubjectEnabled(value)) setSelectedSubject(value); }} onStudyMode={handleSelectMode} onGrowth={page => { setGrowthPage(page); navigateMain('growth'); }} onStartHomeworkChapter={handleStartHomeworkChapter} onOpenClass={() => { setSettingsTab('class'); navigateMain('settings'); }} unreadClassChatCount={unreadChatCount} onStart={handleStart} onIntro={handleIntro} onNoteList={() => setAppState('study_hub')} onLeaderboard={() => setAppState('leaderboard')} onBattle={FEATURES.battle ? () => setAppState('battle') : undefined} onChangeSubject={() => { setSubjectPickerReturnTo('home'); setSubjectPickerOrigin('start'); setAppState('subject_selection'); }} onFoundation={() => { setFoundationBackTo('home'); setAppState('foundation'); }} subjectLabel={getSubjectLabel(selectedSubject)} subject={selectedSubject} isGuest={isGuest} isBgmEnabled={isBgmEnabled} isBgmFadedOut={isBgmFadedOut} onToggleBgm={handleToggleBgm} />}
             {/* ★ルーティング側の門（4箇所のうちの3番目）★
                 ナビのボタンを隠すだけでは、Home の「ランキングを見る」など
                 別の導線からこの状態になれてしまう。
@@ -1109,8 +1136,8 @@ export default function App() {
                   { id: 'battle', label: '対戦', ariaLabel: 'オンライン対戦へ移動', current: appState === 'battle', hidden: !FEATURES.battle, onClick: () => navigateMain('battle') },
                   { id: 'gacha', label: 'ガチャ', ariaLabel: 'ガチャ画面へ移動', current: appState === 'growth' && (growthPage === 'gacha' || growthPage === 'gacha-shop'), onClick: () => { setGrowthPage('gacha'); navigateMain('growth'); } },
                   { id: 'mypage', label: 'マイページ', ariaLabel: 'マイページへ移動', current: appState === 'growth' && growthPage !== 'gacha' && growthPage !== 'gacha-shop' && growthPage !== 'rush' && growthPage !== 'missions', onClick: () => { setGrowthPage('overview'); navigateMain('growth'); } },
-                  { id: 'settings', label: '設定', ariaLabel: pendingFriendRequests > 0 ? `設定画面へ移動（フレンド申請が${pendingFriendRequests}件届いています）` : '設定画面へ移動',
-                    current: appState === 'settings', badge: pendingFriendRequests, onClick: () => navigateMain('settings') },
+                  { id: 'settings', label: '設定', ariaLabel: (pendingFriendRequests + unreadChatCount) > 0 ? `設定画面へ移動（新着通知が${pendingFriendRequests + unreadChatCount}件あります）` : '設定画面へ移動',
+                    current: appState === 'settings', badge: pendingFriendRequests + unreadChatCount, onClick: () => navigateMain('settings') },
                 ]}
               />
             )}

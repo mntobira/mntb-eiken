@@ -671,14 +671,14 @@ describe('sugoroku/auth core logic & Manatobi UI gate (AI 4)', () => {
     expect(classesHtml).toContain('設定を編集');
     expect(classesHtml).toContain('LINE・保護者案内文コピー');
 
-    // SugorokuAdminApp からも「デモ / 本番」スイッチやメールアドレス露出が消え、クラス管理導線が出ること
+    // SugorokuAdminApp からも「デモ / 本番」スイッチやメールアドレス露出が消え、招待・クラス設定導線が出ること
     const adminPortalHtml = renderToStaticMarkup(
       createElement(SugorokuAdminApp, {
         initialDataMode: 'demo',
         onOpenTeacherDashboard: () => {},
       }),
     );
-    expect(adminPortalHtml).toContain('クラス管理・作成');
+    expect(adminPortalHtml).toContain('招待・設定（SGRK27）');
     expect(adminPortalHtml).not.toContain('sg-mode-pill');
     expect(adminPortalHtml).not.toContain('デモ表示');
   });

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { LogOut, Settings, Volume2, VolumeX, LogIn, Users, Check, Loader2, AlertTriangle, School, ClipboardList, Swords } from 'lucide-react';
 // ★対戦の音（BGM / 効果音 / 音量）★ 通常 BGM とは別の設定（src/battle/core/audioSettings.ts の説明を参照）
 import { useBattleAudioSettings } from '../battle/hooks/useBattleAudio';
@@ -7,7 +8,7 @@ import { battleAudio } from '../battle/audio/battleAudio';
 import { FriendPanel } from './FriendPanel';
 import { ClassPanel } from './ClassPanel';
 import { ComingSoon } from './ComingSoon';
-import { isClassroomEnabledFor } from '../config/features';
+import { SOCIAL_FEATURES, isClassroomEnabledFor } from '../config/features';
 import type { SubjectKey } from '../data/allChapters';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
@@ -19,6 +20,7 @@ import {
   hasVerifiedPreAuthorizedInstructorEmail,
   isActiveSugorokuStaff,
   loadCachedSugorokuMember,
+  purgeSugorokuSensitiveLocalCache,
 } from '../sugoroku/auth';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
 import { profileKey } from '../utils/userStorageKeys';
@@ -45,8 +47,8 @@ interface ProfileModalProps {
    *   先生は設定を探すことを苦にしないので、ここに置く。
    */
   onOpenTeacherDashboard?: () => void;
-  /** すごろく塾 管理者ポータル（個人別タイムログ・PDF教材棚）を開く */
-  onOpenSugorokuAdmin?: () => void;
+  /** すごろく塾・クラス管理画面を開く（選択した classId を指定可能） */
+  onOpenSugorokuAdmin?: (classId?: string) => void;
   /**
    * フィードバック管理画面（運営専用）を開く。
    * 運営メールでログインしているときだけボタンを出す。
@@ -70,7 +72,7 @@ function isImmediateSugorokuAdminUser(user: typeof auth.currentUser): boolean {
     hasVerifiedPreAuthorizedInstructorEmail({
       email: user.email,
       emailVerified: user.emailVerified,
-      providerIds: providerIds.length > 0 ? providerIds : ['google.com'],
+      providerIds,
     })
   ) {
     return true;
@@ -80,14 +82,12 @@ function isImmediateSugorokuAdminUser(user: typeof auth.currentUser): boolean {
 }
 
 export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenSugorokuAdmin, onOpenFeedbackAdmin, onStartClassChapter, onLogout }: ProfileModalProps) {
-  /** クラス機能を開けるか（ログイン済みの全ユーザーに公開） */
-  const classroomOn = isClassroomEnabledFor(auth.currentUser);
+  /** クラス機能を開けるか（SOCIAL_FEATURES.classroom が true なら未ログイン時も含め入口を開放し、その場で Google 連携へ案内する） */
+  const classroomOn = SOCIAL_FEATURES.classroom || isClassroomEnabledFor(auth.currentUser);
   const [isAdminAccount, setIsAdminAccount] = useState<boolean>(() => isImmediateSugorokuAdminUser(auth.currentUser));
   const [tab, setTab] = useState<SettingsTab>(() => {
+    if (initialTab === 'class') return 'class';
     if (initialTab && initialTab !== 'general' && auth.currentUser) {
-      if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser)) {
-        return 'general';
-      }
       return initialTab;
     }
     return 'general';
@@ -100,30 +100,43 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    let alive = true;
-    const currentUser = auth.currentUser;
-    const immediate = isImmediateSugorokuAdminUser(currentUser);
-    setIsAdminAccount(immediate);
-    if (!currentUser) return;
-    void checkCurrentUserAdminAccess(currentUser, { strictSpecifiedEmailsOnly: false })
-      .then((res) => {
-        if (!alive) return;
-        setIsAdminAccount(res.allowed);
-        if (res.allowed && initialTab === 'class' && onOpenSugorokuAdmin) {
-          onOpenSugorokuAdmin();
-        }
-      })
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, [initialTab, onOpenSugorokuAdmin]);
+    if (initialTab === 'class') {
+      setTab('class');
+    } else if (initialTab && auth.currentUser) {
+      setTab(initialTab);
+    }
+  }, [initialTab]);
 
   useEffect(() => {
-    if (initialTab === 'class' && isImmediateSugorokuAdminUser(auth.currentUser) && onOpenSugorokuAdmin) {
-      onOpenSugorokuAdmin();
+    let alive = true;
+    const syncAdmin = (currentUser: typeof auth.currentUser) => {
+      const immediate = isImmediateSugorokuAdminUser(currentUser);
+      setIsAdminAccount(immediate);
+      if (!currentUser) return;
+      void checkCurrentUserAdminAccess(currentUser, { strictSpecifiedEmailsOnly: false })
+        .then((res) => {
+          if (!alive) return;
+          setIsAdminAccount(res.allowed);
+        })
+        .catch(() => {
+          if (!alive) return;
+          setIsAdminAccount(false);
+        });
+    };
+    syncAdmin(auth.currentUser);
+    let offAuth: () => void = () => {};
+    try {
+      offAuth = onAuthStateChanged(auth, (u) => {
+        if (alive) syncAdmin(u);
+      });
+    } catch {
+      /* ignore in mock/SSR */
     }
-  }, [initialTab, onOpenSugorokuAdmin]);
+    return () => {
+      alive = false;
+      offAuth();
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -139,6 +152,8 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   };
 
   const logout = async () => {
+    const prevUid = auth.currentUser?.uid;
+    purgeSugorokuSensitiveLocalCache(prevUid);
     await signOutGoogle();
     if (onLogout) {
       onLogout();
@@ -148,11 +163,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   };
 
   const handleClickClassTab = () => {
-    if (!auth.currentUser) return;
-    if (isAdminAccount && onOpenSugorokuAdmin) {
-      onOpenSugorokuAdmin();
-      return;
-    }
     setTab('class');
   };
 
@@ -167,6 +177,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
 
   const switchAccount = async () => {
     setAuthError(null);
+    purgeSugorokuSensitiveLocalCache(auth.currentUser?.uid);
     const outcome = await runSignIn(switchGoogleAccount);
     if (outcome.redirecting) return;
     if (!outcome.ok && !outcome.cancelled) setAuthError(outcome.message || 'ログインに失敗しました。');
@@ -192,7 +203,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} type="button">
             <Users size={14} /> フレンド
           </button>
-          <button aria-pressed={tab === 'class'} onClick={handleClickClassTab} disabled={!auth.currentUser} type="button">
+          <button aria-pressed={tab === 'class'} onClick={handleClickClassTab} type="button">
             <School size={14} /> クラス
           </button>
         </div>
@@ -202,9 +213,17 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
             <FriendPanel />
           ) : tab === 'class' && !classroomOn ? (
             <ComingSoon title="クラス">先生が作ったクラスに参加して、課題や進み具合を共有できるようになります。もうすぐ公開します。</ComingSoon>
-          ) : tab === 'class' && auth.currentUser ? (
+          ) : tab === 'class' ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
-              <ClassPanel defaultDisplayName={name} onStartChapter={onStartClassChapter} />
+              <ClassPanel
+                defaultDisplayName={name}
+                onStartChapter={onStartClassChapter}
+                showAdminHub={isAdminAccount}
+                onOpenClassAdmin={(classId) => onOpenSugorokuAdmin?.(classId)}
+                onLinkGoogle={linkGoogle}
+                linkingGoogle={signing}
+                authError={authError}
+              />
             </div>
           ) : (
             <div className="h-full flex flex-col gap-2">

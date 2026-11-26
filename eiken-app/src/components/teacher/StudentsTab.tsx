@@ -15,10 +15,12 @@ import {
   ShieldCheck,
   ChevronRight,
   ClipboardList,
+  Printer,
 } from 'lucide-react';
 import { aggregateClass, type ClassroomDoc } from '../../utils/classroomCore';
 import { type StudentSummary } from '../../utils/studySummary';
 import type { ThemeShape } from './teacherTheme';
+import { openClassInviteSheetPrint } from '../../sugoroku/admin/printClassInviteSheet';
 import {
   buildClassInviteMessage,
   buildClassInviteUrl,
@@ -390,6 +392,15 @@ function InviteKitCard({
                   招待URLをコピー
                 </>
               )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openClassInviteSheetPrint({ room, settings })}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-[#D8D5CC] bg-white text-[#1B2631] hover:bg-[#FAF8F2] transition-colors"
+            >
+              <Printer className="w-3.5 h-3.5 text-[#3E9C93]" />
+              A4招待シート
             </button>
 
             <button

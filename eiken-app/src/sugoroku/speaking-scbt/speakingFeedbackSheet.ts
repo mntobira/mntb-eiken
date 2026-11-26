@@ -233,13 +233,13 @@ export function buildSpeakingFeedbackSheetHtml(
       </thead>
       <tbody>
         <tr style="text-align:center;">
-          <td>${scores.reading_aloud ?? scores.readingAloud ?? '―'}</td>
-          <td>${scores.q1 ?? '―'}</td>
-          <td>${scores.q2 ?? '―'}</td>
-          <td>${scores.q3 ?? '―'}</td>
-          <td>${scores.q4 ?? '―'}</td>
-          <td>${scores.attitude ?? '―'}</td>
-          <td style="font-size:11.5pt;font-weight:800;">${review ? `${totalScore} / ${maxTotal}` : `未採点 / ${maxTotal}`}</td>
+          <td>${escapeHtml(String(scores.reading_aloud ?? scores.readingAloud ?? '―'))}</td>
+          <td>${escapeHtml(String(scores.q1 ?? '―'))}</td>
+          <td>${escapeHtml(String(scores.q2 ?? '―'))}</td>
+          <td>${escapeHtml(String(scores.q3 ?? '―'))}</td>
+          <td>${escapeHtml(String(scores.q4 ?? '―'))}</td>
+          <td>${escapeHtml(String(scores.attitude ?? '―'))}</td>
+          <td style="font-size:11.5pt;font-weight:800;">${review ? `${Number(totalScore) || 0} / ${Number(maxTotal) || 0}` : `未採点 / ${Number(maxTotal) || 0}`}</td>
         </tr>
       </tbody>
     </table>
@@ -296,6 +296,11 @@ export function openSpeakingFeedbackPrintWindow(
   const html = buildSpeakingFeedbackSheetHtml(submission, set, schoolName);
   const win = window.open('', '_blank', 'width=920,height=980');
   if (win && win.document) {
+    try {
+      win.opener = null;
+    } catch {
+      /* ignore */
+    }
     win.document.open();
     win.document.write(html);
     win.document.close();

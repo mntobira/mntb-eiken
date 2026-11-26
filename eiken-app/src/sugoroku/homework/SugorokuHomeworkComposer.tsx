@@ -103,6 +103,8 @@ export function SugorokuHomeworkComposerModal({
   students,
   accent,
   editingAssignment = null,
+  defaultTargetStudentUids,
+  targetStudentLabel,
   onClose,
   onSubmit,
 }: {
@@ -111,6 +113,10 @@ export function SugorokuHomeworkComposerModal({
   students: StudentRawProgress[];
   accent: string;
   editingAssignment?: SugorokuAssignmentDoc | null;
+  /** 生徒の個人詳細画面から「この生徒に課題を出す」で開いた際の初期対象UID */
+  defaultTargetStudentUids?: string[];
+  /** 個別指定中の生徒名表示用 */
+  targetStudentLabel?: string;
   onClose: () => void;
   onSubmit: (payload: PacemakerSubmitPayload) => Promise<void>;
 }) {
@@ -150,13 +156,17 @@ export function SugorokuHomeworkComposerModal({
   );
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [skillFilter, setSkillFilter] = useState<'all' | 'vocab' | 'reading' | 'listening'>('all');
-  const [deliveryScope, setDeliveryScope] = useState<'all' | 'selected'>(() =>
-    editingAssignment?.targetStudentUids && editingAssignment.targetStudentUids.length > 0
-      ? 'selected'
-      : 'all',
-  );
+  const [deliveryScope, setDeliveryScope] = useState<'all' | 'selected'>(() => {
+    if (editingAssignment?.targetStudentUids && editingAssignment.targetStudentUids.length > 0) {
+      return 'selected';
+    }
+    if (defaultTargetStudentUids && defaultTargetStudentUids.length > 0) {
+      return 'selected';
+    }
+    return 'all';
+  });
   const [selectedUids, setSelectedUids] = useState<string[]>(
-    () => editingAssignment?.targetStudentUids ?? [],
+    () => editingAssignment?.targetStudentUids ?? defaultTargetStudentUids ?? [],
   );
   const [appliedPresetTag, setAppliedPresetTag] = useState<{ id: string; week: number } | null>(
     () =>
@@ -373,11 +383,18 @@ export function SugorokuHomeworkComposerModal({
         <header className="flex items-center justify-between gap-3 px-5 py-3.5 bg-white border-b border-[#E3D9C8]">
           <div className="min-w-0">
             <span className="block text-xs font-extrabold tracking-wider text-[#2458A6]">
-              IN-APP HOMEWORK BUILDER
+              {targetStudentLabel ? `個別課題の配信（${targetStudentLabel}）` : 'クラスの課題・宿題の配信'}
             </span>
             <h2 className="text-lg font-extrabold text-[#1C2A39] truncate">
-              {editingAssignment ? '配信中の課題・回数を編集' : 'アプリ内の回数・課題を設定して配信'}
+              {editingAssignment
+                ? '配信中の課題を編集'
+                : targetStudentLabel
+                  ? `${targetStudentLabel} さんに課題を出す`
+                  : 'クラス全員または生徒を選んで課題を出す'}
             </h2>
+            <p className="text-[11px] text-[#5A6573] mt-0.5">
+              配信すると生徒の「タイトル画面」「ホーム最上部」「設定＞クラス」の3か所に即時反映されます
+            </p>
           </div>
           <button
             type="button"

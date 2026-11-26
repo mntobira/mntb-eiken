@@ -8,6 +8,15 @@
     { "handle": "filesystem" },
     { "src": "/(assets|brand|mascots|icons|sfx|eiken_audio|audio|bgm|cinematics|data|fonts|read_along)/.*", "status": 404 },
     { "src": "/(sw\\.js|manifest\\.json|tanjou\\.mp3)", "status": 404 },
-    { "src": "/.*", "dest": "/index.html" }
+    {
+      "src": "/.*",
+      "dest": "/index.html",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), geolocation=(), payment=(), usb=(), microphone=(self)"
+      }
+    }
   ]
 }

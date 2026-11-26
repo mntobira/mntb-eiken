@@ -55,6 +55,21 @@ export function chapterTitleOf(chapterId: string): string {
   return chapterId;
 }
 
+/** 章ID → 所属する教科ID（例: 'eiken_2'）。見つからなければ null */
+export function chapterSubjectOf(chapterId: string): string | null {
+  if (!chapterId || !/^[A-Za-z0-9_-]{1,100}$/.test(chapterId)) return null;
+  for (const subject of SUBJECT_INDEX) {
+    if (subject.chapters.some((c) => c.id === chapterId)) return subject.id;
+  }
+  return null;
+}
+
+/** 添付された章IDが正規の英検カタログ内に実在するかをホワイトリスト検証する */
+export function isValidEikenChapterId(chapterId: string | null | undefined): chapterId is string {
+  if (!chapterId || typeof chapterId !== 'string') return false;
+  return chapterSubjectOf(chapterId) !== null;
+}
+
 export interface AllGradesChapterCatalogItem {
   id: string;
   grade: string;

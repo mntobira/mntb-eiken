@@ -1,0 +1,911 @@
+/* ============================================================================
+ * LINE本格仕様 1対1 生徒×先生リアルタイムチャット スタイルシステム
+ * ============================================================================ */
+
+.cchat-shell {
+  display: flex;
+  flex-direction: column;
+  height: 76dvh;
+  min-height: 520px;
+  max-height: 760px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid #cfdbe8;
+  background: #8cabd9;
+  box-shadow: 0 14px 36px rgba(15, 28, 46, 0.12);
+  position: relative;
+}
+
+.cchat-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(12, 20, 32, 0.62);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .cchat-modal-backdrop {
+    align-items: center;
+    padding: 16px;
+  }
+}
+
+.cchat-modal-frame {
+  width: 100%;
+  max-width: 560px;
+  height: 90dvh;
+  max-height: 760px;
+  display: flex;
+  flex-direction: column;
+  background: #8cabd9;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.34);
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .cchat-modal-frame {
+    border-radius: 24px;
+  }
+}
+
+/* ── ヘッダー（LINEトークルーム風の落ち着いたダークスレート） ── */
+.cchat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px;
+  background: linear-gradient(180deg, #223042 0%, #1c2838 100%);
+  color: #ffffff;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cchat-header-main {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cchat-back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cchat-back-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.cchat-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06c755 0%, #049b42 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  position: relative;
+}
+
+.cchat-avatar-online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ade80;
+  border: 2px solid #1c2838;
+}
+
+.cchat-header-titles {
+  min-width: 0;
+}
+
+.cchat-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cchat-header-titles strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cchat-status-pill {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.cchat-status-pill[data-status='open'] {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.cchat-status-pill[data-status='resolved'] {
+  background: rgba(6, 199, 85, 0.22);
+  color: #86efac;
+}
+
+.cchat-header-titles small {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cchat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.cchat-head-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 33px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cchat-head-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cchat-head-btn[data-active='true'] {
+  background: rgba(6, 199, 85, 0.26);
+  border-color: rgba(134, 239, 172, 0.55);
+}
+
+/* ── 上部ピン留めアナウンス＆生徒カルテミニ帯 ── */
+.cchat-subbar {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+  z-index: 4;
+}
+
+.cchat-student-pulse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 11.5px;
+  color: #2c3e50;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.cchat-pinned-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  color: #1e293b;
+  background: #fdfcf7;
+}
+
+.cchat-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cchat-search-bar input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 12px;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+/* ── タイムライン（LINE定番のブルーグレー背景） ── */
+.cchat-timeline {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(180deg, #8cabd9 0%, #9ab6df 100%);
+  scroll-behavior: smooth;
+}
+
+.cchat-date-divider {
+  align-self: center;
+  padding: 3px 13px;
+  border-radius: 999px;
+  background: rgba(19, 34, 56, 0.26);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 6px 0 4px;
+  letter-spacing: 0.02em;
+}
+
+.cchat-unread-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 4px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cchat-unread-divider::before,
+.cchat-unread-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.cchat-unread-divider span {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.cchat-empty {
+  margin: auto 10px;
+  padding: 20px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  color: #334155;
+  font-size: 12.5px;
+  line-height: 1.65;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+}
+
+/* ── メッセージ行＆吹き出し（LINEしっぽ・連続メッセージ最適化） ── */
+.cchat-msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  max-width: 88%;
+  position: relative;
+}
+
+.cchat-msg-row[data-grouped='true'] {
+  margin-top: -3px;
+}
+
+.cchat-msg-row[data-mine='true'] {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.cchat-msg-row[data-mine='false'] {
+  align-self: flex-start;
+}
+
+.cchat-peer-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2458a6, #1b4382);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.18);
+}
+
+.cchat-peer-spacer {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.cchat-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cchat-msg-row[data-mine='true'] .cchat-bubble-wrap {
+  align-items: flex-end;
+}
+
+.cchat-msg-row[data-mine='false'] .cchat-bubble-wrap {
+  align-items: flex-start;
+}
+
+.cchat-sender-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16263b;
+  padding-left: 3px;
+}
+
+.cchat-bubble-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  max-width: 100%;
+}
+
+.cchat-msg-row[data-mine='true'] .cchat-bubble-line {
+  flex-direction: row-reverse;
+}
+
+.cchat-bubble {
+  position: relative;
+  padding: 9px 13px;
+  border-radius: 17px;
+  font-size: 13.8px;
+  line-height: 1.52;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.14);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.cchat-bubble:active {
+  transform: scale(0.99);
+}
+
+/* 自分の吹き出し（LINEグリーン + 右上しっぽ） */
+.cchat-msg-row[data-mine='true'] .cchat-bubble {
+  background: #8de055;
+  color: #132211;
+}
+
+.cchat-msg-row[data-mine='true'][data-grouped='false'] .cchat-bubble {
+  border-top-right-radius: 4px;
+}
+
+.cchat-msg-row[data-mine='true'][data-grouped='false'] .cchat-bubble::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -6px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid #8de055;
+  border-right: 7px solid transparent;
+}
+
+/* 相手の吹き出し（ホワイト + 左上しっぽ） */
+.cchat-msg-row[data-mine='false'] .cchat-bubble {
+  background: #ffffff;
+  color: #1b2631;
+}
+
+.cchat-msg-row[data-mine='false'][data-grouped='false'] .cchat-bubble {
+  border-top-left-radius: 4px;
+}
+
+.cchat-msg-row[data-mine='false'][data-grouped='false'] .cchat-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid #ffffff;
+  border-left: 7px solid transparent;
+}
+
+/* 送信取り消し済みピル */
+.cchat-unsent-pill {
+  align-self: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* トピックバッジ（質問・宿題相談・ペース調整・完了報告） */
+.cchat-topic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  border: 1px solid transparent;
+}
+
+/* 引用リプライブロック */
+.cchat-reply-quote {
+  display: block;
+  padding: 5px 8px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  border-left: 3px solid #2458a6;
+  background: rgba(15, 23, 42, 0.06);
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: #334155;
+}
+
+.cchat-reply-quote strong {
+  display: block;
+  font-size: 10.5px;
+  color: #1e40af;
+  margin-bottom: 1px;
+}
+
+/* 添付された単元リンクカード（LINEリッチカード風） */
+.cchat-chapter-card {
+  margin-top: 7px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(36, 88, 166, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cchat-chapter-card:hover {
+  background: #ffffff;
+}
+
+/* 既読・時刻メタ */
+.cchat-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #182b44;
+  font-weight: 700;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+
+.cchat-msg-row[data-mine='true'] .cchat-meta {
+  align-items: flex-end;
+}
+
+.cchat-read-flag {
+  font-weight: 800;
+  color: #0f2942;
+}
+
+/* リアクションバッジ＆ポップオーバーメニュー */
+.cchat-reaction-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.cchat-reaction-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.cchat-action-popover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #1e293b;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.28);
+  margin-top: 3px;
+  z-index: 10;
+}
+
+.cchat-action-emoji-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cchat-action-emoji-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.cchat-action-text-btn {
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cchat-action-text-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* スクロール追従フローティングボタン */
+.cchat-JumpBottom {
+  position: absolute;
+  right: 14px;
+  bottom: 110px;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(24, 38, 58, 0.88);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+  cursor: pointer;
+}
+
+/* ── 下部ドロワー（定型文・スタンプ・単元カード添付）＆ 入力コンポーザー ── */
+.cchat-composer-tray {
+  background: #f8fafc;
+  border-top: 1px solid #d5e0ec;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cchat-active-AttachmentBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #eff6ff;
+  border-bottom: 1px solid #dbeafe;
+  font-size: 11.5px;
+  color: #1e3a8a;
+}
+
+.cchat-tool-drawer {
+  padding: 8px 10px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.cchat-stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 6px;
+}
+
+.cchat-stamp-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cchat-stamp-btn:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.cchat-quick-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 7px 10px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cchat-quick-chip {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #cbd8e6;
+  background: #ffffff;
+  color: #1e3a8a;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cchat-quick-chip:hover {
+  background: #eff6ff;
+}
+
+.cchat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 9px 11px calc(9px + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+}
+
+.cchat-plus-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cchat-plus-btn[aria-expanded='true'] {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #1e293b;
+}
+
+.cchat-textarea {
+  flex: 1;
+  min-height: 38px;
+  max-height: 120px;
+  resize: none;
+  padding: 8.5px 13px;
+  border-radius: 19px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  font-size: 14px;
+  line-height: 1.42;
+  color: #0f172a;
+}
+
+.cchat-textarea:focus {
+  outline: 2px solid #2458a6;
+  background: #ffffff;
+}
+
+.cchat-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: #06c755;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(6, 199, 85, 0.32);
+  transition: transform 0.12s ease;
+}
+
+.cchat-send-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.cchat-send-btn:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* ── 講師側のLINE公式アカウント風トーク管理ボード（スマホ1カラム切替 / PC 2ペイン） ── */
+.cchat-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 860px) {
+  .cchat-board {
+    grid-template-columns: 330px minmax(0, 1fr);
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 859px) {
+  .cchat-board[data-mobile-pane='room'] .cchat-room-list {
+    display: none;
+  }
+  .cchat-board[data-mobile-pane='list'] .cchat-room-pane {
+    display: none;
+  }
+}
+
+@media (min-width: 860px) {
+  .cchat-mobile-only {
+    display: none !important;
+  }
+}
+
+.cchat-room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--mt-line, #e3d9c8);
+  border-radius: 20px;
+  padding: 12px;
+  max-height: 76dvh;
+  overflow-y: auto;
+}
+
+.cchat-room-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 11px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.cchat-room-item:hover {
+  background: #f8fafc;
+}
+
+.cchat-room-item[aria-selected='true'] {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.cchat-room-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2458a6, #3b82f6);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cchat-unread-pill {
+  min-width: 21px;
+  height: 21px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #06c755;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── 新着メッセージ到着時の画面上部LINE風ポップアップ通知 ── */
+.cchat-arrival-banner {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 220;
+  width: min(94vw, 450px);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: rgba(22, 33, 48, 0.96);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  animation: cchatSlideIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes cchatSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -18px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

@@ -48,6 +48,7 @@ export {
   triggerGoogleRedirectSignIn,
   consumeGoogleRedirectResult,
   signOutGoogle,
+  purgeSugorokuSensitiveLocalCache,
   fetchSugorokuMemberDoc,
   ensurePreAuthorizedInstructorMember,
   refreshSugorokuEnrollmentAndAdFree,

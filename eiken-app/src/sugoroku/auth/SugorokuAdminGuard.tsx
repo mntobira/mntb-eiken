@@ -36,6 +36,7 @@ import {
   isSafariOrIPadBrowser,
 } from './sugorokuAuthCore';
 import {
+  purgeSugorokuSensitiveLocalCache,
   signInSugorokuWithGoogle,
   signOutGoogle,
   triggerGoogleRedirectSignIn,
@@ -105,6 +106,7 @@ export function SugorokuAdminGuard({
   /** 非管理者アカウントでログイン中だった場合、1タップでログアウト＋アカウント選択画面を開く */
   const handleSwitchAdminAccount = async () => {
     setAuthError('');
+    purgeSugorokuSensitiveLocalCache(user?.uid);
     await signOutGoogle().catch(() => undefined);
     await handleLogin();
   };
