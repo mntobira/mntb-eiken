@@ -64,6 +64,17 @@ describe('2026-11-15 モンスト風OPムービー（②横/③縦）＋ ①高�
     expect(launch).toContain('タップしてスキップ');
     expect(launch).not.toContain('skippable');
     expect(launch).toContain('TitleBgmMuteButton');
+    for (const filename of ['title_tobira.webm', 'title_tobira-sbs.mp4', 'title_tobira-poster.webp', 'title_tobira-landed.webp', 'title_tobira-blink.webp']) {
+      expect(launch).toContain(`/cinematics/${filename}`);
+      const file = resolve('public/cinematics', filename);
+      expect(existsSync(file), filename).toBe(true);
+      expect(statSync(file).size, filename).toBeLessThan(1_000_000);
+    }
+    for (const ext of ['webm', 'webp', 'png'] as const) {
+      const f = resolve(`public/tobira-motion/walk.${ext}`);
+      expect(existsSync(f), `walk.${ext}`).toBe(true);
+      if (ext !== 'png') expect(statSync(f).size, `walk.${ext}`).toBeLessThan(1_000_000);
+    }
     // ループ属性を持たず1回完結再生し、0.00s同期再生を行うことを保証
     expect(launch).not.toMatch(/<audio[^>]*\bloop\b/);
     expect(launch).toContain('startBgmFromBeginning');

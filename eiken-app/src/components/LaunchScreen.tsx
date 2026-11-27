@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES } from './AlphaCinematicClip';
+import { AlphaCinematicClip, ALPHA_CINEMATIC_CLIPS, FULLFRAME_CINEMATIC_MOVIES, type AlphaClipSpec } from './AlphaCinematicClip';
 import { TitleBgmMuteButton, TITLE_SCREEN_BGM_SRC, useLaunchTitleBgm } from './TitleBgmControl';
 import { ArrowRight, BookHeart, Headphones, PenLine, Play, Repeat2, Swords } from 'lucide-react';
 import { PhilosophyPage } from './PhilosophyPage';
 import { useGrowthProgress } from '../hooks/useGrowthProgress';
-import { equippedPoseSrc } from '../battle/core/growth';
+import { equippedAccessory, equippedPoseSrc } from '../battle/core/growth';
 import { TobiraAccessories } from '../battle/ui/TobiraAccessories';
 import { auth, FIREBASE_CONFIGURED } from '../firebase';
 import './launch-screen.css';
@@ -33,6 +33,17 @@ type Phase = 'intro' | 'crossfade' | 'done';
 type Gate = 'emblem' | 'op' | 'title' | 'philosophy';
 
 const LANDSCAPE_QUERY = '(orientation: landscape) and (min-width: 768px)';
+const BASIC_POSE = '/mascots/basic.webp';
+const TITLE_TOBIRA_CLIP: AlphaClipSpec = {
+  ...ALPHA_CINEMATIC_CLIPS.battleCountdown,
+  webm: '/cinematics/title_tobira.webm',
+  sbsMp4: '/cinematics/title_tobira-sbs.mp4',
+  poster: '/cinematics/title_tobira-poster.webp',
+  endPlate: '/cinematics/title_tobira-landed.webp',
+  width: 420,
+  height: 736,
+  durationSec: 5.16,
+};
 
 function useLandscapeTitle(): boolean {
   const [isLandscape, setIsLandscape] = useState(() => {
@@ -260,26 +271,30 @@ export function LaunchScreen({ onStart, onStartHomeworkChapter, bgmEnabled, onBg
     });
   };
 
-  const [played, setPlayed] = useState(false);
-  const [walkReady, setWalkReady] = useState(false);
-  const equippedSpriteSrc = progress ? equippedPoseSrc(progress) : '/mascots/basic.webp';
+  const played = useRef(false);
+  const [landedReady, setLandedReady] = useState(false);
+  const equippedSpriteSrc = progress ? equippedPoseSrc(progress) : BASIC_POSE;
+  const hasAccessories = Boolean(
+    progress && (['hat', 'glasses', 'cheek', 'aura'] as const).some(slot => equippedAccessory(progress, slot)),
+  );
+  const useCinematicIdle = equippedSpriteSrc === BASIC_POSE && !hasAccessories && landedReady;
 
   // エンブレム／OP再生中にとびら君の待機スプライト・背景プレート・終了プレートを事前デコードし、
   // ジャンプ着地から待機ポーズへのクロスフェードでデコード遅延によるブラーや一瞬の空白を出さない
   useEffect(() => {
     const urls = [
       '/cinematics/title-plate.webp',
-      ALPHA_CINEMATIC_CLIPS.battleCountdown.poster,
-      ALPHA_CINEMATIC_CLIPS.battleCountdown.endPlate,
-      '/mascots/walking.webp',
+      TITLE_TOBIRA_CLIP.poster,
+      TITLE_TOBIRA_CLIP.endPlate,
+      '/cinematics/title_tobira-blink.webp',
       equippedSpriteSrc,
     ];
     urls.forEach((src) => {
       const img = new Image();
       img.decoding = 'async';
       img.src = src;
-      if (src === '/mascots/walking.webp') {
-        img.onload = () => setWalkReady(true);
+      if (src === TITLE_TOBIRA_CLIP.endPlate) {
+        img.onload = () => setLandedReady(true);
       }
       // 事前デコード非対応ブラウザや未キャッシュ時の失敗は通常描画へ委ねる
       void img.decode?.().catch(() => { /* ignore decode race */ });
@@ -292,8 +307,11 @@ export function LaunchScreen({ onStart, onStartHomeworkChapter, bgmEnabled, onBg
     return () => clearTimeout(t);
   }, [phase]);
 
-  const finishIntro = () => setPhase(p => (p === 'intro' ? (played ? 'crossfade' : 'done') : p));
-  const walk = phase === 'done' && !played;
+  const finishIntro = () => {
+    const next = !useCinematicIdle && played.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'crossfade' : 'done';
+    setPhase(p => (p === 'intro' ? next : p));
+  };
 
   useEffect(() => {
     if (gate !== 'title' || finishingBgm) return;
@@ -412,27 +430,33 @@ export function LaunchScreen({ onStart, onStartHomeworkChapter, bgmEnabled, onBg
                 <div className="launch-scene" aria-hidden="true">
                   <img className="launch-plate" src="/cinematics/title-plate.webp" alt="" width={720} height={720} draggable={false} />
                   <div className="launch-sparkles"><i /><i /><i /><i /><i /><i /></div>
-                  {phase !== 'intro' && (
-                    <div className={`launch-arrival ${walk && walkReady ? 'walk-ready' : ''} ${!walk ? 'is-idle' : ''}`}>
+                  {!useCinematicIdle && phase !== 'intro' && (
+                    <div className="launch-arrival is-idle">
                       <div className="launch-gait">
-                        <img className="launch-walking-pose" src="/mascots/walking.webp" alt="" decoding="sync" draggable={false} onLoad={() => setWalkReady(true)} />
                         <img className="launch-equipped-pose" src={equippedSpriteSrc} alt="" decoding="sync" draggable={false} />
-                        {progress && <TobiraAccessories progress={progress} />}
+                        {progress && <TobiraAccessories progress={progress} align="bottom" />}
                       </div>
                     </div>
                   )}
                 </div>
+                {equippedSpriteSrc === BASIC_POSE && !hasAccessories && (
+                  <div className="launch-tobira-framing launch-cinematic-idle" data-visible={phase === 'done' && useCinematicIdle} aria-hidden="true">
+                    <div className="launch-idle-actor">
+                      <img src={TITLE_TOBIRA_CLIP.endPlate} alt="" draggable={false} onLoad={() => setLandedReady(true)} onError={() => setLandedReady(false)} />
+                      <img className="launch-idle-blink" src="/cinematics/title_tobira-blink.webp" alt="" draggable={false} />
+                    </div>
+                  </div>
+                )}
                 {phase !== 'done' && (
                   <div className="launch-tobira-cutout-wrap">
-                    <img className="launch-plate launch-plate-under-video" src="/cinematics/title-plate.webp" alt="" width={720} height={720} draggable={false} aria-hidden="true" />
                     <AlphaCinematicClip
-                      clip={ALPHA_CINEMATIC_CLIPS.battleCountdown}
-                      className="launch-tobira-cutout"
+                      clip={TITLE_TOBIRA_CLIP}
+                      className="launch-tobira-framing launch-tobira-cutout"
                       hold
                       eager
                       fadeInMs={280}
                       label="とびら君の登場動画"
-                      onActiveChange={active => { if (active) setPlayed(true); }}
+                      onActiveChange={active => { if (active) played.current = true; }}
                       onComplete={finishIntro}
                     />
                   </div>
