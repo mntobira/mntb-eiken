@@ -6,7 +6,7 @@ import { SugorokuTodayHomework } from '../sugoroku/homework/SugorokuTodayHomewor
 import '../sugoroku/homework/homework.css';
 import { CompanionArt } from '../battle/ui/CompanionArt';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronRight, Edit3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Target, Zap, BookHeart } from 'lucide-react';
+import { ChevronRight, Edit3, ShieldCheck, Repeat2, Bell, Volume2, VolumeX, Swords, Target, Zap, BookHeart, School } from 'lucide-react';
 import { createPortal } from 'react-dom';
 const PhilosophyPage = React.lazy(() => import('./PhilosophyPage').then(m => ({ default: m.PhilosophyPage })));
 import { auth } from '../firebase';
@@ -145,9 +145,13 @@ interface HomeProps {
    * 渡されなければカード自体を出さない（＝一般ユーザーのホームは一切変わらない）。
    */
   onStartHomeworkChapter?: (chapterId: string) => void;
+  /** ホームから1タップで「設定 ＞ クラス（宿題・先生とチャット・参加コード入力・管理クラス）」を開く */
+  onOpenClass?: () => void;
+  /** 先生・生徒チャットの未読件数（バッジ表示用） */
+  unreadClassChatCount?: number;
 }
 
-export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm, onStartHomeworkChapter }: HomeProps) {
+export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart, onIntro, onNoteList, onLeaderboard, onBattle, onChangeSubject, onFoundation, subjectLabel = '英語リスニング', subject = 'english_listening', isGuest, isBgmEnabled, isBgmFadedOut, onToggleBgm, onStartHomeworkChapter, onOpenClass, unreadClassChatCount = 0 }: HomeProps) {
   const { progress: savedGrowth, uid: growthUid } = useGrowthProgress();
   // 保存破損・アカウント切替中でも住人は表示する。表示用の初期値は保存しない。
   const fallbackGrowth = useMemo(() => emptyProgress(growthUid), [growthUid]);
@@ -445,9 +449,26 @@ export function Home({ onPractice, onPickSubject, onStudyMode, onGrowth, onStart
         </button>
           {onGrowth && <button type="button" className="home-rush-card" onClick={() => onGrowth('rush')} aria-label="マナラッシュ（60秒チャレンジ）を開く" data-home-rush><Zap size={20} /><span><strong>マナラッシュ</strong><small>60秒チャレンジ</small></span></button>}
         </section>
-        <div className="game-home-utility arena-home-bottom has-three">
+        <div className={`game-home-utility arena-home-bottom ${onOpenClass ? 'has-four' : 'has-three'}`}>
           <button type="button" aria-label="アプリ紹介を開く" onClick={onIntro}><ShieldCheck size={17} />使い方</button>
           {onGrowth && <button type="button" onClick={() => onGrowth('missions')}><Target size={17} />ミッション</button>}
+          {onOpenClass && (
+            <button
+              type="button"
+              onClick={onOpenClass}
+              aria-label={unreadClassChatCount > 0 ? `クラスを開く（未読チャット${unreadClassChatCount}件）` : 'クラス（宿題・先生とチャット・参加コード）を開く'}
+              data-open-class
+              style={{ position: 'relative', background: 'linear-gradient(135deg, #f2faf8, #eef5fc)', borderColor: '#bfe0d8', color: '#1f5e56', fontWeight: 800 }}
+            >
+              <School size={17} />
+              クラス
+              {unreadClassChatCount > 0 && (
+                <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 999, background: '#06C755', color: '#fff', fontSize: 10, fontWeight: 900, lineHeight: '18px', textAlign: 'center' }}>
+                  {unreadClassChatCount}
+                </span>
+              )}
+            </button>
+          )}
           {/* ★開発者の想い「学びの扉」をホームからも（2026-10-05 ご要望「もう少し見やすいところに」）★ タイトル画面だけだと一度しか目に入らない */}
           <button type="button" className="home-philosophy-entry" onClick={() => setShowPhilosophy(true)} aria-label="学びの扉（開発者の想い）を読む" data-open-philosophy><BookHeart size={17} />学びの扉</button>
         </div>

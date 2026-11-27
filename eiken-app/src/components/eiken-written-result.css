@@ -615,3 +615,131 @@
     font-size: 12px;
   }
 }
+
+/* 塾クラス在籍生専用：演習結果＆振り返りメモ一括提出バー */
+.ewr-juku-batch-bar {
+  margin: 8px 12px 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1.5px solid #bfe0d8;
+  background: linear-gradient(135deg, #f3fbf9 0%, #fffdf7 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ewr-juku-batch-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ewr-juku-batch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #dff3ee;
+  color: #15534a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ewr-juku-batch-meta {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.ewr-juku-batch-meta b {
+  color: #134e4a;
+  font-weight: 900;
+}
+
+.ewr-juku-batch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ewr-juku-batch-input-wrap {
+  flex: 1 1 240px;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ewr-juku-batch-icon {
+  position: absolute;
+  left: 11px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.ewr-juku-batch-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px 0 34px;
+  border-radius: 11px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.ewr-juku-batch-input:focus {
+  outline: none;
+  border-color: #2f857a;
+  box-shadow: 0 0 0 3px rgba(47, 133, 122, 0.14);
+}
+
+.ewr-juku-batch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 11px;
+  border: 0;
+  background: #1f6b5c;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #13453b;
+}
+
+.ewr-juku-batch-btn:hover:not(:disabled) {
+  background: #18584b;
+}
+
+.ewr-juku-batch-btn[data-submitted="true"] {
+  background: #0f766e;
+}
+
+.ewr-juku-batch-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ewr-juku-batch-ok {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #15534a;
+}
+
+.ewr-juku-batch-err {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #b91c1c;
+}
+

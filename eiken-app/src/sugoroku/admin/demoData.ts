@@ -8,6 +8,9 @@
  */
 
 import { formatDateKey, shiftDateKey } from './adminAnalytics';
+import type { AnswerReasonDoc } from '../../utils/classAssignmentsCore';
+import type { ReviewItem } from '../../utils/reviewList';
+import type { SolvedMap } from '../../utils/studySyncCore';
 import type {
   SugorokuAssignmentDoc,
   SugorokuMemberDoc,
@@ -28,6 +31,9 @@ export interface SugorokuDemoBundle {
   members: SugorokuMemberDoc[];
   logsByUid: Record<string, SugorokuStudyLogDoc[]>;
   solvedByUid: Record<string, Record<string, number>>;
+  rawSolvedByUid: Record<string, SolvedMap>;
+  reviewItemsByUid: Record<string, ReviewItem[]>;
+  answerReasons: AnswerReasonDoc[];
   assignments: SugorokuAssignmentDoc[];
   writingSubmissions: SugorokuWritingSubmissionDoc[];
   speakingSubmissions: SugorokuSpeakingSubmissionDoc[];
@@ -459,6 +465,135 @@ export function createSugorokuDemoBundle(nowMs: number = Date.now()): SugorokuDe
     stu_ito_aoi: {},
   };
 
+  const makeSolvedRange = (chapterId: string, count: number, baseTs: number): SolvedMap => {
+    const out: SolvedMap = {};
+    for (let i = 1; i <= count; i += 1) {
+      out[`${chapterId}::q${i}`] = baseTs + i * 35_000;
+    }
+    return out;
+  };
+
+  const rawSolvedByUid: Record<string, SolvedMap> = {
+    stu_sato_mio: {
+      ...makeSolvedRange('eiken_2_written_02_cloze', 8, ts(-6, 20, 40)),
+      ...makeSolvedRange('eiken_2_written_03_short', 17, ts(-2, 20, 10)),
+      ...makeSolvedRange('eiken_2_listening_r03_part1', 15, ts(0, 19, 10)),
+      ...makeSolvedRange('eiken_2_vocabulary_01', 30, ts(0, 19, 35)),
+    },
+    stu_takahashi_haruto: {
+      ...makeSolvedRange('eiken_2_written_02_cloze', 8, ts(-7, 21, 30)),
+      ...makeSolvedRange('eiken_2_written_03_short', 17, ts(-3, 21, 50)),
+      ...makeSolvedRange('eiken_2_listening_r03_part1', 15, ts(0, 18, 5)),
+      ...makeSolvedRange('eiken_2_vocabulary_01', 18, ts(0, 18, 22)),
+    },
+    stu_yamamoto_riku: {
+      ...makeSolvedRange('eiken_2_written_02_cloze', 3, ts(-8, 22, 15)),
+      ...makeSolvedRange('eiken_2_written_03_short', 5, ts(-4, 22, 45)),
+      ...makeSolvedRange('eiken_2_vocabulary_01', 10, ts(-4, 22, 55)),
+    },
+    stu_nakamura_yuna: {
+      ...makeSolvedRange('eiken_pre2plus_written_02_short', 17, ts(-3, 20, 0)),
+      ...makeSolvedRange('eiken_pre2plus_listening_r02_part1', 15, ts(-1, 20, 20)),
+    },
+    stu_kobayashi_sota: {
+      ...makeSolvedRange('eiken_pre2plus_written_02_short', 10, ts(-2, 22, 5)),
+      ...makeSolvedRange('eiken_pre2plus_listening_r02_part1', 8, ts(-5, 21, 50)),
+    },
+    stu_ito_aoi: {},
+  };
+
+  const reviewItemsByUid: Record<string, ReviewItem[]> = {
+    stu_takahashi_haruto: [
+      {
+        key: 'eiken_2_written_03_short::q4::sq1',
+        chapterId: 'eiken_2_written_03_short',
+        questionIndex: 4,
+        questionId: 'q4',
+        subQuestionId: 'sq1',
+        subLabel: '問4',
+        box: 0,
+        dueAt: ts(0, 23, 0),
+        wrongCount: 2,
+        correctCount: 0,
+        createdAt: ts(-3, 22, 0),
+        updatedAt: ts(-3, 22, 5),
+        lastResult: 'wrong',
+      },
+      {
+        key: 'eiken_2_listening_r03_part1::q9::sq1',
+        chapterId: 'eiken_2_listening_r03_part1',
+        questionIndex: 9,
+        questionId: 'q9',
+        subQuestionId: 'sq1',
+        subLabel: '問9',
+        box: 1,
+        dueAt: ts(1, 23, 0),
+        wrongCount: 1,
+        correctCount: 1,
+        createdAt: ts(0, 18, 12),
+        updatedAt: ts(0, 18, 25),
+        lastResult: 'correct',
+      },
+    ],
+    stu_yamamoto_riku: [
+      {
+        key: 'eiken_2_written_03_short::q2::sq1',
+        chapterId: 'eiken_2_written_03_short',
+        questionIndex: 2,
+        questionId: 'q2',
+        subQuestionId: 'sq1',
+        subLabel: '問2',
+        box: 0,
+        dueAt: ts(-3, 23, 0),
+        wrongCount: 2,
+        correctCount: 0,
+        createdAt: ts(-4, 22, 50),
+        updatedAt: ts(-4, 22, 50),
+        lastResult: 'wrong',
+      },
+      {
+        key: 'eiken_2_written_03_short::q5::sq1',
+        chapterId: 'eiken_2_written_03_short',
+        questionIndex: 5,
+        questionId: 'q5',
+        subQuestionId: 'sq1',
+        subLabel: '問5',
+        box: 0,
+        dueAt: ts(-3, 23, 0),
+        wrongCount: 1,
+        correctCount: 0,
+        createdAt: ts(-4, 22, 54),
+        updatedAt: ts(-4, 22, 54),
+        lastResult: 'wrong',
+      },
+    ],
+  };
+
+  const answerReasons: AnswerReasonDoc[] = [
+    {
+      classId,
+      uid: 'stu_takahashi_haruto',
+      teacherUid: 'teacher_sugoroku_nishi',
+      chapterId: 'eiken_2_listening_r03_part1',
+      questionId: 'q9',
+      qNo: 9,
+      correct: false,
+      reason: '2回目の発話の "not until next Friday" を聞き逃して2番を選びました。解き直しで正解確認済みです。',
+      updatedAt: ts(0, 18, 28),
+    },
+    {
+      classId,
+      uid: 'stu_sato_mio',
+      teacherUid: 'teacher_sugoroku_nishi',
+      chapterId: 'eiken_2_written_03_short',
+      questionId: 'q1',
+      qNo: 1,
+      correct: true,
+      reason: '【一括提出】第3回 短文語彙・熟語（16/17問正解・要復習: 問12 take over と hand over の使い分け）',
+      updatedAt: ts(-2, 20, 28),
+    },
+  ];
+
   const writingSubmissions: SugorokuWritingSubmissionDoc[] = [
     {
       id: 'wsub_haruto_01',
@@ -585,6 +720,9 @@ export function createSugorokuDemoBundle(nowMs: number = Date.now()): SugorokuDe
     members,
     logsByUid,
     solvedByUid,
+    rawSolvedByUid,
+    reviewItemsByUid,
+    answerReasons,
     assignments,
     writingSubmissions,
     speakingSubmissions,

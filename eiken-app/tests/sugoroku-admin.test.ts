@@ -68,6 +68,21 @@ import { buildSpeakingFeedbackSheetHtml } from '../src/sugoroku/speaking-scbt/sp
 import { isValidEikenChapterId } from '../src/sugoroku/homework/chapterTotals';
 import { buildHomeworkTask } from '../src/sugoroku/homework/homeworkCore';
 import { AdminClassHubSection } from '../src/components/classroom/AdminClassHubSection';
+import { buildClassInviteSheetHtml } from '../src/sugoroku/admin/printClassInviteSheet';
+import { createDefaultClassSettings } from '../src/sugoroku/admin/classroomSettings';
+import { ClassPanel } from '../src/components/ClassPanel';
+import { Home } from '../src/components/Home';
+import { ProfileModal } from '../src/components/ProfileModal';
+import {
+  buildClassLiveSubmissionFeed,
+  buildStudentChapterActivities,
+} from '../src/sugoroku/admin/studentProblemActivity';
+import {
+  expandJukuMembershipsForAllEikenGrades,
+  uniqueJukuMembershipsByClass,
+} from '../src/sugoroku/shared/studentClassSession';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () => {
   it('URLクエリ ?portal=admin および VITE_SUGOROKU_PORTAL=admin を正しく判定する', () => {
@@ -835,5 +850,186 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       now,
     });
     expect(classWideTask.isPersonalized).toBe(false);
+  });
+
+  it('A4招待シートHTML出力と生徒側クラス参加パネル（ClassPanel）が正しく描画される', () => {
+    const inviteHtml = buildClassInviteSheetHtml({
+      room: {
+        id: 'cls_2026_2kyu',
+        schoolName: '学習塾すごろく 自由が丘校',
+        className: '2026夏 英検5級〜1級 全級合格コース',
+        subject: 'eiken_2',
+        joinCode: 'SG2026',
+        teacherUid: 'teacher_1',
+        joinOpen: true,
+        plan: 'juku',
+        createdAt: 1700000000000,
+      },
+      settings: {
+        ...createDefaultClassSettings('cls_2026_2kyu'),
+        dailyGoalMinutes: 35,
+        weeklyGoalDays: 6,
+        examSession: 'scbt_monthly',
+        coachNote: '毎日リスニング15分＋単語20分を続けましょう！',
+      },
+      origin: 'https://eiken.manatobi.jp',
+    });
+    expect(inviteHtml).toContain('学習塾すごろく 自由が丘校');
+    expect(inviteHtml).toContain('2026夏 英検5級〜1級 全級合格コース');
+    expect(inviteHtml).toContain('https://eiken.manatobi.jp/?sugoroku_invite=SG2026');
+    expect(inviteHtml).toContain('英検5級〜1級（全級一括対応）');
+    expect(inviteHtml).toContain('1日35分 × 週6日');
+    expect(inviteHtml).toContain('S-CBT受験');
+    expect(inviteHtml).toContain('塾生専用クラス招待状（広告完全非表示）');
+    expect(inviteHtml).toContain('毎日リスニング15分＋単語20分を続けましょう！');
+
+    const unauthPanelHtml = renderToStaticMarkup(
+      createElement(ClassPanel, {
+        defaultDisplayName: 'たくと',
+        onLinkGoogle: () => {},
+      }),
+    );
+    expect(unauthPanelHtml).toContain('クラス参加には Google ログインが必要です');
+    expect(unauthPanelHtml).toContain('6文字コードでクラスに参加できます');
+    expect(unauthPanelHtml).toContain('先生にチャット相談');
+    expect(unauthPanelHtml).toContain('Google でログインしてクラスへ進む');
+
+    // ホーム画面から1タップで「クラス」へ直行できるボタン＋未読バッジが描画される
+    const homeHtml = renderToStaticMarkup(
+      createElement(Home, {
+        onStart: () => {},
+        onIntro: () => {},
+        onNoteList: () => {},
+        onOpenClass: () => {},
+        unreadClassChatCount: 3,
+        isGuest: true,
+      }),
+    );
+    expect(homeHtml).toContain('data-open-class');
+    expect(homeHtml).toContain('クラスを開く（未読チャット3件）');
+
+    // 未ログイン状態でも「設定 ＞ クラス」タブが無効化されず、1画面でGoogleログイン案内が表示される
+    const modalClassHtml = renderToStaticMarkup(
+      createElement(ProfileModal, {
+        initialTab: 'class',
+        onClose: () => {},
+        isBgmEnabled: false,
+        setIsBgmEnabled: () => {},
+        bgmVolume: 0.5,
+        setBgmVolume: () => {},
+      }),
+    );
+    expect(modalClassHtml).toContain('data-settings-tab="class"');
+    expect(modalClassHtml).toContain('Google でログインしてクラスへ進む');
+  });
+
+  it('全級一括コースの全8級展開・フルワイド2ペインUI・設問番号(問1 ○/×)可視化・Firestore参加ルール修正が機能する', () => {
+    // 1. 代表教科が eiken_2 の全級一括コースでも、全8級（5級〜1級）すべてに JukuMembership が展開される
+    const expanded = expandJukuMembershipsForAllEikenGrades([
+      {
+        classId: 'cls_all_grades',
+        teacherUid: 'teacher_1',
+        className: '全級一括コース（英検5級〜1級）',
+        subject: 'eiken_2',
+        plan: 'juku',
+      },
+    ]);
+    expect(expanded.map((m) => m.subject)).toEqual(
+      expect.arrayContaining([
+        'eiken_5',
+        'eiken_4',
+        'eiken_3',
+        'eiken_pre2',
+        'eiken_pre2plus',
+        'eiken_2',
+        'eiken_pre1',
+        'eiken_1',
+      ]),
+    );
+    expect(uniqueJukuMembershipsByClass(expanded)).toHaveLength(1);
+    expect(uniqueJukuMembershipsByClass(expanded)[0]?.classId).toBe('cls_all_grades');
+
+    // 2. 生徒別の解いた単元・設問番号（問1 ○ / 問4 ×）と選んだ理由・一括提出が正確に構築される
+    const bundle = createSugorokuDemoBundle(1_760_000_000_000);
+    const harutoActivities = buildStudentChapterActivities({
+      uid: 'stu_takahashi_haruto',
+      rawSolved: bundle.rawSolvedByUid.stu_takahashi_haruto,
+      chapterCountsFallback: bundle.solvedByUid.stu_takahashi_haruto,
+      reviewItems: bundle.reviewItemsByUid.stu_takahashi_haruto,
+      answerReasons: bundle.answerReasons,
+    });
+    expect(harutoActivities.length).toBeGreaterThanOrEqual(4);
+    const shortChapter = harutoActivities.find(
+      (c) => c.chapterId === 'eiken_2_written_03_short',
+    );
+    expect(shortChapter).toBeDefined();
+    expect(shortChapter?.wrongQuestionCount).toBe(1);
+    expect(shortChapter?.questions.find((q) => q.questionNo === 4)?.status).toBe('wrong');
+
+    const listeningChapter = harutoActivities.find(
+      (c) => c.chapterId === 'eiken_2_listening_r03_part1',
+    );
+    expect(listeningChapter?.reasons.length).toBe(1);
+    expect(listeningChapter?.questions.find((q) => q.questionNo === 9)?.status).toBe('reviewed_ok');
+
+    // 3. 右サイドのライブ一括提出＆演習フィードが生成され、SugorokuAdminApp にフルワイド2ペインで描画される
+    const feed = buildClassLiveSubmissionFeed({
+      members: bundle.members,
+      rawSolvedByUid: bundle.rawSolvedByUid,
+      solvedByUid: bundle.solvedByUid,
+      reviewItemsByUid: bundle.reviewItemsByUid,
+      answerReasons: bundle.answerReasons,
+      writingSubmissions: bundle.writingSubmissions,
+      speakingSubmissions: bundle.speakingSubmissions,
+    });
+    expect(feed.length).toBeGreaterThan(0);
+    expect(feed.some((e) => e.kind === 'writing')).toBe(true);
+    expect(feed.some((e) => e.kind === 'speaking')).toBe(true);
+    expect(feed.some((e) => e.kind === 'reason_batch')).toBe(true);
+
+    const adminHtml = renderToStaticMarkup(
+      createElement(SugorokuAdminApp, {
+        initialDataMode: 'demo',
+      }),
+    );
+    expect(adminHtml).toContain('data-testid="sugoroku-wide-workspace"');
+    expect(adminHtml).toContain('data-testid="sugoroku-live-submission-panel"');
+    expect(adminHtml).toContain('一括提出 ＆ 解いた問題の最新フィード');
+
+    // 4. 生徒詳細画面にも「解いた単元・設問番号の正誤 ＆ 一括提出メモ」セクションと問番号○×チップが描画される
+    const harutoOverview = buildStudentOverview({
+      member: bundle.members[0]!,
+      logs: bundle.logsByUid.stu_takahashi_haruto,
+      assignments: bundle.assignments,
+      solvedByChapter: bundle.solvedByUid.stu_takahashi_haruto,
+      writingSubmissions: bundle.writingSubmissions,
+      speakingSubmissions: bundle.speakingSubmissions,
+    });
+    const detailHtml = renderToStaticMarkup(
+      createElement(SugorokuStudentDetailView, {
+        student: harutoOverview,
+        rawLogs: bundle.logsByUid.stu_takahashi_haruto,
+        assignments: bundle.assignments,
+        solvedByChapter: bundle.solvedByUid.stu_takahashi_haruto,
+        rawSolvedMap: bundle.rawSolvedByUid.stu_takahashi_haruto,
+        reviewItems: bundle.reviewItemsByUid.stu_takahashi_haruto,
+        answerReasons: bundle.answerReasons,
+        isDemoMode: true,
+        onBack: () => {},
+        onSaveProfile: () => {},
+      }),
+    );
+    expect(detailHtml).toContain('data-testid="student-problem-activity-section"');
+    expect(detailHtml).toContain('問4');
+    expect(detailHtml).toContain('not until next Friday');
+
+    // 5. firestore.rules の未参加時 getDoc(resource == null) 許可と英検1級('eiken_1')対応が両ファイルで完全一致している
+    const appRules = readFileSync(resolve(__dirname, '../firestore.rules'), 'utf8');
+    const rootRules = readFileSync(resolve(__dirname, '../../firestore.rules'), 'utf8');
+    expect(appRules).toBe(rootRules);
+    expect(appRules).toContain(
+      "(resource == null && memberId.matches('^[A-Za-z0-9:._-]{1,120}_' + request.auth.uid + '$'))",
+    );
+    expect(appRules).toContain("'eiken_1'");
   });
 });

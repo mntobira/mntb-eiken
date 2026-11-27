@@ -580,3 +580,44 @@ button[aria-pressed="true"] > span.flex > span.shrink-0.text-white {
   }
 }
 
+/* 設定（ProfileModal）の上部タブバー（基本設定 / フレンド / クラス）：
+ * 「クラス」タブ（Grid配置）と「基本設定」タブ（Flex配置）を行き来したときに
+ * タブバー全体の横幅や各ボタンの大きさが伸び縮みしないよう、全タブ共通で固定する */
+.profile-journal .profile-tabs.mt-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  width: min(100%, 480px) !important;
+  max-width: 480px !important;
+  margin-inline: auto !important;
+  box-sizing: border-box !important;
+}
+.profile-journal .profile-tabs.mt-tabs > button {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+}
+@media (min-width: 1100px) {
+  .profile-journal > .profile-frame,
+  .profile-journal[data-settings-tab="general"] > .profile-frame {
+    width: 100% !important;
+    max-width: 1320px !important;
+    margin-inline: auto !important;
+    padding-inline: clamp(20px, 2vw, 36px) !important;
+  }
+  .profile-journal > .profile-frame > .profile-tabs.mt-tabs,
+  .profile-journal[data-settings-tab="general"] > .profile-frame > .profile-tabs.mt-tabs {
+    width: min(100%, 480px) !important;
+    max-width: 480px !important;
+    margin-inline: auto !important;
+    justify-self: center !important;
+  }
+}
+
+

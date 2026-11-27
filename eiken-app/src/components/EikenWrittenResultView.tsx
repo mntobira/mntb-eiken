@@ -49,6 +49,7 @@ import {
 } from './eikenClozePageModel';
 import { parsePassageEmailAndParagraphs } from './eikenStudyHelpers';
 import { EikenQuestionStem } from './EikenClozePageQuiz';
+import { StudentBatchResultSubmitBar } from '../sugoroku/homework/StudentBatchResultSubmitBar';
 import './eiken-cloze-page.css';
 import './eiken-written-result.css';
 
@@ -1217,6 +1218,19 @@ export function EikenWrittenResultView({
             </ol>
           )}
         </section>
+
+        {!isGuest && (
+          <StudentBatchResultSubmitBar
+            chapterId={chapter.id}
+            chapterTitle={headerTitle}
+            items={allSubs.map(({ problem, sub }) => ({
+              problemId: problem.id,
+              subQuestionId: sub.sq.id,
+              displayNo: sub.displayNo,
+              correct: sub.status === 'correct',
+            }))}
+          />
+        )}
 
         {/* 問題画面そのままのコンパクト解説カード一覧 */}
         {hasAnyPassage ? (

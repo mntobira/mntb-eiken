@@ -8,7 +8,7 @@ import { battleAudio } from '../battle/audio/battleAudio';
 import { FriendPanel } from './FriendPanel';
 import { ClassPanel } from './ClassPanel';
 import { ComingSoon } from './ComingSoon';
-import { isClassroomEnabledFor } from '../config/features';
+import { SOCIAL_FEATURES, isClassroomEnabledFor } from '../config/features';
 import type { SubjectKey } from '../data/allChapters';
 import type { SugorokuAdminTabId } from '../sugoroku/admin/SugorokuAdminApp';
 import { DoorMascot } from './DoorMascot';
@@ -83,10 +83,11 @@ function isImmediateSugorokuAdminUser(user: typeof auth.currentUser): boolean {
 }
 
 export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnabled, onToggleBgm, bgmVolume, setBgmVolume, onOpenSugorokuAdmin, onOpenFeedbackAdmin, onStartClassChapter, onLogout }: ProfileModalProps) {
-  /** クラス機能を開けるか（ログイン済みの全ユーザーに公開） */
-  const classroomOn = isClassroomEnabledFor(auth.currentUser);
+  /** クラス機能を開けるか（SOCIAL_FEATURES.classroom が true なら未ログイン時も含め入口を開放し、その場で Google 連携へ案内する） */
+  const classroomOn = SOCIAL_FEATURES.classroom || isClassroomEnabledFor(auth.currentUser);
   const [isAdminAccount, setIsAdminAccount] = useState<boolean>(() => isImmediateSugorokuAdminUser(auth.currentUser));
   const [tab, setTab] = useState<SettingsTab>(() => {
+    if (initialTab === 'class') return 'class';
     if (initialTab && initialTab !== 'general' && auth.currentUser) {
       return initialTab;
     }
@@ -100,7 +101,9 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialTab && auth.currentUser) {
+    if (initialTab === 'class') {
+      setTab('class');
+    } else if (initialTab && auth.currentUser) {
       setTab(initialTab);
     }
   }, [initialTab]);
@@ -161,7 +164,6 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
   };
 
   const handleClickClassTab = () => {
-    if (!auth.currentUser) return;
     setTab('class');
   };
 
@@ -202,7 +204,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
           <button aria-pressed={tab === 'friends'} onClick={() => setTab('friends')} disabled={!auth.currentUser} type="button">
             <Users size={14} /> フレンド
           </button>
-          <button aria-pressed={tab === 'class'} onClick={handleClickClassTab} disabled={!auth.currentUser} type="button">
+          <button aria-pressed={tab === 'class'} onClick={handleClickClassTab} type="button">
             <School size={14} /> クラス
           </button>
         </div>
@@ -212,13 +214,16 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
             <FriendPanel />
           ) : tab === 'class' && !classroomOn ? (
             <ComingSoon title="クラス">先生が作ったクラスに参加して、課題や進み具合を共有できるようになります。もうすぐ公開します。</ComingSoon>
-          ) : tab === 'class' && auth.currentUser ? (
+          ) : tab === 'class' ? (
             <div className="h-full overflow-y-auto no-scrollbar pb-4">
               <ClassPanel
                 defaultDisplayName={name}
                 onStartChapter={onStartClassChapter}
                 showAdminHub={isAdminAccount}
                 onOpenClassAdmin={(classId, initialTab) => onOpenSugorokuAdmin?.(classId, initialTab)}
+                onLinkGoogle={linkGoogle}
+                linkingGoogle={signing}
+                authError={authError}
               />
             </div>
           ) : (

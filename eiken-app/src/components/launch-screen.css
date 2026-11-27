@@ -10,8 +10,8 @@
 .launch-brand img { display: block; width: 100%; height: auto; }
 
 /* とびら君のステージ：残りの高さをすべて使い、正方形の箱を中央に置く */
-.launch-stage { position: relative; flex: 1 1 auto; min-height: 150px; max-height: 380px; width: 100%; }
-.launch-box { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1; margin: 0 auto; }
+.launch-stage { position: relative; flex: 1 1 auto; min-height: 150px; max-height: 380px; width: 100%; overflow: visible; }
+.launch-box { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1; margin: 0 auto; overflow: visible; }
 .launch-scene { position: absolute; inset: 0; transition: opacity .35s ease; }
 .launch-stage[data-phase=intro] .launch-scene { opacity: 0; }
 /* 閉じた円の光背（途中で切れた弧にしない） */
@@ -346,11 +346,37 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
 }
+.launch-op-sound-start {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 232, 178, 0.92);
+  background: rgba(10, 19, 38, 0.86);
+  color: #fffaf0;
+  font: 800 14px/1.2 var(--mt-font-body);
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.launch-op-sound-start:active {
+  transform: translate(-50%, calc(-50% + 1.5px));
+}
 
 /* 既存のタイトル画面ステージ：背景プレートの上に①（battle_countdown）高精度切り抜きとびら君をぴたりと重ねる */
 .launch-tobira-cutout-wrap {
   position: absolute;
   inset: 0;
+  overflow: visible;
   pointer-events: none;
 }
 .launch-plate-under-video {
@@ -358,11 +384,12 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
 }
 .launch-box .launch-tobira-cutout {
   position: absolute;
-  left: 16%;
-  top: 4%;
-  width: 68%;
-  height: 83%;
+  left: 16.1%;
+  top: -6.3%;
+  width: 64.0%;
+  height: 108.7%;
   z-index: 2;
+  overflow: visible;
   pointer-events: none;
 }
 .launch-box .cinematic-skip.alpha-cinematic-skip {
@@ -379,6 +406,7 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   mask-image: none !important;
   object-fit: contain;
   object-position: 50% 100%;
+  filter: drop-shadow(0 6px 10px rgba(28, 42, 57, 0.10));
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }

@@ -8,7 +8,11 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { auth } from '../../firebase';
-import { loadJukuMemberships } from '../../utils/classAssignments';
+import { loadJukuMemberships, subscribeJukuMemberships } from '../../utils/classAssignments';
+import {
+  ensureStudentJukuMemberships,
+  uniqueJukuMembershipsByClass,
+} from '../shared/studentClassSession';
 import { safeLocalStorage } from '../../utils/safeLocalStorage';
 import type { EikenGrade } from '../../eiken/config';
 import type { SugorokuWritingSubmissionDoc } from '../shared/types';
@@ -53,7 +57,16 @@ export function StudentWritingSubmitPanel({
   targetRange,
   text,
 }: StudentWritingSubmitPanelProps) {
-  const memberships = useMemo(() => loadJukuMemberships(uid), [uid]);
+  const [membershipTick, setMembershipTick] = useState(0);
+  useEffect(() => subscribeJukuMemberships(() => setMembershipTick((n) => n + 1)), []);
+  useEffect(() => {
+    if (!uid) return;
+    void ensureStudentJukuMemberships(uid);
+  }, [uid]);
+  const memberships = useMemo(
+    () => uniqueJukuMembershipsByClass(loadJukuMemberships(uid)),
+    [uid, membershipTick],
+  );
   const primaryClassId = memberships[0]?.classId || SUGOROKU_DEMO_CLASS_ID;
   const primaryJukuName = memberships[0]?.className || '';
   const [studentName, setStudentName] = useState<string>(() => {
