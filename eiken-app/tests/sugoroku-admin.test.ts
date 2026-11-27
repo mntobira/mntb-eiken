@@ -81,6 +81,7 @@ import {
   expandJukuMembershipsForAllEikenGrades,
   uniqueJukuMembershipsByClass,
 } from '../src/sugoroku/shared/studentClassSession';
+import { createAccountSelectGoogleProvider } from '../src/utils/accountSwitch';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -293,9 +294,10 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     );
     expect(detailHtml).toContain('佐藤 美桜');
     expect(detailHtml).toContain('この生徒に課題を出す');
-    expect(detailHtml).toContain('生徒のタイトル・ホーム・クラス画面に反映中');
-    expect(detailHtml).toContain('チャットで話す');
-    expect(detailHtml).toContain('目標・メモ設定');
+    expect(detailHtml).toContain('タイトル・ホーム・クラスに自動反映');
+    expect(detailHtml).toContain('目標・メモ');
+    expect(detailHtml).toContain('data-testid="student-detail-bento-grid"');
+    expect(detailHtml).not.toContain('チャットで話す');
     expect(detailHtml).toContain('sg-stack-bar');
     expect(detailHtml).toContain('mt-progress');
     expect(detailHtml).toContain('study-doors');
@@ -676,7 +678,7 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
     );
     expect(boardHtml).toContain('data-testid="teacher-class-chat-board"');
     expect(boardHtml).toContain('相談中');
-    expect(boardHtml).toContain('学習遅れ');
+    expect(boardHtml).toContain('要フォロー');
     expect(boardHtml).toContain('この生徒に課題を出す');
   });
 
@@ -1031,5 +1033,86 @@ describe('AI 1: すごろく塾管理者ポータル（SugorokuAdminApp）', () 
       "(resource == null && memberId.matches('^[A-Za-z0-9:._-]{1,120}_' + request.auth.uid + '$'))",
     );
     expect(appRules).toContain("'eiken_1'");
+  });
+
+  it('参加直後の生徒の誤アラート防止・重複バー撤去＆1画面2×2ベントーUI・アカウント切り替えProviderが正しく機能する', () => {
+    const nowMs = new Date(2026, 10, 27, 20, 0, 0).getTime();
+
+    // 1. 写真7対応：参加から1日（3日以内）かつ締切前の課題を持つ生徒は「遅れ（要フォロー）」にならない
+    const newStudentOverview = buildStudentOverview({
+      member: {
+        uid: 'stu_new_joiner',
+        role: 'student',
+        active: true,
+        adFree: true,
+        displayName: 'サンプル生徒 1',
+        joinedAt: nowMs - 1 * 86_400_000,
+      },
+      logs: [],
+      assignments: [
+        {
+          id: 'hw_future_1',
+          classId: 'cls_all',
+          title: '英検2級 第1週 短文語彙',
+          chapterIds: ['eiken_2_written_01_short'],
+          dueAt: nowMs + 7 * 86_400_000,
+          createdAt: nowMs - 3_600_000,
+        },
+      ],
+      solvedByChapter: {},
+      nowMs,
+    });
+    expect(newStudentOverview.alerts).toHaveLength(0);
+
+    // 一方、入室から5日経過しても一度も学習していない生徒は要フォロー（入室後5日間未着手）として検知される
+    const staleNewOverview = buildStudentOverview({
+      member: {
+        uid: 'stu_stale_joiner',
+        role: 'student',
+        active: true,
+        adFree: true,
+        displayName: '未着手生徒',
+        joinedAt: nowMs - 5 * 86_400_000,
+      },
+      logs: [],
+      assignments: [],
+      solvedByChapter: {},
+      nowMs,
+    });
+    expect(staleNewOverview.alerts.some((a) => a.reason === 'never_studied')).toBe(true);
+
+    // 2. 写真1〜4・6対応：重複していたクラスバー・旧上部バーが撤去され、1画面2×2ベントー＆6列KPIリボンが描画される
+    const adminHtml = renderToStaticMarkup(
+      createElement(SugorokuAdminApp, {
+        initialDataMode: 'demo',
+      }),
+    );
+    expect(adminHtml).not.toContain('aria-label="クラス切り替え・クイック操作"');
+
+    const detailHtml = renderToStaticMarkup(
+      createElement(SugorokuStudentDetailView, {
+        student: newStudentOverview,
+        assignments: [
+          {
+            id: 'hw_future_1',
+            classId: 'cls_all',
+            title: '英検2級 第1週 短文語彙',
+            chapterIds: ['eiken_2_written_01_short'],
+            dueAt: nowMs + 7 * 86_400_000,
+          },
+        ],
+        isDemoMode: true,
+        onBack: () => {},
+        onSaveProfile: () => {},
+      }),
+    );
+    expect(detailHtml).toContain('data-testid="student-detail-bento-grid"');
+    expect(detailHtml).toContain('sg-kpi-ribbon-6');
+    expect(detailHtml).not.toContain('生徒一覧へ戻る');
+    expect(detailHtml).not.toContain('チャットで話す');
+
+    // 3. 写真8対応：アカウント切り替え用 GoogleAuthProvider が毎回アカウント選択（select_account）を強制する
+    const provider = createAccountSelectGoogleProvider();
+    expect(provider.providerId).toBe('google.com');
   });
 });

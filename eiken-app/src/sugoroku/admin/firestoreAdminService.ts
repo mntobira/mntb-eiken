@@ -657,6 +657,7 @@ export async function loadClassPortalData(
         active: meta?.active !== false,
         adFree: meta?.adFree ?? true,
         note: meta?.note,
+        joinedAt: (base as { joinedAt?: unknown } | undefined)?.joinedAt ?? meta?.joinedAt,
       };
     });
 

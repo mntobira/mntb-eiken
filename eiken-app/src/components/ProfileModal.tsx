@@ -13,7 +13,8 @@ import type { SubjectKey } from '../data/allChapters';
 import type { SugorokuAdminTabId } from '../sugoroku/admin/SugorokuAdminApp';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
-import { signInWithGoogle, signOutGoogle, switchGoogleAccount, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
+import { signInWithGoogle, signOutGoogle, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
+import { switchGoogleAccountNonBlocking } from '../utils/accountSwitch';
 import { useSignInGuard } from '../hooks/useSignInGuard';
 import { isFeedbackAdmin } from '../utils/feedbackReply';
 import {
@@ -176,12 +177,22 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
     if (!outcome.ok && !outcome.cancelled) setAuthError(outcome.message || 'ログインに失敗しました。');
   };
 
+  const [switchingAccount, setSwitchingAccount] = useState(false);
+
   const switchAccount = async () => {
+    if (switchingAccount) return;
     setAuthError(null);
-    purgeSugorokuSensitiveLocalCache(auth.currentUser?.uid);
-    const outcome = await runSignIn(switchGoogleAccount);
-    if (outcome.redirecting) return;
-    if (!outcome.ok && !outcome.cancelled) setAuthError(outcome.message || 'ログインに失敗しました。');
+    setSwitchingAccount(true);
+    try {
+      purgeSugorokuSensitiveLocalCache(auth.currentUser?.uid);
+      const outcome = await switchGoogleAccountNonBlocking(onLogout);
+      if (outcome.redirecting) return;
+      if (!outcome.ok && !outcome.cancelled) {
+        setAuthError(outcome.message || 'ログインに失敗しました。');
+      }
+    } finally {
+      setSwitchingAccount(false);
+    }
   };
 
   /* 2026-10-28 A4：「対戦で相手に見えるカード」のプレビューは削除（ご要望） */
@@ -288,11 +299,11 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                       )}
                       {/* C3（2026-10-29）：ログアウトと切り替えは横に並べて縦を詰める */}
                       <div className="ps-account-actions">
-                        <button onClick={switchAccount} disabled={signInBusy} className="compact-action bg-blue-50 text-blue-600 border border-blue-100 disabled:opacity-50">
-                          {signing ? <Loader2 size={15} className="animate-spin" /> : <LogIn size={15} />}
-                          {signing ? '切り替え中…' : '切り替え'}
+                        <button onClick={switchAccount} disabled={signInBusy || switchingAccount} className="compact-action bg-blue-50 text-blue-600 border border-blue-100 disabled:opacity-50">
+                          {signing || switchingAccount ? <Loader2 size={15} className="animate-spin" /> : <LogIn size={15} />}
+                          {signing || switchingAccount ? '切り替え中…' : '切り替え'}
                         </button>
-                        <button onClick={logout} disabled={signInBusy} className="compact-action bg-red-50 text-red-600 border border-red-100 disabled:opacity-50"><LogOut size={15} />ログアウト</button>
+                        <button onClick={logout} disabled={signInBusy || switchingAccount} className="compact-action bg-red-50 text-red-600 border border-red-100 disabled:opacity-50"><LogOut size={15} />ログアウト</button>
                       </div>
                     </>
                   )}
