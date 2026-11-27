@@ -372,25 +372,43 @@ html[data-perf=lite] .launch-copy em::after, html[data-perf=lite] .launch-start:
   transform: translate(-50%, calc(-50% + 1.5px));
 }
 
-/* 既存のタイトル画面ステージ：背景プレートの上に①（battle_countdown）高精度切り抜きとびら君をぴたりと重ねる */
+/* 既存のタイトル画面ステージ：背景プレートの上にタイトル専用切り抜きとびら君（title_tobira）をぴたりと重ねる */
 .launch-tobira-cutout-wrap {
   position: absolute;
   inset: 0;
   overflow: visible;
   pointer-events: none;
 }
-.launch-plate-under-video {
-  z-index: 0;
+.launch-box .launch-tobira-framing {
+  position: absolute;
+  inset: -6.5% 0 auto;
+  width: 100%;
+  height: 108%;
+  z-index: 2;
 }
 .launch-box .launch-tobira-cutout {
-  position: absolute;
-  left: 16.1%;
-  top: -6.3%;
-  width: 64.0%;
-  height: 108.7%;
-  z-index: 2;
+  transition: opacity .22s ease-out;
   overflow: visible;
   pointer-events: none;
+}
+.launch-cinematic-idle { visibility: hidden; pointer-events: none; }
+.launch-cinematic-idle[data-visible=true] { visibility: visible; }
+.launch-idle-actor { position: absolute; inset: 0; transform-origin: 50% 75.5%; }
+.launch-idle-actor > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.launch-idle-blink { opacity: 0; }
+.launch-box .launch-tobira-cutout.is-held { opacity: 1; }
+.launch-box .launch-tobira-cutout :is(.alpha-cinematic-video, .alpha-cinematic-canvas, .alpha-cinematic-poster, .alpha-cinematic-endplate) {
+  position: absolute;
+  inset: 0;
+}
+.launch-box .launch-tobira-cutout.is-held :is(.alpha-cinematic-video, .alpha-cinematic-canvas) { visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .launch-cinematic-idle[data-visible=true] .launch-idle-actor { animation: launch-idle-breathe 4.8s ease-in-out infinite; }
+  .launch-cinematic-idle[data-visible=true] .launch-idle-blink { animation: launch-idle-blink 8s linear infinite; }
+  @keyframes launch-idle-blink {
+    0%, 23%, 26%, 78%, 81%, 100% { opacity: 0; }
+    24.25%, 24.75%, 79.25%, 79.75% { opacity: 1; }
+  }
 }
 .launch-box .cinematic-skip.alpha-cinematic-skip {
   font-size: 12px;
