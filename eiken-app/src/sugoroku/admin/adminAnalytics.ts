@@ -198,6 +198,21 @@ export interface BuildStudentOverviewInput {
   nowMs?: number;
 }
 
+function toEpochMs(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (value && typeof value === 'object') {
+    const maybe = value as { toMillis?: () => number; seconds?: number };
+    if (typeof maybe.toMillis === 'function') {
+      const ms = maybe.toMillis();
+      if (Number.isFinite(ms)) return ms;
+    }
+    if (typeof maybe.seconds === 'number' && Number.isFinite(maybe.seconds)) {
+      return maybe.seconds * 1000;
+    }
+  }
+  return 0;
+}
+
 /**
  * 1名の塾生データを集計し、停滞アラート・今週/本日の有効学習時間・級×技能別内訳を算出する
  */
@@ -284,6 +299,7 @@ export function buildStudentOverview(input: BuildStudentOverviewInput): Sugoroku
   let overdueCount = 0;
   let activeAssignmentTitle: string | null = null;
   let nearestDueAt: number | null = null;
+  let nearestStartAt: number | null = null;
 
   for (const a of myAssignments) {
     let aTotal = 0;
@@ -316,26 +332,36 @@ export function buildStudentOverview(input: BuildStudentOverviewInput): Sugoroku
     }
     if (isIncomplete && (nearestDueAt === null || a.dueAt < nearestDueAt)) {
       nearestDueAt = a.dueAt;
+      nearestStartAt = toEpochMs(a.startAt) || toEpochMs(a.createdAt) || null;
       activeAssignmentTitle = a.title;
     }
   }
   if (!activeAssignmentTitle && myAssignments.length > 0) {
     activeAssignmentTitle = myAssignments[0].title;
     nearestDueAt = myAssignments[0].dueAt;
+    nearestStartAt = toEpochMs(myAssignments[0].startAt) || toEpochMs(myAssignments[0].createdAt) || null;
   }
 
   const completionRate =
     hwTotal > 0 ? Math.min(100, Math.round((hwCompleted / hwTotal) * 100)) : 100;
 
-  // アラート判定
+  // アラート判定（参加直後・まだ締切前の課題を出したばかりの生徒を誤って「遅れ」扱いしない）
   const alerts: StudentAlertBadge[] = [];
-  if (inactiveDays === 999) {
-    alerts.push({
-      reason: 'never_studied',
-      severity: 'critical',
-      label: '初回未学習（声掛け最優先）',
-    });
-  } else if (inactiveDays >= 3) {
+  const hasSolvedAnyProblem = Object.values(input.solvedByChapter || {}).some((n) => (n || 0) > 0);
+  const joinedAtMs = toEpochMs(input.member.joinedAt);
+  const daysSinceJoin =
+    joinedAtMs > 0 ? Math.max(0, Math.floor((nowMs - joinedAtMs) / 86_400_000)) : 0;
+
+  if (inactiveDays === 999 && !hasSolvedAnyProblem) {
+    // 参加から4日以上経過しても一度も学習していない場合のみ未着手アラートを出す（参加当日〜3日以内は正常な開始前）
+    if (joinedAtMs > 0 && daysSinceJoin >= 4) {
+      alerts.push({
+        reason: 'never_studied',
+        severity: 'critical',
+        label: `入室後${daysSinceJoin}日間未着手`,
+      });
+    }
+  } else if (inactiveDays !== 999 && inactiveDays >= 3) {
     alerts.push({
       reason: 'inactive_3days',
       severity: 'critical',
@@ -349,11 +375,19 @@ export function buildStudentOverview(input: BuildStudentOverviewInput): Sugoroku
       severity: 'critical',
       label: `宿題期限超過（${overdueCount}件）`,
     });
-  } else if (hwTotal > 0 && completionRate < 50 && nearestDueAt !== null && nearestDueAt - nowMs <= 2 * 86400_000) {
+  } else if (
+    hwTotal > 0 &&
+    completionRate < 50 &&
+    nearestDueAt !== null &&
+    nearestDueAt >= nowMs &&
+    nearestDueAt - nowMs <= 2 * 86_400_000 &&
+    // 出題した直後（24時間以内）に「ペース遅れ」になる不自然さを防止
+    (nearestStartAt === null || nowMs - nearestStartAt >= 24 * 3_600_000)
+  ) {
     alerts.push({
       reason: 'homework_behind_pace',
       severity: 'warning',
-      label: `宿題ペース遅れ（消化${completionRate}%）`,
+      label: `締切間近・消化${completionRate}%`,
     });
   }
 

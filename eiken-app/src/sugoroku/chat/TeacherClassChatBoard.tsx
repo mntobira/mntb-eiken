@@ -190,7 +190,7 @@ export function TeacherClassChatBoard({
                 { id: 'all', label: `すべて (${students.length})` },
                 { id: 'unread', label: `未読 (${counts.unread})` },
                 { id: 'open', label: `相談中 (${counts.open})` },
-                { id: 'alert', label: `学習遅れ (${counts.alert})` },
+                { id: 'alert', label: `要フォロー (${counts.alert})` },
               ] as const
             ).map((tab) => (
               <button
@@ -257,6 +257,12 @@ export function TeacherClassChatBoard({
                       <span className="text-[10.5px] font-bold text-slate-400 shrink-0">
                         {formatListTime(thread?.lastMessageAt)}
                       </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-0.5 text-[10.5px] font-bold text-slate-500">
+                      <span>今週 {formatDurationJa(st.weeklyActiveSeconds)}</span>
+                      <span>·</span>
+                      <span>宿題 {st.homework.completionRate}%</span>
                     </div>
 
                     <div className="flex items-center justify-between gap-2 mt-0.5">

@@ -31,6 +31,7 @@ import { motion } from 'motion/react';
 import { Loader2, AlertTriangle, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED, USE_EMULATORS } from '../firebase';
 import { signInWithGoogle, consumeGoogleRedirectResult, GOOGLE_LINK_BENEFITS, isInAppBrowser } from '../utils/googleAuth';
+import { signInWithGoogleFreshPopup } from '../utils/accountSwitch';
 import { syncUserData } from '../utils/userDataSync';
 import { syncRankingNickname } from '../utils/leaderboard';
 // ユーザーごとの localStorage キー名は utils/userStorageKeys.ts が唯一の定義
@@ -60,11 +61,12 @@ export function Onboarding({ onComplete, onOffline, onBackToTitle }: OnboardingP
   const [grade, setGrade] = useState('');
   const [stream, setStream] = useState('science');
   const [loading, setLoading] = useState(false);
-  /** Google ログインの処理中（必ず元に戻る）／どちらかのログインが処理中 */
-  const { busy: googleBusy, anyBusy: signInBusy, run: runSignIn } = useSignInGuard();
+  /** Google ログインの処理中（別画面のポップアップ閉じ残りでボタンがロックされないよう自画面の googleBusy のみを見る） */
+  const { busy: googleBusy, run: runSignIn } = useSignInGuard();
+  const [freshPopupBusy, setFreshPopupBusy] = useState(false);
   /** ログイン後、クラウドのプロフィールを待っている間（最大4秒） */
   const [syncing, setSyncing] = useState(false);
-  const signing = googleBusy || syncing;
+  const signing = googleBusy || freshPopupBusy || syncing;
   const [error, setError] = useState<string | null>(null);
   /** ログインに一度でも失敗したか（失敗したときだけ逃げ道を出す） */
   const [loginFailed, setLoginFailed] = useState(false);
@@ -127,9 +129,21 @@ export function Onboarding({ onComplete, onOffline, onBackToTitle }: OnboardingP
   };
 
   const handleLogin = async () => {
+    if (signing) return;
     setError(null);
-    // 「連携中…」は useSignInGuard が必ず元に戻す（想定外の例外・ブラウザの「戻る」でも）
-    handleOutcome(await runSignIn(signInWithGoogle));
+    // タイトル画面で前のポップアップを×で閉じた直後でも login_busy ロックにならず、毎回確実にアカウント選択画面を開く
+    setFreshPopupBusy(true);
+    try {
+      const first = await signInWithGoogleFreshPopup();
+      if (!first.ok && !first.cancelled && first.errorCode?.includes('popup-blocked')) {
+        // ポップアップブロック環境のみ既存の redirect フォールバック経路へ委譲
+        handleOutcome(await runSignIn(signInWithGoogle));
+        return;
+      }
+      handleOutcome(first);
+    } finally {
+      setFreshPopupBusy(false);
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -235,7 +249,7 @@ export function Onboarding({ onComplete, onOffline, onBackToTitle }: OnboardingP
             {/* ===== 主ボタン：Google 連携 ===== */}
             <button
               onClick={handleLogin}
-              disabled={signInBusy || syncing}
+              disabled={signing}
               className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-2xl border border-[#DADCE0] bg-white px-4 py-3.5 text-[14px] font-bold text-[#3C4043] shadow-[0_10px_24px_-14px_rgba(60,64,67,0.45)] transition-all hover:bg-[#F8F9FA] hover:shadow-[0_12px_28px_-14px_rgba(60,64,67,0.5)] disabled:opacity-50"
             >
               {signing

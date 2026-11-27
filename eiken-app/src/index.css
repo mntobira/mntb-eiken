@@ -618,6 +618,15 @@ button[aria-pressed="true"] > span.flex > span.shrink-0.text-white {
     margin-inline: auto !important;
     justify-self: center !important;
   }
+
+  /* クラス管理ポータル・先生画面など左サイドバー(.app-bottom-nav)を表示しない全画面状態では、
+   * .app-shell の padding-left: 176px を解除して左端の無駄な余白をゼロにする */
+  .app-shell[data-app-state="sugoroku_admin"],
+  .app-shell[data-app-state="teacher_dashboard"],
+  .app-shell[data-app-state="sugoroku_review"],
+  .app-shell[data-app-state="feedback_admin"] {
+    padding-left: 0 !important;
+  }
 }
 
 

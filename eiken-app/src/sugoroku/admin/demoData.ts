@@ -119,8 +119,8 @@ export function createSugorokuDemoBundle(nowMs: number = Date.now()): SugorokuDe
       targetGrade: 'eiken_2',
       active: true,
       adFree: true,
-      note: '今週クラス参加コード承認済み。まだ初回演習が未開始のためLINEで案内予定。',
-      joinedAt: ts(-2),
+      note: '先週クラス参加コード承認済み。まだ初回演習が未開始のためLINEで案内予定。',
+      joinedAt: ts(-5),
     },
   ];
 

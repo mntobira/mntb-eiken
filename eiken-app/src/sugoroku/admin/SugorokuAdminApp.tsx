@@ -58,7 +58,6 @@ import {
   createManagedClassroom,
   deleteManagedClassroom,
   fetchClassSettings,
-  getExamSessionShortLabel,
   loadCachedClassSettings,
   loadLastOrgName,
   updateManagedClassroom,
@@ -918,16 +917,16 @@ export function SugorokuAdminApp({
         <div className="sg-topbar-inner">
           <div className="sg-brand-row">
             <div className="sg-title-group">
-              {onBack && <BackButton label="クラス一覧へ" onClick={onBack} />}
-              <div>
-                <h1 style={{ margin: 0 }}>
+              {onBack && <BackButton label="一覧へ" onClick={onBack} />}
+              <div className="sg-title-text">
+                <h1>
                   <KineticText
                     text={sourceInfo.className || 'すごろく塾 管理'}
                     variant="rise"
                   />
                 </h1>
                 {sourceInfo.schoolName && sourceInfo.className && (
-                  <small style={{ display: 'block', fontSize: 11, color: 'var(--mt-ink-3)', fontWeight: 700 }}>
+                  <small>
                     {sourceInfo.schoolName} · すごろく塾 管理
                   </small>
                 )}
@@ -935,12 +934,27 @@ export function SugorokuAdminApp({
             </div>
 
             <div className="sg-head-tools">
+              {dataMode === 'firestore' && classrooms.length > 1 && (
+                <select
+                  aria-label="クラス切り替え"
+                  className="sg-class-select"
+                  value={activeClassId ?? ''}
+                  onChange={(e) => void handleSelectLiveClass(e.target.value)}
+                >
+                  {classrooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.className}（{room.joinCode}）
+                    </option>
+                  ))}
+                </select>
+              )}
+
               {sourceInfo.joinCode && (
                 <button
                   type="button"
                   className="sg-code-btn"
                   onClick={() => setInviteSheetOpen(true)}
-                  title="生徒招待コード・LINE案内文・クラスの目標設定"
+                  title="生徒招待コード・A4招待シート・クラスの目標設定・新規クラス作成"
                 >
                   <Settings2 size={13} aria-hidden="true" />
                   招待・設定（{sourceInfo.joinCode}）
@@ -1111,80 +1125,6 @@ export function SugorokuAdminApp({
             </Card>
           ) : (
             <>
-              {/* 複数クラスを持っているときだけシンプルな切替ピルを表示（ボタン乱立を排除） */}
-              {dataMode === 'firestore' && classrooms.length > 0 && (
-                <div
-                  className="sg-chip-group"
-                  role="group"
-                  aria-label="クラス切り替え・クイック操作"
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: 14,
-                    background: '#fff',
-                    border: '1px solid #dfe5ec',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-                    {classrooms.map((room) => (
-                      <button
-                        key={room.id}
-                        type="button"
-                        className="sg-chip"
-                        aria-pressed={room.id === activeClassId}
-                        onClick={() => void handleSelectLiveClass(room.id)}
-                      >
-                        {room.className}
-                        <small style={{ opacity: 0.72, marginLeft: 4, fontFamily: 'monospace' }}>
-                          {room.joinCode}
-                        </small>
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      className="sg-chip"
-                      onClick={() => setClassFormMode('create')}
-                    >
-                      <Plus size={12} aria-hidden="true" />
-                      新規クラス
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        padding: '3px 8px',
-                        borderRadius: 999,
-                        background: '#f2faf8',
-                        color: '#1f635b',
-                        border: '1px solid #bfe6e0',
-                      }}
-                    >
-                      1日{activeClassSettings.dailyGoalMinutes}分×週{activeClassSettings.weeklyGoalDays}日 ·{' '}
-                      {getExamSessionShortLabel(activeClassSettings.examSession)}
-                    </span>
-                    {activeLiveRoom && (
-                      <button
-                        type="button"
-                        className="sg-chip"
-                        onClick={() =>
-                          openClassInviteSheetPrint({
-                            room: activeLiveRoom,
-                            settings: activeClassSettings,
-                          })
-                        }
-                      >
-                        <Printer size={12} aria-hidden="true" />
-                        A4招待シート
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
               {activeTab === 'chat' ? (
                 <section aria-label="生徒とのチャット" className="sg-stagger sg-grid-12">
                   {allStudentOverviews.length === 0 ? (
@@ -1259,51 +1199,139 @@ export function SugorokuAdminApp({
                   }}
                 />
               ) : selectedStudent ? (
-                <SugorokuStudentDetailView
-                  student={selectedStudent}
-                  rawLogs={sourceInfo.logsByUid[selectedStudent.uid] ?? []}
-                  assignments={sourceInfo.assignments}
-                  solvedByChapter={sourceInfo.solvedByUid[selectedStudent.uid]}
-                  rawSolvedMap={sourceInfo.rawSolvedByUid[selectedStudent.uid]}
-                  reviewItems={sourceInfo.reviewItemsByUid[selectedStudent.uid]}
-                  answerReasons={sourceInfo.answerReasons}
-                  classGoalSummary={{
-                    dailyGoalMinutes: activeClassSettings.dailyGoalMinutes,
-                    weeklyGoalDays: activeClassSettings.weeklyGoalDays,
-                  }}
-                  unreadChatCount={chatThreadsByUid[selectedStudent.uid]?.unreadByTeacher || 0}
-                  isDemoMode={sourceInfo.isDemo}
-                  onBack={() => setSelectedStudentUid(null)}
-                  onSaveProfile={handleSaveStudentProfile}
-                  onCreateHomeworkForStudent={() => {
-                    setEditingAssignment(null);
-                    setHomeworkTargetStudent({
-                      uid: selectedStudent.uid,
-                      name: selectedStudent.rosterName.split('（')[0] || selectedStudent.rosterName,
-                    });
-                    setHomeworkModalOpen(true);
-                  }}
-                  onEditAssignment={(asg) => {
-                    setHomeworkTargetStudent(null);
-                    setEditingAssignment(asg);
-                    setHomeworkModalOpen(true);
-                  }}
-                  onDeleteAssignment={(asg) => void handleDeleteHomework(asg)}
-                  onOpenChat={() => {
-                    setChatStudentUid(selectedStudent.uid);
-                    setSelectedStudentUid(null);
-                    setActiveTab('chat');
-                  }}
-                  onToast={showToast}
-                  onOpenWritingTab={() => {
-                    setSelectedStudentUid(null);
-                    setActiveTab('writing_review');
-                  }}
-                  onOpenSpeakingTab={() => {
-                    setSelectedStudentUid(null);
-                    setActiveTab('speaking_review');
-                  }}
-                />
+                <div className="sg-master-detail" data-testid="sugoroku-student-master-detail">
+                  <aside aria-label="在籍生徒リスト" className="sg-student-rail">
+                    <div className="sg-rail-head">
+                      <button
+                        type="button"
+                        className="sg-rail-back-btn"
+                        onClick={() => setSelectedStudentUid(null)}
+                      >
+                        ← クラス全体（{allStudentOverviews.length}名）
+                      </button>
+                      <button
+                        type="button"
+                        className="sg-rail-back-btn"
+                        onClick={() => {
+                          setEditingAssignment(null);
+                          setHomeworkTargetStudent(null);
+                          setHomeworkModalOpen(true);
+                        }}
+                        title="クラス全体または選択生徒に課題配信"
+                      >
+                        <Plus size={13} aria-hidden="true" />
+                        課題
+                      </button>
+                    </div>
+
+                    <ul className="sg-rail-list">
+                      {allStudentOverviews.map((st) => {
+                        const isActive = st.uid === selectedStudent.uid;
+                        const unread = chatThreadsByUid[st.uid]?.unreadByTeacher || 0;
+                        return (
+                          <li key={st.uid}>
+                            <button
+                              type="button"
+                              className="sg-rail-item"
+                              aria-current={isActive ? 'true' : undefined}
+                              onClick={() => setSelectedStudentUid(st.uid)}
+                            >
+                              <div className="sg-rail-item-top">
+                                <span className="sg-rail-item-name">
+                                  {st.rosterName.split('（')[0] || st.rosterName}
+                                </span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                  {unread > 0 && (
+                                    <span
+                                      style={{
+                                        minWidth: 16,
+                                        height: 16,
+                                        padding: '0 4px',
+                                        borderRadius: 999,
+                                        background: '#06C755',
+                                        color: '#fff',
+                                        fontSize: 10,
+                                        fontWeight: 800,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                      }}
+                                    >
+                                      {unread}
+                                    </span>
+                                  )}
+                                  {st.alerts.length > 0 && (
+                                    <i
+                                      className="sg-rail-alert-dot"
+                                      title={st.alerts[0]?.label}
+                                      aria-hidden="true"
+                                    />
+                                  )}
+                                  <span className="sg-grade-tag" style={{ fontSize: 10.5, padding: '1px 6px' }}>
+                                    {getGradeLabel(st.targetGrade)}
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="sg-rail-item-meta">
+                                <span>今週 {Math.round(st.weeklyActiveSeconds / 60)}分</span>
+                                <span>· 宿題 {st.homework.completionRate}%</span>
+                                {st.weeklySolvedCount > 0 && (
+                                  <span>· {st.weeklySolvedCount}問</span>
+                                )}
+                              </div>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </aside>
+
+                  <SugorokuStudentDetailView
+                    student={selectedStudent}
+                    rawLogs={sourceInfo.logsByUid[selectedStudent.uid] ?? []}
+                    assignments={sourceInfo.assignments}
+                    solvedByChapter={sourceInfo.solvedByUid[selectedStudent.uid]}
+                    rawSolvedMap={sourceInfo.rawSolvedByUid[selectedStudent.uid]}
+                    reviewItems={sourceInfo.reviewItemsByUid[selectedStudent.uid]}
+                    answerReasons={sourceInfo.answerReasons}
+                    classGoalSummary={{
+                      dailyGoalMinutes: activeClassSettings.dailyGoalMinutes,
+                      weeklyGoalDays: activeClassSettings.weeklyGoalDays,
+                    }}
+                    unreadChatCount={chatThreadsByUid[selectedStudent.uid]?.unreadByTeacher || 0}
+                    isDemoMode={sourceInfo.isDemo}
+                    onBack={() => setSelectedStudentUid(null)}
+                    onSaveProfile={handleSaveStudentProfile}
+                    onCreateHomeworkForStudent={() => {
+                      setEditingAssignment(null);
+                      setHomeworkTargetStudent({
+                        uid: selectedStudent.uid,
+                        name: selectedStudent.rosterName.split('（')[0] || selectedStudent.rosterName,
+                      });
+                      setHomeworkModalOpen(true);
+                    }}
+                    onEditAssignment={(asg) => {
+                      setHomeworkTargetStudent(null);
+                      setEditingAssignment(asg);
+                      setHomeworkModalOpen(true);
+                    }}
+                    onDeleteAssignment={(asg) => void handleDeleteHomework(asg)}
+                    onOpenChat={() => {
+                      setChatStudentUid(selectedStudent.uid);
+                      setSelectedStudentUid(null);
+                      setActiveTab('chat');
+                    }}
+                    onToast={showToast}
+                    onOpenWritingTab={() => {
+                      setSelectedStudentUid(null);
+                      setActiveTab('writing_review');
+                    }}
+                    onOpenSpeakingTab={() => {
+                      setSelectedStudentUid(null);
+                      setActiveTab('speaking_review');
+                    }}
+                  />
+                </div>
               ) : (
                 <section
                   aria-label="生徒一覧"
@@ -1949,6 +1977,16 @@ export function SugorokuAdminApp({
                 icon={<Settings2 size={15} aria-hidden="true" />}
               >
                 クラス名・目標時間・参加受付を変更する
+              </SecondaryButton>
+
+              <SecondaryButton
+                onClick={() => {
+                  setInviteSheetOpen(false);
+                  setClassFormMode('create');
+                }}
+                icon={<Plus size={15} aria-hidden="true" />}
+              >
+                別の新規クラス・コースを追加開設する
               </SecondaryButton>
 
               {kpi.count === 0 && sourceInfo.viewerRole === 'owner' && (

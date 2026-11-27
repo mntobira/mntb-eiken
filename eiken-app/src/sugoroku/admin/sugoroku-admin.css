@@ -36,18 +36,18 @@
 
 .sg-topbar-inner {
   width: 100%;
-  max-width: 1560px;
+  max-width: 1840px;
   margin: 0 auto;
-  padding: 10px 16px;
+  padding: 8px 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .sg-topbar-inner {
-    padding: 12px clamp(20px, 2.4vw, 36px);
+    padding: 9px clamp(16px, 1.8vw, 28px);
   }
 }
 
@@ -62,15 +62,93 @@
 .sg-title-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.sg-title-text {
+  flex: 1;
   min-width: 0;
 }
 
 .sg-title-group h1 {
   margin: 0;
-  font: 800 18px/1.25 var(--mt-font-display);
+  font: 800 18px/1.28 var(--mt-font-display);
   color: var(--mt-ink-warm);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-title-group small {
+  display: block;
+  font-size: 11px;
+  color: var(--mt-ink-3);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 639px) {
+  .sg-topbar-inner {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .sg-title-group {
+    flex: 1 1 100%;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .sg-title-group .mt-back {
+    min-height: 34px;
+    padding: 0 9px 0 6px;
+    font-size: 12px;
+  }
+
+  .sg-title-group h1 {
+    font-size: 15px;
+    line-height: 1.32;
+    white-space: normal;
+    word-break: break-word;
+    overflow: visible;
+  }
+
+  /* KineticText の個別 span が white-space: pre のまま折り返せず右端で切れるのを防止 */
+  .sg-title-group h1 .kt-ch {
+    white-space: normal;
+  }
+
+  .sg-head-tools {
+    width: 100%;
+    gap: 5px;
+  }
+
+  .sg-code-btn {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 11.5px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sg-class-select {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-height: 34px;
+  }
+
+  .sg-icon-btn {
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
 }
 
 .sg-head-tools {
@@ -136,22 +214,51 @@
   box-shadow: 0 1px 3px rgba(61, 50, 34, 0.1);
 }
 
-/* ナビタブ：PC・タブレットは5タブ横1列で「スピーキング」の2段折り返しを防止、極小スマホのみ2列折り返し */
+/* ナビタブ：スマホでも5タブ横1列で美しく収め、2段折り返しのアンバランス崩れを防止 */
 .sg-nav-tabs.mt-tabs {
-  grid-auto-flow: row;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  padding: 3px;
+}
+
+.sg-nav-tabs.mt-tabs > button {
+  padding: 0 4px;
+  font-size: 11.5px;
+  gap: 3px;
+  min-height: 38px;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 374px) {
+  .sg-nav-tabs.mt-tabs {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sg-nav-tabs.mt-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .sg-nav-tabs.mt-tabs > button {
+    flex: 1 0 auto;
+    padding: 0 8px;
+  }
 }
 
 @media (min-width: 640px) {
   .sg-nav-tabs.mt-tabs {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+    padding: 4px;
   }
-}
 
-.sg-nav-tabs.mt-tabs > button {
-  padding: 0 8px;
-  font-size: 13px;
-  white-space: nowrap;
+  .sg-nav-tabs.mt-tabs > button {
+    padding: 0 8px;
+    font-size: 13px;
+    gap: 6px;
+    min-height: var(--mt-tap);
+    letter-spacing: 0;
+  }
 }
 
 .sg-tab-count {
@@ -176,18 +283,18 @@
 /* ---------- メイン領域（ワイド画面では左右の無駄な余白を無くし、1画面で生徒・提出・課題を一覧表示） ---------- */
 .sg-main {
   width: 100%;
-  max-width: 1560px;
+  max-width: 1840px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .sg-main {
-    padding: 18px clamp(20px, 2.4vw, 36px) 36px;
+    padding: 14px clamp(16px, 1.8vw, 28px) 24px;
   }
 }
 
@@ -250,6 +357,29 @@
 @media (max-width: 560px) {
   .sg-summary-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 11px 12px;
+  }
+
+  .sg-stat-val {
+    font-size: 19px;
+  }
+
+  .sg-student-row {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  .sg-row-main {
+    flex: 1 1 100%;
+  }
+
+  .sg-row-right {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 1px dashed var(--mt-line);
   }
 }
 
@@ -1612,5 +1742,234 @@
   color: var(--mt-ink);
   display: grid;
   gap: 3px;
+}
+
+/* ---------- ヘッダー内クラス切替セレクト（2クラス以上保有時のみ表示） ---------- */
+.sg-class-select {
+  min-height: 36px;
+  max-width: 240px;
+  padding: 0 12px;
+  border: 1px solid var(--mt-line);
+  border-radius: var(--mt-r-pill);
+  background: var(--mt-bg-card);
+  color: var(--mt-ink-warm);
+  font: 800 12px/1.2 var(--mt-font-display);
+  box-shadow: var(--mt-shadow-press);
+  cursor: pointer;
+}
+
+/* ---------- 生徒詳細：左常設生徒レール ＋ 右1画面2×2ベントー ---------- */
+.sg-master-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.sg-student-rail {
+  display: none;
+}
+
+@media (min-width: 1040px) {
+  .sg-master-detail {
+    grid-template-columns: 276px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .sg-student-rail {
+    position: sticky;
+    top: 102px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: calc(100dvh - 116px);
+    padding: 10px;
+    border-radius: var(--mt-radius-lg);
+    border: 1.5px solid var(--mt-line);
+    background: var(--mt-bg-card);
+    box-shadow: var(--mt-shadow-card);
+  }
+
+  .sg-detail-mobile-back {
+    display: none !important;
+  }
+}
+
+.sg-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--mt-line);
+}
+
+.sg-rail-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: var(--mt-r-pill);
+  border: 1px solid var(--mt-line);
+  background: var(--mt-bg-screen);
+  color: var(--mt-ink-warm);
+  font: 800 12px/1 var(--mt-font-body);
+}
+
+.sg-rail-back-btn:hover {
+  background: var(--mt-bg-sunken);
+}
+
+.sg-rail-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg-rail-item {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  transition: background-color 0.14s, border-color 0.14s;
+}
+
+.sg-rail-item:hover {
+  background: var(--mt-bg-screen);
+}
+
+.sg-rail-item[aria-current="true"] {
+  background: #edf5ff;
+  border-color: #9ec0f5;
+}
+
+.sg-rail-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sg-rail-item-name {
+  font: 800 13px/1.25 var(--mt-font-display);
+  color: var(--mt-ink-warm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sg-rail-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font: 700 11px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-rail-alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mt-danger);
+  flex-shrink: 0;
+}
+
+/* 生徒詳細：1画面収容用のコンパクトヘッダー＆6列KPIリボン＆2×2ベントー */
+.sg-detail-shell {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.sg-detail-hero-card.mt-card {
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.sg-kpi-ribbon-6 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--mt-bg-sunken);
+}
+
+@media (min-width: 680px) {
+  .sg-kpi-ribbon-6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  .sg-kpi-ribbon-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.sg-kpi-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sg-kpi-cell .sg-stat-val {
+  font-size: 18px;
+}
+
+.sg-kpi-sub {
+  font: 600 10.5px/1.2 var(--mt-font-body);
+  color: var(--mt-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-detail-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+@media (min-width: 960px) {
+  .sg-detail-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+.sg-bento-card.mt-card {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sg-bento-scroll {
+  max-height: 220px;
+  overflow-y: auto;
+  display: grid;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.sg-bento-card .sg-day-track {
+  height: 54px;
 }
 

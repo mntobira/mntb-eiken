@@ -5,15 +5,22 @@
 .cchat-shell {
   display: flex;
   flex-direction: column;
-  height: 76dvh;
-  min-height: 520px;
-  max-height: 760px;
-  border-radius: 22px;
+  height: calc(100dvh - 156px);
+  min-height: 420px;
+  max-height: 860px;
+  border-radius: 20px;
   overflow: hidden;
   border: 1px solid #cfdbe8;
   background: #8cabd9;
   box-shadow: 0 14px 36px rgba(15, 28, 46, 0.12);
   position: relative;
+}
+
+@media (min-width: 768px) {
+  .cchat-shell {
+    height: calc(100dvh - 126px);
+    min-height: 480px;
+  }
 }
 
 .cchat-modal-backdrop {
@@ -819,8 +826,9 @@
 
 @media (min-width: 860px) {
   .cchat-board {
-    grid-template-columns: 330px minmax(0, 1fr);
+    grid-template-columns: 340px minmax(0, 1fr);
     align-items: stretch;
+    gap: 14px;
   }
 }
 
@@ -847,7 +855,7 @@
   border: 1px solid var(--mt-line, #e3d9c8);
   border-radius: 20px;
   padding: 12px;
-  max-height: 76dvh;
+  max-height: calc(100dvh - 126px);
   overflow-y: auto;
 }
 
