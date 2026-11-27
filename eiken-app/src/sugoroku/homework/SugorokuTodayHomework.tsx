@@ -301,6 +301,15 @@ export function SugorokuTodayHomework({
         </p>
 
         <div className="sgr-homework-badges">
+          {primary.isPersonalized && (
+            <span
+              className="sgr-homework-flag"
+              data-testid="homework-personalized-badge"
+              style={{ background: '#ede9fe', color: '#6d28d9', borderColor: '#ddd6fe' }}
+            >
+              個別課題
+            </span>
+          )}
           {primary.overdue ? (
             <span className="sgr-homework-flag" data-tone="warn" role="status">
               <AlertTriangle size={12} aria-hidden="true" />

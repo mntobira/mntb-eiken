@@ -35,8 +35,15 @@ import {
   SecondaryButton,
   SectionHeader,
 } from '../../components/ui';
+import type { AnswerReasonDoc } from '../../utils/classAssignmentsCore';
+import type { ReviewItem } from '../../utils/reviewList';
+import type { SolvedMap } from '../../utils/studySyncCore';
 import type { SugorokuAssignmentDoc, SugorokuStudyLogDoc } from '../shared/types';
 import { chapterTitleOf, chapterTotals } from '../homework/chapterTotals';
+import {
+  buildStudentChapterActivities,
+  formatShortTimestampJa,
+} from './studentProblemActivity';
 import {
   buildSugorokuStudentDetailCsv,
   formatDateKey,
@@ -66,6 +73,12 @@ interface SugorokuStudentDetailViewProps {
   assignments?: readonly SugorokuAssignmentDoc[];
   /** この生徒の既習単元マップ（単元別の消化問数算出用） */
   solvedByChapter?: Record<string, number>;
+  /** 設問単位の解答時刻マップ（`章ID::問題ID -> ms`） */
+  rawSolvedMap?: SolvedMap;
+  /** 誤答・復習リスト（どの番号を何回間違えたか） */
+  reviewItems?: readonly ReviewItem[];
+  /** 生徒が送った「選んだ理由・一括振り返り」 */
+  answerReasons?: readonly AnswerReasonDoc[];
   /** クラス既定の1日目標分・週目標日 */
   classGoalSummary?: { dailyGoalMinutes: number; weeklyGoalDays: number };
   /** 未読チャットメッセージ数 */
@@ -118,6 +131,9 @@ export function SugorokuStudentDetailView({
   rawLogs,
   assignments = [],
   solvedByChapter,
+  rawSolvedMap,
+  reviewItems,
+  answerReasons,
   classGoalSummary,
   unreadChatCount = 0,
   isDemoMode,
@@ -139,8 +155,21 @@ export function SugorokuStudentDetailView({
   const [rangeDays, setRangeDays] = useState<14 | 30>(14);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
   const [showAllSessions, setShowAllSessions] = useState(false);
+  const [showAllChapters, setShowAllChapters] = useState(false);
 
   const totalsMap = useMemo(() => chapterTotals(), []);
+
+  const chapterActivities = useMemo(
+    () =>
+      buildStudentChapterActivities({
+        uid: student.uid,
+        rawSolved: rawSolvedMap,
+        chapterCountsFallback: solvedByChapter,
+        reviewItems,
+        answerReasons,
+      }),
+    [student.uid, rawSolvedMap, solvedByChapter, reviewItems, answerReasons],
+  );
 
   // この生徒に配信されている課題一覧（個別指定 または クラス全員向け）
   const studentAssignments = useMemo(() => {
@@ -664,6 +693,116 @@ export function SugorokuStudentDetailView({
                       </span>
                     ))}
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      {/* 2.5 【一括提出＆解いた問題の可視化】どの単元・何番の問題を解いて、どこを間違え・どんな理由を提出したか */}
+      <Card
+        style={{ display: 'grid', gap: 12 }}
+        data-testid="student-problem-activity-section"
+      >
+        <div className="sg-toolbar">
+          <SectionHeader
+            title={`解いた単元・設問番号の正誤 ＆ 一括提出メモ（${chapterActivities.length}単元）`}
+            aside="どの単元の何番（問1・問2…）を解き、どこでつまずいたかを自動集計"
+          />
+          {chapterActivities.length > 6 && (
+            <SecondaryButton onClick={() => setShowAllChapters((v) => !v)}>
+              {showAllChapters ? '直近6単元に畳む' : `全${chapterActivities.length}単元を表示`}
+            </SecondaryButton>
+          )}
+        </div>
+
+        {chapterActivities.length === 0 ? (
+          <p className="slog-empty" style={{ padding: '10px 0', margin: 0 }}>
+            まだ解答済みの単元・一括提出データがありません。生徒が問題を解くか結果画面で「先生へ結果を一括提出」を押すと、単元名と設問ごとの○×がここに並びます。
+          </p>
+        ) : (
+          <div className="sg-grid-10">
+            {(showAllChapters ? chapterActivities : chapterActivities.slice(0, 6)).map((ch) => {
+              const pct =
+                ch.totalProblems > 0
+                  ? Math.min(100, Math.round((ch.solvedCount / ch.totalProblems) * 100))
+                  : 100;
+              const timeStr = formatShortTimestampJa(ch.latestAtMs);
+              return (
+                <div key={ch.chapterId} className="sg-prob-chapter-card">
+                  <div className="sg-toolbar" style={{ alignItems: 'center' }}>
+                    <div className="sg-row-head" style={{ gap: 6 }}>
+                      <span className="sg-grade-tag">{ch.gradeShortLabel}</span>
+                      <strong style={{ fontSize: 14.5, color: 'var(--mt-ink-warm)' }}>
+                        {ch.chapterTitle}
+                      </strong>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                      <span style={{ fontWeight: 800, color: 'var(--mt-ink-warm)' }}>
+                        {ch.solvedCount}/{ch.totalProblems}問（{pct}%）
+                      </span>
+                      {ch.wrongQuestionCount > 0 && (
+                        <span style={{ fontWeight: 800, color: '#B91C1C' }}>
+                          要復習 {ch.wrongQuestionCount}問
+                        </span>
+                      )}
+                      {timeStr && (
+                        <span style={{ color: 'var(--mt-ink-3)', fontWeight: 600 }}>
+                          最終 {timeStr}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {ch.questions.length > 0 && (
+                    <div className="sg-prob-qchips" aria-label={`${ch.chapterTitle}の設問別正誤`}>
+                      {ch.questions.map((q) => (
+                        <span
+                          key={q.questionKey}
+                          className="sg-prob-qchip"
+                          data-status={q.status}
+                          title={
+                            q.wrongCount > 0
+                              ? `${q.label}: 誤答${q.wrongCount}回 / 正解${q.correctCount}回`
+                              : `${q.label}: クリア済み`
+                          }
+                        >
+                          <span>{q.label}</span>
+                          <b>
+                            {q.status === 'wrong'
+                              ? `×${q.wrongCount >= 2 ? `(${q.wrongCount})` : ''}`
+                              : q.status === 'reviewed_ok'
+                              ? '△→○'
+                              : '○'}
+                          </b>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {ch.reasons.length > 0 && (
+                    <div className="sg-grid-6">
+                      {ch.reasons.map((r, idx) => (
+                        <div key={`${r.questionId}_${idx}`} className="sg-reason-note-box">
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 11.5 }}>
+                            <strong style={{ color: r.correct === false ? '#991B1B' : '#155E54' }}>
+                              {r.reason.startsWith('【一括提出】')
+                                ? '生徒からの一括提出サマリー'
+                                : `${r.qNo ? `問${r.qNo}` : r.questionId} の選んだ理由・振り返り`}
+                              {typeof r.correct === 'boolean' ? (r.correct ? '（正解 ○）' : '（誤答 ×）') : ''}
+                            </strong>
+                            <span style={{ color: 'var(--mt-ink-3)' }}>
+                              {formatShortTimestampJa(
+                                typeof r.updatedAt === 'number' ? r.updatedAt : 0,
+                              )}
+                            </span>
+                          </div>
+                          <div>{r.reason}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}

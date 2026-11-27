@@ -316,6 +316,9 @@ export function buildHomeworkTask(input: HomeworkInput): SugorokuHomeworkTask {
     typeof plan?.coachInstruction === 'string' && plan.coachInstruction.trim()
       ? plan.coachInstruction.trim().slice(0, 140)
       : undefined;
+  const isPersonalized = Boolean(
+    plan?.targetStudentUids && plan.targetStudentUids.length > 0,
+  );
 
   let status: SugorokuHomeworkTask['status'];
   if (remaining === 0) status = assignment.dueAt < now ? 'late' : 'done';
@@ -344,6 +347,7 @@ export function buildHomeworkTask(input: HomeworkInput): SugorokuHomeworkTask {
     todayRemaining,
     targetLaps,
     coachInstruction,
+    isPersonalized,
     overPacedToday,
     skillBreakdown,
     status,

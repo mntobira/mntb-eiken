@@ -10,6 +10,7 @@ import { usePdfOpen } from './hooks/usePdfOpen';
 import { useBannerAdSuppressed } from './utils/adSuppress';
 import { useJukuAdFree } from './hooks/useJukuAdFree';
 import { SugorokuAdminGuard, SugorokuAuthGate, useSugorokuPortalMode } from './sugoroku/auth';
+import type { SugorokuAdminTabId } from './sugoroku/admin/SugorokuAdminApp';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BottomNavigation } from './components/ui/BottomNavigation';
@@ -263,7 +264,7 @@ export default function App() {
   const [adminEntryOrigin, setAdminEntryOrigin] = useState<'launch' | 'settings'>('launch');
   /** 設定＞クラスの「管理しているクラス一覧」から選択されたクラスID＆初期タブ */
   const [selectedAdminClassId, setSelectedAdminClassId] = useState<string | undefined>(undefined);
-  const [selectedAdminInitialTab, setSelectedAdminInitialTab] = useState<'students' | 'chat' | undefined>(undefined);
+  const [selectedAdminInitialTab, setSelectedAdminInitialTab] = useState<SugorokuAdminTabId | undefined>(undefined);
   const [selectedAdminStudentUid, setSelectedAdminStudentUid] = useState<string | undefined>(undefined);
   /** 生徒×先生チャットの未読メッセージ合計（設定ナビのバッジに加算） */
   const [unreadChatCount, setUnreadChatCount] = useState(0);
@@ -852,7 +853,7 @@ export default function App() {
                 ? 'max-w-none h-full'
                 : 'max-w-5xl max-h-full flex flex-col'
           }`}>
-            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} onLogout={returnToTitleScreen} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={(classId) => { setSelectedAdminClassId(classId); setSelectedAdminInitialTab(undefined); setSelectedAdminStudentUid(undefined); setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
+            {appState === 'settings' && <ProfileModal initialTab={settingsTab} onClose={() => { setSettingsTab('general'); setAppState(prevAppState); }} onLogout={returnToTitleScreen} isBgmEnabled={isBgmEnabled} setIsBgmEnabled={setIsBgmEnabled} onToggleBgm={handleToggleBgm} bgmVolume={bgmVolume} setBgmVolume={setBgmVolume} onOpenTeacherDashboard={() => { setTeacherDashboardOrigin('settings'); setTeacherAutoOpenCreate(false); setAppState('teacher_dashboard'); }} onOpenSugorokuAdmin={(classId, initialTab) => { setSelectedAdminClassId(classId); setSelectedAdminInitialTab(initialTab); setSelectedAdminStudentUid(undefined); setAdminEntryOrigin('settings'); setAppState('sugoroku_admin'); }} onOpenFeedbackAdmin={() => setAppState('feedback_admin')} onOpenOutfit={() => { setGrowthPage('outfit'); navigateMain('growth'); }} onStartClassChapter={(chapterId, subject) => { if (!isSubjectEnabled(subject)) return; setSettingsTab('general'); setSelectedSubject(subject); setAppMode('practice'); handleSelectChapter(chapterId, 0, false, null, 'practice'); }} />}
             {/* 先生ダッシュボード（後方互換用に保持。通常は SugorokuAdminApp 内に完全統合済み） */}
             {appState === 'teacher_dashboard' && (
               <SugorokuAdminGuard

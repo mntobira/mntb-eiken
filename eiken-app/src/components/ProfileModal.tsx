@@ -10,6 +10,7 @@ import { ClassPanel } from './ClassPanel';
 import { ComingSoon } from './ComingSoon';
 import { SOCIAL_FEATURES, isClassroomEnabledFor } from '../config/features';
 import type { SubjectKey } from '../data/allChapters';
+import type { SugorokuAdminTabId } from '../sugoroku/admin/SugorokuAdminApp';
 import { DoorMascot } from './DoorMascot';
 import { GoogleMark } from './GoogleLinkBanner';
 import { signInWithGoogle, signOutGoogle, switchGoogleAccount, GOOGLE_LINK_BENEFITS } from '../utils/googleAuth';
@@ -47,8 +48,8 @@ interface ProfileModalProps {
    *   先生は設定を探すことを苦にしないので、ここに置く。
    */
   onOpenTeacherDashboard?: () => void;
-  /** すごろく塾・クラス管理画面を開く（選択した classId を指定可能） */
-  onOpenSugorokuAdmin?: (classId?: string) => void;
+  /** すごろく塾・クラス管理画面を開く（選択した classId および初期タブを指定可能） */
+  onOpenSugorokuAdmin?: (classId?: string, initialTab?: SugorokuAdminTabId) => void;
   /**
    * フィードバック管理画面（運営専用）を開く。
    * 運営メールでログインしているときだけボタンを出す。
@@ -219,7 +220,7 @@ export function ProfileModal({ onClose, initialTab, isBgmEnabled, setIsBgmEnable
                 defaultDisplayName={name}
                 onStartChapter={onStartClassChapter}
                 showAdminHub={isAdminAccount}
-                onOpenClassAdmin={(classId) => onOpenSugorokuAdmin?.(classId)}
+                onOpenClassAdmin={(classId, initialTab) => onOpenSugorokuAdmin?.(classId, initialTab)}
                 onLinkGoogle={linkGoogle}
                 linkingGoogle={signing}
                 authError={authError}

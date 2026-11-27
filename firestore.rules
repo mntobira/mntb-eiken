@@ -762,7 +762,9 @@ service cloud.firestore {
         && d.updatedAt == request.time;
     }
     match /eiken_study_progress/{uid} {
-      allow get: if owner(uid) || (request.auth != null && exists(/databases/$(database)/documents/eiken_study_access/$(uid + '_' + request.auth.uid)));
+      allow get: if owner(uid)
+        || (request.auth != null && exists(/databases/$(database)/documents/eiken_study_access/$(uid + '_' + request.auth.uid)))
+        || sgCanReadStudentLogs(uid);
       allow create, update: if owner(uid) && validProgress(uid);
       allow list, delete: if false;
     }
@@ -841,10 +843,13 @@ service cloud.firestore {
     //   仕組みで答えられるようにするための中核。
     // ============================================================
     match /eiken_study_access/{accessId} {
-      // 当事者（生徒本人・許可された先生）だけが存在を確認できる
+      // 当事者（生徒本人・許可された先生）またはすごろく塾スタッフが确认できる。
+      // resource == null（未作成時の存在チェック）も自身のUIDを含むIDなら許可し null 参照エラーを防ぐ。
       allow get: if isAuthenticated()
-        && (resource.data.studentUid == request.auth.uid
-            || resource.data.teacherUid == request.auth.uid);
+        && (
+          (resource == null && accessId.matches('^' + request.auth.uid + '_[A-Za-z0-9:._-]{1,128}$'))
+          || (resource != null && (resource.data.studentUid == request.auth.uid || resource.data.teacherUid == request.auth.uid))
+        );
       allow list: if false;
 
       // 作成できるのは生徒本人のみ。
@@ -893,7 +898,7 @@ service cloud.firestore {
           && data.schoolName is string && data.schoolName.size() > 0 && data.schoolName.size() <= 40
           && data.className is string && data.className.size() > 0 && data.className.size() <= 40
           && data.joinCode is string && data.joinCode.matches('^[ACDEFGHJKMNPQRSTWXYZ2345679]{6}$')
-          && data.subject in ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1']
+          && data.subject in ['eiken_5', 'eiken_4', 'eiken_3', 'eiken_pre2', 'eiken_pre2plus', 'eiken_2', 'eiken_pre1', 'eiken_1']
           && data.joinOpen is bool;
       }
 
@@ -992,8 +997,29 @@ service cloud.firestore {
           && get(/databases/$(database)/documents/eiken_classrooms/$(classId)).data.teacherUid == request.auth.uid;
       }
 
-      allow get, list: if isAuthenticated()
-        && (resource.data.uid == request.auth.uid || isClassTeacher(resource.data.classId));
+      // 担任・本人・塾スタッフ（sgCanReadClassAdminData）が閲覧可能。
+      // 重要：joinClassroomByCode の getDoc(memberRef) 初回参加チェックではまだ文書が存在しない（resource == null）ため、
+      // resource == null のときに resource.data.uid を参照すると Firestore Rules が即時 Permission Denied で落ちる！
+      // そのため memberId が `_{自分のuid}` で終わる未作成ドキュメントの get を明示許可する。
+      allow get: if isAuthenticated()
+        && (
+          (resource == null && memberId.matches('^[A-Za-z0-9:._-]{1,120}_' + request.auth.uid + '$'))
+          || (
+            resource != null
+            && (
+              resource.data.uid == request.auth.uid
+              || isClassTeacher(resource.data.classId)
+              || sgCanReadClassAdminData(resource.data.classId)
+            )
+          )
+        );
+      allow list: if isAuthenticated()
+        && resource != null
+        && (
+          resource.data.uid == request.auth.uid
+          || isClassTeacher(resource.data.classId)
+          || sgCanReadClassAdminData(resource.data.classId)
+        );
 
       // 参加するのは生徒本人のみ（先生が生徒を勝手に登録できない）
       allow create: if isAuthenticated()
@@ -1072,8 +1098,10 @@ service cloud.firestore {
       }
 
       allow get, list: if isAuthenticated()
+        && resource != null
         && (
           caIsTeacher(resource.data.classId)
+          || sgCanReadClassAdminData(resource.data.classId)
           || (
             caIsMember(resource.data.classId)
             && (
@@ -1132,12 +1160,23 @@ service cloud.firestore {
           && reasonId.matches('^' + data.classId + '_' + data.uid + '_[A-Za-z0-9_-]{1,160}$');
       }
 
+      // 初回解説表示時の fetchMyAnswerReason は未提出（resource == null）の文書を get するため、
+      // 自分の classId_uid_ プレフィックスに対する resource == null の get を許可する。
       allow get: if isAuthenticated()
-        && (resource.data.uid == request.auth.uid
-            || (arIsTeacher(resource.data.classId) && arIsJuku(resource.data.classId)));
+        && (
+          (resource == null && reasonId.matches('^[A-Za-z0-9:._-]{1,80}_' + request.auth.uid + '_[A-Za-z0-9_-]{1,160}$'))
+          || (
+            resource != null
+            && (
+              resource.data.uid == request.auth.uid
+              || ((arIsTeacher(resource.data.classId) || sgCanReadClassAdminData(resource.data.classId)) && arIsJuku(resource.data.classId))
+            )
+          )
+        );
       allow list: if isAuthenticated()
+        && resource != null
         && (resource.data.uid == request.auth.uid
-            || (arIsTeacher(resource.data.classId) && arIsJuku(resource.data.classId)));
+            || ((arIsTeacher(resource.data.classId) || sgCanReadClassAdminData(resource.data.classId)) && arIsJuku(resource.data.classId)));
 
       allow create, update: if isAuthenticated()
         && isValidReason(request.resource.data)
@@ -1741,8 +1780,19 @@ service cloud.firestore {
           && (r.reviewedAt == request.time || (r.reviewedAt is int && r.reviewedAt > 0));
       }
 
-      allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
-        || sgCanReadClassAdminData(classId);
+      allow get: if sgCanReadClassAdminData(classId)
+        || (
+          isAuthenticated()
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+          && (resource == null || resource.data.studentUid == request.auth.uid)
+        );
+      allow list: if sgCanReadClassAdminData(classId)
+        || (
+          isAuthenticated()
+          && resource != null
+          && resource.data.studentUid == request.auth.uid
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+        );
 
       // 生徒本人による初回提出：在籍塾クラスのみ、退塾停止中は不可、review は付けられない
       allow create: if isAuthenticated()
@@ -1847,8 +1897,19 @@ service cloud.firestore {
           && (r.reviewedAt == request.time || (r.reviewedAt is int && r.reviewedAt > 0));
       }
 
-      allow get, list: if (isAuthenticated() && resource.data.studentUid == request.auth.uid && sgIsEnrolledInClass(classId, request.auth.uid))
-        || sgCanReadClassAdminData(classId);
+      allow get: if sgCanReadClassAdminData(classId)
+        || (
+          isAuthenticated()
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+          && (resource == null || resource.data.studentUid == request.auth.uid)
+        );
+      allow list: if sgCanReadClassAdminData(classId)
+        || (
+          isAuthenticated()
+          && resource != null
+          && resource.data.studentUid == request.auth.uid
+          && sgIsEnrolledInClass(classId, request.auth.uid)
+        );
 
       allow create: if isAuthenticated()
         && request.resource.data.studentUid == request.auth.uid

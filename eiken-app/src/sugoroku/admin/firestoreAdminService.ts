@@ -32,7 +32,12 @@ import {
   type ClassroomDoc,
   type ClassroomInput,
 } from '../../utils/classroomCore';
-import { fetchAssignments as fetchLegacyAssignments } from '../../utils/classAssignments';
+import {
+  fetchAssignments as fetchLegacyAssignments,
+  fetchClassReasons,
+} from '../../utils/classAssignments';
+import type { AnswerReasonDoc } from '../../utils/classAssignmentsCore';
+import type { ReviewItem } from '../../utils/reviewList';
 import { STUDY_PROGRESS_COLLECTION } from '../../utils/studySync';
 import type { SolvedMap } from '../../utils/studySyncCore';
 import { safeGetItem } from '../../utils/safeLocalStorage';
@@ -56,6 +61,9 @@ export interface LoadedClassPortalData {
   staffInvites: SugorokuStaffInviteDoc[];
   logsByUid: Record<string, SugorokuStudyLogDoc[]>;
   solvedByUid: Record<string, Record<string, number>>;
+  rawSolvedByUid: Record<string, SolvedMap>;
+  reviewItemsByUid: Record<string, ReviewItem[]>;
+  answerReasons: AnswerReasonDoc[];
   assignments: SugorokuAssignmentDoc[];
   writingSubmissions: SugorokuWritingSubmissionDoc[];
   speakingSubmissions: SugorokuSpeakingSubmissionDoc[];
@@ -728,9 +736,11 @@ export async function loadClassPortalData(
     // ignore
   }
 
-  // 3. 各生徒のログと解答済み問題数
+  // 3. 各生徒のログと解答済み問題数（設問ごとの解答時刻 rawSolved ＆ 誤答復習履歴 reviewItems も取得）
   const logsByUid: Record<string, SugorokuStudyLogDoc[]> = {};
   const solvedByUid: Record<string, Record<string, number>> = {};
+  const rawSolvedByUid: Record<string, SolvedMap> = {};
+  const reviewItemsByUid: Record<string, ReviewItem[]> = {};
 
   await Promise.all(
     members.map(async (member) => {
@@ -786,13 +796,16 @@ export async function loadClassPortalData(
       logsByUid[member.uid] = [...byDate.values()];
 
       const chapterCounts: Record<string, number> = {};
+      let rawSolved: SolvedMap = {};
+      let reviewItems: ReviewItem[] = [];
       try {
         const progSnap = await getDoc(doc(db, STUDY_PROGRESS_COLLECTION, member.uid));
         const data = progSnap.exists() ? progSnap.data() || {} : {};
-        const solved = (
+        rawSolved = (
           data.solved && typeof data.solved === 'object' ? data.solved : {}
         ) as SolvedMap;
-        Object.keys(solved).forEach((key) => {
+        reviewItems = Array.isArray(data.reviewItems) ? (data.reviewItems as ReviewItem[]) : [];
+        Object.keys(rawSolved).forEach((key) => {
           const cid = key.split('::')[0];
           if (cid) chapterCounts[cid] = (chapterCounts[cid] ?? 0) + 1;
         });
@@ -800,8 +813,18 @@ export async function loadClassPortalData(
         // ignore
       }
       solvedByUid[member.uid] = chapterCounts;
+      rawSolvedByUid[member.uid] = rawSolved;
+      reviewItemsByUid[member.uid] = reviewItems;
     }),
   );
+
+  // 3.5. 生徒から送信された「選んだ理由・一括振り返り」一覧
+  let answerReasons: AnswerReasonDoc[] = [];
+  try {
+    answerReasons = await fetchClassReasons(classId);
+  } catch {
+    answerReasons = [];
+  }
 
   // 4. ライティング提出一覧
   const writingMap = new Map<string, SugorokuWritingSubmissionDoc>();
@@ -880,6 +903,9 @@ export async function loadClassPortalData(
     staffInvites,
     logsByUid,
     solvedByUid,
+    rawSolvedByUid,
+    reviewItemsByUid,
+    answerReasons,
     assignments: [...assignmentMap.values()].sort((a, b) => a.dueAt - b.dueAt),
     writingSubmissions: [...writingMap.values()].sort(
       (a, b) => (b.submittedAt || 0) - (a.submittedAt || 0),

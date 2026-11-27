@@ -161,6 +161,8 @@ export interface SugorokuHomeworkTask {
   todayRemaining: number;
   targetLaps?: number;
   coachInstruction?: string;
+  /** クラス全体配信ではなく、特定の生徒（個別指導対象）に指定配信された課題か */
+  isPersonalized?: boolean;
   overPacedToday?: boolean;
   skillBreakdown?: SugorokuSkillBreakdown;
   status: 'done' | 'late' | 'not_started' | 'on_track' | 'behind' | 'ahead';

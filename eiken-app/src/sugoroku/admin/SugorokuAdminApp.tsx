@@ -66,10 +66,18 @@ import {
 } from './classroomSettings';
 import { openClassInviteSheetPrint } from './printClassInviteSheet';
 import { createAssignment, deleteAssignment } from '../../utils/classAssignments';
-import { dueDateToMs } from '../../utils/classAssignmentsCore';
+import { dueDateToMs, formatDue } from '../../utils/classAssignmentsCore';
+import type { AnswerReasonDoc } from '../../utils/classAssignmentsCore';
+import type { ReviewItem } from '../../utils/reviewList';
+import type { SolvedMap } from '../../utils/studySyncCore';
 import type { StudentRawProgress } from '../../utils/classroom';
 import { attachPlanToAssignment, deleteHomeworkPlan } from '../homework/homeworkStore';
-import { allEikenChapterCatalog } from '../homework/chapterTotals';
+import { allEikenChapterCatalog, chapterTitleOf, chapterTotals } from '../homework/chapterTotals';
+import {
+  buildClassLiveSubmissionFeed,
+  buildStudentChapterActivities,
+  formatShortTimestampJa,
+} from './studentProblemActivity';
 import {
   SugorokuHomeworkComposerModal,
   type PacemakerSubmitPayload,
@@ -321,6 +329,9 @@ export function SugorokuAdminApp({
         members: demoBundle.members,
         logsByUid: demoBundle.logsByUid,
         solvedByUid: demoBundle.solvedByUid,
+        rawSolvedByUid: demoBundle.rawSolvedByUid,
+        reviewItemsByUid: demoBundle.reviewItemsByUid,
+        answerReasons: demoBundle.answerReasons,
         assignments: demoBundle.assignments,
         writingSubmissions: demoBundle.writingSubmissions,
         speakingSubmissions: demoBundle.speakingSubmissions,
@@ -343,6 +354,9 @@ export function SugorokuAdminApp({
         members: [],
         logsByUid: {},
         solvedByUid: {},
+        rawSolvedByUid: {} as Record<string, SolvedMap>,
+        reviewItemsByUid: {} as Record<string, ReviewItem[]>,
+        answerReasons: [] as AnswerReasonDoc[],
         assignments: [],
         writingSubmissions: [],
         speakingSubmissions: [],
@@ -367,6 +381,9 @@ export function SugorokuAdminApp({
       members: livePortalData.members,
       logsByUid: livePortalData.logsByUid,
       solvedByUid: livePortalData.solvedByUid,
+      rawSolvedByUid: livePortalData.rawSolvedByUid,
+      reviewItemsByUid: livePortalData.reviewItemsByUid,
+      answerReasons: livePortalData.answerReasons,
       assignments: livePortalData.assignments,
       writingSubmissions: livePortalData.writingSubmissions,
       speakingSubmissions: livePortalData.speakingSubmissions,
@@ -451,6 +468,8 @@ export function SugorokuAdminApp({
       (sum, t) => sum + (t.unreadByTeacher || 0),
       0,
     );
+    const totalReasons = sourceInfo.answerReasons.length;
+    const totalPendingSubmissions = pendingWriting + pendingSpeaking;
 
     return {
       count,
@@ -459,9 +478,42 @@ export function SugorokuAdminApp({
       avgHomeworkPct,
       pendingWriting,
       pendingSpeaking,
+      totalPendingSubmissions,
+      totalReasons,
       unreadChats,
     };
   }, [allStudentOverviews, sourceInfo, chatThreadsByUid]);
+
+  const studentActivitiesByUid = useMemo(() => {
+    const out: Record<string, ReturnType<typeof buildStudentChapterActivities>> = {};
+    for (const st of allStudentOverviews) {
+      out[st.uid] = buildStudentChapterActivities({
+        uid: st.uid,
+        rawSolved: sourceInfo.rawSolvedByUid[st.uid],
+        chapterCountsFallback: sourceInfo.solvedByUid[st.uid],
+        reviewItems: sourceInfo.reviewItemsByUid[st.uid],
+        answerReasons: sourceInfo.answerReasons,
+      });
+    }
+    return out;
+  }, [allStudentOverviews, sourceInfo]);
+
+  const liveSubmissionFeed = useMemo(
+    () =>
+      buildClassLiveSubmissionFeed({
+        members: sourceInfo.members,
+        rawSolvedByUid: sourceInfo.rawSolvedByUid,
+        solvedByUid: sourceInfo.solvedByUid,
+        reviewItemsByUid: sourceInfo.reviewItemsByUid,
+        answerReasons: sourceInfo.answerReasons,
+        writingSubmissions: sourceInfo.writingSubmissions,
+        speakingSubmissions: sourceInfo.speakingSubmissions,
+        limit: 14,
+      }),
+    [sourceInfo],
+  );
+
+  const chapterTotalsMap = useMemo(() => chapterTotals(), []);
 
   const handleExportSummaryCsv = () => {
     if (filteredStudents.length === 0) return;
@@ -1212,6 +1264,9 @@ export function SugorokuAdminApp({
                   rawLogs={sourceInfo.logsByUid[selectedStudent.uid] ?? []}
                   assignments={sourceInfo.assignments}
                   solvedByChapter={sourceInfo.solvedByUid[selectedStudent.uid]}
+                  rawSolvedMap={sourceInfo.rawSolvedByUid[selectedStudent.uid]}
+                  reviewItems={sourceInfo.reviewItemsByUid[selectedStudent.uid]}
+                  answerReasons={sourceInfo.answerReasons}
                   classGoalSummary={{
                     dailyGoalMinutes: activeClassSettings.dailyGoalMinutes,
                     weeklyGoalDays: activeClassSettings.weeklyGoalDays,
@@ -1290,8 +1345,8 @@ export function SugorokuAdminApp({
                     </Card>
                   )}
 
-                  {/* 1. 静かな3項目サマリー帯 */}
-                  <div className="sg-summary-strip">
+                  {/* 1. フルワイド4項目サマリー帯（在籍/遅れ・今週平均・宿題消化・一括提出/添削待ち） */}
+                  <div className="sg-summary-strip sg-summary-strip-wide">
                     <div className="sg-stat">
                       <div className="sg-stat-body">
                         <span className="sg-stat-label">在籍 / 要フォロー</span>
@@ -1332,6 +1387,21 @@ export function SugorokuAdminApp({
                         tone="brand"
                       />
                     </div>
+
+                    <div className="sg-stat">
+                      <div className="sg-stat-body">
+                        <span className="sg-stat-label">一括提出 / 添削待ち</span>
+                        <span className="sg-stat-val" data-alert={kpi.totalPendingSubmissions > 0 || undefined}>
+                          <CountUp value={kpi.totalPendingSubmissions} fromZero duration={600} />
+                          <span className="sg-stat-unit">件</span>
+                          {kpi.totalReasons > 0 && (
+                            <span style={{ marginLeft: 8, fontSize: 12.5, fontWeight: 700, color: 'var(--mt-ink-2)' }}>
+                              · 理由/振り返り {kpi.totalReasons}件
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* 2. フィルタ・宿題配信・CSV出力 */}
@@ -1339,11 +1409,14 @@ export function SugorokuAdminApp({
                     <div className="sg-chip-group" role="group" aria-label="絞り込み">
                       {[
                         { id: 'all', label: '全員（全級一括）' },
+                        { id: 'eiken_1', label: '1級' },
+                        { id: 'eiken_pre1', label: '準1級' },
                         { id: 'eiken_2', label: '2級' },
                         { id: 'eiken_pre2plus', label: '準2級+' },
                         { id: 'eiken_pre2', label: '準2級' },
                         { id: 'eiken_3', label: '3級' },
-                        { id: 'eiken_pre1', label: '準1級' },
+                        { id: 'eiken_4', label: '4級' },
+                        { id: 'eiken_5', label: '5級' },
                       ].map((g) => (
                         <button
                           key={g.id}
@@ -1386,143 +1459,337 @@ export function SugorokuAdminApp({
                     </div>
                   </div>
 
-                  {/* 3. 生徒リスト（遅れ・未学習が自動で上位ソート） */}
-                  {filteredStudents.length === 0 ? (
-                    <Card className="slog-empty">該当する生徒がいません</Card>
-                  ) : (
-                    <ul className="sg-student-list sg-stagger">
-                      {filteredStudents.map((st) => {
-                        const alertLevel = st.alerts.some((a) => a.severity === 'critical')
-                          ? 'critical'
-                          : st.alerts.length > 0
-                            ? 'warning'
-                            : undefined;
-                        const primaryAlert = st.alerts[0] ?? null;
+                  {/* 3. フルワイド1画面2ペイン：左＝生徒一覧（解いた単元・設問数・提出バッジ付き）、右＝一括提出・解いた問題ライブフィード＆配信中課題 */}
+                  <div className="sg-wide-workspace" data-testid="sugoroku-wide-workspace">
+                    <div className="sg-wide-main">
+                      {filteredStudents.length === 0 ? (
+                        <Card className="slog-empty">該当する生徒がいません</Card>
+                      ) : (
+                        <ul className="sg-student-list sg-stagger">
+                          {filteredStudents.map((st) => {
+                            const alertLevel = st.alerts.some((a) => a.severity === 'critical')
+                              ? 'critical'
+                              : st.alerts.length > 0
+                                ? 'warning'
+                                : undefined;
+                            const primaryAlert = st.alerts[0] ?? null;
 
-                        const totalCorrect = st.gradeSkillBreakdown.reduce(
-                          (sum, g) => sum + g.correct,
-                          0,
-                        );
-                        const totalJudged = st.gradeSkillBreakdown.reduce(
-                          (sum, g) => sum + g.totalQuestions,
-                          0,
-                        );
-                        const overallAccuracyPct =
-                          totalJudged > 0 ? Math.round((totalCorrect / totalJudged) * 100) : null;
+                            const totalCorrect = st.gradeSkillBreakdown.reduce(
+                              (sum, g) => sum + g.correct,
+                              0,
+                            );
+                            const totalJudged = st.gradeSkillBreakdown.reduce(
+                              (sum, g) => sum + g.totalQuestions,
+                              0,
+                            );
+                            const overallAccuracyPct =
+                              totalJudged > 0 ? Math.round((totalCorrect / totalJudged) * 100) : null;
 
-                        return (
-                          <SwipeableRow
-                            key={st.uid}
-                            leftAction={{
-                              id: 'encourage',
-                              label: '声掛け',
-                              icon: <MessageCircle size={17} aria-hidden="true" />,
-                              onTrigger: () => void handleCopyStudentLineMessage(st),
-                            }}
-                            rightActions={[
-                              {
-                                id: 'sheet',
-                                label: '概要',
-                                icon: <Eye size={17} aria-hidden="true" />,
-                                onTrigger: () => setQuickSheetStudentUid(st.uid),
-                              },
-                            ]}
-                          >
-                            <article
-                              className="sg-student-row"
-                              data-alert={alertLevel}
-                              role="button"
-                              tabIndex={0}
-                              onClick={() => setSelectedStudentUid(st.uid)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  setSelectedStudentUid(st.uid);
-                                }
-                              }}
-                            >
-                              <div className="sg-row-main">
-                                <div className="sg-row-head">
-                                  <h3 className="sg-student-name">{st.rosterName}</h3>
-                                  <span className="sg-grade-tag">
-                                    {st.gradeSkillBreakdown[0]
-                                      ? getGradeLabel(st.gradeSkillBreakdown[0].grade as EikenGrade).replace('英検', '')
-                                      : getGradeLabel(st.targetGrade).replace('英検', '')}
-                                  </span>
-                                  {primaryAlert && (
-                                    <span
-                                      className="sg-alert-text"
-                                      data-warn={primaryAlert.severity === 'warning' || undefined}
-                                    >
-                                      {primaryAlert.label}
-                                    </span>
-                                  )}
-                                </div>
+                            const studentChapters = studentActivitiesByUid[st.uid] ?? [];
+                            const studentReasonCount = sourceInfo.answerReasons.filter(
+                              (r) => r.uid === st.uid,
+                            ).length;
 
-                                <div className="sg-row-sub">
-                                  <span>
-                                    今週 <b>{formatDurationJa(st.weeklyActiveSeconds)}</b>
-                                  </span>
-                                  <span>
-                                    本日 <b>{formatDurationJa(st.todayActiveSeconds)}</b>
-                                  </span>
-                                  <span>
-                                    宿題 <b>{st.homework.completionRate}%</b>
-                                    {st.homework.activeAssignmentTitle
-                                      ? `（${st.homework.completedProblems}/${st.homework.totalProblems}問）`
-                                      : '（未配信）'}
-                                  </span>
-                                  {overallAccuracyPct !== null && (
-                                    <span>
-                                      正答 <b>{overallAccuracyPct}%</b>
-                                    </span>
-                                  )}
-                                </div>
-
-                                <SkillRatioStackBar
-                                  items={st.gradeSkillBreakdown.map((g) => ({
-                                    key: g.key,
-                                    skill: g.skill,
-                                    label: g.label,
-                                    seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
-                                  }))}
-                                />
-                              </div>
-
-                              <div className="sg-row-right">
-                                <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
-
-                                <button
-                                  type="button"
-                                  className="sg-icon-btn"
-                                  aria-label={`${st.rosterName}とチャット`}
-                                  title="1対1チャットを開く"
-                                  style={
-                                    (chatThreadsByUid[st.uid]?.unreadByTeacher || 0) > 0
-                                      ? { background: '#06C755', color: '#fff', borderColor: '#06C755' }
-                                      : undefined
-                                  }
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setChatStudentUid(st.uid);
-                                    setActiveTab('chat');
+                            return (
+                              <SwipeableRow
+                                key={st.uid}
+                                leftAction={{
+                                  id: 'encourage',
+                                  label: '声掛け',
+                                  icon: <MessageCircle size={17} aria-hidden="true" />,
+                                  onTrigger: () => void handleCopyStudentLineMessage(st),
+                                }}
+                                rightActions={[
+                                  {
+                                    id: 'sheet',
+                                    label: '概要',
+                                    icon: <Eye size={17} aria-hidden="true" />,
+                                    onTrigger: () => setQuickSheetStudentUid(st.uid),
+                                  },
+                                ]}
+                              >
+                                <article
+                                  className="sg-student-row"
+                                  data-alert={alertLevel}
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={() => setSelectedStudentUid(st.uid)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      setSelectedStudentUid(st.uid);
+                                    }
                                   }}
                                 >
-                                  <MessageCircle size={15} />
-                                </button>
+                                  <div className="sg-row-main">
+                                    <div className="sg-row-head">
+                                      <h3 className="sg-student-name">{st.rosterName}</h3>
+                                      <span className="sg-grade-tag">
+                                        {st.gradeSkillBreakdown[0]
+                                          ? getGradeLabel(st.gradeSkillBreakdown[0].grade as EikenGrade).replace('英検', '')
+                                          : getGradeLabel(st.targetGrade).replace('英検', '')}
+                                      </span>
+                                      {primaryAlert && (
+                                        <span
+                                          className="sg-alert-text"
+                                          data-warn={primaryAlert.severity === 'warning' || undefined}
+                                        >
+                                          {primaryAlert.label}
+                                        </span>
+                                      )}
+                                      {(st.pendingWritingCount > 0 || st.pendingSpeakingCount > 0) && (
+                                        <span className="sg-pending-sub-pill">
+                                          未確認提出 {st.pendingWritingCount + st.pendingSpeakingCount}件
+                                        </span>
+                                      )}
+                                      {studentReasonCount > 0 && (
+                                        <span
+                                          className="sg-grade-tag"
+                                          style={{ background: '#e0f2fe', color: '#075985' }}
+                                        >
+                                          一括/理由 {studentReasonCount}件
+                                        </span>
+                                      )}
+                                    </div>
 
-                                <ChevronRight
-                                  size={18}
-                                  className="sg-row-chevron"
-                                  aria-hidden="true"
-                                />
-                              </div>
-                            </article>
-                          </SwipeableRow>
-                        );
-                      })}
-                    </ul>
-                  )}
+                                    <div className="sg-row-sub">
+                                      <span>
+                                        今週 <b>{formatDurationJa(st.weeklyActiveSeconds)}</b>
+                                      </span>
+                                      <span>
+                                        本日 <b>{formatDurationJa(st.todayActiveSeconds)}</b>
+                                      </span>
+                                      <span>
+                                        宿題 <b>{st.homework.completionRate}%</b>
+                                        {st.homework.activeAssignmentTitle
+                                          ? `（${st.homework.completedProblems}/${st.homework.totalProblems}問）`
+                                          : '（未配信）'}
+                                      </span>
+                                      {overallAccuracyPct !== null && (
+                                        <span>
+                                          正答 <b>{overallAccuracyPct}%</b>
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {studentChapters.length > 0 && (
+                                      <div className="sg-row-solved-strip" aria-label="直近で解いた単元">
+                                        {studentChapters.slice(0, 3).map((ch) => (
+                                          <span
+                                            key={ch.chapterId}
+                                            className="sg-solved-unit-pill"
+                                            data-has-wrong={ch.wrongQuestionCount > 0 ? 'true' : undefined}
+                                          >
+                                            <span>[{ch.gradeShortLabel}] {ch.chapterTitle}</span>
+                                            <b>{ch.solvedCount}/{ch.totalProblems}問</b>
+                                            {ch.wrongQuestionCount > 0 && (
+                                              <span>(×{ch.wrongQuestionCount})</span>
+                                            )}
+                                          </span>
+                                        ))}
+                                        {studentChapters.length > 3 && (
+                                          <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--mt-ink-3)' }}>
+                                            +{studentChapters.length - 3}単元
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    <SkillRatioStackBar
+                                      items={st.gradeSkillBreakdown.map((g) => ({
+                                        key: g.key,
+                                        skill: g.skill,
+                                        label: g.label,
+                                        seconds: g.weeklySeconds > 0 ? g.weeklySeconds : g.totalSeconds,
+                                      }))}
+                                    />
+                                  </div>
+
+                                  <div className="sg-row-right">
+                                    <StudyDoorsWeek recentDailyLogs={st.recentDailyLogs} />
+
+                                    <button
+                                      type="button"
+                                      className="sg-quick-hw-btn"
+                                      title={`${st.rosterName}に個別課題を出す`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingAssignment(null);
+                                        setHomeworkTargetStudent({
+                                          uid: st.uid,
+                                          name: st.rosterName.split('（')[0] || st.rosterName,
+                                        });
+                                        setHomeworkModalOpen(true);
+                                      }}
+                                    >
+                                      <Plus size={13} aria-hidden="true" />
+                                      課題
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      className="sg-icon-btn"
+                                      aria-label={`${st.rosterName}とチャット`}
+                                      title="1対1チャットを開く"
+                                      style={
+                                        (chatThreadsByUid[st.uid]?.unreadByTeacher || 0) > 0
+                                          ? { background: '#06C755', color: '#fff', borderColor: '#06C755' }
+                                          : undefined
+                                      }
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setChatStudentUid(st.uid);
+                                        setActiveTab('chat');
+                                      }}
+                                    >
+                                      <MessageCircle size={15} />
+                                    </button>
+
+                                    <ChevronRight
+                                      size={18}
+                                      className="sg-row-chevron"
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                </article>
+                              </SwipeableRow>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* 右サイド：誰がどの問題を解いたか＆一括提出タイムライン ＋ 現在配信中の課題 */}
+                    <aside
+                      className="sg-wide-side"
+                      aria-label="一括提出・解いた問題フィードと配信中課題"
+                      data-testid="sugoroku-live-submission-panel"
+                    >
+                      <Card className="sg-grid-10">
+                        <div className="sg-toolbar">
+                          <div>
+                            <strong style={{ font: '800 14.5px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+                              一括提出 ＆ 解いた問題の最新フィード
+                            </strong>
+                            <small style={{ display: 'block', fontSize: 11.5, color: 'var(--mt-ink-3)' }}>
+                              クリックするとその生徒の設問別（問1 ○/×）または添削画面へ直行
+                            </small>
+                          </div>
+                        </div>
+
+                        {liveSubmissionFeed.length === 0 ? (
+                          <p className="sg-student-note">
+                            生徒が問題を解くか、筆記・英作文・スピーキングで「一括提出」を行うと、誰が何番の問題に取り組んだかがここにリアルタイム表示されます。
+                          </p>
+                        ) : (
+                          <ul className="sg-feed-list">
+                            {liveSubmissionFeed.map((ev) => (
+                              <li key={ev.id}>
+                                <button
+                                  type="button"
+                                  className="sg-feed-item"
+                                  onClick={() => {
+                                    if (ev.kind === 'writing') {
+                                      setActiveTab('writing_review');
+                                    } else if (ev.kind === 'speaking') {
+                                      setActiveTab('speaking_review');
+                                    } else {
+                                      setSelectedStudentUid(ev.studentUid);
+                                    }
+                                  }}
+                                >
+                                  <div className="sg-feed-top">
+                                    <span className="sg-feed-badge" data-tone={ev.tone}>
+                                      {ev.badgeText}
+                                    </span>
+                                    <span className="sg-feed-time">
+                                      {formatShortTimestampJa(ev.timestampMs)}
+                                    </span>
+                                  </div>
+                                  <div className="sg-feed-student">{ev.studentName}</div>
+                                  <div className="sg-feed-title">{ev.title}</div>
+                                  <p className="sg-feed-sub">{ev.subtitle}</p>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </Card>
+
+                      <Card className="sg-grid-10">
+                        <div className="sg-toolbar">
+                          <strong style={{ font: '800 14.5px/1.3 var(--mt-font-display)', color: 'var(--mt-ink-warm)' }}>
+                            配信中の課題（{sourceInfo.assignments.length}件）
+                          </strong>
+                          <button
+                            type="button"
+                            className="sg-quick-hw-btn"
+                            onClick={() => {
+                              setEditingAssignment(null);
+                              setHomeworkTargetStudent(null);
+                              setHomeworkModalOpen(true);
+                            }}
+                          >
+                            <Plus size={12} aria-hidden="true" />
+                            追加
+                          </button>
+                        </div>
+
+                        {sourceInfo.assignments.length === 0 ? (
+                          <p className="sg-student-note">
+                            まだ課題が配信されていません。「＋ 追加」または「教材PDF」タブの合格ルートからワンタップで出題できます。
+                          </p>
+                        ) : (
+                          <div className="sg-grid-8">
+                            {sourceInfo.assignments.slice(0, 5).map((asg) => {
+                              const isInd =
+                                Array.isArray(asg.targetStudentUids) &&
+                                asg.targetStudentUids.length > 0;
+                              const totalProbs = asg.chapterIds.reduce(
+                                (sum, cid) => sum + (chapterTotalsMap[cid] || 0),
+                                0,
+                              );
+                              return (
+                                <div
+                                  key={asg.id}
+                                  style={{
+                                    padding: '9px 11px',
+                                    borderRadius: 12,
+                                    border: '1px solid var(--mt-line)',
+                                    background: 'var(--mt-bg-screen)',
+                                    display: 'grid',
+                                    gap: 4,
+                                  }}
+                                >
+                                  <div className="sg-feed-top">
+                                    <span
+                                      className="sg-feed-badge"
+                                      data-tone={isInd ? 'blue' : 'teal'}
+                                    >
+                                      {isInd
+                                        ? `個別指定 (${asg.targetStudentUids?.length}名)`
+                                        : 'クラス全員'}
+                                    </span>
+                                    <span className="sg-feed-time">
+                                      締切 {formatDue(asg.dueAt)}
+                                    </span>
+                                  </div>
+                                  <strong style={{ fontSize: 12.5, color: 'var(--mt-ink-warm)' }}>
+                                    {asg.title}
+                                  </strong>
+                                  <small style={{ fontSize: 11.5, color: 'var(--mt-ink-3)' }}>
+                                    {asg.chapterIds.slice(0, 2).map((cid) => chapterTitleOf(cid)).join(' / ')}
+                                    {asg.chapterIds.length > 2 ? ` ほか+${asg.chapterIds.length - 2}` : ''}
+                                    {totalProbs > 0 ? `（計${totalProbs}問）` : ''}
+                                  </small>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </Card>
+                    </aside>
+                  </div>
                 </section>
               )}
             </>

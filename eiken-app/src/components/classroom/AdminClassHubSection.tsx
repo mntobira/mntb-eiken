@@ -3,20 +3,23 @@
  * 管理者・先生向け「管理しているクラス一覧 ＋ クラス追加」ハブ（設定 ＞ クラス内）
  * ============================================================================
  *
- * ■ A1 ＋ クラスUIブラッシュアップ
+ * ■ A1 ＋ クラスUIブラッシュアップ ＋ 直行ショートカット統合
  * - 1つの管理アカウントで「設定 ＞ クラス」を開いたとき、いきなり特定の専用画面へ
  *   固定ロックせず、自分が管理・担当している全クラス（すごろく塾・コース別・学校別）を
  *   俯瞰して切り替え・新規開設できるハブとして表示。
- * - 各クラスカードから 1タップで「管理画面を開く」「6文字コードコピー」「LINE案内文コピー」
- *   「A4招待シート印刷」を実行可能。3クラス以上のときはキーワード絞り込みも表示。
+ * - 各クラスカードに「在籍人数」「新着チャット件数」を表示し、
+ *   『👥 生徒・課題管理』『💬 1対1トーク』『📄 教材PDF』『✍ 添削』へ1タップ直行可能。
+ * - さらに「6文字コードコピー」「LINE案内文コピー」「A4招待シート印刷」も1タップ完結。
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  BookOpen,
   Check,
   ChevronRight,
   Clock,
   Copy,
+  FilePenLine,
   Loader2,
   MessageCircle,
   Plus,
@@ -26,11 +29,14 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  Users,
 } from 'lucide-react';
 import { auth, FIREBASE_CONFIGURED } from '../../firebase';
+import { fetchClassMembers } from '../../utils/classroom';
 import type { ClassroomDoc } from '../../utils/classroomCore';
 import { subjectTheme } from '../../data/subjectTheme';
 import { ClassFormModal, type ClassFormValues } from '../teacher/CreateClassModal';
+import type { SugorokuAdminTabId } from '../../sugoroku/admin/SugorokuAdminApp';
 import {
   buildClassInviteMessage,
   createDefaultClassSettings,
@@ -46,13 +52,14 @@ import { openClassInviteSheetPrint } from '../../sugoroku/admin/printClassInvite
 import { subscribeUserChatInbox } from '../../sugoroku/chat';
 
 interface AdminClassHubSectionProps {
-  /** 選んだクラスIDの管理画面（SugorokuAdminApp）を開く */
-  onOpenClassAdmin: (classId: string) => void;
+  /** 選んだクラスID（および開く初期タブ）の管理画面（SugorokuAdminApp）を開く */
+  onOpenClassAdmin: (classId: string, initialTab?: SugorokuAdminTabId) => void;
 }
 
 export function AdminClassHubSection({ onOpenClassAdmin }: AdminClassHubSectionProps) {
   const [rooms, setRooms] = useState<ClassroomDoc[]>([]);
   const [settingsMap, setSettingsMap] = useState<Record<string, JukuClassSettings>>({});
+  const [memberCountMap, setMemberCountMap] = useState<Record<string, number>>({});
   const [unreadByClassId, setUnreadByClassId] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -79,10 +86,27 @@ export function AdminClassHubSection({ onOpenClassAdmin }: AdminClassHubSectionP
       }
       setSettingsMap(cached);
       if (list.length > 0) {
-        const fetched = await Promise.all(
-          list.map(async (r) => [r.id, await fetchClassSettings(r.id)] as const),
-        );
-        setSettingsMap(Object.fromEntries(fetched));
+        const [fetchedSettings, fetchedCounts] = await Promise.all([
+          Promise.all(
+            list.map(async (r) => [r.id, await fetchClassSettings(r.id)] as const),
+          ),
+          Promise.all(
+            list.map(async (r) => {
+              try {
+                const members = await fetchClassMembers(r.id);
+                return [r.id, members.length] as const;
+              } catch {
+                return [r.id, -1] as const;
+              }
+            }),
+          ),
+        ]);
+        setSettingsMap(Object.fromEntries(fetchedSettings));
+        const countsObj: Record<string, number> = {};
+        for (const [cid, count] of fetchedCounts) {
+          if (count >= 0) countsObj[cid] = count;
+        }
+        setMemberCountMap(countsObj);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : '管理クラスの取得に失敗しました。');
@@ -169,7 +193,7 @@ export function AdminClassHubSection({ onOpenClassAdmin }: AdminClassHubSectionP
       });
       setCreateOpen(false);
       await loadRooms();
-      onOpenClassAdmin(created.id);
+      onOpenClassAdmin(created.id, 'students');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'クラスの作成に失敗しました。');
     } finally {
@@ -267,83 +291,135 @@ export function AdminClassHubSection({ onOpenClassAdmin }: AdminClassHubSectionP
             const theme = subjectTheme(room.subject);
             const st = settingsMap[room.id] ?? loadCachedClassSettings(room.id);
             const unread = unreadByClassId[room.id] || 0;
+            const memberCount = memberCountMap[room.id];
             const isAllGrades = (room.className || '').includes('全級');
 
             return (
-              <li key={room.id}>
+              <li
+                key={room.id}
+                className="w-full rounded-2xl border border-[#D4E1EE] bg-white hover:border-[#2458A6] hover:shadow-xs transition-all p-3.5 space-y-2.5"
+              >
                 <div
                   role="button"
                   tabIndex={0}
-                  onClick={() => onOpenClassAdmin(room.id)}
+                  onClick={() => onOpenClassAdmin(room.id, 'students')}
                   onKeyDown={(ev) => {
                     if (ev.key === 'Enter' || ev.key === ' ') {
                       ev.preventDefault();
-                      onOpenClassAdmin(room.id);
+                      onOpenClassAdmin(room.id, 'students');
                     }
                   }}
-                  className="w-full rounded-2xl border border-[#D4E1EE] bg-white hover:border-[#2458A6] hover:shadow-xs transition-all p-3.5 space-y-2.5 cursor-pointer"
+                  className="flex items-start justify-between gap-2.5 cursor-pointer"
                 >
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#2458A6]/10 text-[#2458A6] text-[11px] font-extrabold">
-                          <School size={11} />
-                          {room.schoolName || 'クラス'}
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#2458A6]/10 text-[#2458A6] text-[11px] font-extrabold">
+                        <School size={11} />
+                        {room.schoolName || 'クラス'}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${theme.chipTextClass} ${theme.chipBgClass}`}
+                      >
+                        {isAllGrades ? '5級〜1級 全級対応' : theme.label}
+                      </span>
+                      {room.plan === 'juku' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#E8F6F4] text-[#1F635B] border border-[#BFE6E0] text-[10px] font-extrabold">
+                          <ShieldCheck size={10} />
+                          塾プラン・広告OFF
                         </span>
-                        <span
-                          className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${theme.chipTextClass} ${theme.chipBgClass}`}
-                        >
-                          {isAllGrades ? '5級〜1級 全級対応' : theme.label}
+                      )}
+                      {typeof memberCount === 'number' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-bold">
+                          <Users size={11} />
+                          生徒 {memberCount}名
                         </span>
-                        {room.plan === 'juku' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#E8F6F4] text-[#1F635B] border border-[#BFE6E0] text-[10px] font-extrabold">
-                            <ShieldCheck size={10} />
-                            塾プラン・広告OFF
-                          </span>
-                        )}
-                        {room.joinOpen === false && (
-                          <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-600 text-[10px] font-bold">
-                            受付締切
-                          </span>
-                        )}
-                        {unread > 0 && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#06C755] text-white text-[11px] font-extrabold shadow-2xs">
-                            <MessageCircle size={11} />
-                            新着チャット {unread}件
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="text-sm font-extrabold text-[#1B2631] leading-snug">
-                        {room.className}
-                      </p>
-
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#5D6D7E] font-medium">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock size={11} className="text-[#2458A6]" />
-                          1日{st.dailyGoalMinutes}分×週{st.weeklyGoalDays}日
+                      )}
+                      {room.joinOpen === false && (
+                        <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-600 text-[10px] font-bold">
+                          受付締切
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Target size={11} className="text-[#2458A6]" />
-                          {getExamSessionShortLabel(st.examSession)}
+                      )}
+                      {unread > 0 && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#06C755] text-white text-[11px] font-extrabold shadow-2xs">
+                          <MessageCircle size={11} />
+                          新着チャット {unread}件
                         </span>
-                      </div>
+                      )}
                     </div>
 
-                    <span className="shrink-0 inline-flex min-h-[38px] items-center gap-0.5 px-3 py-2 rounded-xl bg-[#2458A6] text-white text-xs font-extrabold shadow-2xs">
-                      開く
-                      <ChevronRight size={14} />
-                    </span>
+                    <p className="text-sm font-extrabold text-[#1B2631] leading-snug">
+                      {room.className}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#5D6D7E] font-medium">
+                      <span className="inline-flex items-center gap-1">
+                        <Clock size={11} className="text-[#2458A6]" />
+                        1日{st.dailyGoalMinutes}分×週{st.weeklyGoalDays}日
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Target size={11} className="text-[#2458A6]" />
+                        {getExamSessionShortLabel(st.examSession)}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* 下段クイックツールバー：6文字コード・LINE案内文・A4招待シート */}
-                  <div className="pt-2 border-t border-[#EEF2F6] flex flex-wrap items-center justify-between gap-1.5">
+                  <span className="shrink-0 inline-flex min-h-[38px] items-center gap-0.5 px-3 py-2 rounded-xl bg-[#2458A6] text-white text-xs font-extrabold shadow-2xs">
+                    開く
+                    <ChevronRight size={14} />
+                  </span>
+                </div>
+
+                {/* 下段クイックツールバー：目的タブ直行 ＋ 6文字コード・LINE案内文・招待シート */}
+                <div className="pt-2 border-t border-[#EEF2F6] flex flex-wrap items-center justify-between gap-2">
+                  <div
+                    className="flex flex-wrap items-center gap-1.5"
+                    aria-label={`${room.className}のショートカット`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onOpenClassAdmin(room.id, 'students')}
+                      className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EFF5FC] border border-[#CEDCEB] hover:bg-[#E2EDF9] text-[11px] font-extrabold text-[#1E3A8A] cursor-pointer"
+                    >
+                      <Users size={12} />
+                      生徒・課題
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenClassAdmin(room.id, 'chat')}
+                      className={`inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-extrabold cursor-pointer ${
+                        unread > 0
+                          ? 'bg-[#06C755] text-white border-[#06C755] hover:bg-[#05b34c]'
+                          : 'bg-white text-[#047857] border-[#BBE5CD] hover:bg-[#F0FDF4]'
+                      }`}
+                    >
+                      <MessageCircle size={12} />
+                      トーク{unread > 0 ? ` (${unread})` : ''}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenClassAdmin(room.id, 'pdf_shelf')}
+                      className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#DCE7F3] hover:bg-[#F5F9FF] text-[11px] font-bold text-slate-700 cursor-pointer"
+                    >
+                      <BookOpen size={12} />
+                      教材PDF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenClassAdmin(room.id, 'writing_review')}
+                      className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#DCE7F3] hover:bg-[#F5F9FF] text-[11px] font-bold text-slate-700 cursor-pointer"
+                    >
+                      <FilePenLine size={12} />
+                      添削
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       type="button"
                       onClick={(e) =>
                         void copyWithFeedback(e, room.joinCode, `code:${room.id}`)
                       }
-                      className="inline-flex min-h-[32px] items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[#D8E1EB] bg-[#F8FAFC] hover:bg-[#EFF4F9] text-[11px] font-bold text-[#1B2631]"
+                      className="inline-flex min-h-[32px] items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[#D8E1EB] bg-[#F8FAFC] hover:bg-[#EFF4F9] text-[11px] font-bold text-[#1B2631] cursor-pointer"
                       title="生徒用の6文字参加コードをコピー"
                     >
                       {copiedToken === `code:${room.id}` ? (
@@ -357,42 +433,40 @@ export function AdminClassHubSection({ onOpenClassAdmin }: AdminClassHubSectionP
                       </strong>
                     </button>
 
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={(e) =>
-                          void copyWithFeedback(
-                            e,
-                            buildClassInviteMessage({ room, settings: st }),
-                            `line:${room.id}`,
-                          )
-                        }
-                        className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg border border-[#DCE7F3] bg-white hover:bg-[#F5F9FF] text-[11px] font-bold text-[#2458A6]"
-                        title="LINE・保護者連絡用の招待文をコピー"
-                      >
-                        {copiedToken === `line:${room.id}` ? (
-                          <>
-                            <Check size={12} className="text-[#059669]" />
-                            LINE文コピー済
-                          </>
-                        ) : (
-                          <>
-                            <MessageCircle size={12} />
-                            LINE案内文
-                          </>
-                        )}
-                      </button>
+                    <button
+                      type="button"
+                      onClick={(e) =>
+                        void copyWithFeedback(
+                          e,
+                          buildClassInviteMessage({ room, settings: st }),
+                          `line:${room.id}`,
+                        )
+                      }
+                      className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg border border-[#DCE7F3] bg-white hover:bg-[#F5F9FF] text-[11px] font-bold text-[#2458A6] cursor-pointer"
+                      title="LINE・保護者連絡用の招待文をコピー"
+                    >
+                      {copiedToken === `line:${room.id}` ? (
+                        <>
+                          <Check size={12} className="text-[#059669]" />
+                          LINE文コピー済
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle size={12} />
+                          LINE案内文
+                        </>
+                      )}
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={(e) => handlePrintInvite(e, room, st)}
-                        className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg border border-[#DCE7F3] bg-white hover:bg-[#F5F9FF] text-[11px] font-bold text-[#374151]"
-                        title="教室配布・画面提示用のA4招待シートを開く"
-                      >
-                        <Printer size={12} className="text-[#2458A6]" />
-                        招待シート
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => handlePrintInvite(e, room, st)}
+                      className="inline-flex min-h-[32px] items-center gap-1 px-2.5 py-1 rounded-lg border border-[#DCE7F3] bg-white hover:bg-[#F5F9FF] text-[11px] font-bold text-[#374151] cursor-pointer"
+                      title="教室配布・画面提示用のA4招待シートを開く"
+                    >
+                      <Printer size={12} className="text-[#2458A6]" />
+                      招待シート
+                    </button>
                   </div>
                 </div>
               </li>

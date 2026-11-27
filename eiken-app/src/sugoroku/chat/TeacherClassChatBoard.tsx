@@ -161,6 +161,12 @@ export function TeacherClassChatBoard({
               type="search"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowDown' && sortedFilteredStudents.length > 0) {
+                  e.preventDefault();
+                  handlePickStudent(sortedFilteredStudents[0].uid);
+                }
+              }}
               placeholder="生徒名・相談内容で検索"
               aria-label="トーク一覧を検索"
               className="flex-1 min-w-0 bg-transparent text-xs font-bold text-slate-800 focus:outline-none"
